@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSC 240 - Week 1: Introduction to Sets and Set Operations - Part 1</title>
+    <meta name="description" content="Interactive learning experience for CSC 240 Week 1 Part 1: Modules 1-3">
+    <style>
+        /* Color scheme and variables */
+        :root {
+            --primary: #1a4d2e;
+            --secondary: #2d6a4f;
+            --accent: #52b788;
+            --light: #95d5b2;
+            --pale: #d8f3dc;
+            --bg: #ffffff;
+            --surface: #f8f9fa;
+            --text: #1b263b;
+            --text-light: #415a77;
+            --text-muted: #778da9;
+            --border: #d8e2dc;
+            --success: #2a9d8f;
+            --warning: #f77f00;
+            --error: #e63946;
+            --info: #0077b6;
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background: var(--bg);
+        }
+        
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: var(--primary);
+            color: white;
+            padding: 8px 16px;
+            text-decoration: none;
+            z-index: 10000;
+        }
+        
+        .skip-link:focus { top: 0; }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 2rem 1rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 { font-size: 1.75rem; margin-bottom: 0.5rem; }
+        
+        nav {
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 80px;
+            z-index: 999;
+            border-bottom: 2px solid var(--border);
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0.5rem 1rem;
+        }
+        
+        .nav-list {
+            list-style: none;
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .nav-link {
+            padding: 0.5rem 1rem;
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .nav-link:hover {
+            background: var(--light);
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+        
+        .nav-link.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+        
+        .progress-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 1.5rem;
+            background: var(--surface);
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 16px;
+            background: var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--success));
+            transition: width 0.5s;
+            width: 0%;
+        }
+        
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem 3rem;
+        }
+        
+        .module-section {
+            margin-bottom: 3rem;
+            scroll-margin-top: 160px;
+        }
+        
+        .card {
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border);
+        }
+        
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--accent);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+        
+        h2 { color: var(--primary); font-size: 1.5rem; margin-bottom: 0.5rem; }
+        h3 { color: var(--primary); font-size: 1.25rem; margin: 1.5rem 0 1rem; }
+        h4 { color: var(--primary); font-size: 1.1rem; margin: 1rem 0 0.5rem; }
+        
+        p { color: var(--text-light); margin-bottom: 1rem; }
+        
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: flex;
+            gap: 1rem;
+            border-left: 4px solid;
+        }
+        
+        .alert.info {
+            background: #e3f2fd;
+            border-color: var(--info);
+            color: #01579b;
+        }
+        
+        .alert.warning {
+            background: #fff3e0;
+            border-color: var(--warning);
+            color: #e65100;
+        }
+        
+        .alert.success {
+            background: #e8f5e9;
+            border-color: var(--success);
+            color: #1b5e20;
+        }
+        
+        .alert.error {
+            background: #ffebee;
+            border-color: var(--error);
+            color: #b71c1c;
+        }
+        
+        .example-box {
+            background: var(--surface);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--accent);
+            margin-bottom: 1.5rem;
+        }
+        
+        .example-title {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        
+        .example-steps {
+            list-style: none;
+            counter-reset: step;
+        }
+        
+        .example-step {
+            counter-increment: step;
+            margin-bottom: 1rem;
+            padding-left: 2.5rem;
+            position: relative;
+        }
+        
+        .example-step::before {
+            content: counter(step);
+            position: absolute;
+            left: 0;
+            width: 28px;
+            height: 28px;
+            background: var(--accent);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+        
+        .grid { display: grid; gap: 1.5rem; margin: 1.5rem 0; }
+        .grid-2 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+        
+        .accordion-button {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+        
+        .accordion-button:hover {
+            background: var(--light);
+            border-color: var(--accent);
+        }
+        
+        .accordion-icon {
+            transition: transform 0.3s;
+            font-size: 1.5rem;
+        }
+        
+        .accordion-button[aria-expanded="true"] .accordion-icon {
+            transform: rotate(180deg);
+        }
+        
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s;
+            background: white;
+            border: 2px solid var(--border);
+            border-top: none;
+            border-radius: 0 0 12px 12px;
+            margin-top: -12px;
+        }
+        
+        .accordion-content.active {
+            max-height: 3000px;
+            padding: 1.5rem;
+        }
+        
+        .tabs { margin-bottom: 1.5rem; }
+        
+        .tab-list {
+            display: flex;
+            gap: 0.5rem;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .tab-button {
+            padding: 0.75rem 1.5rem;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-light);
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.3s;
+        }
+        
+        .tab-button:hover {
+            color: var(--primary);
+            background: var(--surface);
+        }
+        
+        .tab-button[aria-selected="true"] {
+            color: var(--primary);
+            border-bottom-color: var(--accent);
+        }
+        
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; animation: fadeIn 0.3s; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .drag-drop-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        
+        .drop-zone {
+            background: var(--surface);
+            border: 2px dashed var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            min-height: 200px;
+        }
+        
+        .drop-zone.drag-over {
+            border-color: var(--accent);
+            background: var(--pale);
+        }
+        
+        .drop-zone-title {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        .draggable-items {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .draggable-item {
+            padding: 0.75rem;
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            cursor: move;
+            transition: all 0.3s;
+        }
+        
+        .draggable-item:hover {
+            border-color: var(--accent);
+            transform: scale(1.02);
+        }
+        
+        .draggable-item.dragging { opacity: 0.5; }
+        .draggable-item.correct { border-color: var(--success); background: #e8f5e9; }
+        .draggable-item.incorrect { border-color: var(--error); background: #ffebee; }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border: 2px solid;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+        
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .btn-large {
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+        }
+        
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .quiz-feedback.show { display: block; }
+        
+        .quiz-feedback.correct {
+            background: #e8f5e9;
+            color: #1b5e20;
+            border-left: 4px solid var(--success);
+        }
+        
+        .quiz-feedback.incorrect {
+            background: #ffebee;
+            color: #b71c1c;
+            border-left: 4px solid var(--error);
+        }
+        
+        .quiz-controls {
+            margin-top: 1.5rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .set-creator {
+            background: var(--surface);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 2px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
+        
+        .set-input-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .form-group { flex: 1; min-width: 200px; }
+        
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        .form-help {
+            display: block;
+            margin-top: 0.25rem;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+        
+        .set-display {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 2px solid var(--border);
+            margin: 1rem 0;
+            min-height: 100px;
+        }
+        
+        .set-notation {
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .set-elements {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        
+        .set-element {
+            padding: 0.5rem 1rem;
+            background: var(--accent);
+            color: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .element-remove {
+            background: rgba(255,255,255,0.3);
+            border: none;
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        
+        .element-remove:hover {
+            background: rgba(255,255,255,0.5);
+        }
+        
+        .notation-display {
+            background: var(--surface);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 2px solid var(--border);
+            font-family: 'Courier New', monospace;
+            font-size: 1.3rem;
+            text-align: center;
+            color: var(--primary);
+            margin: 1.5rem 0;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .notation-display.large {
+            font-size: 1.5rem;
+            min-height: 100px;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+        }
+        
+        .comparison-table th,
+        .comparison-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 2px solid var(--border);
+        }
+        
+        .comparison-table th {
+            background: var(--accent);
+            color: white;
+            font-weight: 600;
+        }
+        
+        .comparison-table tr:nth-child(even) {
+            background: var(--surface);
+        }
+        
+        code {
+            background: var(--surface);
+            padding: 0.2em 0.4em;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: var(--primary);
+        }
+        
+        .checkbox-item {
+            padding: 1rem;
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            display: flex;
+            gap: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .checkbox-item:hover {
+            background: var(--pale);
+            border-color: var(--accent);
+        }
+        
+        .checkbox-item.completed {
+            background: var(--pale);
+        }
+        
+        .checkbox-input {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: var(--accent);
+        }
+        
+        .quiz-container {
+            background: var(--surface);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 2px solid var(--border);
+            margin: 1.5rem 0;
+        }
+        
+        .quiz-question {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+        }
+        
+        .quiz-options { list-style: none; }
+        
+        .quiz-option {
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .quiz-option:hover {
+            border-color: var(--accent);
+            background: var(--pale);
+        }
+        
+        .quiz-option.selected {
+            border-color: var(--accent);
+            background: var(--light);
+        }
+        
+        .quiz-option.correct {
+            border-color: var(--success);
+            background: #e8f5e9;
+        }
+        
+        .quiz-option.incorrect {
+            border-color: var(--error);
+            background: #ffebee;
+        }
+        
+        .option-letter {
+            width: 32px;
+            height: 32px;
+            background: var(--accent);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+        
+        .quiz-option.correct .option-letter {
+            background: var(--success);
+        }
+        
+        .quiz-option.incorrect .option-letter {
+            background: var(--error);
+        }
+        
+        footer {
+            background: var(--surface);
+            padding: 2rem 1rem;
+            margin-top: 3rem;
+            text-align: center;
+            border-top: 2px solid var(--border);
+        }
+        
+        footer p {
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            h1 { font-size: 1.5rem; }
+            .nav-list { flex-direction: column; }
+            .nav-link { width: 100%; }
+            .grid-2 { grid-template-columns: 1fr; }
+            .set-input-row { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <a href="#main" class="skip-link">Skip to main content</a>
+    
+    <header>
+        <div class="header-content">
+            <h1>CSC 240 - Discrete Structures</h1>
+            <p>Week 1: Introduction to Sets and Set Operations - Part 1</p>
+        </div>
+    </header>
+    
+    <nav>
+        <div class="nav-container">
+            <ul class="nav-list">
+                <li><a href="#module1" class="nav-link">Module 1: Intro to Discrete Math</a></li>
+                <li><a href="#module2" class="nav-link">Module 2: Introduction to Sets</a></li>
+                <li><a href="#module3" class="nav-link">Module 3: Set Notation</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <div class="progress-container">
+        <div class="progress-header">
+            <span style="font-weight: 600;">Your Progress (Part 1)</span>
+            <div>
+                <span id="modules-completed">Modules: 0/3</span>
+                <span id="progress-percentage" style="font-weight: 700; color: var(--accent); font-size: 1.5rem; margin-left: 1rem;">0%</span>
+            </div>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill"></div>
+        </div>
+    </div>
+    
+    <main id="main">
+        <!-- MODULE 1 -->
+        <section id="module1" class="module-section">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">📚</div>
+                    <div>
+                        <h2>Module 1: Introduction to Discrete Mathematics</h2>
+                        <p style="margin: 0; color: var(--text-muted);">Estimated Time: 15 minutes</p>
+                    </div>
+                </div>
+                
+                <div class="alert info">
+                    <span style="font-size: 1.5rem;">🎯</span>
+                    <div>
+                        <strong>Learning Objectives:</strong>
+                        <ul style="margin-top: 0.5rem; margin-left: 1.5rem;">
+                            <li>Understand what discrete mathematics is</li>
+                            <li>Explain discrete vs. continuous mathematics</li>
+                            <li>Identify CS applications of discrete structures</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <h3>What is Discrete Mathematics?</h3>
+                <p><strong>Discrete mathematics</strong> is the study of mathematical structures that are fundamentally discrete (separate, distinct) rather than continuous.</p>
+                
+                <div class="example-box">
+                    <div class="example-title">💡 Example: Discrete vs. Continuous</div>
+                    <div class="grid grid-2">
+                        <div>
+                            <h4 style="color: var(--accent);">Discrete Examples:</h4>
+                            <ul style="margin-left: 1.5rem; color: var(--text-light);">
+                                <li>Number of students in class</li>
+                                <li>Files on your computer</li>
+                                <li>Bits in a byte (0 or 1)</li>
+                                <li>Steps in an algorithm</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 style="color: var(--info);">Continuous Examples:</h4>
+                            <ul style="margin-left: 1.5rem; color: var(--text-light);">
+                                <li>Temperature (72.5°F)</li>
+                                <li>Distance traveled</li>
+                                <li>Time elapsed</li>
+                                <li>Volume of water</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <h3>Self-Check: Discrete vs. Continuous</h3>
+                <div class="quiz-container">
+                    <p class="quiz-question">Classify each item by dragging to the correct category:</p>
+                    <div class="drag-drop-container">
+                        <div class="drop-zone" data-category="discrete">
+                            <div class="drop-zone-title">Discrete</div>
+                            <div class="draggable-items" id="discrete-zone"></div>
+                        </div>
+                        <div class="drop-zone" data-category="continuous">
+                            <div class="drop-zone-title">Continuous</div>
+                            <div class="draggable-items" id="continuous-zone"></div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 1rem;">
+                        <p style="font-weight: 600; margin-bottom: 0.5rem;">Drag items:</p>
+                        <div class="draggable-items" id="items-to-classify">
+                            <div class="draggable-item" draggable="true" data-answer="discrete">Number of program errors</div>
+                            <div class="draggable-item" draggable="true" data-answer="continuous">Program execution time</div>
+                            <div class="draggable-item" draggable="true" data-answer="discrete">Vertices in a graph</div>
+                            <div class="draggable-item" draggable="true" data-answer="continuous">Memory usage percentage</div>
+                            <div class="draggable-item" draggable="true" data-answer="discrete">Database records</div>
+                            <div class="draggable-item" draggable="true" data-answer="discrete">Boolean values (true/false)</div>
+                        </div>
+                    </div>
+                    <div class="quiz-controls">
+                        <button class="btn btn-primary" onclick="checkClassification()">Check Answers</button>
+                        <button class="btn btn-secondary" onclick="resetClassification()">Reset</button>
+                    </div>
+                    <div id="classification-feedback" class="quiz-feedback"></div>
+                </div>
+                
+                <div style="margin-top: 2rem; padding-top: 2rem; border-top: 2px solid var(--border);">
+                    <label class="checkbox-item" onclick="toggleModuleCompletion(1)">
+                        <input type="checkbox" class="checkbox-input" id="module1-complete">
+                        <span><strong>I've completed Module 1</strong></span>
+                    </label>
+                </div>
+            </div>
+        </section>
+        
+        <!-- MODULE 2 -->
+        <section id="module2" class="module-section">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">📦</div>
+                    <div>
+                        <h2>Module 2: Introduction to Sets</h2>
+                        <p style="margin: 0; color: var(--text-muted);">Estimated Time: 25 minutes</p>
+                    </div>
+                </div>
+                
+                <div class="alert info">
+                    <span style="font-size: 1.5rem;">🎯</span>
+                    <div>
+                        <strong>Learning Objectives:</strong>
+                        <ul style="margin-top: 0.5rem; margin-left: 1.5rem;">
+                            <li>Define what a set is</li>
+                            <li>Understand set notation</li>
+                            <li>Distinguish finite from infinite sets</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <h3>What is a Set?</h3>
+                <p>A <strong>set</strong> is a well-defined collection of distinct objects. The objects are called <strong>elements</strong> or <strong>members</strong>.</p>
+                
+                <div class="example-box">
+                    <div class="example-title">💡 Real-World Examples</div>
+                    <ul class="example-steps">
+                        <li><strong>Primary colors:</strong> {red, blue, yellow}</li>
+                        <li><strong>Even numbers &lt; 10:</strong> {2, 4, 6, 8}</li>
+                        <li><strong>Your programming languages:</strong> {Java, Python, C++}</li>
+                        <li><strong>CSC 240 students:</strong> {Alice, Bob, Charlie, ...}</li>
+                    </ul>
+                </div>
+                
+                <div class="alert warning">
+                    <span style="font-size: 1.5rem;">⚠️</span>
+                    <div>
+                        <strong>Set Properties:</strong>
+                        <ol style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                            <li><strong>No order:</strong> {1,2,3} = {3,2,1}</li>
+                            <li><strong>No duplicates:</strong> {1,2,2,3} = {1,2,3}</li>
+                            <li><strong>Well-defined:</strong> Clear membership</li>
+                        </ol>
+                    </div>
+                </div>
+                
+                <h3>Set Notation</h3>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Notation</th>
+                            <th>Meaning</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>∈</code></td>
+                            <td>Element of</td>
+                            <td>3 ∈ {1,2,3,4}</td>
+                        </tr>
+                        <tr>
+                            <td><code>∉</code></td>
+                            <td>Not element of</td>
+                            <td>5 ∉ {1,2,3,4}</td>
+                        </tr>
+                        <tr>
+                            <td><code>∅</code></td>
+                            <td>Empty set</td>
+                            <td>∅ = {}</td>
+                        </tr>
+                        <tr>
+                            <td><code>|A|</code></td>
+                            <td>Cardinality</td>
+                            <td>|{1,2,3}| = 3</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h3>Interactive: Create Your Own Set</h3>
+                <div class="set-creator">
+                    <p style="font-weight: 600; margin-bottom: 1rem;">Add elements to create your set:</p>
+                    <div class="set-input-row">
+                        <div class="form-group" style="margin: 0;">
+                            <label for="element-input" class="form-label">Enter an element:</label>
+                            <input type="text" id="element-input" class="form-input" placeholder="Type and press Enter">
+                        </div>
+                        <button class="btn btn-primary" onclick="addElement()" style="align-self: flex-end;">Add</button>
+                    </div>
+                    <div class="set-display">
+                        <div class="set-notation" id="set-notation-display">A = { }</div>
+                        <div style="font-size: 0.9rem; color: var(--text-muted); margin-top: 0.5rem;">
+                            <strong>Cardinality:</strong> <span id="set-cardinality">|A| = 0</span>
+                        </div>
+                        <div class="set-elements" id="set-elements-display"></div>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                        <button class="btn btn-secondary btn-small" onclick="clearSet()">Clear</button>
+                        <button class="btn btn-secondary btn-small" onclick="addSampleElements()">Add Samples</button>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 2rem; padding-top: 2rem; border-top: 2px solid var(--border);">
+                    <label class="checkbox-item" onclick="toggleModuleCompletion(2)">
+                        <input type="checkbox" class="checkbox-input" id="module2-complete">
+                        <span><strong>I've completed Module 2</strong></span>
+                    </label>
+                </div>
+            </div>
+        </section>
+        
+        <!-- MODULE 3 -->
+        <section id="module3" class="module-section">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">✍️</div>
+                    <div>
+                        <h2>Module 3: Roster and Set-Builder Notation</h2>
+                        <p style="margin: 0; color: var(--text-muted);">Estimated Time: 30 minutes</p>
+                    </div>
+                </div>
+                
+                <div class="alert info">
+                    <span style="font-size: 1.5rem;">🎯</span>
+                    <div>
+                        <strong>Learning Objectives:</strong>
+                        <ul style="margin-top: 0.5rem; margin-left: 1.5rem;">
+                            <li>Express sets using roster notation</li>
+                            <li>Express sets using set-builder notation</li>
+                            <li>Convert between notations</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <h3>Roster Notation (List Method)</h3>
+                <p><strong>Roster notation</strong> lists all elements explicitly:</p>
+                <div class="notation-display">A = {1, 2, 3, 4, 5}</div>
+                
+                <div class="example-box">
+                    <div class="example-title">💡 Roster Notation Examples</div>
+                    <ul class="example-steps">
+                        <li><code>A = {2, 4, 6, 8, 10}</code> - First five even numbers</li>
+                        <li><code>B = {red, blue, green}</code> - Colors</li>
+                        <li><code>C = {a, e, i, o, u}</code> - Vowels</li>
+                    </ul>
+                </div>
+                
+                <h3>Set-Builder Notation (Property Method)</h3>
+                <p><strong>Set-builder notation</strong> describes properties:</p>
+                <div class="notation-display large">{x | property of x}</div>
+                <p style="text-align: center; color: var(--text-muted);">Read as: "The set of all x such that x has [property]"</p>
+                
+                <div class="example-box">
+                    <div class="example-title">💡 Set-Builder Examples</div>
+                    <ul class="example-steps">
+                        <li><code>{x | x is even and x &lt; 10}</code> = {2, 4, 6, 8}</li>
+                        <li><code>{x ∈ ℤ | -5 ≤ x &lt; 5}</code> = {-5, -4, ..., 4}</li>
+                        <li><code>{x | x² = 9}</code> = {-3, 3}</li>
+                    </ul>
+                </div>
+                
+                <h3>Practice: Conversion</h3>
+                <div class="set-creator">
+                    <div class="tabs">
+                        <div class="tab-list">
+                            <button class="tab-button" onclick="switchTab(event, 'practice1')" aria-selected="true">Problem 1</button>
+                            <button class="tab-button" onclick="switchTab(event, 'practice2')">Problem 2</button>
+                        </div>
+                        <div id="practice1" class="tab-panel active">
+                            <p><strong>Convert to roster notation:</strong></p>
+                            <div class="notation-display">{x | x is an integer and -3 ≤ x &lt; 5}</div>
+                            <div class="form-group">
+                                <input type="text" id="answer1" class="form-input" placeholder="Enter roster notation">
+                            </div>
+                            <button class="btn btn-primary" onclick="checkAnswer(1, '{-3,-2,-1,0,1,2,3,4}')">Check</button>
+                            <div id="feedback1" class="quiz-feedback"></div>
+                        </div>
+                        <div id="practice2" class="tab-panel">
+                            <p><strong>Convert to set-builder notation:</strong></p>
+                            <div class="notation-display">{2, 4, 6, 8, 10}</div>
+                            <div class="form-group">
+                                <input type="text" id="answer2" class="form-input" placeholder="Describe the property">
+                            </div>
+                            <button class="btn btn-primary" onclick="checkBuilderNotation(2)">Check</button>
+                            <div id="feedback2" class="quiz-feedback"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 2rem; padding-top: 2rem; border-top: 2px solid var(--border);">
+                    <label class="checkbox-item" onclick="toggleModuleCompletion(3)">
+                        <input type="checkbox" class="checkbox-input" id="module3-complete">
+                        <span><strong>I've completed Module 3</strong></span>
+                    </label>
+                </div>
+            </div>
+        </section>
+        
+        <!-- COMPLETION -->
+        <section class="card" style="background: var(--pale); border-color: var(--accent);">
+            <h2>🎉 Part 1 Complete!</h2>
+            <p>Great job completing Modules 1-3! You've learned the foundations of discrete math and sets.</p>
+            <p><strong>Coming in Part 2:</strong> Set Operations, Venn Diagrams, Subsets, and more!</p>
+            <div style="text-align: center; margin-top: 2rem;">
+                <button class="btn btn-primary btn-large" onclick="alert('Part 2 will be available soon!')">Ready for Part 2 →</button>
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <p><strong>CSC 240 - Discrete Structures</strong></p>
+        <p>Week 1, Part 1 of 3 | Modules 1-3</p>
+        <p>Mendocino College Computer Science Department</p>
+    </footer>
+    
+    <script>
+        // SESSION STORAGE
+        const STORAGE_KEY = 'csc240_week1_part1';
+        let currentSet = [];
+        
+        // PROGRESS TRACKING
+        function updateProgress() {
+            const modules = [
+                document.getElementById('module1-complete')?.checked || false,
+                document.getElementById('module2-complete')?.checked || false,
+                document.getElementById('module3-complete')?.checked || false
+            ];
+            const completed = modules.filter(Boolean).length;
+            const percentage = Math.round((completed / 3) * 100);
+            
+            document.getElementById('progress-fill').style.width = percentage + '%';
+            document.getElementById('progress-percentage').textContent = percentage + '%';
+            document.getElementById('modules-completed').textContent = `Modules: ${completed}/3`;
+            
+            saveProgress();
+        }
+        
+        function toggleModuleCompletion(module) {
+            setTimeout(updateProgress, 100);
+        }
+        
+        function saveProgress() {
+            const progress = {
+                module1: document.getElementById('module1-complete')?.checked || false,
+                module2: document.getElementById('module2-complete')?.checked || false,
+                module3: document.getElementById('module3-complete')?.checked || false
+            };
+            sessionStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+        }
+        
+        function loadProgress() {
+            const saved = sessionStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                const progress = JSON.parse(saved);
+                if (progress.module1) document.getElementById('module1-complete').checked = true;
+                if (progress.module2) document.getElementById('module2-complete').checked = true;
+                if (progress.module3) document.getElementById('module3-complete').checked = true;
+                updateProgress();
+            }
+        }
+        
+        // DRAG AND DROP
+        let draggedItem = null;
+        
+        function setupDragDrop() {
+            const items = document.querySelectorAll('.draggable-item');
+            items.forEach(item => {
+                item.addEventListener('dragstart', function() {
+                    draggedItem = this;
+                    this.classList.add('dragging');
+                });
+                item.addEventListener('dragend', function() {
+                    this.classList.remove('dragging');
+                });
+            });
+            
+            const zones = document.querySelectorAll('.drop-zone');
+            zones.forEach(zone => {
+                zone.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    this.classList.add('drag-over');
+                });
+                zone.addEventListener('dragleave', function() {
+                    this.classList.remove('drag-over');
+                });
+                zone.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    this.classList.remove('drag-over');
+                    if (draggedItem) {
+                        const container = this.querySelector('.draggable-items');
+                        container.appendChild(draggedItem);
+                    }
+                });
+            });
+        }
+        
+        function checkClassification() {
+            const discreteZone = document.getElementById('discrete-zone');
+            const continuousZone = document.getElementById('continuous-zone');
+            let correct = 0;
+            let total = 0;
+            
+            [discreteZone, continuousZone].forEach(zone => {
+                const items = zone.querySelectorAll('.draggable-item');
+                items.forEach(item => {
+                    total++;
+                    const answer = item.dataset.answer;
+                    const parent = zone.closest('.drop-zone').dataset.category;
+                    if (answer === parent) {
+                        item.classList.add('correct');
+                        item.classList.remove('incorrect');
+                        correct++;
+                    } else {
+                        item.classList.add('incorrect');
+                        item.classList.remove('correct');
+                    }
+                });
+            });
+            
+            const feedback = document.getElementById('classification-feedback');
+            feedback.classList.add('show');
+            if (correct === total) {
+                feedback.className = 'quiz-feedback show correct';
+                feedback.innerHTML = '<strong>Perfect!</strong> All items are correctly classified.';
+            } else {
+                feedback.className = 'quiz-feedback show incorrect';
+                feedback.innerHTML = `<strong>${correct}/${total} correct.</strong> Try moving the incorrectly placed items.`;
+            }
+        }
+        
+        function resetClassification() {
+            const items = document.querySelectorAll('.draggable-item');
+            const container = document.getElementById('items-to-classify');
+            items.forEach(item => {
+                item.classList.remove('correct', 'incorrect');
+                container.appendChild(item);
+            });
+            document.getElementById('classification-feedback').classList.remove('show');
+        }
+        
+        // SET CREATOR
+        function addElement() {
+            const input = document.getElementById('element-input');
+            const value = input.value.trim();
+            if (value && !currentSet.includes(value)) {
+                currentSet.push(value);
+                updateSetDisplay();
+                input.value = '';
+            }
+        }
+        
+        function removeElement(element) {
+            currentSet = currentSet.filter(e => e !== element);
+            updateSetDisplay();
+        }
+        
+        function updateSetDisplay() {
+            const notation = document.getElementById('set-notation-display');
+            const cardinality = document.getElementById('set-cardinality');
+            const elements = document.getElementById('set-elements-display');
+            
+            if (currentSet.length === 0) {
+                notation.textContent = 'A = { }';
+            } else {
+                notation.textContent = 'A = {' + currentSet.join(', ') + '}';
+            }
+            
+            cardinality.textContent = `|A| = ${currentSet.length}`;
+            
+            elements.innerHTML = currentSet.map(el => 
+                `<div class="set-element">
+                    ${el}
+                    <button class="element-remove" onclick="removeElement('${el}')">×</button>
+                </div>`
+            ).join('');
+        }
+        
+        function clearSet() {
+            currentSet = [];
+            updateSetDisplay();
+        }
+        
+        function addSampleElements() {
+            currentSet = ['1', '2', '3', '4', '5'];
+            updateSetDisplay();
+        }
+        
+        // TABS
+        function switchTab(event, tabId) {
+            const tabList = event.target.closest('.tab-list');
+            const buttons = tabList.querySelectorAll('.tab-button');
+            buttons.forEach(btn => btn.setAttribute('aria-selected', 'false'));
+            event.target.setAttribute('aria-selected', 'true');
+            
+            const container = tabList.closest('.tabs');
+            const panels = container.querySelectorAll('.tab-panel');
+            panels.forEach(panel => panel.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+        }
+        
+        // QUIZ ANSWERS
+        function checkAnswer(num, correctAnswer) {
+            const input = document.getElementById('answer' + num);
+            const feedback = document.getElementById('feedback' + num);
+            const userAnswer = input.value.replace(/\s/g, '').toLowerCase();
+            const correct = correctAnswer.replace(/\s/g, '').toLowerCase();
+            
+            feedback.classList.add('show');
+            if (userAnswer === correct) {
+                feedback.className = 'quiz-feedback show correct';
+                feedback.innerHTML = '<strong>Correct!</strong> Well done.';
+            } else {
+                feedback.className = 'quiz-feedback show incorrect';
+                feedback.innerHTML = `<strong>Not quite.</strong> The answer is ${correctAnswer}`;
+            }
+        }
+        
+        function checkBuilderNotation(num) {
+            const input = document.getElementById('answer' + num);
+            const feedback = document.getElementById('feedback' + num);
+            const answer = input.value.toLowerCase();
+            
+            feedback.classList.add('show');
+            if (answer.includes('even') || answer.includes('2n')) {
+                feedback.className = 'quiz-feedback show correct';
+                feedback.innerHTML = '<strong>Correct!</strong> Your notation describes even numbers.';
+            } else {
+                feedback.className = 'quiz-feedback show incorrect';
+                feedback.innerHTML = '<strong>Hint:</strong> Look for the pattern - all numbers are even and less than 12.';
+            }
+        }
+        
+        // INITIALIZE
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProgress();
+            setupDragDrop();
+            
+            document.getElementById('element-input').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') addElement();
+            });
+        });
+    </script>
+</body>
+</html>
