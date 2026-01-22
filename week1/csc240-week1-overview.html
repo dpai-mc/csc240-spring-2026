@@ -1,84 +1,1458 @@
-
 <!DOCTYPE html>
-<html lang='en'>
+<html lang="en">
 <head>
-<meta charset='UTF-8'>
-<meta name='viewport' content='width=device-width, initial-scale=1.0'>
-<title>CSC240 Week 1 Overview</title>
-<style>
- body {
-   background-color: #ffffff;
-   color: #000000;
-   font-family: Arial, sans-serif;
-   line-height: 1.6;
-   padding: 20px;
- }
- h1, h2 {
-   color: #003366;
- }
- .section {
-   margin-bottom: 30px;
- }
- .toggle {
-   background-color: #003366;
-   color: white;
-   padding: 10px;
-   border: none;
-   cursor: pointer;
-   font-size: 1rem;
- }
- .content {
-   display: none;
-   margin-top: 10px;
- }
-</style>
-<script>
-function toggleSection(id) {
-  var content = document.getElementById(id);
-  if (content.style.display === 'block') {
-    content.style.display = 'none';
-  } else {
-    content.style.display = 'block';
-  }
-}
-</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSC 240 - Week 1: Introduction to Sets and Set Operations</title>
+    <meta name="description" content="Week 1 learning materials for CSC 240 Discrete Structures course covering sets and set operations">
+    
+    <style>
+        /* CSS Variables for theming */
+        :root {
+            --primary-color: #1a4d2e;
+            --secondary-color: #2d6a4f;
+            --accent-color: #52b788;
+            --light-accent: #95d5b2;
+            --background: #ffffff;
+            --surface: #f8f9fa;
+            --text-primary: #1b263b;
+            --text-secondary: #415a77;
+            --border-color: #d8e2dc;
+            --shadow: rgba(27, 38, 59, 0.08);
+            --shadow-hover: rgba(27, 38, 59, 0.16);
+            --success: #2a9d8f;
+            --warning: #f77f00;
+            --info: #0077b6;
+        }
+
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--background);
+            overflow-x: hidden;
+        }
+
+        /* Skip to main content link for screen readers */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: var(--primary-color);
+            color: white;
+            padding: 8px 16px;
+            text-decoration: none;
+            z-index: 100;
+            border-radius: 0 0 4px 0;
+            font-weight: 600;
+        }
+
+        .skip-link:focus {
+            top: 0;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 2rem 1rem;
+            box-shadow: 0 4px 12px var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.5px;
+        }
+
+        .week-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            font-weight: 400;
+        }
+
+        /* Progress bar */
+        .progress-container {
+            background: var(--surface);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px var(--shadow);
+            margin: 2rem auto;
+            max-width: 1200px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .progress-title {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .progress-percentage {
+            font-weight: 700;
+            color: var(--accent-color);
+            font-size: 1.2rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: var(--border-color);
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-color) 0%, var(--success) 100%);
+            border-radius: 6px;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+
+        /* Main container */
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem 3rem 1rem;
+        }
+
+        /* Overview section */
+        .overview-section {
+            background: var(--surface);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px var(--shadow);
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .overview-section h2 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-icon {
+            width: 32px;
+            height: 32px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--accent-color);
+            border-radius: 8px;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        /* Info grid */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .info-card {
+            background: white;
+            padding: 1.25rem;
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .info-card:hover {
+            border-color: var(--accent-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--shadow-hover);
+        }
+
+        .info-card-title {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-card-content {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        /* Learning objectives */
+        .objectives-list {
+            list-style: none;
+            margin-top: 1rem;
+        }
+
+        .objectives-list li {
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid var(--accent-color);
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .objectives-list li:hover {
+            background: var(--light-accent);
+            transform: translateX(4px);
+        }
+
+        .checkbox-wrapper {
+            margin-top: 2px;
+        }
+
+        .objective-checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: var(--accent-color);
+        }
+
+        .objective-text {
+            flex: 1;
+            color: var(--text-secondary);
+        }
+
+        .objectives-list li.completed {
+            background: var(--light-accent);
+            opacity: 0.8;
+        }
+
+        .objectives-list li.completed .objective-text {
+            text-decoration: line-through;
+            color: var(--text-secondary);
+        }
+
+        /* Accordion sections */
+        .accordion {
+            margin-bottom: 1rem;
+        }
+
+        .accordion-button {
+            width: 100%;
+            padding: 1.25rem 1.5rem;
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .accordion-button:hover {
+            background: var(--light-accent);
+            border-color: var(--accent-color);
+        }
+
+        .accordion-button:focus {
+            outline: 3px solid var(--accent-color);
+            outline-offset: 2px;
+        }
+
+        .accordion-icon {
+            transition: transform 0.3s ease;
+            font-size: 1.5rem;
+            color: var(--accent-color);
+        }
+
+        .accordion-button[aria-expanded="true"] .accordion-icon {
+            transform: rotate(180deg);
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, padding 0.3s ease;
+            background: white;
+            border: 2px solid var(--border-color);
+            border-top: none;
+            border-radius: 0 0 12px 12px;
+            margin-top: -12px;
+        }
+
+        .accordion-content.active {
+            max-height: 3000px;
+            padding: 1.5rem;
+            border-top: 2px solid var(--border-color);
+        }
+
+        .accordion-inner {
+            padding-top: 0.5rem;
+        }
+
+        /* Reading materials */
+        .reading-item {
+            background: var(--surface);
+            padding: 1.25rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--info);
+        }
+
+        .reading-item h4 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .reading-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-top: 0.75rem;
+        }
+
+        .reading-badge {
+            padding: 0.35rem 0.75rem;
+            background: var(--accent-color);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .reading-badge.required {
+            background: var(--warning);
+        }
+
+        .reading-badge.optional {
+            background: var(--info);
+        }
+
+        .reading-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 0.5rem;
+            transition: color 0.3s ease;
+        }
+
+        .reading-link:hover {
+            color: var(--primary-color);
+            text-decoration: underline;
+        }
+
+        .reading-link:focus {
+            outline: 3px solid var(--accent-color);
+            outline-offset: 2px;
+            border-radius: 4px;
+        }
+
+        /* Assignment cards */
+        .assignment-grid {
+            display: grid;
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .assignment-card {
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .assignment-card:hover {
+            border-color: var(--accent-color);
+            box-shadow: 0 4px 16px var(--shadow-hover);
+            transform: translateY(-2px);
+        }
+
+        .assignment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .assignment-title {
+            font-size: 1.3rem;
+            color: var(--primary-color);
+            font-weight: 700;
+            flex: 1;
+        }
+
+        .points-badge {
+            padding: 0.5rem 1rem;
+            background: var(--accent-color);
+            color: white;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .assignment-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .meta-icon {
+            color: var(--accent-color);
+        }
+
+        .assignment-description {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 1rem;
+        }
+
+        .assignment-checklist {
+            list-style: none;
+            margin-top: 1rem;
+        }
+
+        .assignment-checklist li {
+            padding: 0.5rem 0.5rem 0.5rem 2rem;
+            position: relative;
+            color: var(--text-secondary);
+        }
+
+        .assignment-checklist li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--accent-color);
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            border-bottom: 2px solid var(--border-color);
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .tab-button {
+            padding: 0.75rem 1.5rem;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            margin-bottom: -2px;
+        }
+
+        .tab-button:hover {
+            color: var(--primary-color);
+            background: var(--surface);
+        }
+
+        .tab-button:focus {
+            outline: 3px solid var(--accent-color);
+            outline-offset: 2px;
+        }
+
+        .tab-button.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--accent-color);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Alert boxes */
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .alert-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .alert-info {
+            background: #e3f2fd;
+            border-left: 4px solid var(--info);
+            color: #01579b;
+        }
+
+        .alert-success {
+            background: #e8f5e9;
+            border-left: 4px solid var(--success);
+            color: #1b5e20;
+        }
+
+        .alert-warning {
+            background: #fff3e0;
+            border-left: 4px solid var(--warning);
+            color: #e65100;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--surface);
+            padding: 2rem 1rem;
+            margin-top: 3rem;
+            text-align: center;
+            border-top: 2px solid var(--border-color);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            color: var(--text-secondary);
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .assignment-header {
+                flex-direction: column;
+            }
+
+            .tabs {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .tab-button {
+                white-space: nowrap;
+            }
+        }
+
+        /* Print styles */
+        @media print {
+            .progress-container,
+            .accordion-button,
+            header {
+                break-inside: avoid;
+            }
+
+            .accordion-content {
+                max-height: none !important;
+                display: block !important;
+            }
+        }
+
+        /* Focus visible for accessibility */
+        *:focus-visible {
+            outline: 3px solid var(--accent-color);
+            outline-offset: 2px;
+        }
+
+        /* Utility classes */
+        .text-center {
+            text-align: center;
+        }
+
+        .mt-1 { margin-top: 0.5rem; }
+        .mt-2 { margin-top: 1rem; }
+        .mt-3 { margin-top: 1.5rem; }
+        .mb-1 { margin-bottom: 0.5rem; }
+        .mb-2 { margin-bottom: 1rem; }
+        .mb-3 { margin-bottom: 1.5rem; }
+    </style>
 </head>
 <body>
-<h1>CSC 240 – Week 1 Overview</h1>
+    <!-- Skip to main content link -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
 
-<div class='section'>
-  <h2>Module Overview</h2>
-  <button class='toggle' onclick="toggleSection('overview')">Show/Hide</button>
-  <div id='overview' class='content'>
-    <p>This module introduces the foundational concept of sets, a core building block for the rest of the course. Students learn representation, operations, and visualization of sets.</p>
-  </div>
-</div>
+    <!-- Header -->
+    <header role="banner">
+        <div class="header-content">
+            <h1>CSC 240 - Discrete Structures</h1>
+            <p class="week-subtitle">Week 1: Introduction to Sets and Set Operations</p>
+        </div>
+    </header>
 
-<div class='section'>
-  <h2>Required Readings & Media</h2>
-  <button class='toggle' onclick="toggleSection('readings')">Show/Hide</button>
-  <div id='readings' class='content'>
-    <ul>
-      <li>Saylor.org CS202 – Unit 1, Sections 1.1–1.2</li>
-      <li>Interactive Venn Diagram Tool</li>
-      <li>NCTM Set Theory Visualizer</li>
-    </ul>
-  </div>
-</div>
+    <!-- Progress tracker -->
+    <div class="progress-container" role="region" aria-label="Week 1 progress tracker">
+        <div class="progress-header">
+            <span class="progress-title">Your Week 1 Progress</span>
+            <span class="progress-percentage" id="progress-percentage" aria-live="polite">0%</span>
+        </div>
+        <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+            <div class="progress-fill" id="progress-fill"></div>
+        </div>
+    </div>
 
-<div class='section'>
-  <h2>Learning Objectives</h2>
-  <button class='toggle' onclick="toggleSection('objectives')">Show/Hide</button>
-  <div id='objectives' class='content'>
-    <ul>
-      <li>Define sets using roster and set-builder notation</li>
-      <li>Apply set operations: union, intersection, difference, complement</li>
-      <li>Construct and interpret Venn diagrams</li>
-      <li>Compute power sets and Cartesian products</li>
-      <li>Represent sets programmatically</li>
-    </ul>
-  </div>
-</div>
+    <!-- Main content -->
+    <main id="main-content" role="main">
+        
+        <!-- Week Overview -->
+        <section class="overview-section" aria-labelledby="overview-heading">
+            <h2 id="overview-heading">
+                <span class="section-icon" aria-hidden="true">📋</span>
+                Week Overview
+            </h2>
+            
+            <div class="info-grid">
+                <div class="info-card">
+                    <div class="info-card-title">Module Title</div>
+                    <div class="info-card-content">Introduction to Sets and Set Operations</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-card-title">Duration</div>
+                    <div class="info-card-content">Week 1</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-card-title">In-Class Hours</div>
+                    <div class="info-card-content">3 hours lecture</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-card-title">Out-of-Class Hours</div>
+                    <div class="info-card-content">6 hours</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-card-title">Total Hours</div>
+                    <div class="info-card-content">9 hours</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-card-title">CSLO Alignment</div>
+                    <div class="info-card-content">CSLO 2</div>
+                </div>
+            </div>
 
+            <div class="alert alert-info mt-3">
+                <span class="alert-icon" aria-hidden="true">ℹ️</span>
+                <div>
+                    <strong>CSLO 2:</strong> Apply combinatorics and set theory to counting problems.
+                </div>
+            </div>
+        </section>
+
+        <!-- Learning Objectives -->
+        <section class="overview-section" aria-labelledby="objectives-heading">
+            <h2 id="objectives-heading">
+                <span class="section-icon" aria-hidden="true">🎯</span>
+                Week 1 Learning Objectives
+            </h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                By the end of this week, you will be able to:
+            </p>
+            <ul class="objectives-list" role="list">
+                <li onclick="toggleObjective(this)" role="listitem">
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" class="objective-checkbox" 
+                               id="obj1" 
+                               aria-label="Mark as complete: Define sets using roster and set-builder notation"
+                               onchange="updateProgress()">
+                    </div>
+                    <label for="obj1" class="objective-text">
+                        Define sets using roster and set-builder notation
+                    </label>
+                </li>
+                <li onclick="toggleObjective(this)" role="listitem">
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" class="objective-checkbox" 
+                               id="obj2" 
+                               aria-label="Mark as complete: Perform basic set operations"
+                               onchange="updateProgress()">
+                    </div>
+                    <label for="obj2" class="objective-text">
+                        Perform basic set operations (union, intersection, difference, complement)
+                    </label>
+                </li>
+                <li onclick="toggleObjective(this)" role="listitem">
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" class="objective-checkbox" 
+                               id="obj3" 
+                               aria-label="Mark as complete: Apply Venn diagrams to visualize set relationships"
+                               onchange="updateProgress()">
+                    </div>
+                    <label for="obj3" class="objective-text">
+                        Apply Venn diagrams to visualize set relationships
+                    </label>
+                </li>
+                <li onclick="toggleObjective(this)" role="listitem">
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" class="objective-checkbox" 
+                               id="obj4" 
+                               aria-label="Mark as complete: Calculate power sets and Cartesian products"
+                               onchange="updateProgress()">
+                    </div>
+                    <label for="obj4" class="objective-text">
+                        Calculate power sets and Cartesian products
+                    </label>
+                </li>
+                <li onclick="toggleObjective(this)" role="listitem">
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" class="objective-checkbox" 
+                               id="obj5" 
+                               aria-label="Mark as complete: Set up programming environment"
+                               onchange="updateProgress()">
+                    </div>
+                    <label for="obj5" class="objective-text">
+                        Set up your programming environment (Visual Studio Code with Java or C++)
+                    </label>
+                </li>
+            </ul>
+        </section>
+
+        <!-- Pre-Class Preparation -->
+        <section class="accordion" aria-labelledby="prep-heading">
+            <h2 class="visually-hidden" id="prep-heading">Pre-Class Preparation</h2>
+            <button class="accordion-button" 
+                    aria-expanded="false" 
+                    aria-controls="prep-content"
+                    onclick="toggleAccordion(this)">
+                <span>📚 Pre-Class Preparation</span>
+                <span class="accordion-icon" aria-hidden="true">▼</span>
+            </button>
+            <div class="accordion-content" id="prep-content">
+                <div class="accordion-inner">
+                    <h3 style="color: var(--primary-color); margin-bottom: 1rem;">Required Reading</h3>
+                    
+                    <div class="reading-item">
+                        <h4>Primary Textbook: Saylor.org CS202 - Discrete Structures</h4>
+                        <p style="color: var(--text-secondary); margin: 0.5rem 0;">
+                            <strong>Unit 1: Sets, Set Relations, and Set Functions</strong>
+                        </p>
+                        <ul style="margin-left: 1.5rem; color: var(--text-secondary);">
+                            <li>Section 1.1: Introduction to Sets</li>
+                            <li>Section 1.2: Set Operations</li>
+                        </ul>
+                        <div class="reading-meta">
+                            <span class="reading-badge required">Required</span>
+                            <span class="reading-badge">⏱️ 90 minutes</span>
+                        </div>
+                        <a href="https://learn.saylor.org/course/view.php?id=67" 
+                           class="reading-link" 
+                           target="_blank" 
+                           rel="noopener noreferrer">
+                            Access Course →
+                        </a>
+                    </div>
+
+                    <h3 style="color: var(--primary-color); margin: 2rem 0 1rem 0;">Supplementary Reading (Optional)</h3>
+                    
+                    <div class="reading-item">
+                        <h4>Math is Fun - Set Theory</h4>
+                        <p style="color: var(--text-secondary); margin: 0.5rem 0;">
+                            Clear, visual introduction to set theory concepts with interactive examples.
+                        </p>
+                        <div class="reading-meta">
+                            <span class="reading-badge optional">Optional</span>
+                            <span class="reading-badge">⏱️ 30 minutes</span>
+                        </div>
+                        <a href="https://www.mathsisfun.com/sets/sets-introduction.html" 
+                           class="reading-link" 
+                           target="_blank" 
+                           rel="noopener noreferrer">
+                            Visit Resource →
+                        </a>
+                    </div>
+
+                    <div class="alert alert-success mt-3">
+                        <span class="alert-icon" aria-hidden="true">💡</span>
+                        <div>
+                            <strong>Study Tip:</strong> Take notes while reading and write down any questions for class discussion.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Assignments -->
+        <section class="accordion" aria-labelledby="assignments-heading">
+            <h2 class="visually-hidden" id="assignments-heading">Week 1 Assignments</h2>
+            <button class="accordion-button" 
+                    aria-expanded="false" 
+                    aria-controls="assignments-content"
+                    onclick="toggleAccordion(this)">
+                <span>✏️ Week 1 Assignments</span>
+                <span class="accordion-icon" aria-hidden="true">▼</span>
+            </button>
+            <div class="accordion-content" id="assignments-content">
+                <div class="accordion-inner">
+                    
+                    <!-- Tabs for different assignment types -->
+                    <div class="tabs" role="tablist">
+                        <button class="tab-button active" 
+                                role="tab" 
+                                aria-selected="true" 
+                                aria-controls="programming-tab"
+                                onclick="switchTab(event, 'programming-tab')">
+                            Programming
+                        </button>
+                        <button class="tab-button" 
+                                role="tab" 
+                                aria-selected="false" 
+                                aria-controls="problem-set-tab"
+                                onclick="switchTab(event, 'problem-set-tab')">
+                            Problem Set
+                        </button>
+                        <button class="tab-button" 
+                                role="tab" 
+                                aria-selected="false" 
+                                aria-controls="setup-tab"
+                                onclick="switchTab(event, 'setup-tab')">
+                            Environment Setup
+                        </button>
+                        <button class="tab-button" 
+                                role="tab" 
+                                aria-selected="false" 
+                                aria-controls="discussion-tab"
+                                onclick="switchTab(event, 'discussion-tab')">
+                            Discussion
+                        </button>
+                    </div>
+
+                    <!-- Programming Exercise Tab -->
+                    <div id="programming-tab" class="tab-content active" role="tabpanel">
+                        <div class="assignment-card">
+                            <div class="assignment-header">
+                                <h3 class="assignment-title">PE-01: Set Operations Implementation</h3>
+                                <span class="points-badge">15 Points</span>
+                            </div>
+                            <div class="assignment-meta">
+                                <span class="meta-item">
+                                    <span class="meta-icon" aria-hidden="true">📅</span>
+                                    Due: End of Week 1 (Sunday, 11:59 PM)
+                                </span>
+                                <span class="meta-item">
+                                    <span class="meta-icon" aria-hidden="true">⏱️</span>
+                                    Estimated Time: 2-3 hours
+                                </span>
+                            </div>
+                            <div class="assignment-description">
+                                <p><strong>Objective:</strong> Implement basic set operations in your chosen programming language (Java or C++).</p>
+                                
+                                <h4 style="color: var(--primary-color); margin-top: 1.5rem; margin-bottom: 0.5rem;">Requirements:</h4>
+                                <p>Create a program that:</p>
+                                <ul class="assignment-checklist">
+                                    <li>Represents sets using arrays or collections</li>
+                                    <li>Implements union (A ∪ B)</li>
+                                    <li>Implements intersection (A ∩ B)</li>
+                                    <li>Implements difference (A - B)</li>
+                                    <li>Checks if element is member of set</li>
+                                    <li>Takes two sets of integers as input</li>
+                                    <li>Displays all results clearly</li>
+                                </ul>
+
+                                <div class="alert alert-info mt-2">
+                                    <span class="alert-icon" aria-hidden="true">💻</span>
+                                    <div>
+                                        <strong>Sample Output:</strong><br>
+                                        <code style="display: block; background: var(--surface); padding: 0.75rem; border-radius: 4px; margin-top: 0.5rem;">
+Set A: {1, 2, 3, 4, 5}<br>
+Set B: {4, 5, 6, 7, 8}<br>
+A ∪ B: {1, 2, 3, 4, 5, 6, 7, 8}<br>
+A ∩ B: {4, 5}<br>
+A - B: {1, 2, 3}
+                                        </code>
+                                    </div>
+                                </div>
+
+                                <h4 style="color: var(--primary-color); margin-top: 1.5rem; margin-bottom: 0.5rem;">Submission:</h4>
+                                <ul style="margin-left: 1.5rem; color: var(--text-secondary);">
+                                    <li>Submit source code (.java or .cpp) to Canvas</li>
+                                    <li>Include README.txt with compilation instructions</li>
+                                    <li>File naming: <code>LastName_FirstName_PE01_Week1.zip</code></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Problem Set Tab -->
+                    <div id="problem-set-tab" class="tab-content" role="tabpanel">
+                        <div class="assignment-card">
+                            <div class="assignment-header">
+                                <h3 class="assignment-title">PS-01: Set Theory and Operations</h3>
+                                <span class="points-badge">10 Points</span>
+                            </div>
+                            <div class="assignment-meta">
+                                <span class="meta-item">
+                                    <span class="meta-icon" aria-hidden="true">📅</span>
+                                    Due: End of Week 1 (Sunday, 11:59 PM)
+                                </span>
+                                <span class="meta-item">
+                                    <span class="meta-icon" aria-hidden="true">⏱️</span>
+                                    Estimated Time: 1 hour
+                                </span>
+                            </div>
+                            <div class="assignment-description">
+                                <p><strong>Format:</strong> PDF submission to Canvas</p>
+                                
+                                <h4 style="color: var(--primary-color); margin-top: 1.5rem; margin-bottom: 0.5rem;">Problems:</h4>
+                                
+                                <div style="background: var(--surface); padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                                    <p style="margin-bottom: 0.5rem;"><strong>Problem 1 (2 points):</strong> Express in roster notation:</p>
+                                    <ul style="margin-left: 1.5rem; color: var(--text-secondary);">
+                                        <li>A = {x | x is an integer and -3 ≤ x &lt; 5}</li>
+                                        <li>B = {x | x is a perfect square less than 50}</li>
+                                    </ul>
+                                </div>
+
+                                <div style="background: var(--surface); padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                                    <p style="margin-bottom: 0.5rem;"><strong>Problem 2 (2 points):</strong> Express in set-builder notation:</p>
+                                    <ul style="margin-left: 1.5rem; color: var(--text-secondary);">
+                                        <li>C = {2, 4, 6, 8, 10, 12, 14}</li>
+                                        <li>D = {1, 4, 9, 16, 25, 36, 49}</li>
+                                    </ul>
+                                </div>
+
+                                <div style="background: var(--surface); padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                                    <p style="margin-bottom: 0.5rem;"><strong>Problem 3 (3 points):</strong> Let U = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, A = {1, 2, 3, 4, 5}, and B = {3, 4, 5, 6, 7}. Find:</p>
+                                    <ul style="margin-left: 1.5rem; color: var(--text-secondary);">
+                                        <li>A ∪ B, A ∩ B, A - B</li>
+                                        <li>B - A, A', (A ∩ B)'</li>
+                                    </ul>
+                                </div>
+
+                                <div style="background: var(--surface); padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                                    <p style="margin-bottom: 0.5rem;"><strong>Problem 4 (2 points):</strong> Draw a Venn diagram showing students who know Java and/or C++</p>
+                                </div>
+
+                                <div style="background: var(--surface); padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                                    <p style="margin-bottom: 0.5rem;"><strong>Problem 5 (1 point):</strong> True or False with explanation:</p>
+                                    <ul style="margin-left: 1.5rem; color: var(--text-secondary);">
+                                        <li>{1, 2, 3} ⊆ {1, 2, 3, 4, 5}</li>
+                                        <li>∅ ∈ {∅}</li>
+                                        <li>If A ∩ B = ∅, then A and B are disjoint sets</li>
+                                    </ul>
+                                </div>
+
+                                <h4 style="color: var(--primary-color); margin-top: 1.5rem; margin-bottom: 0.5rem;">Submission:</h4>
+                                <ul style="margin-left: 1.5rem; color: var(--text-secondary);">
+                                    <li>Submit as single PDF document</li>
+                                    <li>Show all work for partial credit</li>
+                                    <li>File naming: <code>LastName_FirstName_PS01.pdf</code></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Environment Setup Tab -->
+                    <div id="setup-tab" class="tab-content" role="tabpanel">
+                        <div class="assignment-card">
+                            <div class="assignment-header">
+                                <h3 class="assignment-title">Programming Environment Setup</h3>
+                                <span class="points-badge">Completion</span>
+                            </div>
+                            <div class="assignment-meta">
+                                <span class="meta-item">
+                                    <span class="meta-icon" aria-hidden="true">📅</span>
+                                    Due: End of Week 1
+                                </span>
+                                <span class="meta-item">
+                                    <span class="meta-icon" aria-hidden="true">⏱️</span>
+                                    Estimated Time: 2-3 hours
+                                </span>
+                            </div>
+                            <div class="assignment-description">
+                                <p><strong>Objective:</strong> Set up your development environment for CSC 240.</p>
+                                
+                                <div class="alert alert-warning mt-2 mb-2">
+                                    <span class="alert-icon" aria-hidden="true">⚠️</span>
+                                    <div>
+                                        <strong>Choose ONE track:</strong> You must complete either Java OR C++ setup (not both). Use the language you're most comfortable with.
+                                    </div>
+                                </div>
+
+                                <h4 style="color: var(--primary-color); margin-top: 1.5rem; margin-bottom: 0.5rem;">Track A: Java Development</h4>
+                                <ul class="assignment-checklist">
+                                    <li>Install JDK (Java Development Kit) 17 or later</li>
+                                    <li>Download and install Visual Studio Code</li>
+                                    <li>Install "Extension Pack for Java" in VS Code</li>
+                                    <li>Create and run a "Hello, World!" program</li>
+                                    <li>Submit screenshot of successful execution</li>
+                                </ul>
+
+                                <h4 style="color: var(--primary-color); margin-top: 1.5rem; margin-bottom: 0.5rem;">Track B: C++ Development</h4>
+                                <ul class="assignment-checklist">
+                                    <li>Install C++ compiler (MinGW for Windows, Xcode CLI for macOS, g++ for Linux)</li>
+                                    <li>Download and install Visual Studio Code</li>
+                                    <li>Install "C/C++" extension in VS Code</li>
+                                    <li>Create and compile a "Hello, World!" program</li>
+                                    <li>Submit screenshot of successful compilation and execution</li>
+                                </ul>
+
+                                <div class="alert alert-info mt-2">
+                                    <span class="alert-icon" aria-hidden="true">📚</span>
+                                    <div>
+                                        <strong>Resources Available:</strong> Step-by-step setup guides, video tutorials, and troubleshooting FAQs are available on Canvas.
+                                    </div>
+                                </div>
+
+                                <h4 style="color: var(--primary-color); margin-top: 1.5rem; margin-bottom: 0.5rem;">Submission:</h4>
+                                <ul style="margin-left: 1.5rem; color: var(--text-secondary);">
+                                    <li>Upload screenshot showing successful program execution</li>
+                                    <li>Submit to Canvas assignment "Programming Environment Setup"</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Discussion Tab -->
+                    <div id="discussion-tab" class="tab-content" role="tabpanel">
+                        <div class="assignment-card">
+                            <div class="assignment-header">
+                                <h3 class="assignment-title">Discussion: Why Discrete Structures Matter</h3>
+                                <span class="points-badge">3 Points</span>
+                            </div>
+                            <div class="assignment-meta">
+                                <span class="meta-item">
+                                    <span class="meta-icon" aria-hidden="true">📅</span>
+                                    Initial Post: Thursday | Responses: Sunday
+                                </span>
+                                <span class="meta-item">
+                                    <span class="meta-icon" aria-hidden="true">⏱️</span>
+                                    Estimated Time: 30 minutes
+                                </span>
+                            </div>
+                            <div class="assignment-description">
+                                <h4 style="color: var(--primary-color); margin-bottom: 0.5rem;">Discussion Prompt:</h4>
+                                <p style="background: var(--surface); padding: 1rem; border-radius: 8px; border-left: 4px solid var(--accent-color);">
+                                    After completing this week's reading and class activities, reflect on the following:
+                                </p>
+                                
+                                <ol style="margin: 1rem 0 1rem 1.5rem; color: var(--text-secondary); line-height: 1.8;">
+                                    <li>What is one concept from set theory that you think will be particularly useful in programming? Why?</li>
+                                    <li>Can you think of a real-world application of sets in computer science beyond what we discussed in class?</li>
+                                    <li>What questions do you still have about sets or set operations?</li>
+                                </ol>
+
+                                <h4 style="color: var(--primary-color); margin-top: 1.5rem; margin-bottom: 0.5rem;">Requirements:</h4>
+                                <ul class="assignment-checklist">
+                                    <li>Initial post: 150-200 words (due by Thursday)</li>
+                                    <li>Respond to at least 2 classmates (by Sunday)</li>
+                                    <li>Use professional language and proper grammar</li>
+                                    <li>Engage thoughtfully with peers' ideas</li>
+                                </ul>
+
+                                <div class="alert alert-success mt-2">
+                                    <span class="alert-icon" aria-hidden="true">💬</span>
+                                    <div>
+                                        <strong>Discussion Tip:</strong> Make connections between discrete structures and your own programming experiences. Share specific examples when possible!
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- Weekly Schedule -->
+        <section class="accordion" aria-labelledby="schedule-heading">
+            <h2 class="visually-hidden" id="schedule-heading">Weekly Schedule</h2>
+            <button class="accordion-button" 
+                    aria-expanded="false" 
+                    aria-controls="schedule-content"
+                    onclick="toggleAccordion(this)">
+                <span>📅 Weekly Schedule & Time Management</span>
+                <span class="accordion-icon" aria-hidden="true">▼</span>
+            </button>
+            <div class="accordion-content" id="schedule-content">
+                <div class="accordion-inner">
+                    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                        This week requires approximately <strong>9 total hours</strong> of work. Here's a suggested schedule to help you stay on track:
+                    </p>
+
+                    <div style="display: grid; gap: 1rem;">
+                        <div style="background: white; border: 2px solid var(--border-color); border-radius: 8px; padding: 1.25rem;">
+                            <h4 style="color: var(--primary-color); margin-bottom: 0.5rem;">📖 Before Class (2-3 hours)</h4>
+                            <ul style="margin-left: 1.5rem; color: var(--text-secondary);">
+                                <li>Complete required reading from Saylor.org (90 minutes)</li>
+                                <li>Optional: Review Math is Fun set theory tutorial (30 minutes)</li>
+                                <li>Start environment setup if you have time (60+ minutes)</li>
+                            </ul>
+                        </div>
+
+                        <div style="background: white; border: 2px solid var(--border-color); border-radius: 8px; padding: 1.25rem;">
+                            <h4 style="color: var(--primary-color); margin-bottom: 0.5rem;">🏫 During Class (3 hours)</h4>
+                            <ul style="margin-left: 1.5rem; color: var(--text-secondary);">
+                                <li>Attend lecture on set theory and operations</li>
+                                <li>Participate in interactive examples and discussions</li>
+                                <li>Practice Venn diagrams and set operations</li>
+                                <li>Ask questions about concepts or assignments</li>
+                            </ul>
+                        </div>
+
+                        <div style="background: white; border: 2px solid var(--border-color); border-radius: 8px; padding: 1.25rem;">
+                            <h4 style="color: var(--primary-color); margin-bottom: 0.5rem;">💻 After Class (4-6 hours)</h4>
+                            <ul style="margin-left: 1.5rem; color: var(--text-secondary);">
+                                <li>Tuesday-Wednesday: Complete environment setup (2-3 hours)</li>
+                                <li>Wednesday-Thursday: Work on Problem Set PS-01 (1 hour)</li>
+                                <li>Thursday: Post initial discussion response (30 minutes)</li>
+                                <li>Friday-Saturday: Complete Programming Exercise PE-01 (2-3 hours)</li>
+                                <li>Sunday: Respond to discussion posts, final review (30 minutes)</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info mt-3">
+                        <span class="alert-icon" aria-hidden="true">⏰</span>
+                        <div>
+                            <strong>Time Management Tip:</strong> Don't wait until Sunday to start! Breaking work into smaller chunks throughout the week reduces stress and improves learning.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Getting Help -->
+        <section class="accordion" aria-labelledby="help-heading">
+            <h2 class="visually-hidden" id="help-heading">Getting Help</h2>
+            <button class="accordion-button" 
+                    aria-expanded="false" 
+                    aria-controls="help-content"
+                    onclick="toggleAccordion(this)">
+                <span>🆘 Getting Help</span>
+                <span class="accordion-icon" aria-hidden="true">▼</span>
+            </button>
+            <div class="accordion-content" id="help-content">
+                <div class="accordion-inner">
+                    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                        Need assistance? Here are your resources:
+                    </p>
+
+                    <div style="display: grid; gap: 1rem;">
+                        <div style="background: var(--surface); border-left: 4px solid var(--accent-color); padding: 1.25rem; border-radius: 8px;">
+                            <h4 style="color: var(--primary-color); margin-bottom: 0.5rem;">👨‍🏫 Instructor Office Hours</h4>
+                            <p style="color: var(--text-secondary); margin: 0;">
+                                Your first resource for course-specific questions. Check Canvas for schedule and Zoom links. No appointment needed!
+                            </p>
+                        </div>
+
+                        <div style="background: var(--surface); border-left: 4px solid var(--accent-color); padding: 1.25rem; border-radius: 8px;">
+                            <h4 style="color: var(--primary-color); margin-bottom: 0.5rem;">💬 Canvas Discussion Forums</h4>
+                            <p style="color: var(--text-secondary); margin: 0;">
+                                Post questions and help classmates. Check before posting—your question may already be answered! Great for programming troubleshooting.
+                            </p>
+                        </div>
+
+                        <div style="background: var(--surface); border-left: 4px solid var(--accent-color); padding: 1.25rem; border-radius: 8px;">
+                            <h4 style="color: var(--primary-color); margin-bottom: 0.5rem;">📚 Tutoring Center</h4>
+                            <p style="color: var(--text-secondary); margin: 0;">
+                                Free tutoring available for math and programming help. Check the college website for hours and locations.
+                            </p>
+                        </div>
+
+                        <div style="background: var(--surface); border-left: 4px solid var(--accent-color); padding: 1.25rem; border-radius: 8px;">
+                            <h4 style="color: var(--primary-color); margin-bottom: 0.5rem;">👥 Study Groups</h4>
+                            <p style="color: var(--text-secondary); margin: 0;">
+                                Form study groups with classmates to discuss concepts and work through problems together. Use Canvas to connect with peers!
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-warning mt-3">
+                        <span class="alert-icon" aria-hidden="true">🚨</span>
+                        <div>
+                            <strong>Having technical issues?</strong> Contact IT support immediately. Don't wait until the last minute if you're having trouble with your development environment!
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Success Tips -->
+        <section class="overview-section" aria-labelledby="tips-heading">
+            <h2 id="tips-heading">
+                <span class="section-icon" aria-hidden="true">⭐</span>
+                Tips for Success This Week
+            </h2>
+            
+            <div style="display: grid; gap: 1rem; margin-top: 1rem;">
+                <div style="background: white; padding: 1rem; border-radius: 8px; border-left: 4px solid var(--success);">
+                    <p style="color: var(--text-secondary); margin: 0;">
+                        <strong style="color: var(--primary-color);">📝 Take good notes:</strong> Set theory builds on itself. Clear notes now will help you throughout the semester.
+                    </p>
+                </div>
+                
+                <div style="background: white; padding: 1rem; border-radius: 8px; border-left: 4px solid var(--success);">
+                    <p style="color: var(--text-secondary); margin: 0;">
+                        <strong style="color: var(--primary-color);">💻 Get help with setup early:</strong> Don't struggle alone with environment setup. Use office hours or ask in the forum.
+                    </p>
+                </div>
+                
+                <div style="background: white; padding: 1rem; border-radius: 8px; border-left: 4px solid var(--success);">
+                    <p style="color: var(--text-secondary); margin: 0;">
+                        <strong style="color: var(--primary-color);">🎯 Practice with examples:</strong> Work through textbook examples by hand before starting the programming exercise.
+                    </p>
+                </div>
+                
+                <div style="background: white; padding: 1rem; border-radius: 8px; border-left: 4px solid var(--success);">
+                    <p style="color: var(--text-secondary); margin: 0;">
+                        <strong style="color: var(--primary-color);">🗣️ Ask questions:</strong> If you're confused about notation or concepts, ask! These are foundational topics.
+                    </p>
+                </div>
+                
+                <div style="background: white; padding: 1rem; border-radius: 8px; border-left: 4px solid var(--success);">
+                    <p style="color: var(--text-secondary); margin: 0;">
+                        <strong style="color: var(--primary-color);">⏰ Start early:</strong> Don't save everything for Sunday. Spread the work throughout the week for better retention.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer role="contentinfo">
+        <div class="footer-content">
+            <p><strong>CSC 240 - Discrete Structures</strong></p>
+            <p>Mendocino College Computer Science Department</p>
+            <p style="margin-top: 1rem; font-size: 0.9rem;">
+                Questions? Contact your instructor through Canvas or during office hours.
+            </p>
+            <p style="margin-top: 0.5rem; font-size: 0.85rem;">
+                Week 1 of 17 | Last Updated: January 2026
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize progress from sessionStorage on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProgress();
+            loadObjectiveStates();
+        });
+
+        // Toggle accordion sections
+        function toggleAccordion(button) {
+            const content = button.nextElementSibling;
+            const isExpanded = button.getAttribute('aria-expanded') === 'true';
+            
+            button.setAttribute('aria-expanded', !isExpanded);
+            content.classList.toggle('active');
+        }
+
+        // Switch between tabs
+        function switchTab(event, tabId) {
+            // Get all tabs and contents
+            const tabs = document.querySelectorAll('.tab-button');
+            const contents = document.querySelectorAll('.tab-content');
+            
+            // Remove active class from all
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+                tab.setAttribute('aria-selected', 'false');
+            });
+            contents.forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Add active class to clicked tab and corresponding content
+            event.currentTarget.classList.add('active');
+            event.currentTarget.setAttribute('aria-selected', 'true');
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        // Toggle objective completion
+        function toggleObjective(listItem) {
+            const checkbox = listItem.querySelector('.objective-checkbox');
+            checkbox.checked = !checkbox.checked;
+            updateProgress();
+        }
+
+        // Update progress bar based on checked objectives
+        function updateProgress() {
+            const checkboxes = document.querySelectorAll('.objective-checkbox');
+            const checked = document.querySelectorAll('.objective-checkbox:checked').length;
+            const total = checkboxes.length;
+            const percentage = Math.round((checked / total) * 100);
+            
+            // Update progress bar
+            const progressFill = document.getElementById('progress-fill');
+            const progressPercentage = document.getElementById('progress-percentage');
+            const progressBar = document.querySelector('.progress-bar');
+            
+            progressFill.style.width = percentage + '%';
+            progressPercentage.textContent = percentage + '%';
+            progressBar.setAttribute('aria-valuenow', percentage);
+            
+            // Update objective list items
+            checkboxes.forEach(checkbox => {
+                const listItem = checkbox.closest('li');
+                if (checkbox.checked) {
+                    listItem.classList.add('completed');
+                } else {
+                    listItem.classList.remove('completed');
+                }
+            });
+            
+            // Save progress to sessionStorage
+            saveProgress();
+        }
+
+        // Save progress to sessionStorage
+        function saveProgress() {
+            const checkboxes = document.querySelectorAll('.objective-checkbox');
+            const states = {};
+            
+            checkboxes.forEach(checkbox => {
+                states[checkbox.id] = checkbox.checked;
+            });
+            
+            sessionStorage.setItem('week1_progress', JSON.stringify(states));
+        }
+
+        // Load progress from sessionStorage
+        function loadProgress() {
+            const saved = sessionStorage.getItem('week1_progress');
+            
+            if (saved) {
+                const states = JSON.parse(saved);
+                
+                Object.keys(states).forEach(id => {
+                    const checkbox = document.getElementById(id);
+                    if (checkbox) {
+                        checkbox.checked = states[id];
+                    }
+                });
+                
+                updateProgress();
+            }
+        }
+
+        // Load objective states (for visual consistency)
+        function loadObjectiveStates() {
+            const checkboxes = document.querySelectorAll('.objective-checkbox');
+            checkboxes.forEach(checkbox => {
+                const listItem = checkbox.closest('li');
+                if (checkbox.checked) {
+                    listItem.classList.add('completed');
+                }
+            });
+        }
+
+        // Keyboard navigation for accordion
+        document.addEventListener('keydown', function(e) {
+            if (e.target.classList.contains('accordion-button')) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    e.target.click();
+                }
+            }
+        });
+
+        // Keyboard navigation for tabs
+        document.addEventListener('keydown', function(e) {
+            if (e.target.classList.contains('tab-button')) {
+                const tabs = Array.from(document.querySelectorAll('.tab-button'));
+                const currentIndex = tabs.indexOf(e.target);
+                
+                if (e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    const nextIndex = (currentIndex + 1) % tabs.length;
+                    tabs[nextIndex].focus();
+                    tabs[nextIndex].click();
+                } else if (e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    const prevIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+                    tabs[prevIndex].focus();
+                    tabs[prevIndex].click();
+                }
+            }
+        });
+
+        // Announce progress changes to screen readers
+        function announceProgress(percentage) {
+            const announcement = document.createElement('div');
+            announcement.setAttribute('role', 'status');
+            announcement.setAttribute('aria-live', 'polite');
+            announcement.style.position = 'absolute';
+            announcement.style.left = '-10000px';
+            announcement.textContent = `Progress updated to ${percentage}%`;
+            document.body.appendChild(announcement);
+            setTimeout(() => announcement.remove(), 1000);
+        }
+
+        // Add smooth scroll to top functionality
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        // Show scroll to top button when scrolling
+        window.addEventListener('scroll', function() {
+            const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+            // Could add a scroll-to-top button here if desired
+        });
+    </script>
 </body>
 </html>
