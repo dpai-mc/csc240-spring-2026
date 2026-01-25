@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSC240 Week 1 – Interactive Part 2: Set Operations, Venn Diagrams, Subsets</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --bg-color: #f4f6f7;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --success-color: #27ae60;
+            --error-color: #c0392b;
+            --border-radius: 8px;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            padding-bottom: 80px; /* Space for sticky footer */
+        }
+
+        /* Accessibility Skip Links */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: var(--accent-color);
+            color: white;
+            padding: 8px;
+            z-index: 100;
+            transition: top 0.3s;
+            text-decoration: none;
+            border-radius: 0 0 4px 4px;
+        }
+        .skip-link:focus {
+            top: 0;
+        }
+
+        /* Layout */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-top: 20px;
+        }
+
+        header h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        section {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+            border-left: 5px solid var(--accent-color);
+        }
+
+        /* Typography */
+        h2 {
+            color: var(--primary-color);
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+
+        h3 {
+            color: var(--accent-color);
+            margin-top: 25px;
+        }
+
+        p, li {
+            font-size: 1.05rem;
+        }
+
+        code {
+            background-color: #eee;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Consolas', monospace;
+            color: #d35400;
+        }
+
+        .highlight-term {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .objectives {
+            background-color: #e8f4f8;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+        }
+
+        .objectives h4 {
+            margin-top: 0;
+            color: var(--primary-color);
+        }
+
+        /* Interactives */
+        .interactive-box {
+            border: 2px dashed #bdc3c7;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: var(--border-radius);
+            background-color: #fafafa;
+        }
+
+        .interactive-title {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"], select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        button {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        button.reset-btn {
+            background-color: #95a5a6;
+        }
+        
+        button.reset-btn:hover {
+            background-color: #7f8c8d;
+        }
+
+        .feedback-area {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            display: none;
+        }
+
+        .feedback-correct {
+            background-color: #d4edda;
+            color: #155724;
+            display: block;
+        }
+
+        .feedback-incorrect {
+            background-color: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
+
+        /* Specific Visuals */
+        .set-bubbles {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .bubble {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .bubble.active {
+            background: var(--accent-color);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        /* SVG Venn Diagram */
+        .venn-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        svg.venn-svg {
+            max-width: 100%;
+            height: auto;
+            cursor: pointer;
+        }
+
+        .venn-region {
+            fill: white;
+            stroke: var(--primary-color);
+            stroke-width: 2;
+            transition: fill 0.3s;
+        }
+
+        .venn-region:hover {
+            fill: #ecf0f1;
+        }
+
+        .venn-region.shaded {
+            fill: var(--accent-color);
+            opacity: 0.7;
+        }
+
+        /* Progress Footer */
+        #progress-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: white;
+            border-top: 2px solid var(--accent-color);
+            padding: 15px;
+            display: flex;
+            justify-content: space-around;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        .progress-item {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+
+        .progress-item.completed {
+            color: var(--success-color);
+            font-weight: bold;
+        }
+        
+        .progress-item.in-progress {
+            color: #e67e22;
+            font-weight: bold;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            section { padding: 15px; }
+            #progress-footer { flex-direction: column; text-align: center; gap: 5px; }
+        }
+    </style>
+</head>
+<body>
+
+    <a href="#module-4-set-operations" class="skip-link">Skip to Module 4</a>
+    <a href="#module-5-venn-diagrams" class="skip-link">Skip to Module 5</a>
+    <a href="#module-6-subsets" class="skip-link">Skip to Module 6</a>
+
+    <header class="container">
+        <h1>CSC 240: Discrete Structures</h1>
+        <p>Week 1 – Part 2: Operations, Venn Diagrams, and Subsets</p>
+    </header>
+
+    <div class="container">
+
+        <section id="module-4-set-operations">
+            <h2>Module 4: Set Operations <span style="font-size: 0.6em; color: #7f8c8d; font-weight: normal;">(40 mins)</span></h2>
+            
+            <div class="objectives">
+                <h4>Learning Objectives</h4>
+                <ul>
+                    <li>Perform union (∪), intersection (∩), and difference (−) operations.</li>
+                    <li>Calculate complements (A') relative to a Universal set.</li>
+                    <li>Identify disjoint sets.</li>
+                </ul>
+            </div>
+
+            <h3>The Core Operations</h3>
+            <p>Just like numbers have addition and subtraction, sets have operations that allow us to combine them. Let's look at the primary ways to manipulate sets.</p>
+            
+            
+
+[Image of set union intersection and difference diagrams]
+
+
+            <ul>
+                <li><strong>Union (A ∪ B):</strong> Think of this as "marriage". It combines all elements from A and B. Duplicates are listed only once.</li>
+                <li><strong>Intersection (A ∩ B):</strong> Think of this as the "common ground". It contains only elements that exist in <em>both</em> sets.</li>
+                <li><strong>Difference (A − B):</strong> Think of this as "subtraction". It takes set A, and removes anything that is also found in B. Note: <code>A - B</code> is usually different from <code>B - A</code>!</li>
+            </ul>
+
+            <div class="interactive-box">
+                <span class="interactive-title">Interactive Tool: Set Operation Calculator</span>
+                <p>Enter elements separated by commas (e.g., 1, 2, 3).</p>
+                
+                <div class="input-group">
+                    <label for="setA">Set A:</label>
+                    <input type="text" id="setA" value="1, 2, 3, 4" placeholder="1, 2, 3">
+                </div>
+                <div class="input-group">
+                    <label for="setB">Set B:</label>
+                    <input type="text" id="setB" value="3, 4, 5, 6" placeholder="3, 4, 5">
+                </div>
+                
+                <div class="input-group">
+                    <label for="operation">Operation:</label>
+                    <select id="operation">
+                        <option value="union">Union (A ∪ B)</option>
+                        <option value="intersection">Intersection (A ∩ B)</option>
+                        <option value="diffAB">Difference (A − B)</option>
+                        <option value="diffBA">Difference (B − A)</option>
+                        <option value="disjoint">Are they Disjoint?</option>
+                    </select>
+                </div>
+
+                <button onclick="calculateSetOperation()">Calculate</button>
+
+                <div id="calc-feedback" class="feedback-area" aria-live="polite"></div>
+                
+                <div id="visual-animator" class="set-bubbles" aria-hidden="true">
+                    </div>
+            </div>
+
+            <h3>Common Mistakes</h3>
+            <p>Students often confuse <strong>Difference</strong>. Remember, if you are doing <code>A - B</code>, you never add new elements from B. You only delete from A.</p>
+            
+            <div class="interactive-box">
+                <span class="interactive-title">Practice Question</span>
+                <p>If A = {x, y, z} and B = {y, z, w}, what is A - B?</p>
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="checkM4Quiz('incorrect')" style="background: white; color: var(--text-color); border: 1px solid #ccc;">{w}</button>
+                    <button onclick="checkM4Quiz('correct')" style="background: white; color: var(--text-color); border: 1px solid #ccc;">{x}</button>
+                    <button onclick="checkM4Quiz('incorrect')" style="background: white; color: var(--text-color); border: 1px solid #ccc;">{x, w}</button>
+                </div>
+                <div id="m4-quiz-feedback" class="feedback-area" aria-live="polite"></div>
+            </div>
+        </section>
+
+        <section id="module-5-venn-diagrams">
+            <h2>Module 5: Venn Diagrams <span style="font-size: 0.6em; color: #7f8c8d; font-weight: normal;">(35 mins)</span></h2>
+            
+            <div class="objectives">
+                <h4>Learning Objectives</h4>
+                <ul>
+                    <li>Draw and shade Venn diagrams.</li>
+                    <li>Interpret shaded regions.</li>
+                    <li>Use diagrams to solve word problems.</li>
+                </ul>
+            </div>
+
+            <h3>Visualizing Logic</h3>
+            <p>Venn diagrams use circles to represent sets inside a rectangle representing the Universal Set (U). Overlapping regions represent intersections.</p>
+            
+            
+
+            <div class="interactive-box">
+                <span class="interactive-title">Interactive Shading Practice</span>
+                <p id="shade-instruction"><strong>Target:</strong> Shade the region representing <strong>A ∩ B</strong> (Intersection).</p>
+                
+                <div class="venn-wrapper">
+                    <svg width="300" height="200" viewBox="0 0 300 200" class="venn-svg">
+                        <path id="region-a-only" d="M 100,100 m -60,0 a 60,60 0 1,0 120,0 a 60,60 0 1,0 -120,0" fill="white" fill-opacity="0" /> <rect x="0" y="0" width="300" height="200" fill="none" stroke="#ccc" stroke-dasharray="4" />
+                        <text x="10" y="20" fill="#999">U</text>
+                        
+                        <path id="path-a-only" class="venn-region" d="M 90,100 A 60,60 0 1,0 150,186.6 A 60,60 0 0,1 150,13.4 A 60,60 0 0,0 90,100 Z" transform="translate(0,0)" onclick="toggleShade('path-a-only')"/>
+                        <text x="60" y="100" pointer-events="none">A</text>
+
+                        <path id="path-b-only" class="venn-region" d="M 210,100 A 60,60 0 1,1 150,13.4 A 60,60 0 0,0 150,186.6 A 60,60 0 0,1 210,100 Z" onclick="toggleShade('path-b-only')"/>
+                        <text x="240" y="100" pointer-events="none">B</text>
+
+                        <path id="path-intersect" class="venn-region" d="M 150,13.4 A 60,60 0 0,1 150,186.6 A 60,60 0 0,1 150,13.4 Z" onclick="toggleShade('path-intersect')"/>
+                    </svg>
+                </div>
+
+                <div style="margin-top: 15px; text-align: center;">
+                    <button onclick="checkVennShading()">Check Shading</button>
+                    <button class="reset-btn" onclick="resetVenn()">Reset</button>
+                </div>
+                <div id="venn-feedback" class="feedback-area" aria-live="polite"></div>
+            </div>
+
+            <h3>Problem Solver: The Survey</h3>
+            <p>In a class of 50 students:</p>
+            <ul>
+                <li>30 study Java (Set A)</li>
+                <li>25 study Python (Set B)</li>
+                <li>10 study <strong>both</strong></li>
+            </ul>
+            
+            <div class="interactive-box">
+                <span class="interactive-title">Challenge</span>
+                <p>How many students study <strong>only</strong> Python?</p>
+                <input type="text" id="venn-q1" placeholder="Enter number..." style="width: 150px;">
+                <button onclick="checkVennMath()">Submit</button>
+                <div id="venn-math-feedback" class="feedback-area" aria-live="polite"></div>
+            </div>
+        </section>
+
+        <section id="module-6-subsets">
+            <h2>Module 6: Subsets & Relations <span style="font-size: 0.6em; color: #7f8c8d; font-weight: normal;">(25 mins)</span></h2>
+
+            <div class="objectives">
+                <h4>Learning Objectives</h4>
+                <ul>
+                    <li>Define subset (⊆) vs. proper subset (⊂).</li>
+                    <li>Understand properties: Reflexive, Transitive.</li>
+                    <li>Analyze nested set relationships.</li>
+                </ul>
+            </div>
+
+            <h3>Understanding Containment</h3>
+            <p>If every element of Set A is also inside Set B, then A is a <strong>subset</strong> of B ($A \subseteq B$).</p>
+            <p>If A is a subset of B, but A is <em>not equal</em> to B (B has extra stuff), then A is a <strong>proper subset</strong> ($A \subset B$).</p>
+            
+            
+
+            <div class="interactive-box">
+                <span class="interactive-title">Subset Checker</span>
+                <p>Type two sets to see their relationship.</p>
+                <div class="input-group">
+                    <label>Set A:</label>
+                    <input type="text" id="subA" value="2, 4" placeholder="e.g. 1, 2">
+                </div>
+                <div class="input-group">
+                    <label>Set B:</label>
+                    <input type="text" id="subB" value="1, 2, 3, 4, 5" placeholder="e.g. 1, 2, 3">
+                </div>
+                <button onclick="checkSubset()">Check Relationship</button>
+                <div id="subset-feedback" class="feedback-area" aria-live="polite"></div>
+                
+                <div id="subset-visual" style="margin-top:20px; min-height: 100px; display: flex; align-items: center; justify-content: center;"></div>
+            </div>
+
+            <h3>Properties Quiz</h3>
+            <p>Test your knowledge of subset rules.</p>
+            <div class="interactive-box">
+                <p><strong>True or False:</strong> The empty set (∅) is a subset of every set.</p>
+                <button onclick="checkSubsetQuiz(true)">True</button>
+                <button onclick="checkSubsetQuiz(false)">False</button>
+                <div id="subset-quiz-feedback" class="feedback-area" aria-live="polite"></div>
+            </div>
+        </section>
+
+    </div>
+
+    <div id="progress-footer">
+        <span id="prog-m4" class="progress-item">Module 4: Not Started</span>
+        <span id="prog-m5" class="progress-item">Module 5: Not Started</span>
+        <span id="prog-m6" class="progress-item">Module 6: Not Started</span>
+    </div>
+
+    <script>
+        /* --- UTILITY FUNCTIONS --- */
+        function parseSet(inputStr) {
+            if (!inputStr.trim()) return [];
+            // Split by comma, trim whitespace, remove empty strings, convert to numbers if possible or keep strings
+            return inputStr.split(',')
+                .map(item => item.trim())
+                .filter(item => item !== "")
+                .map(item => isNaN(item) ? item : Number(item));
+        }
+
+        function arraysEqual(a, b) {
+            if (a.length !== b.length) return false;
+            let setA = new Set(a);
+            for (let item of b) if (!setA.has(item)) return false;
+            return true;
+        }
+
+        /* --- MODULE 4 LOGIC --- */
+        function calculateSetOperation() {
+            const setA = parseSet(document.getElementById('setA').value);
+            const setB = parseSet(document.getElementById('setB').value);
+            const op = document.getElementById('operation').value;
+            const feedback = document.getElementById('calc-feedback');
+            const visual = document.getElementById('visual-animator');
+            
+            let result = [];
+            let msg = "";
+            let explanation = "";
+
+            // Logic
+            if (op === 'union') {
+                // Unique elements from both
+                result = [...new Set([...setA, ...setB])];
+                explanation = "A ∪ B contains all unique elements from both sets.";
+            } else if (op === 'intersection') {
+                result = setA.filter(x => setB.includes(x));
+                explanation = "A ∩ B contains only elements found in BOTH sets.";
+            } else if (op === 'diffAB') {
+                result = setA.filter(x => !setB.includes(x));
+                explanation = "A − B contains elements in A that are NOT in B.";
+            } else if (op === 'diffBA') {
+                result = setB.filter(x => !setA.includes(x));
+                explanation = "B − A contains elements in B that are NOT in A.";
+            } else if (op === 'disjoint') {
+                const intersection = setA.filter(x => setB.includes(x));
+                const isDisjoint = intersection.length === 0;
+                msg = isDisjoint 
+                    ? `<span style='color:green'>Yes!</span> They share no elements.` 
+                    : `<span style='color:red'>No.</span> They share: {${intersection.join(', ')}}`;
+                feedback.innerHTML = msg;
+                feedback.className = isDisjoint ? "feedback-area feedback-correct" : "feedback-area feedback-incorrect";
+                feedback.style.display = "block";
+                markProgress(4, 'completed');
+                return; // Exit for disjoint check
+            }
+
+            // sort for display
+            result.sort((a,b) => a - b);
+
+            msg = `Result: { ${result.join(', ')} }`;
+            feedback.innerHTML = `<strong>${msg}</strong><br><small>${explanation}</small>`;
+            feedback.className = "feedback-area feedback-correct";
+            feedback.style.display = "block";
+
+            // Simple Visualizer
+            visual.innerHTML = '';
+            result.forEach(item => {
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble active';
+                bubble.innerText = item;
+                visual.appendChild(bubble);
+            });
+
+            markProgress(4, 'completed');
+        }
+
+        function checkM4Quiz(status) {
+            const fb = document.getElementById('m4-quiz-feedback');
+            if(status === 'correct') {
+                fb.innerText = "Correct! We start with {x, y, z} and remove anything found in {y, z, w}. 'y' and 'z' are removed. 'w' was never in A, so we ignore it.";
+                fb.className = "feedback-area feedback-correct";
+            } else {
+                fb.innerText = "Incorrect. Remember, Difference (A-B) only keeps things that started in A. Do not add items from B.";
+                fb.className = "feedback-area feedback-incorrect";
+            }
+            fb.style.display = 'block';
+        }
+
+        /* --- MODULE 5 LOGIC --- */
+        let currentShading = {
+            'path-a-only': false,
+            'path-b-only': false,
+            'path-intersect': false
+        };
+
+        function toggleShade(id) {
+            const el = document.getElementById(id);
+            currentShading[id] = !currentShading[id];
+            if(currentShading[id]) {
+                el.classList.add('shaded');
+            } else {
+                el.classList.remove('shaded');
+            }
+        }
+
+        function checkVennShading() {
+            // Target is Intersection (only path-intersect should be true)
+            const fb = document.getElementById('venn-feedback');
+            
+            if(currentShading['path-intersect'] && !currentShading['path-a-only'] && !currentShading['path-b-only']) {
+                fb.innerText = "Correct! You shaded the region where the circles overlap.";
+                fb.className = "feedback-area feedback-correct";
+                markProgress(5, 'completed');
+            } else {
+                fb.innerText = "Not quite. For Intersection (∩), shade ONLY the part where the circles overlap.";
+                fb.className = "feedback-area feedback-incorrect";
+            }
+            fb.style.display = 'block';
+        }
+
+        function resetVenn() {
+            ['path-a-only', 'path-b-only', 'path-intersect'].forEach(id => {
+                currentShading[id] = false;
+                document.getElementById(id).classList.remove('shaded');
+            });
+            document.getElementById('venn-feedback').style.display = 'none';
+        }
+
+        function checkVennMath() {
+            const val = document.getElementById('venn-q1').value.trim();
+            const fb = document.getElementById('venn-math-feedback');
+            // Logic: Python Total (25) - Both (10) = Only Python (15)
+            if(val === "15") {
+                fb.innerText = "Correct! Total Python (25) minus Intersection (10) equals 15.";
+                fb.className = "feedback-area feedback-correct";
+            } else {
+                fb.innerText = "Try again. Hint: Take the total Python students and subtract those who also study Java.";
+                fb.className = "feedback-area feedback-incorrect";
+            }
+            fb.style.display = 'block';
+        }
+
+        /* --- MODULE 6 LOGIC --- */
+        function checkSubset() {
+            const A = parseSet(document.getElementById('subA').value);
+            const B = parseSet(document.getElementById('subB').value);
+            const fb = document.getElementById('subset-feedback');
+            const vis = document.getElementById('subset-visual');
+
+            // Logic
+            const isSubset = A.every(val => B.includes(val));
+            const isEqual = arraysEqual(A, B);
+            const isProper = isSubset && !isEqual;
+
+            if (isEqual) {
+                fb.innerHTML = "A = B. They are equal sets (and thus subsets of each other).";
+                fb.className = "feedback-area feedback-correct";
+                vis.innerHTML = "<div style='width:100px; height:100px; border:2px solid #333; border-radius:50%; display:flex; align-items:center; justify-content:center; background:#ccc;'>A=B</div>";
+            } else if (isProper) {
+                fb.innerHTML = "A ⊂ B (Proper Subset). All of A is inside B, and B has extra elements.";
+                fb.className = "feedback-area feedback-correct";
+                vis.innerHTML = "<div style='width:150px; height:150px; border:2px solid #333; border-radius:50%; position:relative; background:#eee;'><span style='position:absolute; top:10px; left:50%; transform:translateX(-50%);'>B</span><div style='width:80px; height:80px; border:2px solid #3498db; background:#d6eaf8; border-radius:50%; position:absolute; bottom:10px; left:50%; transform:translateX(-50%); display:flex; align-items:center; justify-content:center;'>A</div></div>";
+            } else {
+                fb.innerHTML = "No subset relationship. A contains elements not found in B.";
+                fb.className = "feedback-area feedback-incorrect";
+                vis.innerHTML = "<div style='display:flex; gap:10px;'><div style='width:80px; height:80px; border:2px solid #3498db; border-radius:50%; display:flex; align-items:center; justify-content:center;'>A</div><div style='width:80px; height:80px; border:2px solid #333; border-radius:50%; display:flex; align-items:center; justify-content:center;'>B</div></div>";
+            }
+            fb.style.display = 'block';
+            markProgress(6, 'completed');
+        }
+
+        function checkSubsetQuiz(answer) {
+            const fb = document.getElementById('subset-quiz-feedback');
+            if (answer === true) {
+                fb.innerText = "Correct! The empty set is a subset of every set.";
+                fb.className = "feedback-area feedback-correct";
+            } else {
+                fb.innerText = "Incorrect. It is a fundamental property that ∅ ⊆ A for any set A.";
+                fb.className = "feedback-area feedback-incorrect";
+            }
+            fb.style.display = 'block';
+        }
+
+        /* --- PROGRESS & SESSION LOGIC --- */
+        function markProgress(moduleNum, status) {
+            sessionStorage.setItem(`csc240_m${moduleNum}`, status);
+            updateFooter();
+        }
+
+        function updateFooter() {
+            const modules = [4, 5, 6];
+            modules.forEach(m => {
+                const status = sessionStorage.getItem(`csc240_m${m}`) || 'not-started';
+                const el = document.getElementById(`prog-m${m}`);
+                if (status === 'completed') {
+                    el.innerText = `Module ${m}: Completed`;
+                    el.className = 'progress-item completed';
+                } else if (status === 'in-progress') {
+                    el.innerText = `Module ${m}: In Progress`;
+                    el.className = 'progress-item in-progress';
+                } else {
+                    el.innerText = `Module ${m}: Not Started`;
+                    el.className = 'progress-item';
+                }
+            });
+        }
+
+        // Scroll Observer for "In Progress"
+        document.addEventListener("DOMContentLoaded", () => {
+            updateFooter();
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.id;
+                        let modNum = 0;
+                        if(id.includes('module-4')) modNum = 4;
+                        if(id.includes('module-5')) modNum = 5;
+                        if(id.includes('module-6')) modNum = 6;
+
+                        // Only set to in-progress if not already completed
+                        if(modNum > 0) {
+                            const current = sessionStorage.getItem(`csc240_m${modNum}`);
+                            if(current !== 'completed') {
+                                markProgress(modNum, 'in-progress');
+                            }
+                        }
+                    }
+                });
+            }, { threshold: 0.3 }); // Trigger when 30% visible
+
+            document.querySelectorAll('section').forEach(section => {
+                observer.observe(section);
+            });
+        });
+    </script>
+</body>
+</html>
