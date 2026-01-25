@@ -358,7 +358,7 @@
             height: auto;
         }
 
-        .venn-circle {
+        .venn-region {
             fill: white;
             stroke: var(--primary);
             stroke-width: 3;
@@ -367,11 +367,11 @@
             cursor: pointer;
         }
 
-        .venn-circle:hover {
+        .venn-region:hover {
             fill: var(--pale);
         }
 
-        .venn-circle.shaded {
+        .venn-region.shaded {
             fill: var(--accent);
             opacity: 0.8;
         }
@@ -798,21 +798,57 @@
                 <h3>Interactive: Venn Diagram Shading</h3>
                 <div class="card" style="background: var(--surface);">
                     <p id="shade-instruction" style="margin-bottom: 1rem; font-weight: 600;">
-                        <strong>Instructions:</strong> Click the circles to shade/unshade them. Try to shade the correct region for: <span style="color: var(--accent);">A ∩ B</span> (Intersection)
+                        <strong>Instructions:</strong> Click the regions to shade/unshade them. Try to shade the correct region for: <span style="color: var(--accent);">A ∩ B</span> (Intersection)
                     </p>
                     
                     <div class="venn-wrapper">
                         <svg width="400" height="300" viewBox="0 0 400 300" class="venn-svg">
+                            <defs>
+                                <!-- Define clip paths for the three regions -->
+                                <clipPath id="clipA">
+                                    <circle cx="150" cy="150" r="80"/>
+                                </clipPath>
+                                <clipPath id="clipB">
+                                    <circle cx="250" cy="150" r="80"/>
+                                </clipPath>
+                                <clipPath id="clipNotA">
+                                    <rect x="0" y="0" width="400" height="300"/>
+                                    <circle cx="150" cy="150" r="80" fill="black"/>
+                                </clipPath>
+                            </defs>
+                            
                             <!-- Universal set rectangle -->
                             <rect x="10" y="10" width="380" height="280" fill="none" stroke="#999" stroke-width="2" stroke-dasharray="5,5"/>
                             <text x="20" y="30" font-size="16" fill="#666">U</text>
                             
-                            <!-- Set A (left circle) -->
-                            <circle id="circle-a" class="venn-circle" cx="150" cy="150" r="80" onclick="toggleCircle('circle-a')"/>
-                            <text x="100" y="155" font-size="20" font-weight="bold" fill="var(--text)" pointer-events="none">A</text>
+                            <!-- Circle outlines (for visual reference) -->
+                            <circle cx="150" cy="150" r="80" fill="none" stroke="var(--primary)" stroke-width="3"/>
+                            <circle cx="250" cy="150" r="80" fill="none" stroke="var(--primary)" stroke-width="3"/>
                             
-                            <!-- Set B (right circle) -->
-                            <circle id="circle-b" class="venn-circle" cx="250" cy="150" r="80" onclick="toggleCircle('circle-b')"/>
+                            <!-- Region A-only (left crescent) -->
+                            <g clip-path="url(#clipA)">
+                                <rect id="region-a-only" class="venn-region" x="70" y="70" width="160" height="160" 
+                                      clip-path="url(#clipNotA)" onclick="toggleVennRegion('region-a-only')"/>
+                            </g>
+                            
+                            <!-- Region B-only (right crescent) -->
+                            <g clip-path="url(#clipB)">
+                                <clipPath id="clipNotAForB">
+                                    <rect x="0" y="0" width="400" height="300"/>
+                                    <circle cx="150" cy="150" r="80" fill="black"/>
+                                </clipPath>
+                                <rect id="region-b-only" class="venn-region" x="170" y="70" width="160" height="160" 
+                                      clip-path="url(#clipNotAForB)" onclick="toggleVennRegion('region-b-only')"/>
+                            </g>
+                            
+                            <!-- Region intersection (center overlap) - rendered on top -->
+                            <g clip-path="url(#clipA)">
+                                <circle id="region-intersection" class="venn-region" cx="250" cy="150" r="80" 
+                                        onclick="toggleVennRegion('region-intersection')"/>
+                            </g>
+                            
+                            <!-- Labels -->
+                            <text x="100" y="155" font-size="20" font-weight="bold" fill="var(--text)" pointer-events="none">A</text>
                             <text x="280" y="155" font-size="20" font-weight="bold" fill="var(--text)" pointer-events="none">B</text>
                         </svg>
                     </div>
@@ -1224,52 +1260,60 @@
             }
         }
 
-        // MODULE 5: VENN DIAGRAMS
+        // MODULE 5: VENN DIAGRAMS - NEW THREE-REGION IMPLEMENTATION
         let currentVennChallenge = 'intersection';
         const vennChallenges = {
             'intersection': { 
                 instruction: 'Shade A ∩ B (Intersection)', 
-                correct: ['circle-a', 'circle-b'],
-                explanation: 'For intersection, both circles should be shaded because the overlapping region represents elements in both sets.'
+                correct: ['region-intersection'],
+                explanation: 'The intersection is only the middle region where both circles overlap.'
             },
             'union': { 
                 instruction: 'Shade A ∪ B (Union)', 
-                correct: ['circle-a', 'circle-b'],
-                explanation: 'For union, both circles should be shaded to show all elements in either set.'
+                correct: ['region-a-only', 'region-b-only', 'region-intersection'],
+                explanation: 'The union includes all three regions: A-only, B-only, and the intersection.'
             },
             'onlyA': { 
                 instruction: 'Shade A - B (Only A)', 
-                correct: ['circle-a'],
-                explanation: 'For A - B, shade only circle A to show elements in A but not in B.'
+                correct: ['region-a-only'],
+                explanation: 'A - B is only the left crescent containing elements in A but not in B.'
             },
             'onlyB': { 
                 instruction: 'Shade B - A (Only B)', 
-                correct: ['circle-b'],
-                explanation: 'For B - A, shade only circle B to show elements in B but not in A.'
+                correct: ['region-b-only'],
+                explanation: 'B - A is only the right crescent containing elements in B but not in A.'
+            },
+            'neither': {
+                instruction: 'Shade nothing (Empty set)',
+                correct: [],
+                explanation: 'The empty set means no regions are shaded.'
             }
         };
 
-        function toggleCircle(id) {
-            const circle = document.getElementById(id);
-            circle.classList.toggle('shaded');
+        function toggleVennRegion(regionId) {
+            const region = document.getElementById(regionId);
+            region.classList.toggle('shaded');
         }
 
         function checkVennShading() {
             const fb = document.getElementById('venn-feedback');
             const challenge = vennChallenges[currentVennChallenge];
-            const circleA = document.getElementById('circle-a').classList.contains('shaded');
-            const circleB = document.getElementById('circle-b').classList.contains('shaded');
             
-            let correct = false;
-            if (currentVennChallenge === 'intersection' || currentVennChallenge === 'union') {
-                correct = circleA && circleB;
-            } else if (currentVennChallenge === 'onlyA') {
-                correct = circleA && !circleB;
-            } else if (currentVennChallenge === 'onlyB') {
-                correct = !circleA && circleB;
-            }
+            const regionAOnly = document.getElementById('region-a-only').classList.contains('shaded');
+            const regionBOnly = document.getElementById('region-b-only').classList.contains('shaded');
+            const regionIntersection = document.getElementById('region-intersection').classList.contains('shaded');
             
-            if(correct) {
+            const shaded = [];
+            if (regionAOnly) shaded.push('region-a-only');
+            if (regionBOnly) shaded.push('region-b-only');
+            if (regionIntersection) shaded.push('region-intersection');
+            
+            // Check if the shaded regions match the correct answer
+            const correct = shaded.length === challenge.correct.length && 
+                           shaded.every(r => challenge.correct.includes(r)) &&
+                           challenge.correct.every(r => shaded.includes(r));
+            
+            if (correct) {
                 fb.innerHTML = `<strong>✓ Correct!</strong> ${challenge.explanation}`;
                 fb.className = "quiz-feedback show correct";
             } else {
@@ -1279,8 +1323,9 @@
         }
 
         function resetVenn() {
-            document.getElementById('circle-a').classList.remove('shaded');
-            document.getElementById('circle-b').classList.remove('shaded');
+            document.getElementById('region-a-only').classList.remove('shaded');
+            document.getElementById('region-b-only').classList.remove('shaded');
+            document.getElementById('region-intersection').classList.remove('shaded');
             document.getElementById('venn-feedback').className = "quiz-feedback";
         }
 
@@ -1291,7 +1336,7 @@
             currentVennChallenge = challenges[nextIndex];
             
             document.getElementById('shade-instruction').innerHTML = 
-                `<strong>Instructions:</strong> Click the circles to shade/unshade them. Try to shade the correct region for: <span style="color: var(--accent);">${vennChallenges[currentVennChallenge].instruction}</span>`;
+                `<strong>Instructions:</strong> Click the regions to shade/unshade them. Try to shade the correct region for: <span style="color: var(--accent);">${vennChallenges[currentVennChallenge].instruction}</span>`;
             
             resetVenn();
         }
