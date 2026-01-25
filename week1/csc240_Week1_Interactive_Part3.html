@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSC 240 - Week 1: Part 3 (Modules 7-9)</title>
+    <meta name="description" content="Interactive learning experience for CSC 240 Week 1 Part 3: Modules 7-9">
+    <style>
+        /* Color scheme - Matched to Part 2 */
+        :root {
+            --primary: #1a4d2e;
+            --secondary: #2d6a4f;
+            --accent: #52b788;
+            --light: #95d5b2;
+            --pale: #d8f3dc;
+            --bg: #ffffff;
+            --surface: #f8f9fa;
+            --text: #1b263b;
+            --text-light: #415a77;
+            --text-muted: #778da9;
+            --border: #d8e2dc;
+            --success: #2a9d8f;
+            --warning: #f77f00;
+            --error: #e63946;
+            --info: #0077b6;
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background: var(--bg);
+        }
+        
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: var(--primary);
+            color: white;
+            padding: 8px 16px;
+            text-decoration: none;
+            z-index: 10000;
+        }
+        
+        .skip-link:focus { top: 0; }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 2rem 1rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 998;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 { font-size: 1.75rem; margin-bottom: 0.5rem; }
+        
+        nav {
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            border-bottom: 2px solid var(--border);
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0.5rem 1rem;
+        }
+        
+        .nav-list {
+            list-style: none;
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .nav-link {
+            padding: 0.5rem 1rem;
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .nav-link:hover {
+            background: var(--light);
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+        
+        .nav-link.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+        
+        .progress-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 1.5rem;
+            background: var(--surface);
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 16px;
+            background: var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--success));
+            transition: width 0.5s;
+            width: 0%;
+        }
+        
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem 3rem;
+        }
+        
+        .module-section {
+            margin-bottom: 3rem;
+            scroll-margin-top: 100px;
+        }
+        
+        .card {
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border);
+        }
+        
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--accent);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            flex-shrink: 0;
+        }
+        
+        h2 { color: var(--primary); font-size: 1.5rem; margin-bottom: 0.5rem; }
+        h3 { color: var(--primary); font-size: 1.25rem; margin: 1.5rem 0 1rem; }
+        h4 { color: var(--primary); font-size: 1.1rem; margin: 1rem 0 0.5rem; }
+        
+        p { color: var(--text-light); margin-bottom: 1rem; }
+        
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: flex;
+            gap: 1rem;
+            border-left: 4px solid;
+        }
+        
+        .alert.info { background: #e3f2fd; border-color: var(--info); color: #01579b; }
+        .alert.warning { background: #fff3e0; border-color: var(--warning); color: #e65100; }
+        .alert.success { background: #e8f5e9; border-color: var(--success); color: #1b5e20; }
+        .alert.error { background: #ffebee; border-color: var(--error); color: #b71c1c; }
+        
+        .example-box {
+            background: var(--surface);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--accent);
+            margin-bottom: 1.5rem;
+        }
+        
+        .example-title {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        
+        .example-steps {
+            list-style: none;
+            counter-reset: step;
+        }
+        
+        .example-step {
+            counter-increment: step;
+            margin-bottom: 1rem;
+            padding-left: 2.5rem;
+            position: relative;
+        }
+        
+        .example-step::before {
+            content: counter(step);
+            position: absolute;
+            left: 0;
+            width: 28px;
+            height: 28px;
+            background: var(--accent);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border: 2px solid;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+        
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+
+        /* Form elements */
+        .set-input-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .form-group { flex: 1; min-width: 200px; }
+        
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+        
+        .form-input, select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        .form-input:focus, select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        /* Quiz feedback */
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .quiz-feedback.show { display: block; }
+        .quiz-feedback.correct { 
+            background: #e8f5e9; 
+            color: #1b5e20; 
+            border-left: 4px solid var(--success); 
+        }
+        .quiz-feedback.incorrect { 
+            background: #ffebee; 
+            color: #b71c1c; 
+            border-left: 4px solid var(--error); 
+        }
+
+        /* Checkbox items for completion */
+        .checkbox-item {
+            padding: 1rem;
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            display: flex;
+            gap: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .checkbox-item:hover {
+            background: var(--pale);
+            border-color: var(--accent);
+        }
+        
+        .checkbox-item.completed {
+            background: var(--pale);
+        }
+        
+        .checkbox-input {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: var(--accent);
+        }
+
+        code {
+            background: var(--surface);
+            padding: 0.2em 0.4em;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: var(--primary);
+            border: 1px solid var(--border);
+        }
+        
+        pre code {
+            display: block;
+            padding: 1rem;
+            overflow-x: auto;
+            border: none;
+        }
+
+        /* Module 8: Concept Map Styles */
+        .concept-map-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        
+        .concept-node {
+            background: white;
+            border: 2px solid var(--accent);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .concept-node:hover, .concept-node.active {
+            background: var(--accent);
+            color: white;
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .concept-detail {
+            background: var(--surface);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            border-left: 4px solid var(--primary);
+            display: none;
+        }
+        
+        /* Module 9: Accordion Styles */
+        .accordion-item {
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            overflow: hidden;
+        }
+        
+        .accordion-header {
+            background: var(--surface);
+            padding: 1rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .accordion-header:hover {
+            background: var(--pale);
+        }
+        
+        .accordion-content {
+            padding: 1rem;
+            background: white;
+            display: none;
+            border-top: 2px solid var(--border);
+        }
+        
+        .accordion-content.open {
+            display: block;
+        }
+
+        /* Visualizer Styles */
+        .visualizer-box {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+        
+        .viz-line {
+            padding: 2px 5px;
+            border-radius: 2px;
+        }
+        
+        .viz-line.active {
+            background: var(--accent);
+            color: #fff;
+            font-weight: bold;
+        }
+        
+        .viz-controls {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        footer {
+            background: var(--surface);
+            padding: 2rem 1rem;
+            margin-top: 3rem;
+            text-align: center;
+            border-top: 2px solid var(--border);
+        }
+
+        footer p {
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 1.5rem; }
+            .nav-list { flex-direction: column; }
+            .nav-link { width: 100%; }
+            .set-input-row { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <a href="#main" class="skip-link">Skip to main content</a>
+    
+    <header>
+        <div class="header-content">
+            <h1>CSC 240 - Discrete Structures</h1>
+            <p style="color: #ffffff; opacity: 1;">Week 1: Advanced Sets & Practice - Part 3</p>
+        </div>
+    </header>
+    
+    <nav>
+        <div class="nav-container">
+            <ul class="nav-list">
+                <li><a href="#module-7" class="nav-link">Module 7: Power Sets & Cartesian</a></li>
+                <li><a href="#module-8" class="nav-link">Module 8: Practice & Review</a></li>
+                <li><a href="#module-9" class="nav-link">Module 9: PE-01 Prep</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <div class="progress-container">
+        <div class="progress-header">
+            <span style="font-weight: 600;">Your Progress (Part 3)</span>
+            <div>
+                <span id="modules-completed">Modules: 0/3</span>
+                <span id="progress-percentage" style="font-weight: 700; color: var(--accent); font-size: 1.5rem; margin-left: 1rem;">0%</span>
+            </div>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill"></div>
+        </div>
+    </div>
+    
+    <main id="main">
+        <section id="module-7" class="module-section">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">⚡</div>
+                    <div>
+                        <h2>Module 7: Power Sets & Cartesian Products</h2>
+                        <p style="margin: 0; color: var(--text-muted);">Estimated Time: 25 minutes</p>
+                    </div>
+                </div>
+
+                <div class="alert info">
+                    <span style="font-size: 1.5rem;">🎯</span>
+                    <div>
+                        <strong>Learning Objectives:</strong>
+                        <ul style="margin-top: 0.5rem; margin-left: 1.5rem;">
+                            <li>Calculate power sets and understand P(A) notation</li>
+                            <li>Use the size formula 2^n for power sets</li>
+                            <li>Calculate Cartesian products (A × B)</li>
+                            <li>Understand ordered pair notation and applications</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>1. Power Sets</h3>
+                <p><strong>Definition:</strong> The power set of a set A is the set of <em>all</em> possible subsets of A, including the empty set (∅) and A itself.</p>
+                <p><strong>Notation:</strong> P(A) or 2^A</p>
+                
+                <div class="example-box">
+                    <div class="example-title">💡 Size Formula</div>
+                    <p>If a set A has <strong>n</strong> elements (denoted |A| = n), then the power set P(A) has <strong>2^n</strong> elements.</p>
+                    <p class="alert warning" style="margin-top: 1rem;">
+                        <strong>Check:</strong> If A = {1, 2}, |A|=2. <br>
+                        P(A) = { ∅, {1}, {2}, {1,2} }.<br>
+                        Size is 4, which is 2^2. Correct!
+                    </p>
+                </div>
+
+                <div class="card" style="background: var(--surface); border-color: var(--accent);">
+                    <h4>Interactive Power Set Generator</h4>
+                    <p>Enter a small set (max 5 elements) separated by commas to see how the Power Set is constructed step-by-step.</p>
+                    
+                    <div class="set-input-row">
+                        <div class="form-group">
+                            <label class="form-label" for="power-input">Set A:</label>
+                            <input type="text" id="power-input" class="form-input" value="a, b, c" placeholder="a, b">
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-primary" onclick="generatePowerSet()">Generate P(A)</button>
+                    
+                    <div id="power-output" style="margin-top: 1.5rem;"></div>
+                </div>
+
+                <h3>2. Cartesian Products</h3>
+                <p><strong>Definition:</strong> The Cartesian product of sets A and B, denoted <strong>A × B</strong>, is the set of all ordered pairs (a, b) where a ∈ A and b ∈ B.</p>
+                
+                <div class="alert success">
+                    <span style="font-size: 1.5rem;">🔑</span>
+                    <div>
+                        <strong>Key Difference:</strong> Unlike sets, <strong>order matters</strong> in ordered pairs. <br>
+                        (1, 2) ≠ (2, 1), whereas {1, 2} = {2, 1}.
+                    </div>
+                </div>
+
+                <p><strong>Size Formula:</strong> |A × B| = |A| × |B|</p>
+                <p><strong>Applications:</strong> Coordinate systems (x, y), database joins, combinatorial testing.</p>
+
+                <div class="card" style="background: var(--surface); border-color: var(--accent);">
+                    <h4>Cartesian Product Calculator</h4>
+                    <p>Enter two sets to generate their product.</p>
+                    
+                    <div class="set-input-row">
+                        <div class="form-group">
+                            <label class="form-label" for="cart-a">Set A:</label>
+                            <input type="text" id="cart-a" class="form-input" value="1, 2" placeholder="1, 2">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="cart-b">Set B:</label>
+                            <input type="text" id="cart-b" class="form-input" value="x, y, z" placeholder="x, y">
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 1rem; font-weight: bold; color: var(--text-light);">
+                        Prediction: |A| = <span id="size-a">2</span>, |B| = <span id="size-b">3</span>. 
+                        Result size will be <span id="size-pred">6</span>.
+                    </div>
+                    
+                    <button class="btn btn-primary" onclick="generateCartesian()">Calculate A × B</button>
+                    
+                    <div id="cart-output" class="example-box" style="margin-top: 1rem; display:none; background: white;"></div>
+                </div>
+
+                <div style="margin-top: 2rem; padding-top: 2rem; border-top: 2px solid var(--border);">
+                    <label class="checkbox-item" onclick="toggleModuleCompletion(7)">
+                        <input type="checkbox" class="checkbox-input" id="module7-complete">
+                        <span><strong>I've completed Module 7</strong></span>
+                    </label>
+                </div>
+            </div>
+        </section>
+
+        <section id="module-8" class="module-section">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">🧠</div>
+                    <div>
+                        <h2>Module 8: Practice and Review</h2>
+                        <p style="margin: 0; color: var(--text-muted);">Estimated Time: 20 minutes</p>
+                    </div>
+                </div>
+
+                <p>Synthesize all Week 1 concepts, identify weak points, and prepare for your assignment.</p>
+
+                <h3>1. Concept Connection Map</h3>
+                <p>Click a concept to see how it connects to others.</p>
+                
+                <div class="concept-map-container">
+                    <div class="concept-node" onclick="showConcept('sets')">Sets</div>
+                    <div class="concept-node" onclick="showConcept('subsets')">Subsets (⊆)</div>
+                    <div class="concept-node" onclick="showConcept('power')">Power Set P(A)</div>
+                    <div class="concept-node" onclick="showConcept('ops')">Operations (∪, ∩)</div>
+                    <div class="concept-node" onclick="showConcept('cart')">Cartesian (×)</div>
+                </div>
+                
+                <div id="concept-detail-box" class="concept-detail">
+                    <h4 id="concept-title" style="margin-top:0">Select a topic</h4>
+                    <p id="concept-text">...</p>
+                </div>
+
+                <h3>2. Common Mistakes Gallery</h3>
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        Mistake 1: {∅} vs ∅ <span style="font-size: 1.2rem;">+</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p><strong>The Error:</strong> Treating the empty set the same as a set containing the empty set.</p>
+                        <p><strong>Correction:</strong> ∅ is empty (size 0). {∅} is a set containing one element (size 1). It's like an empty box vs. a box containing an empty box.</p>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        Mistake 2: Subset vs Member (⊆ vs ∈) <span style="font-size: 1.2rem;">+</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p><strong>The Error:</strong> Writing 1 ⊆ {1, 2}.</p>
+                        <p><strong>Correction:</strong> Elements <em>belong</em> (∈) to sets: 1 ∈ {1, 2}. <br>Sets are <em>subsets</em> of sets: {1} ⊆ {1, 2}.</p>
+                    </div>
+                </div>
+
+                <h3>3. Comprehensive Practice Problem</h3>
+                <div class="example-box">
+                    <p><strong>Problem:</strong> Let A = {1, 2}. Calculate P(A) × A.</p>
+                    <p><em>Hint: First find P(A), then do the cross product with A.</em></p>
+                    
+                    <button class="btn btn-secondary btn-small" onclick="document.getElementById('practice-sol').style.display='block'">Show Solution</button>
+                    
+                    <div id="practice-sol" style="display:none; margin-top:1rem; border-top: 1px solid var(--border); padding-top:1rem;">
+                        <ol class="example-steps">
+                            <li class="example-step"><strong>Calculate P(A):</strong><br> Subsets of {1, 2} are ∅, {1}, {2}, {1, 2}.<br> So P(A) = { ∅, {1}, {2}, {1, 2} }.</li>
+                            <li class="example-step"><strong>Calculate Size:</strong><br> |P(A)| = 4, |A| = 2. Result will have 4 × 2 = 8 pairs.</li>
+                            <li class="example-step"><strong>Form Pairs (x, y) where x ∈ P(A) and y ∈ A:</strong><br>
+                            (∅, 1), (∅, 2)<br>
+                            ({1}, 1), ({1}, 2)<br>
+                            ({2}, 1), ({2}, 2)<br>
+                            ({1, 2}, 1), ({1, 2}, 2)
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+
+                <h3>4. Self-Assessment Quiz</h3>
+                <div class="card" style="background: var(--surface);">
+                    <p><strong>Q1:</strong> If |A| = 3, what is |P(A)|?</p>
+                    <div class="set-input-row">
+                        <button class="btn btn-secondary btn-small" onclick="checkQuiz(1, false)">3</button>
+                        <button class="btn btn-secondary btn-small" onclick="checkQuiz(1, false)">6</button>
+                        <button class="btn btn-secondary btn-small" onclick="checkQuiz(1, true)">8</button>
+                        <button class="btn btn-secondary btn-small" onclick="checkQuiz(1, false)">9</button>
+                    </div>
+                    <div id="q1-feedback" class="quiz-feedback"></div>
+                    
+                    <p style="margin-top: 1rem;"><strong>Q2:</strong> Which is true for A = {1, 2}?</p>
+                    <div class="set-input-row">
+                        <button class="btn btn-secondary btn-small" onclick="checkQuiz(2, false)">{1} ∈ A</button>
+                        <button class="btn btn-secondary btn-small" onclick="checkQuiz(2, true)">{1} ⊆ A</button>
+                        <button class="btn btn-secondary btn-small" onclick="checkQuiz(2, false)">1 ⊆ A</button>
+                    </div>
+                    <div id="q2-feedback" class="quiz-feedback"></div>
+                </div>
+
+                <div style="margin-top: 2rem; padding-top: 2rem; border-top: 2px solid var(--border);">
+                    <label class="checkbox-item" onclick="toggleModuleCompletion(8)">
+                        <input type="checkbox" class="checkbox-input" id="module8-complete">
+                        <span><strong>I've completed Module 8</strong></span>
+                    </label>
+                </div>
+            </div>
+        </section>
+
+        <section id="module-9" class="module-section">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">💻</div>
+                    <div>
+                        <h2>Module 9: Preparing for PE-01</h2>
+                        <p style="margin: 0; color: var(--text-muted);">Estimated Time: 15 minutes</p>
+                    </div>
+                </div>
+
+                <div class="alert info">
+                    <strong>Assignment Goal:</strong> Implement a `Set` class (or struct) that handles basic operations: Union, Intersection, and Difference.
+                </div>
+
+                <h3>1. From Math to Code</h3>
+                <p>How do we represent a mathematical set in programming?</p>
+                <ul style="margin-bottom: 1rem; margin-left: 1.5rem;">
+                    <li><strong>Arrays/Vectors:</strong> Simple, but need to handle duplicates manually.</li>
+                    <li><strong>Hash Sets (Java HashSet / C++ std::unordered_set):</strong> O(1) lookups, automatically handles duplicates.</li>
+                </ul>
+
+                <div class="example-box">
+                    <div class="example-title">Code Snippet: Intersection (Java style)</div>
+                    <pre><code>public Set&lt;Integer&gt; intersection(Set&lt;Integer&gt; A, Set&lt;Integer&gt; B) {
+    Set&lt;Integer&gt; result = new HashSet<>();
+    for (Integer x : A) {
+        if (B.contains(x)) {
+            result.add(x);
+        }
+    }
+    return result;
+}</code></pre>
+                </div>
+
+                <h3>2. Pseudocode Visualizer</h3>
+                <p>Walk through the algorithm for <strong>Union (A ∪ B)</strong>.</p>
+                
+                <div class="visualizer-box">
+                    <div id="line-1" class="viz-line">1. Create empty set RESULT</div>
+                    <div id="line-2" class="viz-line">2. For every element x in A:</div>
+                    <div id="line-3" class="viz-line">&nbsp;&nbsp;&nbsp;Add x to RESULT</div>
+                    <div id="line-4" class="viz-line">3. For every element y in B:</div>
+                    <div id="line-5" class="viz-line">&nbsp;&nbsp;&nbsp;Add y to RESULT (duplicates ignored)</div>
+                    <div id="line-6" class="viz-line">4. Return RESULT</div>
+                    
+                    <div class="viz-controls">
+                        <button id="viz-btn" class="btn btn-primary btn-small" onclick="nextVizStep()">Start / Next Step</button>
+                        <span id="viz-status" style="align-self: center;">Ready</span>
+                    </div>
+                </div>
+
+                <h3>3. Resources & Help</h3>
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        Download Starter Templates <span style="font-size: 1.2rem;">⬇️</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p>Starter code available for Java, C++, and Python. <a href="#" style="color: var(--accent);">Click here to download zip (Simulated)</a>.</p>
+                    </div>
+                </div>
+                
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        Frequently Asked Questions <span style="font-size: 1.2rem;">+</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p><strong>Q: Can I use built-in library functions for Union?</strong><br>
+                        A: No, for PE-01 you must implement the logic manually using loops or iterators.</p>
+                        <p><strong>Q: How do I handle empty sets?</strong><br>
+                        A: Ensure your loops handle size 0 correctly. The logic usually works without special cases.</p>
+                    </div>
+                </div>
+
+                <div style="margin-top: 2rem; padding-top: 2rem; border-top: 2px solid var(--border);">
+                    <label class="checkbox-item" onclick="toggleModuleCompletion(9)">
+                        <input type="checkbox" class="checkbox-input" id="module9-complete">
+                        <span><strong>I've completed Module 9 (Finish Week 1)</strong></span>
+                    </label>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>CSC 240 - Discrete Structures | Week 1</p>
+        <p>© 2026 University CS Department</p>
+    </footer>
+
+    <script>
+        // --- Navigation & Progress Logic (Adapted from Part 2) ---
+        const totalModules = 3;
+        const completedModules = new Set();
+        
+        function toggleModuleCompletion(moduleNum) {
+            const checkbox = document.getElementById(`module${moduleNum}-complete`);
+            const parent = checkbox.closest('.checkbox-item');
+            
+            if (checkbox.checked) {
+                completedModules.add(moduleNum);
+                parent.classList.add('completed');
+            } else {
+                completedModules.delete(moduleNum);
+                parent.classList.remove('completed');
+            }
+            
+            updateProgress();
+        }
+        
+        function updateProgress() {
+            const count = completedModules.size;
+            const percentage = Math.round((count / totalModules) * 100);
+            
+            document.getElementById('modules-completed').textContent = `Modules: ${count}/${totalModules}`;
+            document.getElementById('progress-percentage').textContent = `${percentage}%`;
+            document.getElementById('progress-fill').style.width = `${percentage}%`;
+            
+            if (count === totalModules) {
+                document.getElementById('progress-fill').style.background = 'var(--success)';
+            }
+        }
+
+        // Highlight active nav link on scroll
+        const sections = document.querySelectorAll('.module-section');
+        const navLinks = document.querySelectorAll('.nav-link');
+        
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= sectionTop - 150) {
+                    current = section.getAttribute('id');
+                }
+            });
+            
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').includes(current)) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // --- Module 7: Power Set Logic ---
+        function generatePowerSet() {
+            const input = document.getElementById('power-input').value;
+            // Parse CSV, trim, remove empty
+            const elements = input.split(',').map(s => s.trim()).filter(s => s !== "");
+            
+            if (elements.length > 5) {
+                alert("For this demo, please limit sets to 5 elements to prevent browser lag.");
+                return;
+            }
+
+            const powerSet = [[]]; // Start with empty set
+            
+            for (let i = 0; i < elements.length; i++) {
+                const currentLen = powerSet.length;
+                for (let j = 0; j < currentLen; j++) {
+                    // Add current element to existing subsets
+                    powerSet.push([...powerSet[j], elements[i]]);
+                }
+            }
+            
+            // Format output
+            const formatted = powerSet.map(subset => {
+                if (subset.length === 0) return '∅';
+                return `{${subset.join(', ')}}`;
+            });
+            
+            const outputDiv = document.getElementById('power-output');
+            outputDiv.innerHTML = `
+                <div class="alert success">
+                    <strong>Result (Size ${formatted.length}):</strong><br>
+                    { ${formatted.join(', ')} }
+                </div>
+            `;
+        }
+
+        // --- Module 7: Cartesian Product Logic ---
+        function generateCartesian() {
+            const inputA = document.getElementById('cart-a').value.split(',').map(s => s.trim()).filter(s => s !== "");
+            const inputB = document.getElementById('cart-b').value.split(',').map(s => s.trim()).filter(s => s !== "");
+            
+            // Update sizes
+            document.getElementById('size-a').innerText = inputA.length;
+            document.getElementById('size-b').innerText = inputB.length;
+            document.getElementById('size-pred').innerText = inputA.length * inputB.length;
+            
+            const product = [];
+            for (let a of inputA) {
+                for (let b of inputB) {
+                    product.push(`(${a}, ${b})`);
+                }
+            }
+            
+            const outputDiv = document.getElementById('cart-output');
+            outputDiv.style.display = 'block';
+            outputDiv.innerHTML = `
+                <div class="example-title">Result Set A × B</div>
+                <p>{ ${product.join(', ')} }</p>
+            `;
+        }
+
+        // --- Module 8: Concept Map ---
+        const concepts = {
+            'sets': '<strong>Set:</strong> An unordered collection of unique objects. Fundamental to all Discrete Structures.',
+            'subsets': '<strong>Subset (A ⊆ B):</strong> Every element of A is also in B. <br>Size relationship: |A| ≤ |B|.',
+            'power': '<strong>Power Set P(A):</strong> The set of ALL subsets. Size grows exponentially (2^n).',
+            'ops': '<strong>Operations:</strong> Union (OR), Intersection (AND), Difference (NOT). Used to build new sets.',
+            'cart': '<strong>Cartesian Product:</strong> Combines sets into ordered pairs. Basis for coordinate systems and relations.'
+        };
+
+        function showConcept(key) {
+            const detailBox = document.getElementById('concept-detail-box');
+            const title = document.getElementById('concept-title');
+            const text = document.getElementById('concept-text');
+            
+            // UI Update
+            document.querySelectorAll('.concept-node').forEach(node => node.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            detailBox.style.display = 'block';
+            title.innerText = key.charAt(0).toUpperCase() + key.slice(1);
+            text.innerHTML = concepts[key];
+        }
+
+        function toggleAccordion(header) {
+            const content = header.nextElementSibling;
+            content.classList.toggle('open');
+            const symbol = header.querySelector('span');
+            symbol.innerText = content.classList.contains('open') ? '−' : '+';
+        }
+
+        function checkQuiz(qNum, isCorrect) {
+            const feedback = document.getElementById(`q${qNum}-feedback`);
+            feedback.className = 'quiz-feedback show';
+            if (isCorrect) {
+                feedback.classList.add('correct');
+                feedback.innerHTML = "<strong>Correct!</strong> Great job.";
+            } else {
+                feedback.classList.add('incorrect');
+                feedback.innerHTML = "<strong>Incorrect.</strong> Try reviewing the definitions above.";
+            }
+        }
+
+        // --- Module 9: Visualizer ---
+        let vizStep = 0;
+        const totalSteps = 6;
+        
+        function nextVizStep() {
+            // Reset
+            if (vizStep >= totalSteps) vizStep = 0;
+            
+            // Clear all
+            document.querySelectorAll('.viz-line').forEach(line => line.classList.remove('active'));
+            
+            vizStep++;
+            document.getElementById(`line-${vizStep}`).classList.add('active');
+            
+            // Update button text
+            const btn = document.getElementById('viz-btn');
+            btn.innerText = (vizStep === totalSteps) ? "Reset" : "Next Step";
+            
+            // Status text
+            let status = "";
+            if(vizStep === 1) status = "Initializing result set...";
+            if(vizStep === 2) status = "Looping through Set A...";
+            if(vizStep === 3) status = "Added element from A";
+            if(vizStep === 4) status = "Looping through Set B...";
+            if(vizStep === 5) status = "Checking duplicates & adding...";
+            if(vizStep === 6) status = "Done! Result contains A ∪ B";
+            document.getElementById('viz-status').innerText = status;
+        }
+    </script>
+</body>
+</html>
