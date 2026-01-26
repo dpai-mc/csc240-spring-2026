@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PE-01: Set Operations Implementation - CSC 240</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 40px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h1 {
+            color: #0d47a1;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            border-bottom: 3px solid #0d47a1;
+            padding-bottom: 10px;
+        }
+
+        h2 {
+            color: #1565c0;
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            padding-left: 10px;
+            border-left: 4px solid #1565c0;
+        }
+
+        h3 {
+            color: #1976d2;
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        h4 {
+            color: #2196f3;
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: #555;
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            font-style: italic;
+        }
+
+        .metadata {
+            background-color: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 2rem;
+            border-left: 4px solid #0d47a1;
+        }
+
+        .metadata p {
+            margin: 0.5rem 0;
+            font-size: 0.95rem;
+        }
+
+        .metadata strong {
+            color: #0d47a1;
+            display: inline-block;
+            min-width: 180px;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        ul, ol {
+            margin-left: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .alert {
+            padding: 15px;
+            margin-bottom: 1.5rem;
+            border-radius: 5px;
+            border-left: 4px solid;
+        }
+
+        .alert-info {
+            background-color: #e3f2fd;
+            border-color: #0d47a1;
+            color: #0d47a1;
+        }
+
+        .alert-success {
+            background-color: #e8f5e9;
+            border-color: #2e7d32;
+            color: #1b5e20;
+        }
+
+        .alert-warning {
+            background-color: #fff3e0;
+            border-color: #e65100;
+            color: #e65100;
+        }
+
+        .alert-danger {
+            background-color: #ffebee;
+            border-color: #c62828;
+            color: #c62828;
+        }
+
+        .code-block {
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 1.5rem;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            color: #1a1a1a;
+        }
+
+        .code-block pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .rubric-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            border: 1px solid #ddd;
+        }
+
+        .rubric-table th {
+            background-color: #0d47a1;
+            color: #ffffff;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .rubric-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #ddd;
+            color: #333;
+        }
+
+        .rubric-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .rubric-table tr:hover {
+            background-color: #e3f2fd;
+        }
+
+        .checkmark {
+            color: #2e7d32;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+
+        .icon-heading {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .icon {
+            font-size: 1.5rem;
+        }
+
+        .checklist {
+            list-style-type: none;
+            margin-left: 0;
+        }
+
+        .checklist li {
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .checklist li:before {
+            content: "☐";
+            position: absolute;
+            left: 0;
+            color: #0d47a1;
+            font-size: 1.2rem;
+        }
+
+        .requirements-box {
+            background-color: #fff9e6;
+            border: 2px solid #f9a825;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 1.5rem;
+        }
+
+        .requirements-box h4 {
+            color: #f57f17;
+            margin-top: 0;
+        }
+
+        .step-number {
+            display: inline-block;
+            background-color: #0d47a1;
+            color: #ffffff;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+
+        .allowed-list {
+            background-color: #e8f5e9;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #2e7d32;
+            margin-bottom: 1rem;
+        }
+
+        .not-allowed-list {
+            background-color: #ffebee;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #c62828;
+            margin-bottom: 1rem;
+        }
+
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: #0d47a1;
+            color: white;
+            padding: 8px;
+            text-decoration: none;
+            border-radius: 0 0 5px 0;
+        }
+
+        .skip-link:focus {
+            top: 0;
+        }
+
+        @media print {
+            body {
+                background-color: #ffffff;
+            }
+            
+            .container {
+                box-shadow: none;
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            h2 {
+                font-size: 1.25rem;
+            }
+
+            .metadata strong {
+                display: block;
+                margin-bottom: 0.25rem;
+            }
+        }
+
+        /* Focus styles for keyboard navigation */
+        a:focus, button:focus, summary:focus {
+            outline: 3px solid #0d47a1;
+            outline-offset: 2px;
+        }
+
+        /* Collapsible sections */
+        details {
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+        }
+
+        summary {
+            cursor: pointer;
+            font-weight: 600;
+            color: #0d47a1;
+            padding: 5px;
+            user-select: none;
+        }
+
+        summary:hover {
+            background-color: #e3f2fd;
+            border-radius: 3px;
+        }
+
+        details[open] summary {
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <div class="container">
+        <header>
+            <h1 id="main-content" tabindex="-1">Programming Exercise PE-01: Set Operations Implementation</h1>
+            <p class="subtitle">CSC 240 - Discrete Structures</p>
+
+            <div class="metadata" role="region" aria-label="Assignment information">
+                <p><strong>Assignment:</strong> PE-01 - Set Operations Implementation</p>
+                <p><strong>Week:</strong> Week 1</p>
+                <p><strong>Points:</strong> 15 points</p>
+                <p><strong>Estimated Time:</strong> 2-3 hours</p>
+                <p><strong>Programming Language:</strong> Java OR C++ (your choice)</p>
+                <p><strong>IDE Required:</strong> Visual Studio Code</p>
+            </div>
+        </header>
+
+        <main>
+            <section aria-labelledby="learning-objectives">
+                <h2 id="learning-objectives"><span class="icon" aria-hidden="true">🎯</span> Learning Objectives</h2>
+                <p>This assignment reinforces <strong>CSLO 2: Apply combinatorics and set theory to counting problems</strong> by having you:</p>
+                <ul>
+                    <li>Translate mathematical set operations into working code</li>
+                    <li>Implement fundamental set theory concepts programmatically</li>
+                    <li>Practice with collections/data structures in your chosen language</li>
+                    <li>Develop problem-solving skills connecting theory to implementation</li>
+                </ul>
+            </section>
+
+            <section aria-labelledby="assignment-description">
+                <h2 id="assignment-description"><span class="icon" aria-hidden="true">📝</span> Assignment Description</h2>
+                <p>You will create a program that implements basic set operations on sets of integers. Your program should allow users to input two sets and then perform various set operations, displaying the results in a clear, readable format.</p>
+
+                <h3>What You're Building</h3>
+                <p>A command-line application that:</p>
+                <ul>
+                    <li>Accepts two sets of integers as input from the user</li>
+                    <li>Performs the following set operations:
+                        <ul>
+                            <li><strong>Union (A ∪ B):</strong> All elements in A or B (or both)</li>
+                            <li><strong>Intersection (A ∩ B):</strong> Elements in both A and B</li>
+                            <li><strong>Difference (A - B):</strong> Elements in A but not in B</li>
+                            <li><strong>Difference (B - A):</strong> Elements in B but not in A</li>
+                        </ul>
+                    </li>
+                    <li>Displays all results in a clear, formatted manner</li>
+                    <li><em>(Optional bonus)</em> Checks if an element is a member of a set</li>
+                </ul>
+            </section>
+
+            <section aria-labelledby="requirements">
+                <h2 id="requirements"><span class="icon" aria-hidden="true">✅</span> Requirements</h2>
+
+                <h3>Functional Requirements</h3>
+                <p><strong>Your program MUST:</strong></p>
+
+                <div class="requirements-box">
+                    <h4>Accept Input:</h4>
+                    <ul>
+                        <li>Prompt the user to enter elements for Set A</li>
+                        <li>Prompt the user to enter elements for Set B</li>
+                        <li>Handle integer input appropriately</li>
+                        <li>Accept sets of varying sizes (minimum 3 elements, maximum 10 elements recommended)</li>
+                    </ul>
+                </div>
+
+                <div class="requirements-box">
+                    <h4>Represent Sets:</h4>
+                    <ul>
+                        <li><strong>Java:</strong> Use <code>HashSet&lt;Integer&gt;</code> or arrays (HashSet recommended for automatic duplicate handling)</li>
+                        <li><strong>C++:</strong> Use <code>std::set&lt;int&gt;</code> or <code>std::unordered_set&lt;int&gt;</code> or arrays</li>
+                    </ul>
+                </div>
+
+                <div class="requirements-box">
+                    <h4>Implement Operations:</h4>
+                    <ul>
+                        <li><strong>Union (A ∪ B):</strong> Return/display all unique elements from both sets</li>
+                        <li><strong>Intersection (A ∩ B):</strong> Return/display only elements present in both sets</li>
+                        <li><strong>Difference (A - B):</strong> Return/display elements in A that are not in B</li>
+                        <li><strong>Difference (B - A):</strong> Return/display elements in B that are not in A</li>
+                    </ul>
+                </div>
+
+                <div class="requirements-box">
+                    <h4>Display Output:</h4>
+                    <ul>
+                        <li>Show the original Set A</li>
+                        <li>Show the original Set B</li>
+                        <li>Show the result of each operation clearly labeled</li>
+                        <li>Format output for readability (see sample output below)</li>
+                    </ul>
+                </div>
+
+                <h3>Technical Requirements</h3>
+                <ul>
+                    <li><strong>Language:</strong> Java or C++ (choose ONE)</li>
+                    <li><strong>IDE:</strong> Visual Studio Code (required for consistency)</li>
+                    <li><strong>Input Method:</strong> Console/terminal input (Scanner in Java, cin in C++)</li>
+                    <li><strong>Output Method:</strong> Console/terminal output (System.out in Java, cout in C++)</li>
+                    <li><strong>File Structure:</strong>
+                        <ul>
+                            <li>Single source file (.java or .cpp)</li>
+                            <li>README.txt with compilation and execution instructions</li>
+                        </ul>
+                    </li>
+                </ul>
+            </section>
+
+            <section aria-labelledby="sample-output">
+                <h2 id="sample-output"><span class="icon" aria-hidden="true">📤</span> Sample Input/Output</h2>
+
+                <details>
+                    <summary>Example 1: Basic Operation</summary>
+                    <div class="code-block">
+                        <pre>=== Set Operations Program ===
+
+Enter elements for Set A (space-separated integers): 1 2 3 4 5
+Enter elements for Set B (space-separated integers): 4 5 6 7 8
+
+=== Results ===
+
+Set A: {1, 2, 3, 4, 5}
+Set B: {4, 5, 6, 7, 8}
+
+A ∪ B (Union): {1, 2, 3, 4, 5, 6, 7, 8}
+A ∩ B (Intersection): {4, 5}
+A - B (Difference): {1, 2, 3}
+B - A (Difference): {6, 7, 8}</pre>
+                    </div>
+                </details>
+
+                <details>
+                    <summary>Example 2: Disjoint Sets</summary>
+                    <div class="code-block">
+                        <pre>=== Set Operations Program ===
+
+Enter elements for Set A (space-separated integers): 1 2 3
+Enter elements for Set B (space-separated integers): 4 5 6
+
+=== Results ===
+
+Set A: {1, 2, 3}
+Set B: {4, 5, 6}
+
+A ∪ B (Union): {1, 2, 3, 4, 5, 6}
+A ∩ B (Intersection): {} (empty set)
+A - B (Difference): {1, 2, 3}
+B - A (Difference): {4, 5, 6}</pre>
+                    </div>
+                </details>
+
+                <details>
+                    <summary>Example 3: Overlapping Sets</summary>
+                    <div class="code-block">
+                        <pre>=== Set Operations Program ===
+
+Enter elements for Set A (space-separated integers): 10 20 30 40
+Enter elements for Set B (space-separated integers): 20 40 60 80
+
+=== Results ===
+
+Set A: {10, 20, 30, 40}
+Set B: {20, 40, 60, 80}
+
+A ∪ B (Union): {10, 20, 30, 40, 60, 80}
+A ∩ B (Intersection): {20, 40}
+A - B (Difference): {10, 30}
+B - A (Difference): {60, 80}</pre>
+                    </div>
+                </details>
+            </section>
+
+            <section aria-labelledby="grading-rubric">
+                <h2 id="grading-rubric"><span class="icon" aria-hidden="true">🎓</span> Grading Rubric (15 Points Total)</h2>
+
+                <h3>1. Correctness (8 points)</h3>
+                <p>Your program must correctly implement all operations:</p>
+
+                <table class="rubric-table" role="table" aria-label="Correctness grading criteria">
+                    <thead>
+                        <tr>
+                            <th scope="col">Operation</th>
+                            <th scope="col">Points</th>
+                            <th scope="col">Criteria</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Union</strong></td>
+                            <td>2 points</td>
+                            <td>
+                                <span class="checkmark">✓</span> Returns all unique elements from both sets<br>
+                                <span class="checkmark">✓</span> No duplicates in result<br>
+                                <span class="checkmark">✓</span> Handles empty intersection correctly
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Intersection</strong></td>
+                            <td>2 points</td>
+                            <td>
+                                <span class="checkmark">✓</span> Returns only elements present in both sets<br>
+                                <span class="checkmark">✓</span> Returns empty set when no common elements<br>
+                                <span class="checkmark">✓</span> Handles all elements in common correctly
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Difference A - B</strong></td>
+                            <td>2 points</td>
+                            <td>
+                                <span class="checkmark">✓</span> Returns elements in A but not in B<br>
+                                <span class="checkmark">✓</span> Returns empty set when A ⊆ B<br>
+                                <span class="checkmark">✓</span> Returns all of A when sets are disjoint
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Difference B - A</strong></td>
+                            <td>2 points</td>
+                            <td>
+                                <span class="checkmark">✓</span> Returns elements in B but not in A<br>
+                                <span class="checkmark">✓</span> Returns empty set when B ⊆ A<br>
+                                <span class="checkmark">✓</span> Returns all of B when sets are disjoint
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p><strong>Testing Criteria:</strong></p>
+                <ul>
+                    <li>Instructor will test with multiple input sets</li>
+                    <li>Edge cases: empty results, complete overlap, disjoint sets</li>
+                    <li>Duplicate handling (if user enters duplicates, program should handle gracefully)</li>
+                </ul>
+
+                <h3>2. Code Quality (4 points)</h3>
+                <table class="rubric-table" role="table" aria-label="Code quality grading criteria">
+                    <thead>
+                        <tr>
+                            <th scope="col">Category</th>
+                            <th scope="col">Points</th>
+                            <th scope="col">Criteria</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Organization</strong></td>
+                            <td>1.5 points</td>
+                            <td>
+                                <span class="checkmark">✓</span> Logical structure with clear separation of concerns<br>
+                                <span class="checkmark">✓</span> Functions/methods used appropriately<br>
+                                <span class="checkmark">✓</span> No unnecessary code duplication
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Readability</strong></td>
+                            <td>1.5 points</td>
+                            <td>
+                                <span class="checkmark">✓</span> Meaningful variable and function names<br>
+                                <span class="checkmark">✓</span> Consistent indentation and formatting<br>
+                                <span class="checkmark">✓</span> Code follows language conventions (Java: camelCase, C++: snake_case or camelCase)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Error Handling</strong></td>
+                            <td>1 point</td>
+                            <td>
+                                <span class="checkmark">✓</span> Handles invalid input gracefully (non-integer input)<br>
+                                <span class="checkmark">✓</span> Provides helpful error messages<br>
+                                <span class="checkmark">✓</span> Program doesn't crash on unexpected input
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>3. Documentation (2 points)</h3>
+                <table class="rubric-table" role="table" aria-label="Documentation grading criteria">
+                    <thead>
+                        <tr>
+                            <th scope="col">Category</th>
+                            <th scope="col">Points</th>
+                            <th scope="col">Criteria</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Code Comments</strong></td>
+                            <td>1 point</td>
+                            <td>
+                                <span class="checkmark">✓</span> Header comment with your name, date, assignment number<br>
+                                <span class="checkmark">✓</span> Comments explaining complex logic<br>
+                                <span class="checkmark">✓</span> Function/method documentation (purpose, parameters, return value)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>README.txt</strong></td>
+                            <td>1 point</td>
+                            <td>
+                                <span class="checkmark">✓</span> Compilation instructions for your OS<br>
+                                <span class="checkmark">✓</span> Execution instructions<br>
+                                <span class="checkmark">✓</span> Any known limitations or assumptions
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>4. Compilation/Execution (1 point)</h3>
+                <ul>
+                    <li><span class="checkmark">✓</span> Program compiles without errors</li>
+                    <li><span class="checkmark">✓</span> Program runs without crashing</li>
+                    <li><span class="checkmark">✓</span> Follows submission requirements</li>
+                </ul>
+            </section>
+
+            <section aria-labelledby="submission-requirements">
+                <h2 id="submission-requirements"><span class="icon" aria-hidden="true">📦</span> Submission Requirements</h2>
+
+                <h3>What to Submit</h3>
+                <p>Create a ZIP file containing:</p>
+
+                <ol>
+                    <li><strong>Source Code File:</strong>
+                        <ul>
+                            <li>Java: SetOperations.java (or your class name)</li>
+                            <li>C++: set_operations.cpp (and any .h files if used)</li>
+                        </ul>
+                    </li>
+                    <li><strong>README.txt</strong> with the following information:</li>
+                </ol>
+
+                <div class="code-block">
+                    <pre>Name: [Your Full Name]
+Assignment: PE-01 - Set Operations Implementation
+Course: CSC 240 - Discrete Structures
+Date: [Submission Date]
+Language: [Java or C++]
+
+=== Compilation Instructions ===
+[Provide specific commands for your OS]
+
+=== Execution Instructions ===
+[How to run your program]
+
+=== Known Limitations ===
+[Any assumptions or limitations of your implementation]
+
+=== Extra Features (if any) ===
+[Any bonus features you implemented]</pre>
+                </div>
+
+                <h3>File Naming Convention</h3>
+                <p><strong>ZIP file name:</strong> <code>LastName_FirstName_PE01_Week1.zip</code></p>
+                <p><strong>Example:</strong> <code>Smith_John_PE01_Week1.zip</code></p>
+
+                <h3>Where to Submit</h3>
+                <p>Submit to Canvas under "Assignments" → "PE-01: Set Operations Implementation"</p>
+            </section>
+
+            <section aria-labelledby="getting-started">
+                <h2 id="getting-started"><span class="icon" aria-hidden="true">💻</span> Getting Started</h2>
+
+                <h3><span class="step-number">1</span> Set Up Your Environment</h3>
+                <p>Make sure you've completed the "Programming Environment Setup" assignment:</p>
+                <ul>
+                    <li>Visual Studio Code installed</li>
+                    <li>Java JDK or C++ compiler installed</li>
+                    <li>Extensions installed (Java Extension Pack or C/C++ extension)</li>
+                    <li>Tested with a "Hello, World!" program</li>
+                </ul>
+
+                <h3><span class="step-number">2</span> Plan Your Approach</h3>
+                <p>Before coding, plan your solution:</p>
+
+                <h4>Choose your data structure:</h4>
+                <ul>
+                    <li><strong>Java:</strong> <code>HashSet&lt;Integer&gt;</code> (recommended) or <code>ArrayList&lt;Integer&gt;</code></li>
+                    <li><strong>C++:</strong> <code>std::set&lt;int&gt;</code> or <code>std::unordered_set&lt;int&gt;</code> (recommended) or <code>std::vector&lt;int&gt;</code></li>
+                </ul>
+
+                <h4>Break down the problem:</h4>
+                <ul>
+                    <li>How will you read input?</li>
+                    <li>How will you store sets?</li>
+                    <li>How will you implement each operation?</li>
+                    <li>How will you display results?</li>
+                </ul>
+
+                <h4>Pseudocode example for Union:</h4>
+                <div class="code-block">
+                    <pre>function union(setA, setB):
+    result = empty set
+    for each element in setA:
+        add element to result
+    for each element in setB:
+        add element to result (duplicates automatically handled)
+    return result</pre>
+                </div>
+
+                <h3><span class="step-number">3</span> Start with a Template</h3>
+                <p>Use the starter code templates provided on Canvas:</p>
+                <ul>
+                    <li>PE01_Template.java (for Java students)</li>
+                    <li>pe01_template.cpp (for C++ students)</li>
+                </ul>
+
+                <p>These templates include:</p>
+                <ul>
+                    <li>Basic structure and imports</li>
+                    <li>Input/output formatting</li>
+                    <li>Comments indicating where to add your code</li>
+                </ul>
+
+                <h3><span class="step-number">4</span> Implement One Operation at a Time</h3>
+                <ol>
+                    <li>Start with Union (easiest)</li>
+                    <li>Then Intersection</li>
+                    <li>Then Difference (A - B)</li>
+                    <li>Finally Difference (B - A)</li>
+                </ol>
+                <p><strong>Test each operation before moving to the next!</strong></p>
+
+                <h3><span class="step-number">5</span> Test Thoroughly</h3>
+                <p>Test your program with:</p>
+                <ul>
+                    <li>The sample inputs provided above</li>
+                    <li>Edge cases: empty intersection, disjoint sets, identical sets</li>
+                    <li>Sets of different sizes</li>
+                    <li>Duplicate input (should be handled gracefully)</li>
+                </ul>
+            </section>
+
+            <section aria-labelledby="getting-help">
+                <h2 id="getting-help"><span class="icon" aria-hidden="true">🆘</span> Getting Help</h2>
+
+                <h3>Resources Available</h3>
+                
+                <h4>Office Hours:</h4>
+                <ul>
+                    <li>Check Canvas for instructor office hours schedule</li>
+                    <li>No appointment needed</li>
+                    <li>Bring specific questions or error messages</li>
+                </ul>
+
+                <h4>Discussion Forum:</h4>
+                <ul>
+                    <li>Post questions on Canvas discussion board</li>
+                    <li>Help classmates (but don't share complete solutions!)</li>
+                    <li>Check existing posts before asking</li>
+                </ul>
+
+                <h4>Starter Code:</h4>
+                <ul>
+                    <li>Templates available on Canvas under "Week 1 Resources"</li>
+                    <li>Include basic structure and helpful comments</li>
+                </ul>
+
+                <h4>Documentation:</h4>
+                <ul>
+                    <li>Java: Oracle Java Documentation</li>
+                    <li>C++: cppreference.com</li>
+                </ul>
+
+                <h3>Common Issues and Solutions</h3>
+
+                <details>
+                    <summary><strong>Issue:</strong> "My sets contain duplicates"</summary>
+                    <p><strong>Solution:</strong> Use HashSet (Java) or std::set (C++) which automatically handle duplicates</p>
+                </details>
+
+                <details>
+                    <summary><strong>Issue:</strong> "I can't read input properly"</summary>
+                    <p><strong>Solution:</strong> Review Scanner (Java) or cin (C++) documentation; see starter code examples</p>
+                </details>
+
+                <details>
+                    <summary><strong>Issue:</strong> "My output formatting is messy"</summary>
+                    <p><strong>Solution:</strong> Use System.out.printf() (Java) or std::cout with formatting (C++)</p>
+                </details>
+
+                <details>
+                    <summary><strong>Issue:</strong> "Program compiles but crashes on input"</summary>
+                    <p><strong>Solution:</strong> Add error handling for invalid input (non-integers)</p>
+                </details>
+            </section>
+
+            <section aria-labelledby="academic-integrity">
+                <h2 id="academic-integrity"><span class="icon" aria-hidden="true">⚠️</span> Academic Integrity</h2>
+
+                <div class="allowed-list">
+                    <h3>What's Allowed ✅</h3>
+                    <ul>
+                        <li>Using course materials and textbook</li>
+                        <li>Discussing concepts and approaches with classmates</li>
+                        <li>Asking clarifying questions to instructor/TA</li>
+                        <li>Using official language documentation</li>
+                        <li>Using starter code templates provided</li>
+                    </ul>
+                </div>
+
+                <div class="not-allowed-list">
+                    <h3>What's NOT Allowed ❌</h3>
+                    <ul>
+                        <li>Copying code from classmates</li>
+                        <li>Sharing your complete solution code</li>
+                        <li>Using code from online sources (Stack Overflow, GitHub, etc.) without understanding and citation</li>
+                        <li>Having someone else write your code</li>
+                        <li>Using AI code generators (ChatGPT, Copilot, etc.) to write your solution</li>
+                    </ul>
+                </div>
+
+                <div class="alert alert-danger" role="alert">
+                    <h3>Consequences</h3>
+                    <ul>
+                        <li><strong>First offense:</strong> 0 on assignment + meeting with instructor</li>
+                        <li><strong>Second offense:</strong> F in course + referral to academic affairs</li>
+                        <li>All incidents reported to department</li>
+                    </ul>
+                </div>
+
+                <p><strong>Remember:</strong> The goal is to learn. Struggling is part of learning!</p>
+            </section>
+
+            <section aria-labelledby="submission-checklist">
+                <h2 id="submission-checklist"><span class="icon" aria-hidden="true">✅</span> Submission Checklist</h2>
+                <p>Before submitting, verify:</p>
+
+                <ul class="checklist">
+                    <li>Program compiles without errors</li>
+                    <li>Program runs without crashing</li>
+                    <li>All four operations work correctly</li>
+                    <li>Output is formatted clearly</li>
+                    <li>Code has meaningful variable names</li>
+                    <li>Code includes comments</li>
+                    <li>README.txt is complete with compilation/execution instructions</li>
+                    <li>Files are in a ZIP archive</li>
+                    <li>ZIP file follows naming convention: LastName_FirstName_PE01_Week1.zip</li>
+                    <li>Submitted to correct Canvas assignment before deadline</li>
+                </ul>
+            </section>
+
+            <section aria-labelledby="course-connection">
+                <h2 id="course-connection"><span class="icon" aria-hidden="true">📊</span> How This Assignment Connects to Course Goals</h2>
+
+                <div class="alert alert-info" role="complementary">
+                    <p>This assignment directly supports:</p>
+                    
+                    <h3>CSLO 2: Apply combinatorics and set theory to counting problems</h3>
+                    <ul>
+                        <li>You're implementing the foundational operations of set theory</li>
+                        <li>Understanding how sets work programmatically prepares you for counting problems later</li>
+                    </ul>
+
+                    <h3>Week 1 Objectives:</h3>
+                    <ul>
+                        <li>Perform basic set operations ✓</li>
+                        <li>Translate mathematical concepts to code ✓</li>
+                        <li>Practice with collections/data structures ✓</li>
+                    </ul>
+
+                    <h3>Future Topics:</h3>
+                    <ul>
+                        <li>These set operations are building blocks for relations (Week 2)</li>
+                        <li>Power sets and Cartesian products (Week 2) build on this foundation</li>
+                        <li>Graph and tree algorithms (Weeks 12-16) use set operations extensively</li>
+                    </ul>
+                </div>
+            </section>
+        </main>
+
+        <footer style="margin-top: 3rem; padding-top: 2rem; border-top: 2px solid #ddd; text-align: center; color: #666;">
+            <p>CSC 240 - Discrete Structures | Mendocino College</p>
+            <p style="font-size: 0.9rem; margin-top: 0.5rem;">Questions? Contact your instructor or visit office hours.</p>
+        </footer>
+    </div>
+</body>
+</html>
