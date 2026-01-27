@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSC 152 - Week 2 Overview</title>
+    <style>
+        /* CSS Variables for consistency */
+        :root {
+            --primary-color: #1a4d7a;
+            --secondary-color: #2d6a9f;
+            --accent-color: #e67e22;
+            --text-primary: #2c3e50;
+            --text-secondary: #5d6d7e;
+            --background: #ffffff;
+            --card-background: #f8f9fa;
+            --border-color: #d5d8dc;
+            --hover-color: #ebf5fb;
+            --success-color: #27ae60;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 8px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.7;
+            color: var(--text-primary);
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf0 100%);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+
+        /* Skip to main content link for screen readers */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: var(--primary-color);
+            color: white;
+            padding: 8px;
+            text-decoration: none;
+            z-index: 100;
+        }
+
+        .skip-link:focus {
+            top: 0;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: var(--background);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 2.5rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(20px, -20px) scale(1.05); }
+            50% { transform: translate(0, -40px) scale(1.1); }
+            75% { transform: translate(-20px, -20px) scale(1.05); }
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .course-code {
+            font-size: 0.95rem;
+            opacity: 0.95;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Main content */
+        main {
+            padding: 2rem;
+        }
+
+        /* Section styles */
+        section {
+            margin-bottom: 2rem;
+            animation: fadeIn 0.8s ease-out backwards;
+        }
+
+        section:nth-child(1) { animation-delay: 0.1s; }
+        section:nth-child(2) { animation-delay: 0.2s; }
+        section:nth-child(3) { animation-delay: 0.3s; }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid var(--accent-color);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        h2::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            display: inline-block;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0.7; }
+        }
+
+        /* Overview card */
+        .overview-card {
+            background: linear-gradient(135deg, var(--card-background) 0%, #ffffff 100%);
+            padding: 1.75rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--accent-color);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .overview-card:hover {
+            box-shadow: var(--shadow-hover);
+            transform: translateX(4px);
+        }
+
+        .overview-card p {
+            font-size: 1.05rem;
+            line-height: 1.8;
+            color: var(--text-secondary);
+        }
+
+        /* Learning objectives list */
+        .objectives-container {
+            background: var(--card-background);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .objectives-list {
+            list-style: none;
+            counter-reset: objective-counter;
+        }
+
+        .objective-item {
+            counter-increment: objective-counter;
+            margin-bottom: 1.25rem;
+            padding: 1.25rem;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            position: relative;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .objective-item:hover {
+            background: var(--hover-color);
+            border-color: var(--secondary-color);
+            transform: translateX(8px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .objective-item::before {
+            content: counter(objective-counter);
+            position: absolute;
+            left: -0.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 2.5rem;
+            height: 2.5rem;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .objective-item:hover::before {
+            transform: translateY(-50%) scale(1.15) rotate(360deg);
+        }
+
+        .objective-item.completed {
+            background: #e8f8f5;
+            border-color: var(--success-color);
+        }
+
+        .objective-item.completed::after {
+            content: '✓';
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 2rem;
+            height: 2rem;
+            background: var(--success-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            animation: checkmark 0.5s ease;
+        }
+
+        @keyframes checkmark {
+            0% { transform: translateY(-50%) scale(0); }
+            50% { transform: translateY(-50%) scale(1.2); }
+            100% { transform: translateY(-50%) scale(1); }
+        }
+
+        .objective-text {
+            padding-left: 2rem;
+            font-size: 1rem;
+            line-height: 1.6;
+            color: var(--text-primary);
+        }
+
+        /* CSLO Alignment badge */
+        .cslo-badge {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-top: 1.5rem;
+            display: inline-block;
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(230, 126, 34, 0.3);
+            transition: all 0.3s ease;
+            animation: slideInRight 0.8s ease-out;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .cslo-badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(230, 126, 34, 0.4);
+        }
+
+        .cslo-label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.95;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .cslo-description {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        /* Progress tracker */
+        .progress-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .progress-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .progress-count {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 24px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #48c6ef 0%, #6f86d6 100%);
+            border-radius: 12px;
+            transition: width 0.8s cubic-bezier(0.65, 0, 0.35, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .progress-text {
+            margin-top: 0.75rem;
+            font-size: 0.95rem;
+            opacity: 0.95;
+        }
+
+        /* Interactive controls */
+        .controls {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:focus {
+            outline: 3px solid var(--accent-color);
+            outline-offset: 2px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        /* Accessibility features */
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* Focus styles for keyboard navigation */
+        *:focus {
+            outline: 2px solid var(--accent-color);
+            outline-offset: 2px;
+        }
+
+        /* Print styles */
+        @media print {
+            body {
+                background: white;
+            }
+            .container {
+                box-shadow: none;
+            }
+            .controls {
+                display: none;
+            }
+            .progress-section {
+                display: none;
+            }
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem 0.5rem;
+            }
+
+            main {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 1.75rem;
+            }
+
+            h2 {
+                font-size: 1.4rem;
+            }
+
+            .objective-item {
+                padding-left: 3rem;
+            }
+
+            .objective-item::before {
+                left: 0.5rem;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* Loading animation */
+        .loading {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Skip to main content link for accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <div class="container" role="main">
+        <header>
+            <p class="course-code">CSC 152 - Network OS and Administration</p>
+            <h1>Week 2 Overview</h1>
+        </header>
+
+        <main id="main-content">
+            <!-- Week Overview Section -->
+            <section aria-labelledby="overview-heading">
+                <h2 id="overview-heading">Week Overview</h2>
+                <div class="overview-card">
+                    <p>
+                        Week 2 builds upon the foundational server concepts from Week 1 by diving deep into server hardware 
+                        architecture and components. Students will learn about the critical hardware elements that make servers 
+                        reliable and performant, including processors, memory, storage, network interfaces, and power/cooling systems. 
+                        This week emphasizes understanding hardware specifications, monitoring server resources, and making informed 
+                        decisions about hardware selection and configuration. Students will also explore data center environmental 
+                        considerations that ensure optimal server operation.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Learning Objectives Section -->
+            <section aria-labelledby="objectives-heading">
+                <h2 id="objectives-heading">Learning Objectives</h2>
+                <div class="objectives-container">
+                    <p style="margin-bottom: 1.25rem; color: var(--text-secondary); font-weight: 500;">
+                        By the end of Week 2, students will be able to:
+                    </p>
+                    <ol class="objectives-list" role="list">
+                        <li class="objective-item" 
+                            role="listitem" 
+                            tabindex="0" 
+                            data-objective="1"
+                            aria-label="Learning objective 1: Identify and explain the function of major server hardware components (CPU, RAM, storage, NICs)">
+                            <span class="objective-text">
+                                Identify and explain the function of major server hardware components (CPU, RAM, storage, NICs)
+                            </span>
+                        </li>
+                        <li class="objective-item" 
+                            role="listitem" 
+                            tabindex="0" 
+                            data-objective="2"
+                            aria-label="Learning objective 2: Install and configure server hardware components in virtual environments">
+                            <span class="objective-text">
+                                Install and configure server hardware components in virtual environments
+                            </span>
+                        </li>
+                        <li class="objective-item" 
+                            role="listitem" 
+                            tabindex="0" 
+                            data-objective="3"
+                            aria-label="Learning objective 3: Describe power and cooling requirements for servers and data centers">
+                            <span class="objective-text">
+                                Describe power and cooling requirements for servers and data centers
+                            </span>
+                        </li>
+                        <li class="objective-item" 
+                            role="listitem" 
+                            tabindex="0" 
+                            data-objective="4"
+                            aria-label="Learning objective 4: Explain environmental controls necessary for reliable server operation">
+                            <span class="objective-text">
+                                Explain environmental controls necessary for reliable server operation
+                            </span>
+                        </li>
+                        <li class="objective-item" 
+                            role="listitem" 
+                            tabindex="0" 
+                            data-objective="5"
+                            aria-label="Learning objective 5: Use hardware monitoring tools to assess server resource utilization">
+                            <span class="objective-text">
+                                Use hardware monitoring tools to assess server resource utilization
+                            </span>
+                        </li>
+                        <li class="objective-item" 
+                            role="listitem" 
+                            tabindex="0" 
+                            data-objective="6"
+                            aria-label="Learning objective 6: Compare and contrast different storage technologies (HDD, SSD, NVMe)">
+                            <span class="objective-text">
+                                Compare and contrast different storage technologies (HDD, SSD, NVMe)
+                            </span>
+                        </li>
+                        <li class="objective-item" 
+                            role="listitem" 
+                            tabindex="0" 
+                            data-objective="7"
+                            aria-label="Learning objective 7: Evaluate hardware specifications for different server workloads">
+                            <span class="objective-text">
+                                Evaluate hardware specifications for different server workloads
+                            </span>
+                        </li>
+                        <li class="objective-item" 
+                            role="listitem" 
+                            tabindex="0" 
+                            data-objective="8"
+                            aria-label="Learning objective 8: Calculate power consumption and cooling requirements for server deployments">
+                            <span class="objective-text">
+                                Calculate power consumption and cooling requirements for server deployments
+                            </span>
+                        </li>
+                    </ol>
+
+                    <div class="cslo-badge" role="complementary" aria-label="Course Student Learning Outcome alignment">
+                        <span class="cslo-label">CSLO Alignment</span>
+                        <span class="cslo-description">
+                            CSLO 1 - Manage and maintain servers, including operating system (OS) configuration, access control and virtualization
+                        </span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Progress Tracker Section -->
+            <section aria-labelledby="progress-heading">
+                <div class="progress-section" role="region" aria-live="polite">
+                    <div class="progress-header">
+                        <h2 id="progress-heading" style="border: none; margin: 0; padding: 0; color: white;">
+                            Your Progress
+                        </h2>
+                        <span class="progress-count" aria-label="Objectives completed">
+                            <span id="completed-count">0</span> / 8
+                        </span>
+                    </div>
+                    <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Learning objectives completion progress">
+                        <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+                    </div>
+                    <p class="progress-text">
+                        Click on objectives to mark them as completed during this session. Progress resets when you close the page.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Interactive Controls -->
+            <div class="controls">
+                <button class="btn btn-primary" id="reset-btn" aria-label="Reset all objective completions">
+                    <span>↻</span>
+                    <span>Reset Progress</span>
+                </button>
+                <button class="btn btn-secondary" id="print-btn" aria-label="Print this page">
+                    <span>🖨</span>
+                    <span>Print Page</span>
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Accessibility and interaction enhancements
+        (function() {
+            'use strict';
+
+            // State management
+            const state = {
+                completedObjectives: new Set(),
+                totalObjectives: 8
+            };
+
+            // DOM elements
+            const objectiveItems = document.querySelectorAll('.objective-item');
+            const progressFill = document.getElementById('progress-fill');
+            const completedCount = document.getElementById('completed-count');
+            const resetBtn = document.getElementById('reset-btn');
+            const printBtn = document.getElementById('print-btn');
+            const progressBar = document.querySelector('.progress-bar');
+
+            // Initialize the page
+            function init() {
+                updateProgress();
+                attachEventListeners();
+                announceToScreenReader('Week 2 overview loaded. Interactive objectives available for session tracking.');
+            }
+
+            // Toggle objective completion
+            function toggleObjective(item) {
+                const objNum = parseInt(item.getAttribute('data-objective'));
+                const isCompleted = state.completedObjectives.has(objNum);
+
+                if (isCompleted) {
+                    state.completedObjectives.delete(objNum);
+                    item.classList.remove('completed');
+                    item.setAttribute('aria-checked', 'false');
+                    announceToScreenReader('Objective ' + objNum + ' marked as incomplete');
+                } else {
+                    state.completedObjectives.add(objNum);
+                    item.classList.add('completed');
+                    item.setAttribute('aria-checked', 'true');
+                    announceToScreenReader('Objective ' + objNum + ' marked as complete');
+                }
+
+                updateProgress();
+            }
+
+            // Update progress bar and count
+            function updateProgress() {
+                const completed = state.completedObjectives.size;
+                const percentage = (completed / state.totalObjectives) * 100;
+
+                completedCount.textContent = completed;
+                progressFill.style.width = percentage + '%';
+                progressBar.setAttribute('aria-valuenow', Math.round(percentage));
+
+                // Celebrate when all objectives are completed
+                if (completed === state.totalObjectives) {
+                    announceToScreenReader('Congratulations! All learning objectives completed!');
+                }
+            }
+
+            // Reset all progress
+            function resetProgress() {
+                if (state.completedObjectives.size === 0) {
+                    announceToScreenReader('No progress to reset');
+                    return;
+                }
+
+                const confirmed = confirm('Are you sure you want to reset all progress for this session?');
+                if (!confirmed) return;
+
+                state.completedObjectives.clear();
+                objectiveItems.forEach(item => {
+                    item.classList.remove('completed');
+                    item.setAttribute('aria-checked', 'false');
+                });
+
+                updateProgress();
+                announceToScreenReader('Session progress reset successfully');
+            }
+
+            // Print page
+            function printPage() {
+                window.print();
+            }
+
+            // Screen reader announcements
+            function announceToScreenReader(message) {
+                const announcement = document.createElement('div');
+                announcement.setAttribute('role', 'status');
+                announcement.setAttribute('aria-live', 'polite');
+                announcement.classList.add('visually-hidden');
+                announcement.textContent = message;
+                document.body.appendChild(announcement);
+
+                setTimeout(() => {
+                    document.body.removeChild(announcement);
+                }, 1000);
+            }
+
+            // Attach event listeners
+            function attachEventListeners() {
+                // Objective items - click and keyboard
+                objectiveItems.forEach(item => {
+                    // Click event
+                    item.addEventListener('click', function() {
+                        toggleObjective(this);
+                    });
+
+                    // Keyboard events (Space and Enter)
+                    item.addEventListener('keydown', function(e) {
+                        if (e.key === ' ' || e.key === 'Enter') {
+                            e.preventDefault();
+                            toggleObjective(this);
+                        }
+                    });
+
+                    // Add role for checkbox-like behavior
+                    item.setAttribute('role', 'checkbox');
+                    item.setAttribute('aria-checked', 'false');
+                });
+
+                // Reset button
+                resetBtn.addEventListener('click', resetProgress);
+
+                // Print button
+                printBtn.addEventListener('click', printPage);
+
+                // Keyboard shortcut for print (Ctrl+P is handled by browser)
+                document.addEventListener('keydown', function(e) {
+                    // Ctrl/Cmd + R to reset (with confirmation)
+                    if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
+                        e.preventDefault();
+                        resetProgress();
+                    }
+                });
+            }
+
+            // Initialize when DOM is ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
+
+            // Add smooth scroll behavior for skip link
+            document.querySelector('.skip-link').addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                target.focus();
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        })();
+    </script>
+</body>
+</html>

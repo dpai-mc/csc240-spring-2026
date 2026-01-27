@@ -1,0 +1,1726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="CSC 152 Week 2 Module 1: Interactive learning module on server processors and computing power">
+    <title>CSC 152 - Module 1: Server Processors and Computing Power</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #7c3aed;
+            --success-color: #059669;
+            --warning-color: #d97706;
+            --error-color: #dc2626;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --shadow: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--bg-color);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-lg);
+        }
+
+        header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .progress-bar {
+            background: rgba(255,255,255,0.2);
+            height: 8px;
+            border-radius: 4px;
+            margin-top: 1rem;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: white;
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .section {
+            background: var(--card-bg);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        h2 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            color: var(--secondary-color);
+            margin: 1.5rem 0 1rem 0;
+            font-size: 1.4rem;
+        }
+
+        .key-concept {
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            border-left: 4px solid var(--primary-color);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 8px;
+        }
+
+        .key-concept h4 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .key-concept ul {
+            margin-left: 1.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .interactive-diagram {
+            background: #f1f5f9;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            text-align: center;
+        }
+
+        .cpu-architecture {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .cpu-component {
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .cpu-component:hover,
+        .cpu-component:focus {
+            border-color: var(--primary-color);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            outline: none;
+        }
+
+        .cpu-component h4 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .component-details {
+            display: none;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+            text-align: left;
+        }
+
+        .component-details.active {
+            display: block;
+        }
+
+        .core-visualization {
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            align-items: center;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .control-group label {
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        select, input[type="range"] {
+            padding: 0.5rem;
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        select:focus, input[type="range"]:focus {
+            outline: 2px solid var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .cores-display {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .core {
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            position: relative;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .core.processing {
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .thread-indicator {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 20px;
+            height: 20px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 50%;
+            font-size: 0.7rem;
+        }
+
+        .performance-comparison {
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .scenario-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 1.5rem;
+        }
+
+        .scenario {
+            background: #f8fafc;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .scenario h4 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .performance-bar {
+            background: #e2e8f0;
+            height: 40px;
+            border-radius: 6px;
+            overflow: hidden;
+            margin: 1rem 0;
+            position: relative;
+        }
+
+        .performance-fill {
+            background: linear-gradient(90deg, var(--success-color), #34d399);
+            height: 100%;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .processor-tabs {
+            margin: 2rem 0;
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .tab-button {
+            padding: 0.75rem 1.5rem;
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .tab-button:hover,
+        .tab-button:focus {
+            border-color: var(--primary-color);
+            background: #f0f9ff;
+            outline: none;
+        }
+
+        .tab-button.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .tab-content {
+            display: none;
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 2rem;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .processor-tiers {
+            display: grid;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .tier {
+            background: #f8fafc;
+            padding: 1rem;
+            border-left: 4px solid;
+            border-radius: 4px;
+        }
+
+        .tier.bronze { border-color: #cd7f32; }
+        .tier.silver { border-color: #c0c0c0; }
+        .tier.gold { border-color: #ffd700; }
+        .tier.platinum { border-color: #e5e4e2; }
+
+        .processor-example {
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .spec-tree {
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            line-height: 1.8;
+        }
+
+        .comparison-tool {
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .processor-selectors {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .comparison-table th {
+            background: #f8fafc;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .comparison-table tr:hover {
+            background: #f8fafc;
+        }
+
+        .metric-bar {
+            background: #e2e8f0;
+            height: 20px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+
+        .metric-fill {
+            background: var(--primary-color);
+            height: 100%;
+            transition: width 0.5s ease;
+        }
+
+        .quiz-container {
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .quiz-question {
+            margin-bottom: 2rem;
+        }
+
+        .quiz-question h4 {
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .quiz-option {
+            background: #f8fafc;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .quiz-option:hover,
+        .quiz-option:focus {
+            border-color: var(--primary-color);
+            background: #f0f9ff;
+            outline: none;
+        }
+
+        .quiz-option.selected {
+            border-color: var(--primary-color);
+            background: #dbeafe;
+        }
+
+        .quiz-option.correct {
+            border-color: var(--success-color);
+            background: #d1fae5;
+        }
+
+        .quiz-option.incorrect {
+            border-color: var(--error-color);
+            background: #fee2e2;
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .quiz-feedback.show {
+            display: block;
+        }
+
+        .quiz-feedback.correct {
+            background: #d1fae5;
+            border: 2px solid var(--success-color);
+            color: #065f46;
+        }
+
+        .quiz-feedback.incorrect {
+            background: #fee2e2;
+            border: 2px solid var(--error-color);
+            color: #991b1b;
+        }
+
+        .drag-drop-container {
+            margin: 2rem 0;
+        }
+
+        .draggable-items,
+        .drop-zones {
+            display: grid;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .draggable-item {
+            background: var(--primary-color);
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            cursor: move;
+            text-align: center;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .draggable-item:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .draggable-item.dragging {
+            opacity: 0.5;
+        }
+
+        .drop-zone {
+            background: #f8fafc;
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .drop-zone.drag-over {
+            border-color: var(--primary-color);
+            background: #f0f9ff;
+        }
+
+        .drop-zone.filled {
+            border-style: solid;
+            border-color: var(--success-color);
+            background: #d1fae5;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover,
+        .btn-primary:focus {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            outline: 2px solid var(--primary-color);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+        }
+
+        .btn-secondary:hover,
+        .btn-secondary:focus {
+            background: #f0f9ff;
+            outline: 2px solid var(--primary-color);
+        }
+
+        .terminal {
+            background: #1e293b;
+            color: #e2e8f0;
+            font-family: 'Courier New', monospace;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            overflow-x: auto;
+        }
+
+        .terminal-prompt {
+            color: #22c55e;
+        }
+
+        .terminal-output {
+            margin-top: 0.5rem;
+            padding-left: 1rem;
+        }
+
+        .assessment-summary {
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            text-align: center;
+        }
+
+        .score-display {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin: 1rem 0;
+        }
+
+        .stars {
+            font-size: 2rem;
+            color: #fbbf24;
+            margin: 1rem 0;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            header {
+                padding: 1.5rem;
+            }
+
+            header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 1.5rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            h3 {
+                font-size: 1.2rem;
+            }
+
+            .cpu-architecture {
+                grid-template-columns: 1fr;
+            }
+
+            .scenario-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tab-buttons {
+                flex-direction: column;
+            }
+
+            .processor-selectors {
+                grid-template-columns: 1fr;
+            }
+
+            .comparison-table {
+                font-size: 0.9rem;
+            }
+
+            .comparison-table th,
+            .comparison-table td {
+                padding: 0.5rem;
+            }
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0,0,0,0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* Focus visible for better keyboard navigation */
+        *:focus-visible {
+            outline: 3px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header role="banner">
+            <h1>Module 1: Server Processors and Computing Power</h1>
+            <p>Understanding the computational heart of server systems</p>
+            <div class="progress-bar" role="progressbar" aria-label="Module progress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+        </header>
+
+        <main role="main">
+            <!-- Section 1.1: Introduction to Server Processors -->
+            <section class="section" id="section1" aria-labelledby="intro-heading">
+                <h2 id="intro-heading">1.1 Introduction to Server Processors</h2>
+                
+                <p>Server processors are the computational heart of any server system. Unlike consumer desktop processors, server CPUs prioritize reliability, multi-threaded performance, and 24/7 operation over single-threaded gaming performance or integrated graphics.</p>
+
+                <div class="key-concept" role="region" aria-label="Key concept about server vs desktop CPUs">
+                    <h4>💡 Key Concept: Server vs. Desktop CPUs</h4>
+                    <p>Server CPUs differ from desktop processors in several critical ways:</p>
+                    <ul>
+                        <li><strong>ECC memory support</strong> (error correction) - Detects and corrects memory errors</li>
+                        <li><strong>More cores</strong> (8-64+ vs. 4-16) - Handles more simultaneous tasks</li>
+                        <li><strong>Larger cache sizes</strong> (up to 256MB L3) - Reduces memory access latency</li>
+                        <li><strong>Multi-socket support</strong> - Multiple CPUs in one system</li>
+                        <li><strong>Higher reliability ratings</strong> - Designed for continuous operation</li>
+                        <li><strong>Lower clock speeds</strong> (prioritize efficiency) - Better power and thermal management</li>
+                    </ul>
+                </div>
+
+                <div class="interactive-diagram" role="region" aria-label="Interactive CPU architecture diagram">
+                    <h3>CPU Architecture Components</h3>
+                    <p>Click or tap each component to learn more</p>
+                    
+                    <div class="cpu-architecture">
+                        <div class="cpu-component" tabindex="0" role="button" aria-expanded="false" data-component="cores">
+                            <h4>CPU Cores</h4>
+                            <p>8-64+ cores</p>
+                            <div class="component-details">
+                                <p><strong>Function:</strong> Independent processing units that execute instructions</p>
+                                <p><strong>Impact:</strong> More cores = more parallel processing capability</p>
+                                <p><strong>Server Use:</strong> Handles multiple virtual machines and concurrent workloads</p>
+                            </div>
+                        </div>
+
+                        <div class="cpu-component" tabindex="0" role="button" aria-expanded="false" data-component="cache">
+                            <h4>Cache Memory</h4>
+                            <p>L1, L2, L3 levels</p>
+                            <div class="component-details">
+                                <p><strong>Function:</strong> High-speed memory close to cores</p>
+                                <p><strong>Levels:</strong> L1 (fastest, smallest), L2 (medium), L3 (largest, shared)</p>
+                                <p><strong>Impact:</strong> Reduces latency by storing frequently accessed data</p>
+                            </div>
+                        </div>
+
+                        <div class="cpu-component" tabindex="0" role="button" aria-expanded="false" data-component="memory">
+                            <h4>Memory Controller</h4>
+                            <p>DDR4/DDR5 support</p>
+                            <div class="component-details">
+                                <p><strong>Function:</strong> Manages communication between CPU and RAM</p>
+                                <p><strong>Channels:</strong> Multiple channels increase bandwidth</p>
+                                <p><strong>ECC Support:</strong> Enables error-correcting memory</p>
+                            </div>
+                        </div>
+
+                        <div class="cpu-component" tabindex="0" role="button" aria-expanded="false" data-component="pcie">
+                            <h4>PCIe Lanes</h4>
+                            <p>48-128 lanes</p>
+                            <div class="component-details">
+                                <p><strong>Function:</strong> Connect to expansion cards (GPUs, NVMe, NICs)</p>
+                                <p><strong>Bandwidth:</strong> PCIe 4.0: 2GB/s per lane, PCIe 5.0: 4GB/s per lane</p>
+                                <p><strong>Server Use:</strong> Critical for high-speed storage and networking</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 1.2: Cores and Threads -->
+            <section class="section" id="section2" aria-labelledby="cores-heading">
+                <h2 id="cores-heading">1.2 Understanding Cores and Threads</h2>
+
+                <p>Cores are independent processing units within a CPU. Each core can execute instructions independently. Modern server processors contain multiple cores (8, 16, 32, 64, or more) enabling true parallel processing.</p>
+
+                <p><strong>Hyper-Threading (Intel) or SMT (AMD)</strong> allows each physical core to handle two threads simultaneously, appearing as two logical processors to the operating system.</p>
+
+                <div class="core-visualization" role="region" aria-label="Interactive core and thread visualization">
+                    <h3>Core and Thread Visualization</h3>
+                    
+                    <div class="controls">
+                        <div class="control-group">
+                            <label for="coreCount">Number of Cores:</label>
+                            <select id="coreCount" aria-label="Select number of cores">
+                                <option value="1">1 Core</option>
+                                <option value="2">2 Cores</option>
+                                <option value="4">4 Cores</option>
+                                <option value="8" selected>8 Cores</option>
+                                <option value="16">16 Cores</option>
+                            </select>
+                        </div>
+
+                        <div class="control-group">
+                            <label for="hyperThreading">Hyper-Threading:</label>
+                            <select id="hyperThreading" aria-label="Toggle hyper-threading">
+                                <option value="off">Off</option>
+                                <option value="on" selected>On</option>
+                            </select>
+                        </div>
+
+                        <div class="control-group">
+                            <label for="workload">Workload:</label>
+                            <select id="workload" aria-label="Select workload type">
+                                <option value="light">Light (25% utilization)</option>
+                                <option value="medium" selected>Medium (50% utilization)</option>
+                                <option value="heavy">Heavy (75% utilization)</option>
+                                <option value="max">Maximum (100% utilization)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="coresDisplay" class="cores-display" role="status" aria-live="polite"></div>
+
+                    <div id="processorInfo" style="margin-top: 1.5rem; padding: 1rem; background: #f0f9ff; border-radius: 8px;">
+                        <p><strong>Physical Cores:</strong> <span id="physicalCores">8</span></p>
+                        <p><strong>Logical Processors:</strong> <span id="logicalCores">16</span></p>
+                        <p><strong>Threads per Core:</strong> <span id="threadsPerCore">2</span></p>
+                    </div>
+                </div>
+
+                <!-- Quick Knowledge Check -->
+                <div class="quiz-container" role="region" aria-labelledby="quiz1-heading">
+                    <h3 id="quiz1-heading">Knowledge Check #1: Cores vs. Threads</h3>
+                    
+                    <div class="quiz-question">
+                        <h4>A server has a 16-core processor with hyper-threading enabled. How many logical processors does the operating system see?</h4>
+                        
+                        <div class="quiz-options" role="radiogroup" aria-labelledby="quiz1-heading">
+                            <div class="quiz-option" tabindex="0" role="radio" aria-checked="false" data-answer="wrong">
+                                <span>8</span>
+                            </div>
+                            <div class="quiz-option" tabindex="0" role="radio" aria-checked="false" data-answer="wrong">
+                                <span>16</span>
+                            </div>
+                            <div class="quiz-option" tabindex="0" role="radio" aria-checked="false" data-answer="correct">
+                                <span>32</span>
+                            </div>
+                            <div class="quiz-option" tabindex="0" role="radio" aria-checked="false" data-answer="wrong">
+                                <span>64</span>
+                            </div>
+                        </div>
+
+                        <div class="quiz-feedback" role="status" aria-live="polite"></div>
+
+                        <button class="btn btn-primary" id="submitQuiz1" style="margin-top: 1rem;">Submit Answer</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 1.3: Clock Speed vs. Core Count -->
+            <section class="section" id="section3" aria-labelledby="clockspeed-heading">
+                <h2 id="clockspeed-heading">1.3 Clock Speed vs. Core Count</h2>
+
+                <p>When selecting server processors, understanding the tradeoff between clock speed (GHz) and core count is essential. Different workloads benefit from different configurations.</p>
+
+                <div class="performance-comparison" role="region" aria-label="Interactive performance comparison tool">
+                    <h3>Performance Comparison Tool</h3>
+                    
+                    <div class="control-group" style="margin-bottom: 2rem;">
+                        <label for="workloadType"><strong>Select Workload Type:</strong></label>
+                        <select id="workloadType" style="width: 100%; max-width: 400px; margin-top: 0.5rem;">
+                            <option value="webserver">Web Server</option>
+                            <option value="database">Database Server</option>
+                            <option value="fileserver">File Server</option>
+                            <option value="virtualization">Virtualization Host</option>
+                        </select>
+                    </div>
+
+                    <div class="scenario-grid">
+                        <div class="scenario">
+                            <h4>Scenario 1: High Clock Speed</h4>
+                            <p><strong>Configuration:</strong> 8 cores @ 3.8 GHz</p>
+                            <p><strong>Total Processing Power:</strong> 30.4 GHz aggregate</p>
+                            
+                            <div class="performance-bar" role="progressbar" aria-label="Scenario 1 performance" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100">
+                                <div class="performance-fill" id="scenario1Bar" style="width: 60%;">
+                                    <span id="scenario1Score">60</span>
+                                </div>
+                            </div>
+
+                            <div id="scenario1Analysis">
+                                <p><strong>Best for:</strong> Single-threaded applications</p>
+                                <p><strong>Advantage:</strong> High per-core performance</p>
+                            </div>
+                        </div>
+
+                        <div class="scenario">
+                            <h4>Scenario 2: More Cores</h4>
+                            <p><strong>Configuration:</strong> 32 cores @ 2.4 GHz</p>
+                            <p><strong>Total Processing Power:</strong> 76.8 GHz aggregate</p>
+                            
+                            <div class="performance-bar" role="progressbar" aria-label="Scenario 2 performance" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100">
+                                <div class="performance-fill" id="scenario2Bar" style="width: 85%;">
+                                    <span id="scenario2Score">85</span>
+                                </div>
+                            </div>
+
+                            <div id="scenario2Analysis">
+                                <p><strong>Best for:</strong> Multi-threaded workloads</p>
+                                <p><strong>Advantage:</strong> Handles many parallel tasks</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="workloadAnalysis" style="margin-top: 2rem; padding: 1.5rem; background: #f0f9ff; border-left: 4px solid var(--primary-color); border-radius: 8px;" role="status" aria-live="polite">
+                        <!-- Dynamic analysis will appear here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 1.4: Processor Families -->
+            <section class="section" id="section4" aria-labelledby="families-heading">
+                <h2 id="families-heading">1.4 Processor Families</h2>
+
+                <div class="processor-tabs" role="region" aria-label="Processor family information">
+                    <div class="tab-buttons" role="tablist" aria-label="Processor families">
+                        <button class="tab-button active" role="tab" aria-selected="true" aria-controls="intel-panel" id="intel-tab" data-tab="intel">Intel Xeon</button>
+                        <button class="tab-button" role="tab" aria-selected="false" aria-controls="amd-panel" id="amd-tab" data-tab="amd">AMD EPYC</button>
+                        <button class="tab-button" role="tab" aria-selected="false" aria-controls="arm-panel" id="arm-tab" data-tab="arm">ARM-Based</button>
+                    </div>
+
+                    <div class="tab-content active" id="intel-panel" role="tabpanel" aria-labelledby="intel-tab">
+                        <h3>Intel Xeon Processor Family</h3>
+                        
+                        <p>Intel Xeon Scalable processors are organized into tiers based on performance and features:</p>
+
+                        <div class="processor-tiers">
+                            <div class="tier bronze">
+                                <strong>Bronze:</strong> Entry-level, 4-8 cores, basic server features
+                            </div>
+                            <div class="tier silver">
+                                <strong>Silver:</strong> Mid-range, 8-16 cores, balanced performance
+                            </div>
+                            <div class="tier gold">
+                                <strong>Gold:</strong> High-performance, 16-28 cores, advanced features
+                            </div>
+                            <div class="tier platinum">
+                                <strong>Platinum:</strong> Highest performance, 24-40 cores, all features
+                            </div>
+                        </div>
+
+                        <div class="processor-example">
+                            <h4>Example: Intel Xeon Gold 6330</h4>
+                            <div class="spec-tree">
+                                ├─ Cores: 28<br>
+                                ├─ Base Clock: 2.0 GHz<br>
+                                ├─ Turbo Boost: 3.1 GHz<br>
+                                ├─ Cache: 42 MB L3<br>
+                                ├─ TDP: 205W<br>
+                                ├─ Memory: DDR4-2933, up to 6TB<br>
+                                ├─ PCIe Lanes: 64 (PCIe 4.0)<br>
+                                └─ Price Range: $2,100-$2,400
+                            </div>
+                            <p style="margin-top: 1rem;"><strong>Typical Use Cases:</strong> Virtualization hosts, database servers, high-performance computing</p>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="amd-panel" role="tabpanel" aria-labelledby="amd-tab">
+                        <h3>AMD EPYC Processor Family</h3>
+                        
+                        <p>AMD EPYC processors offer high core counts and competitive performance:</p>
+
+                        <div class="processor-example">
+                            <h4>Example: AMD EPYC 7763</h4>
+                            <div class="spec-tree">
+                                ├─ Cores: 64<br>
+                                ├─ Base Clock: 2.45 GHz<br>
+                                ├─ Boost Clock: 3.5 GHz<br>
+                                ├─ Cache: 256 MB L3<br>
+                                ├─ TDP: 280W<br>
+                                ├─ Memory: DDR4-3200, up to 4TB<br>
+                                ├─ PCIe Lanes: 128 (PCIe 4.0)<br>
+                                └─ Price Range: $7,000-$8,000
+                            </div>
+                            <p style="margin-top: 1rem;"><strong>Key Advantages:</strong></p>
+                            <ul style="margin-left: 2rem;">
+                                <li>Exceptional core count (up to 96 cores in newer models)</li>
+                                <li>More PCIe lanes than comparable Intel processors</li>
+                                <li>Competitive price-to-performance ratio</li>
+                                <li>Strong memory bandwidth</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="arm-panel" role="tabpanel" aria-labelledby="arm-tab">
+                        <h3>ARM-Based Server Processors</h3>
+                        
+                        <p>ARM processors are gaining traction in data centers due to power efficiency:</p>
+
+                        <div class="processor-example">
+                            <h4>Example: AWS Graviton3</h4>
+                            <div class="spec-tree">
+                                ├─ Cores: 64<br>
+                                ├─ Architecture: ARM Neoverse V1<br>
+                                ├─ Clock Speed: Up to 2.6 GHz<br>
+                                ├─ Cache: 64 MB L3<br>
+                                ├─ Memory: DDR5, 300+ GB/s bandwidth<br>
+                                ├─ PCIe: PCIe 5.0 support<br>
+                                └─ Power Efficiency: 60% better than x86 alternatives
+                            </div>
+                            <p style="margin-top: 1rem;"><strong>Key Characteristics:</strong></p>
+                            <ul style="margin-left: 2rem;">
+                                <li>Excellent power efficiency (important for data center operating costs)</li>
+                                <li>Growing software ecosystem</li>
+                                <li>Often used in cloud environments (AWS, Oracle Cloud)</li>
+                                <li>Lower cost per core in cloud deployments</li>
+                            </ul>
+                            <p style="margin-top: 1rem;"><strong>Considerations:</strong> Some legacy software may require recompilation or may not be available for ARM architecture</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Processor Comparison Tool -->
+                <div class="comparison-tool">
+                    <h3>Interactive Processor Comparison</h3>
+                    <p>Select two processors to compare side-by-side:</p>
+
+                    <div class="processor-selectors">
+                        <div class="control-group">
+                            <label for="processor1">Processor 1:</label>
+                            <select id="processor1">
+                                <option value="xeon-silver-4314">Xeon Silver 4314 (16-core, 2.4GHz)</option>
+                                <option value="xeon-gold-6330">Xeon Gold 6330 (28-core, 2.0GHz)</option>
+                                <option value="xeon-platinum-8380">Xeon Platinum 8380 (40-core, 2.3GHz)</option>
+                                <option value="epyc-7443">EPYC 7443 (24-core, 2.85GHz)</option>
+                                <option value="epyc-7763">EPYC 7763 (64-core, 2.45GHz)</option>
+                            </select>
+                        </div>
+
+                        <div class="control-group">
+                            <label for="processor2">Processor 2:</label>
+                            <select id="processor2">
+                                <option value="xeon-silver-4314">Xeon Silver 4314 (16-core, 2.4GHz)</option>
+                                <option value="xeon-gold-6330">Xeon Gold 6330 (28-core, 2.0GHz)</option>
+                                <option value="xeon-platinum-8380">Xeon Platinum 8380 (40-core, 2.3GHz)</option>
+                                <option value="epyc-7443" selected>EPYC 7443 (24-core, 2.85GHz)</option>
+                                <option value="epyc-7763">EPYC 7763 (64-core, 2.45GHz)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <table class="comparison-table" role="table" aria-label="Processor comparison">
+                        <thead>
+                            <tr>
+                                <th scope="col">Specification</th>
+                                <th scope="col" id="proc1Header">Processor 1</th>
+                                <th scope="col" id="proc2Header">Processor 2</th>
+                            </tr>
+                        </thead>
+                        <tbody id="comparisonTableBody">
+                            <!-- Will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Section 1.5: Virtualization Support -->
+            <section class="section" id="section5" aria-labelledby="virtualization-heading">
+                <h2 id="virtualization-heading">1.5 Virtualization Support</h2>
+
+                <div class="key-concept">
+                    <h4>🖥️ Hardware Virtualization Extensions</h4>
+                    <p>Modern processors include hardware virtualization support that dramatically improves virtual machine performance:</p>
+                    <ul>
+                        <li><strong>Intel: VT-x</strong> (Virtualization Technology)</li>
+                        <li><strong>AMD: AMD-V</strong></li>
+                    </ul>
+                    
+                    <p style="margin-top: 1rem;"><strong>These extensions allow hypervisors to:</strong></p>
+                    <ul>
+                        <li>✓ Run multiple operating systems simultaneously</li>
+                        <li>✓ Improve VM performance significantly (10-50x faster than software emulation)</li>
+                        <li>✓ Provide hardware-level isolation between VMs</li>
+                        <li>✓ Enable advanced features (nested virtualization, PCI passthrough)</li>
+                    </ul>
+                    
+                    <p style="margin-top: 1rem;"><strong>Without these extensions, virtualization is:</strong></p>
+                    <ul>
+                        <li>✗ Much slower (relies on software emulation)</li>
+                        <li>✗ Limited in capabilities</li>
+                        <li>✗ Not suitable for production use</li>
+                    </ul>
+                </div>
+
+                <div class="terminal" role="region" aria-label="Command line example">
+                    <div><span class="terminal-prompt">$</span> lscpu | grep Virtualization</div>
+                    <div id="vtxOutput" class="terminal-output" style="display: none;">
+                        Virtualization:      VT-x<br>
+                        Virtualization type: full
+                    </div>
+                    <button class="btn btn-primary" id="runVtxCommand" style="margin-top: 1rem;">Run Command</button>
+                </div>
+
+                <div id="vtxExplanation" style="display: none; margin-top: 1rem; padding: 1rem; background: #d1fae5; border-left: 4px solid var(--success-color); border-radius: 8px;">
+                    <p><strong>✓ Output Explanation:</strong></p>
+                    <p>This Linux system has Intel VT-x enabled, supporting full hardware virtualization. The system can run hypervisors like KVM, VMware ESXi, or Proxmox efficiently.</p>
+                    <p style="margin-top: 0.5rem;"><strong>In Windows:</strong> You can check virtualization support in Task Manager → Performance tab → CPU section.</p>
+                </div>
+            </section>
+
+            <!-- Final Module Assessment -->
+            <section class="section" id="assessment" aria-labelledby="assessment-heading">
+                <h2 id="assessment-heading">Module 1 Knowledge Check</h2>
+                <p>Test your understanding of server processors and computing power concepts.</p>
+
+                <!-- Question 1: Drag and Drop -->
+                <div class="quiz-container">
+                    <h3>Question 1: Match Concepts</h3>
+                    <p>Drag each characteristic to what it best applies to:</p>
+
+                    <div class="drag-drop-container">
+                        <h4>Draggable Items:</h4>
+                        <div class="draggable-items" id="dragItems1">
+                            <div class="draggable-item" draggable="true" data-id="cores">High core count</div>
+                            <div class="draggable-item" draggable="true" data-id="clock">High clock speed</div>
+                            <div class="draggable-item" draggable="true" data-id="cache">Large cache</div>
+                            <div class="draggable-item" draggable="true" data-id="ecc">ECC support</div>
+                        </div>
+
+                        <h4 style="margin-top: 1.5rem;">Drop Zones:</h4>
+                        <div class="drop-zones">
+                            <div class="drop-zone" data-accept="cores">
+                                Best for parallel workloads: <strong id="drop1">_____</strong>
+                            </div>
+                            <div class="drop-zone" data-accept="clock">
+                                Best for single-threaded apps: <strong id="drop2">_____</strong>
+                            </div>
+                            <div class="drop-zone" data-accept="cache">
+                                Reduces memory latency: <strong id="drop3">_____</strong>
+                            </div>
+                            <div class="drop-zone" data-accept="ecc">
+                                Detects memory errors: <strong id="drop4">_____</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" id="checkDragDrop" style="margin-top: 1rem;">Check Answers</button>
+                    <div id="dragDropFeedback" class="quiz-feedback" role="status" aria-live="polite"></div>
+                </div>
+
+                <!-- Question 2: True/False -->
+                <div class="quiz-container">
+                    <h3>Question 2: True or False</h3>
+                    <div class="quiz-question">
+                        <h4>A 16-core processor with hyper-threading can run 16 threads simultaneously.</h4>
+                        
+                        <div class="quiz-options" role="radiogroup">
+                            <div class="quiz-option" tabindex="0" role="radio" aria-checked="false" data-answer="wrong">
+                                <span>True</span>
+                            </div>
+                            <div class="quiz-option" tabindex="0" role="radio" aria-checked="false" data-answer="correct">
+                                <span>False</span>
+                            </div>
+                        </div>
+
+                        <div class="quiz-feedback" role="status" aria-live="polite"></div>
+                        <button class="btn btn-primary quiz-submit" style="margin-top: 1rem;">Submit Answer</button>
+                    </div>
+                </div>
+
+                <!-- Question 3: Multiple Choice -->
+                <div class="quiz-container">
+                    <h3>Question 3: Virtualization Host Selection</h3>
+                    <div class="quiz-question">
+                        <h4>Which processor is better for a virtualization host running 20 VMs?</h4>
+                        
+                        <div class="quiz-options" role="radiogroup">
+                            <div class="quiz-option" tabindex="0" role="radio" aria-checked="false" data-answer="wrong">
+                                <span>8-core @ 4.0 GHz</span>
+                            </div>
+                            <div class="quiz-option" tabindex="0" role="radio" aria-checked="false" data-answer="correct">
+                                <span>32-core @ 2.4 GHz</span>
+                            </div>
+                        </div>
+
+                        <div class="quiz-feedback" role="status" aria-live="polite"></div>
+                        <button class="btn btn-primary quiz-submit" style="margin-top: 1rem;">Submit Answer</button>
+                    </div>
+                </div>
+
+                <!-- Question 4: Fill in the Blank -->
+                <div class="quiz-container">
+                    <h3>Question 4: Fill in the Blank</h3>
+                    <div class="quiz-question">
+                        <h4><strong>VT-x</strong> or <strong>AMD-V</strong> extensions enable hardware-assisted virtualization.</h4>
+                        <label for="fillBlank">Your answer:</label>
+                        <input type="text" id="fillBlank" style="width: 100%; max-width: 300px; padding: 0.75rem; margin: 1rem 0; border: 2px solid var(--border-color); border-radius: 8px; font-size: 1rem;" placeholder="Type your answer here" aria-label="Virtualization extension answer">
+                        
+                        <div class="quiz-feedback" role="status" aria-live="polite"></div>
+                        <button class="btn btn-primary" id="submitFillBlank" style="margin-top: 1rem;">Submit Answer</button>
+                    </div>
+                </div>
+
+                <!-- Assessment Summary -->
+                <div class="assessment-summary" id="assessmentSummary" style="display: none;">
+                    <h3>Assessment Complete!</h3>
+                    <div class="score-display" id="finalScore">0/5</div>
+                    <div class="stars" id="starRating">★★★★★</div>
+                    <p id="summaryMessage"></p>
+                    
+                    <div style="margin-top: 2rem;">
+                        <button class="btn btn-primary" onclick="location.reload()">Review Module</button>
+                        <button class="btn btn-secondary" onclick="window.scrollTo(0,0)">Back to Top</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Progress tracking
+        let progress = 0;
+        const progressBar = document.getElementById('progressBar');
+        
+        function updateProgress() {
+            const sections = document.querySelectorAll('.section');
+            const windowHeight = window.innerHeight;
+            let visibleSections = 0;
+            
+            sections.forEach(section => {
+                const rect = section.getBoundingClientRect();
+                if (rect.top < windowHeight && rect.bottom > 0) {
+                    visibleSections++;
+                }
+            });
+            
+            progress = Math.min((visibleSections / sections.length) * 100, 100);
+            progressBar.style.width = progress + '%';
+            progressBar.parentElement.setAttribute('aria-valuenow', Math.round(progress));
+        }
+        
+        window.addEventListener('scroll', updateProgress);
+        updateProgress();
+
+        // Interactive CPU Components
+        document.querySelectorAll('.cpu-component').forEach(component => {
+            component.addEventListener('click', function() {
+                const details = this.querySelector('.component-details');
+                const isExpanded = this.getAttribute('aria-expanded') === 'true';
+                
+                // Close all others
+                document.querySelectorAll('.cpu-component').forEach(c => {
+                    c.querySelector('.component-details').classList.remove('active');
+                    c.setAttribute('aria-expanded', 'false');
+                });
+                
+                // Toggle current
+                if (!isExpanded) {
+                    details.classList.add('active');
+                    this.setAttribute('aria-expanded', 'true');
+                }
+            });
+            
+            component.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.click();
+                }
+            });
+        });
+
+        // Core Visualization
+        function updateCoreVisualization() {
+            const coreCount = parseInt(document.getElementById('coreCount').value);
+            const hyperThreading = document.getElementById('hyperThreading').value;
+            const workload = document.getElementById('workload').value;
+            
+            const coresDisplay = document.getElementById('coresDisplay');
+            const threadsPerCore = hyperThreading === 'on' ? 2 : 1;
+            const logicalCores = coreCount * threadsPerCore;
+            
+            document.getElementById('physicalCores').textContent = coreCount;
+            document.getElementById('logicalCores').textContent = logicalCores;
+            document.getElementById('threadsPerCore').textContent = threadsPerCore;
+            
+            coresDisplay.innerHTML = '';
+            
+            for (let i = 0; i < coreCount; i++) {
+                const core = document.createElement('div');
+                core.className = 'core';
+                core.setAttribute('role', 'img');
+                core.setAttribute('aria-label', `Core ${i + 1}`);
+                
+                const shouldProcess = Math.random() < getUtilization(workload);
+                if (shouldProcess) {
+                    core.classList.add('processing');
+                }
+                
+                core.innerHTML = `
+                    Core ${i + 1}
+                    ${hyperThreading === 'on' ? '<div class="thread-indicator">×2</div>' : ''}
+                `;
+                
+                coresDisplay.appendChild(core);
+            }
+        }
+        
+        function getUtilization(workload) {
+            const utilization = {
+                'light': 0.25,
+                'medium': 0.5,
+                'heavy': 0.75,
+                'max': 1.0
+            };
+            return utilization[workload] || 0.5;
+        }
+        
+        document.getElementById('coreCount').addEventListener('change', updateCoreVisualization);
+        document.getElementById('hyperThreading').addEventListener('change', updateCoreVisualization);
+        document.getElementById('workload').addEventListener('change', updateCoreVisualization);
+        
+        updateCoreVisualization();
+
+        // Quiz 1: Cores vs Threads
+        const quiz1Options = document.querySelectorAll('#section2 .quiz-option');
+        const quiz1Submit = document.getElementById('submitQuiz1');
+        const quiz1Feedback = document.querySelector('#section2 .quiz-feedback');
+        let quiz1Selected = null;
+        
+        quiz1Options.forEach(option => {
+            option.addEventListener('click', function() {
+                quiz1Options.forEach(o => {
+                    o.classList.remove('selected');
+                    o.setAttribute('aria-checked', 'false');
+                });
+                this.classList.add('selected');
+                this.setAttribute('aria-checked', 'true');
+                quiz1Selected = this;
+            });
+            
+            option.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.click();
+                }
+            });
+        });
+        
+        quiz1Submit.addEventListener('click', function() {
+            if (!quiz1Selected) {
+                alert('Please select an answer');
+                return;
+            }
+            
+            const isCorrect = quiz1Selected.dataset.answer === 'correct';
+            quiz1Feedback.classList.add('show', isCorrect ? 'correct' : 'incorrect');
+            
+            if (isCorrect) {
+                quiz1Selected.classList.add('correct');
+                quiz1Feedback.innerHTML = '✓ Correct! With hyper-threading, each physical core presents as 2 logical processors: 16 cores × 2 = 32 logical processors.';
+            } else {
+                quiz1Selected.classList.add('incorrect');
+                document.querySelector('#section2 .quiz-option[data-answer="correct"]').classList.add('correct');
+                quiz1Feedback.innerHTML = '✗ Not quite. With hyper-threading enabled, each physical core can handle 2 threads simultaneously. So 16 physical cores × 2 threads per core = 32 logical processors.';
+            }
+            
+            quiz1Submit.disabled = true;
+        });
+
+        // Clock Speed vs Core Count Analysis
+        const workloadType = document.getElementById('workloadType');
+        const workloadAnalysis = document.getElementById('workloadAnalysis');
+        const scenario1Bar = document.getElementById('scenario1Bar');
+        const scenario2Bar = document.getElementById('scenario2Bar');
+        const scenario1Score = document.getElementById('scenario1Score');
+        const scenario2Score = document.getElementById('scenario2Score');
+        const scenario1Analysis = document.getElementById('scenario1Analysis');
+        const scenario2Analysis = document.getElementById('scenario2Analysis');
+        
+        const workloadData = {
+            webserver: {
+                scenario1: 70,
+                scenario2: 90,
+                winner: 2,
+                analysis: 'Web servers handle multiple concurrent connections. The 32-core processor excels here because each connection can be processed on a separate core, resulting in better throughput and response times. The higher core count outweighs the clock speed advantage.',
+                s1best: 'Serving static content, fewer concurrent users',
+                s2best: 'High-traffic sites, many concurrent connections'
+            },
+            database: {
+                scenario1: 45,
+                scenario2: 95,
+                winner: 2,
+                analysis: 'Database servers handle many concurrent queries. More cores allow parallel query processing, index building, and concurrent transactions. The 32-core processor performs 45% better because databases are highly parallelizable workloads where core count matters more than clock speed.',
+                s1best: 'Small databases, simple queries',
+                s2best: 'Large databases, complex queries, OLTP workloads'
+            },
+            fileserver: {
+                scenario1: 60,
+                scenario2: 85,
+                winner: 2,
+                analysis: 'File servers handle multiple simultaneous file access requests. More cores allow serving more clients concurrently. The 32-core processor is better suited for environments with many concurrent users accessing files.',
+                s1best: 'Small office file sharing, few users',
+                s2best: 'Enterprise file services, many concurrent users'
+            },
+            virtualization: {
+                scenario1: 40,
+                scenario2: 100,
+                winner: 2,
+                analysis: 'Virtualization hosts run multiple VMs simultaneously. Each VM benefits from dedicated cores. With 32 cores, you can allocate 2-4 cores per VM and run 8-16 VMs comfortably. The 8-core processor would struggle with this workload, limiting you to 2-4 VMs maximum.',
+                s1best: 'Running 2-3 VMs, development environments',
+                s2best: 'Production virtualization, 10+ VMs, enterprise workloads'
+            }
+        };
+        
+        function updateWorkloadAnalysis() {
+            const selected = workloadType.value;
+            const data = workloadData[selected];
+            
+            scenario1Bar.style.width = data.scenario1 + '%';
+            scenario2Bar.style.width = data.scenario2 + '%';
+            scenario1Score.textContent = data.scenario1;
+            scenario2Score.textContent = data.scenario2;
+            
+            scenario1Analysis.innerHTML = `<p><strong>Best for:</strong> ${data.s1best}</p>`;
+            scenario2Analysis.innerHTML = `<p><strong>Best for:</strong> ${data.s2best}</p>`;
+            
+            const winner = data.winner === 1 ? 'Scenario 1 (High Clock Speed)' : 'Scenario 2 (More Cores)';
+            const diff = Math.abs(data.scenario1 - data.scenario2);
+            
+            workloadAnalysis.innerHTML = `
+                <p><strong>✓ ${winner} performs ${diff}% better for ${workloadType.options[workloadType.selectedIndex].text}</strong></p>
+                <p><strong>Reason:</strong> ${data.analysis}</p>
+            `;
+        }
+        
+        workloadType.addEventListener('change', updateWorkloadAnalysis);
+        updateWorkloadAnalysis();
+
+        // Processor Tabs
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabContents = document.querySelectorAll('.tab-content');
+        
+        tabButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const tabId = this.dataset.tab;
+                
+                tabButtons.forEach(btn => {
+                    btn.classList.remove('active');
+                    btn.setAttribute('aria-selected', 'false');
+                });
+                
+                tabContents.forEach(content => {
+                    content.classList.remove('active');
+                });
+                
+                this.classList.add('active');
+                this.setAttribute('aria-selected', 'true');
+                document.getElementById(tabId + '-panel').classList.add('active');
+            });
+        });
+
+        // Processor Comparison Tool
+        const processorData = {
+            'xeon-silver-4314': {
+                name: 'Xeon Silver 4314',
+                cores: 16,
+                baseClock: '2.4 GHz',
+                turboClock: '3.4 GHz',
+                cache: '24 MB',
+                tdp: '135W',
+                price: '$950',
+                score: 85
+            },
+            'xeon-gold-6330': {
+                name: 'Xeon Gold 6330',
+                cores: 28,
+                baseClock: '2.0 GHz',
+                turboClock: '3.1 GHz',
+                cache: '42 MB',
+                tdp: '205W',
+                price: '$2,130',
+                score: 142
+            },
+            'xeon-platinum-8380': {
+                name: 'Xeon Platinum 8380',
+                cores: 40,
+                baseClock: '2.3 GHz',
+                turboClock: '3.4 GHz',
+                cache: '60 MB',
+                tdp: '270W',
+                price: '$9,360',
+                score: 195
+            },
+            'epyc-7443': {
+                name: 'EPYC 7443',
+                cores: 24,
+                baseClock: '2.85 GHz',
+                turboClock: '4.0 GHz',
+                cache: '128 MB',
+                tdp: '200W',
+                price: '$2,010',
+                score: 135
+            },
+            'epyc-7763': {
+                name: 'EPYC 7763',
+                cores: 64,
+                baseClock: '2.45 GHz',
+                turboClock: '3.5 GHz',
+                cache: '256 MB',
+                tdp: '280W',
+                price: '$7,890',
+                score: 250
+            }
+        };
+        
+        function updateComparison() {
+            const proc1 = processorData[document.getElementById('processor1').value];
+            const proc2 = processorData[document.getElementById('processor2').value];
+            
+            document.getElementById('proc1Header').textContent = proc1.name;
+            document.getElementById('proc2Header').textContent = proc2.name;
+            
+            const tbody = document.getElementById('comparisonTableBody');
+            tbody.innerHTML = `
+                <tr>
+                    <th scope="row">Cores</th>
+                    <td>${proc1.cores}</td>
+                    <td>${proc2.cores}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Base Clock</th>
+                    <td>${proc1.baseClock}</td>
+                    <td>${proc2.baseClock}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Turbo Clock</th>
+                    <td>${proc1.turboClock}</td>
+                    <td>${proc2.turboClock}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Cache</th>
+                    <td>${proc1.cache}</td>
+                    <td>${proc2.cache}</td>
+                </tr>
+                <tr>
+                    <th scope="row">TDP</th>
+                    <td>${proc1.tdp}</td>
+                    <td>${proc2.tdp}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Price</th>
+                    <td>${proc1.price}</td>
+                    <td>${proc2.price}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Performance Score</th>
+                    <td>${proc1.score}<div class="metric-bar"><div class="metric-fill" style="width: ${(proc1.score/250)*100}%"></div></div></td>
+                    <td>${proc2.score}<div class="metric-bar"><div class="metric-fill" style="width: ${(proc2.score/250)*100}%"></div></div></td>
+                </tr>
+            `;
+        }
+        
+        document.getElementById('processor1').addEventListener('change', updateComparison);
+        document.getElementById('processor2').addEventListener('change', updateComparison);
+        updateComparison();
+
+        // VT-x Command Simulation
+        document.getElementById('runVtxCommand').addEventListener('click', function() {
+            document.getElementById('vtxOutput').style.display = 'block';
+            document.getElementById('vtxExplanation').style.display = 'block';
+            this.disabled = true;
+            this.textContent = 'Command Executed';
+        });
+
+        // Drag and Drop Assessment
+        let draggedElement = null;
+        const dragItems = document.querySelectorAll('.draggable-item');
+        const dropZones = document.querySelectorAll('.drop-zone');
+        
+        dragItems.forEach(item => {
+            item.addEventListener('dragstart', function(e) {
+                draggedElement = this;
+                this.classList.add('dragging');
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/html', this.innerHTML);
+            });
+            
+            item.addEventListener('dragend', function() {
+                this.classList.remove('dragging');
+            });
+        });
+        
+        dropZones.forEach(zone => {
+            zone.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.classList.add('drag-over');
+                e.dataTransfer.dropEffect = 'move';
+            });
+            
+            zone.addEventListener('dragleave', function() {
+                this.classList.remove('drag-over');
+            });
+            
+            zone.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.classList.remove('drag-over');
+                
+                if (draggedElement) {
+                    const dropId = 'drop' + (Array.from(dropZones).indexOf(this) + 1);
+                    const targetSpan = document.getElementById(dropId);
+                    targetSpan.textContent = draggedElement.textContent;
+                    this.classList.add('filled');
+                    this.dataset.droppedId = draggedElement.dataset.id;
+                }
+            });
+        });
+        
+        document.getElementById('checkDragDrop').addEventListener('click', function() {
+            let correct = 0;
+            let total = dropZones.length;
+            
+            dropZones.forEach(zone => {
+                const expected = zone.dataset.accept;
+                const actual = zone.dataset.droppedId;
+                
+                if (expected === actual) {
+                    correct++;
+                    zone.style.borderColor = 'var(--success-color)';
+                } else {
+                    zone.style.borderColor = 'var(--error-color)';
+                }
+            });
+            
+            const feedback = document.getElementById('dragDropFeedback');
+            feedback.classList.add('show', correct === total ? 'correct' : 'incorrect');
+            feedback.innerHTML = correct === total ? 
+                `✓ Perfect! All ${total} matches are correct!` :
+                `You got ${correct} out of ${total} correct. Review the incorrect matches and try again.`;
+            
+            this.disabled = true;
+        });
+
+        // General Quiz Handler
+        document.querySelectorAll('.quiz-submit').forEach(button => {
+            button.addEventListener('click', function() {
+                const quizQuestion = this.closest('.quiz-question');
+                const options = quizQuestion.querySelectorAll('.quiz-option');
+                const feedback = quizQuestion.querySelector('.quiz-feedback');
+                let selected = null;
+                
+                options.forEach(opt => {
+                    if (opt.classList.contains('selected')) {
+                        selected = opt;
+                    }
+                });
+                
+                if (!selected) {
+                    alert('Please select an answer');
+                    return;
+                }
+                
+                const isCorrect = selected.dataset.answer === 'correct';
+                feedback.classList.add('show', isCorrect ? 'correct' : 'incorrect');
+                
+                if (isCorrect) {
+                    selected.classList.add('correct');
+                    if (quizQuestion.querySelector('h4').textContent.includes('16-core')) {
+                        feedback.innerHTML = '✓ Correct! With hyper-threading, each physical core can handle 2 threads simultaneously. So 16 cores × 2 = 32 threads, not 16.';
+                    } else {
+                        feedback.innerHTML = '✓ Correct! More cores allow more VMs to run simultaneously with dedicated resources. The 32-core processor can allocate 1-2 cores per VM comfortably.';
+                    }
+                } else {
+                    selected.classList.add('incorrect');
+                    options.forEach(opt => {
+                        if (opt.dataset.answer === 'correct') {
+                            opt.classList.add('correct');
+                        }
+                    });
+                    if (quizQuestion.querySelector('h4').textContent.includes('16-core')) {
+                        feedback.innerHTML = '✗ Not quite. A 16-core processor with hyper-threading can run 32 threads (2 per core), not 16.';
+                    } else {
+                        feedback.innerHTML = '✗ Not quite. For virtualization with 20 VMs, more cores are essential. Each VM benefits from dedicated cores. The 32-core processor is the better choice.';
+                    }
+                }
+                
+                this.disabled = true;
+            });
+        });
+        
+        // Fill in the Blank
+        document.getElementById('submitFillBlank').addEventListener('click', function() {
+            const answer = document.getElementById('fillBlank').value.trim().toLowerCase();
+            const quizQuestion = this.closest('.quiz-question');
+            const feedback = quizQuestion.querySelector('.quiz-feedback');
+            
+            const correctAnswers = ['vt-x', 'amd-v', 'vtx', 'amdv', 'vt-x or amd-v', 'amd-v or vt-x'];
+            const isCorrect = correctAnswers.some(a => answer.includes(a));
+            
+            feedback.classList.add('show', isCorrect ? 'correct' : 'incorrect');
+            
+            if (isCorrect) {
+                feedback.innerHTML = '✓ Correct! VT-x (Intel) and AMD-V (AMD) are the hardware virtualization extensions that enable efficient hardware-assisted virtualization.';
+            } else {
+                feedback.innerHTML = '✗ The correct answers are VT-x (for Intel processors) or AMD-V (for AMD processors). These are the hardware extensions that enable virtualization.';
+            }
+            
+            this.disabled = true;
+        });
+    </script>
+</body>
+</html>
