@@ -1,0 +1,1769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSC 240 Week 2 Part 2: Functions & Classification</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --accent-color: #f093fb;
+            --success-color: #4caf50;
+            --warning-color: #ff9800;
+            --danger-color: #f44336;
+            --light-bg: #f8f9fa;
+            --dark-text: #333;
+            --border-color: #ddd;
+            --shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark-text);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+
+        .part-indicator {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        nav {
+            background: var(--light-bg);
+            padding: 15px 30px;
+            border-bottom: 3px solid var(--primary-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .nav-links a {
+            color: var(--primary-color);
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .nav-links a:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .nav-links a:focus {
+            outline: 3px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        .progress-section {
+            padding: 30px;
+            background: var(--light-bg);
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .progress-bar-container {
+            background: #e0e0e0;
+            height: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .progress-bar-fill {
+            background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .module-badges {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .module-badge {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+            background: #e0e0e0;
+            color: var(--dark-text);
+            transition: all 0.3s ease;
+        }
+
+        .module-badge.completed {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .module {
+            margin-bottom: 50px;
+            padding: 30px;
+            background: white;
+            border-radius: 8px;
+            border-left: 5px solid var(--primary-color);
+            box-shadow: var(--shadow);
+        }
+
+        .module-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--light-bg);
+        }
+
+        .module-icon {
+            font-size: 2.5em;
+        }
+
+        .module-title h2 {
+            color: var(--primary-color);
+            font-size: 1.8em;
+            margin-bottom: 5px;
+        }
+
+        .module-meta {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .objectives {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #2196f3;
+            margin: 20px 0;
+        }
+
+        .objectives h3 {
+            color: #1976d2;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .objectives ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .objectives li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .objectives li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #2196f3;
+            font-weight: bold;
+        }
+
+        .definition {
+            background: #fff3e0;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #ff9800;
+            margin: 20px 0;
+        }
+
+        .definition-title {
+            color: #f57c00;
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .example {
+            background: #e8f5e9;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #4caf50;
+            margin: 20px 0;
+        }
+
+        .example-title {
+            color: #388e3c;
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .note {
+            background: #fff9c4;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #fbc02d;
+            margin: 20px 0;
+        }
+
+        .note-title {
+            color: #f57f17;
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .warning {
+            background: #ffebee;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #f44336;
+            margin: 20px 0;
+        }
+
+        .warning-title {
+            color: #c62828;
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .math-block {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+
+        .interactive-box {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 25px;
+            border-radius: 8px;
+            margin: 25px 0;
+            box-shadow: var(--shadow);
+        }
+
+        .interactive-title {
+            color: var(--primary-color);
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .function-diagram {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 30px;
+            align-items: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .set-box {
+            border: 3px solid var(--primary-color);
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 200px;
+        }
+
+        .set-box h4 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .element {
+            background: var(--light-bg);
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 5px;
+            border: 2px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .element:hover {
+            background: #e3f2fd;
+            border-color: var(--primary-color);
+            transform: translateX(5px);
+        }
+
+        .element.selected {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--secondary-color);
+        }
+
+        .arrow-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .arrow {
+            font-size: 2em;
+            color: var(--primary-color);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn:focus {
+            outline: 3px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .quiz-container {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 20px 0;
+            box-shadow: var(--shadow);
+        }
+
+        .quiz-question {
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--dark-text);
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .quiz-option {
+            padding: 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .quiz-option:hover {
+            border-color: var(--primary-color);
+            background: var(--light-bg);
+            transform: translateX(5px);
+        }
+
+        .quiz-option.selected {
+            border-color: var(--primary-color);
+            background: #e3f2fd;
+        }
+
+        .quiz-option.correct {
+            border-color: var(--success-color);
+            background: #e8f5e9;
+        }
+
+        .quiz-option.incorrect {
+            border-color: var(--danger-color);
+            background: #ffebee;
+        }
+
+        .quiz-feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .quiz-feedback.show {
+            display: block;
+        }
+
+        .quiz-feedback.correct {
+            background: #e8f5e9;
+            border-left: 4px solid var(--success-color);
+            color: #2e7d32;
+        }
+
+        .quiz-feedback.incorrect {
+            background: #ffebee;
+            border-left: 4px solid var(--danger-color);
+            color: #c62828;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 1em;
+            font-family: inherit;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .input-group {
+            margin: 15px 0;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark-text);
+        }
+
+        .result-display {
+            background: var(--light-bg);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .result-item {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-label {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-right: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid var(--border-color);
+        }
+
+        th {
+            background: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background: var(--light-bg);
+        }
+
+        footer {
+            background: #333;
+            color: white;
+            text-align: center;
+            padding: 30px;
+        }
+
+        .footer-nav {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #555;
+        }
+
+        .footer-nav a {
+            color: var(--accent-color);
+            text-decoration: none;
+            margin: 0 15px;
+            transition: color 0.3s ease;
+        }
+
+        .footer-nav a:hover {
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .module {
+                padding: 20px;
+            }
+
+            .nav-links {
+                flex-direction: column;
+            }
+
+            .function-diagram {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .progress-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease;
+        }
+
+        code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        pre {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+        }
+
+        .mapping-line {
+            stroke: var(--primary-color);
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .mapping-line.highlight {
+            stroke: var(--success-color);
+            stroke-width: 3;
+        }
+
+        canvas {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: white;
+            max-width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header role="banner">
+            <h1>Week 2: Relations and Functions</h1>
+            <p class="subtitle">Part 2: Functions & Classification</p>
+            <span class="part-indicator">Modules 4-6 | CSC 240 - Discrete Structures</span>
+        </header>
+
+        <nav role="navigation" aria-label="Module navigation">
+            <div class="nav-links">
+                <a href="#module4">Module 4: Functions Fundamentals</a>
+                <a href="#module5">Module 5: Function Types</a>
+                <a href="#module6">Module 6: Function Operations</a>
+            </div>
+        </nav>
+
+        <section class="progress-section" aria-label="Learning progress">
+            <div class="progress-header">
+                <div>
+                    <h2>Your Progress (Part 2)</h2>
+                    <p>Complete all modules to unlock Part 3</p>
+                </div>
+                <div class="module-badges" role="status" aria-live="polite">
+                    <span class="module-badge" id="badge-module4">Module 4</span>
+                    <span class="module-badge" id="badge-module5">Module 5</span>
+                    <span class="module-badge" id="badge-module6">Module 6</span>
+                </div>
+            </div>
+            <div class="progress-bar-container" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                <div class="progress-bar-fill" id="progressBar">0%</div>
+            </div>
+        </section>
+
+        <main class="content" role="main">
+            <!-- Module 4: Functions Fundamentals -->
+            <article class="module fade-in" id="module4">
+                <div class="module-header">
+                    <span class="module-icon">🎯</span>
+                    <div class="module-title">
+                        <h2>Module 4: Functions as Special Relations</h2>
+                        <p class="module-meta">⏱️ Estimated Time: 30 minutes</p>
+                    </div>
+                </div>
+
+                <div class="objectives">
+                    <h3>🎯 Learning Objectives:</h3>
+                    <ul>
+                        <li>Define functions as special types of relations</li>
+                        <li>Understand domain, codomain, and range</li>
+                        <li>Distinguish between relations and functions</li>
+                        <li>Identify function notation and representation</li>
+                    </ul>
+                </div>
+
+                <h3>What is a Function?</h3>
+                <p>A <strong>function</strong> is a special type of relation where each element in the domain is related to <em>exactly one</em> element in the codomain.</p>
+
+                <div class="definition">
+                    <div class="definition-title">📖 Formal Definition</div>
+                    <p>A <strong>function f from set A to set B</strong> (written f: A → B) is a relation from A to B such that:</p>
+                    <ul>
+                        <li>Every element in A is related to some element in B</li>
+                        <li>No element in A is related to more than one element in B</li>
+                    </ul>
+                    <div class="math-block">
+                        f: A → B means ∀a ∈ A, ∃!b ∈ B such that f(a) = b
+                    </div>
+                    <p>The "!" means "exactly one" (unique existence).</p>
+                </div>
+
+                <div class="note">
+                    <div class="note-title">💡 Key Insight</div>
+                    <p><strong>Every function is a relation, but not every relation is a function!</strong></p>
+                    <p>A relation becomes a function when it passes two tests:</p>
+                    <ol>
+                        <li><strong>Total:</strong> Every element in the domain must map to something</li>
+                        <li><strong>Well-defined:</strong> Each element maps to exactly ONE thing</li>
+                    </ol>
+                </div>
+
+                <div class="example">
+                    <div class="example-title">💡 Example: Relation vs. Function</div>
+                    <p><strong>Relation R₁:</strong> {(1,2), (2,3), (3,4)}</p>
+                    <p>✓ This IS a function because each first element appears exactly once.</p>
+                    
+                    <p><strong>Relation R₂:</strong> {(1,2), (1,3), (2,4)}</p>
+                    <p>✗ This is NOT a function because 1 maps to both 2 and 3.</p>
+                    
+                    <p><strong>Relation R₃:</strong> {(1,2), (2,3)}</p>
+                    <p>✓ This IS a function if domain = {1, 2}.</p>
+                    <p>✗ This is NOT a function if domain = {1, 2, 3} (3 doesn't map anywhere).</p>
+                </div>
+
+                <h3>Function Terminology</h3>
+                
+                <div class="definition">
+                    <div class="definition-title">📖 Domain, Codomain, and Range</div>
+                    <p>For a function f: A → B:</p>
+                    <ul>
+                        <li><strong>Domain:</strong> The set A (all possible inputs)</li>
+                        <li><strong>Codomain:</strong> The set B (all possible outputs)</li>
+                        <li><strong>Range:</strong> The actual outputs used (subset of B)</li>
+                    </ul>
+                    <div class="math-block">
+                        Domain(f) = A<br>
+                        Codomain(f) = B<br>
+                        Range(f) = {b ∈ B | ∃a ∈ A such that f(a) = b}
+                    </div>
+                </div>
+
+                <div class="example">
+                    <div class="example-title">💡 Example: Domain, Codomain, Range</div>
+                    <p>Consider f: {1, 2, 3} → {1, 2, 3, 4, 5, 6} where f(x) = 2x</p>
+                    <ul>
+                        <li><strong>Domain:</strong> {1, 2, 3} (all inputs)</li>
+                        <li><strong>Codomain:</strong> {1, 2, 3, 4, 5, 6} (declared possible outputs)</li>
+                        <li><strong>Range:</strong> {2, 4, 6} (actual outputs produced)</li>
+                    </ul>
+                    <p>Notice: Range ⊆ Codomain always!</p>
+                </div>
+
+                <h3>Function Notation</h3>
+                <p>There are several ways to express functions:</p>
+
+                <table>
+                    <tr>
+                        <th>Notation</th>
+                        <th>Example</th>
+                        <th>Meaning</th>
+                    </tr>
+                    <tr>
+                        <td>f: A → B</td>
+                        <td>f: ℝ → ℝ</td>
+                        <td>Function from A to B</td>
+                    </tr>
+                    <tr>
+                        <td>f(x) = expression</td>
+                        <td>f(x) = x²</td>
+                        <td>Rule definition</td>
+                    </tr>
+                    <tr>
+                        <td>y = f(x)</td>
+                        <td>y = 2x + 1</td>
+                        <td>Output notation</td>
+                    </tr>
+                    <tr>
+                        <td>x ↦ expression</td>
+                        <td>x ↦ x + 3</td>
+                        <td>Mapping notation</td>
+                    </tr>
+                </table>
+
+                <div class="interactive-box">
+                    <div class="interactive-title">🎮 Interactive: Is It a Function?</div>
+                    <p>For each relation below, determine if it is a function. Click to reveal the answer.</p>
+                    
+                    <div id="functionTest">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <div class="example">
+                    <div class="example-title">💡 Real-World Functions</div>
+                    <p><strong>Student ID → Student Name</strong></p>
+                    <ul>
+                        <li>Domain: All student IDs</li>
+                        <li>Codomain: All possible names</li>
+                        <li>This IS a function: Each ID maps to exactly one name</li>
+                    </ul>
+
+                    <p><strong>Student Name → Student ID</strong></p>
+                    <ul>
+                        <li>This is NOT a function if two students share a name</li>
+                        <li>One name could map to multiple IDs</li>
+                    </ul>
+
+                    <p><strong>Social Security Number → Person</strong></p>
+                    <ul>
+                        <li>This IS a function: Each SSN uniquely identifies one person</li>
+                    </ul>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">
+                        <strong>Check Your Understanding:</strong> Which of the following is a function from A = {1, 2, 3} to B = {a, b, c}?
+                    </div>
+                    <div class="quiz-options">
+                        <div class="quiz-option" onclick="checkFunctionQuiz(this, false)">
+                            A) {(1,a), (1,b), (2,c), (3,a)}
+                        </div>
+                        <div class="quiz-option" onclick="checkFunctionQuiz(this, true)">
+                            B) {(1,a), (2,b), (3,c)}
+                        </div>
+                        <div class="quiz-option" onclick="checkFunctionQuiz(this, false)">
+                            C) {(1,a), (2,b)}
+                        </div>
+                        <div class="quiz-option" onclick="checkFunctionQuiz(this, false)">
+                            D) {(1,a), (2,a), (2,b), (3,c)}
+                        </div>
+                    </div>
+                    <div class="quiz-feedback" id="function-quiz-feedback"></div>
+                </div>
+
+                <div style="text-align: center; margin-top: 30px;">
+                    <button class="btn btn-success" onclick="completeModule(4)">
+                        ✓ Complete Module 4
+                    </button>
+                </div>
+            </article>
+
+            <!-- Module 5: Function Types -->
+            <article class="module fade-in" id="module5">
+                <div class="module-header">
+                    <span class="module-icon">🔀</span>
+                    <div class="module-title">
+                        <h2>Module 5: Function Classification</h2>
+                        <p class="module-meta">⏱️ Estimated Time: 35 minutes</p>
+                    </div>
+                </div>
+
+                <div class="objectives">
+                    <h3>🎯 Learning Objectives:</h3>
+                    <ul>
+                        <li>Define and identify injective (one-to-one) functions</li>
+                        <li>Define and identify surjective (onto) functions</li>
+                        <li>Define and identify bijective functions</li>
+                        <li>Apply function classification to real-world examples</li>
+                    </ul>
+                </div>
+
+                <p>Functions can be classified based on how they map elements from domain to codomain. These classifications are crucial for understanding function behavior and applications.</p>
+
+                <h3>1. Injective Functions (One-to-One)</h3>
+
+                <div class="definition">
+                    <div class="definition-title">📖 Injective (One-to-One)</div>
+                    <p>A function f: A → B is <strong>injective</strong> if different inputs always produce different outputs.</p>
+                    <div class="math-block">
+                        ∀x₁, x₂ ∈ A: f(x₁) = f(x₂) → x₁ = x₂
+                    </div>
+                    <p>Equivalently (contrapositive):</p>
+                    <div class="math-block">
+                        ∀x₁, x₂ ∈ A: x₁ ≠ x₂ → f(x₁) ≠ f(x₂)
+                    </div>
+                    <p><strong>Visual Test:</strong> No two arrows point to the same element in the codomain.</p>
+                </div>
+
+                <div class="example">
+                    <div class="example-title">💡 Injective Examples</div>
+                    <p><strong>Injective:</strong></p>
+                    <ul>
+                        <li>f(x) = 2x on ℝ → ℝ (different inputs → different outputs)</li>
+                        <li>f(x) = x + 5 on ℤ → ℤ</li>
+                        <li>Student ID → Student (each ID maps to unique student)</li>
+                    </ul>
+                    
+                    <p><strong>NOT Injective:</strong></p>
+                    <ul>
+                        <li>f(x) = x² on ℝ → ℝ (both 2 and -2 map to 4)</li>
+                        <li>f(x) = |x| on ℤ → ℕ (both -3 and 3 map to 3)</li>
+                        <li>Student → Birth Month (multiple students share birth months)</li>
+                    </ul>
+                </div>
+
+                <h3>2. Surjective Functions (Onto)</h3>
+
+                <div class="definition">
+                    <div class="definition-title">📖 Surjective (Onto)</div>
+                    <p>A function f: A → B is <strong>surjective</strong> if every element in the codomain is mapped to by at least one element in the domain.</p>
+                    <div class="math-block">
+                        ∀b ∈ B, ∃a ∈ A such that f(a) = b
+                    </div>
+                    <p>In other words: <strong>Range = Codomain</strong></p>
+                    <p><strong>Visual Test:</strong> Every element in B has at least one arrow pointing to it.</p>
+                </div>
+
+                <div class="example">
+                    <div class="example-title">💡 Surjective Examples</div>
+                    <p><strong>Surjective:</strong></p>
+                    <ul>
+                        <li>f: ℝ → ℝ where f(x) = 2x (every real number is 2 times some other real)</li>
+                        <li>f: ℤ → {even, odd} where f(x) = parity of x (both outputs are used)</li>
+                        <li>Rounding function: ℝ → ℤ (every integer is the rounding of some real)</li>
+                    </ul>
+                    
+                    <p><strong>NOT Surjective:</strong></p>
+                    <ul>
+                        <li>f: ℝ → ℝ where f(x) = x² (negative numbers are never outputs)</li>
+                        <li>f: {1,2,3} → {1,2,3,4,5} where f(x) = x (4 and 5 never mapped to)</li>
+                    </ul>
+                </div>
+
+                <h3>3. Bijective Functions (One-to-One and Onto)</h3>
+
+                <div class="definition">
+                    <div class="definition-title">📖 Bijective (One-to-One Correspondence)</div>
+                    <p>A function f: A → B is <strong>bijective</strong> if it is both injective AND surjective.</p>
+                    <ul>
+                        <li>Each element in A maps to a unique element in B (injective)</li>
+                        <li>Every element in B is mapped to (surjective)</li>
+                    </ul>
+                    <p><strong>Result:</strong> Perfect pairing between A and B!</p>
+                    <p><strong>Visual Test:</strong> Each element in A has exactly one arrow out, each element in B has exactly one arrow in.</p>
+                </div>
+
+                <div class="note">
+                    <div class="note-title">💡 Why Bijections Matter</div>
+                    <p>Bijective functions are special because:</p>
+                    <ul>
+                        <li>They have <strong>inverse functions</strong></li>
+                        <li>They show two sets have the <strong>same cardinality</strong></li>
+                        <li>They create perfect <strong>one-to-one correspondences</strong></li>
+                        <li>Used in <strong>encryption</strong> (must be reversible)</li>
+                    </ul>
+                </div>
+
+                <div class="example">
+                    <div class="example-title">💡 Bijective Examples</div>
+                    <p><strong>Bijective:</strong></p>
+                    <ul>
+                        <li>f: ℝ → ℝ where f(x) = 2x + 1 (both injective and surjective)</li>
+                        <li>f: {1,2,3} → {a,b,c} where f(1)=a, f(2)=b, f(3)=c</li>
+                        <li>Social Security Number → Person in USA</li>
+                    </ul>
+                    
+                    <p><strong>NOT Bijective:</strong></p>
+                    <ul>
+                        <li>f(x) = x² on ℝ → ℝ (not injective, not surjective)</li>
+                        <li>f(x) = x² on ℝ → ℝ≥₀ (not injective, but surjective)</li>
+                        <li>f(x) = 2x on ℤ → ℤ (injective, but not surjective - odd numbers not in range)</li>
+                    </ul>
+                </div>
+
+                <h3>Summary Table</h3>
+
+                <table>
+                    <tr>
+                        <th>Property</th>
+                        <th>Injective</th>
+                        <th>Surjective</th>
+                        <th>Bijective</th>
+                    </tr>
+                    <tr>
+                        <td>Different inputs</td>
+                        <td>→ Different outputs</td>
+                        <td>Can map to same output</td>
+                        <td>→ Different outputs</td>
+                    </tr>
+                    <tr>
+                        <td>Coverage of codomain</td>
+                        <td>May miss some elements</td>
+                        <td>Covers all elements</td>
+                        <td>Covers all elements</td>
+                    </tr>
+                    <tr>
+                        <td>Range vs Codomain</td>
+                        <td>Range ⊆ Codomain</td>
+                        <td>Range = Codomain</td>
+                        <td>Range = Codomain</td>
+                    </tr>
+                    <tr>
+                        <td>Inverse exists?</td>
+                        <td>No (not always)</td>
+                        <td>No (not always)</td>
+                        <td>Yes (always)</td>
+                    </tr>
+                    <tr>
+                        <td>Visual</td>
+                        <td>No two arrows to same point</td>
+                        <td>Every point receives arrow</td>
+                        <td>Perfect pairing</td>
+                    </tr>
+                </table>
+
+                <div class="interactive-box">
+                    <div class="interactive-title">🎮 Interactive: Function Type Identifier</div>
+                    <p>Build a function by selecting mappings, then we'll determine its type!</p>
+                    
+                    <div class="function-diagram">
+                        <div class="set-box">
+                            <h4>Domain A</h4>
+                            <div id="domainElements"></div>
+                        </div>
+                        
+                        <div class="arrow-container">
+                            <div class="arrow">→</div>
+                            <button class="btn btn-secondary" onclick="clearMappings()">Clear</button>
+                        </div>
+                        
+                        <div class="set-box">
+                            <h4>Codomain B</h4>
+                            <div id="codomainElements"></div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 20px;">
+                        <p><strong>Instructions:</strong> Click an element in Domain A, then click an element in Codomain B to create a mapping.</p>
+                        <button class="btn btn-primary" onclick="analyzeFunction()">Analyze Function</button>
+                    </div>
+
+                    <div id="functionAnalysis" class="result-display" style="display: none;">
+                        <!-- Results will be displayed here -->
+                    </div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">
+                        <strong>Practice Problem:</strong> Consider f: ℤ → ℤ where f(x) = 3x. Which statement is true?
+                    </div>
+                    <div class="quiz-options">
+                        <div class="quiz-option" onclick="checkTypeQuiz(this, false)">
+                            A) f is surjective but not injective
+                        </div>
+                        <div class="quiz-option" onclick="checkTypeQuiz(this, true)">
+                            B) f is injective but not surjective
+                        </div>
+                        <div class="quiz-option" onclick="checkTypeQuiz(this, false)">
+                            C) f is bijective
+                        </div>
+                        <div class="quiz-option" onclick="checkTypeQuiz(this, false)">
+                            D) f is neither injective nor surjective
+                        </div>
+                    </div>
+                    <div class="quiz-feedback" id="type-quiz-feedback"></div>
+                </div>
+
+                <div style="text-align: center; margin-top: 30px;">
+                    <button class="btn btn-success" onclick="completeModule(5)">
+                        ✓ Complete Module 5
+                    </button>
+                </div>
+            </article>
+
+            <!-- Module 6: Function Operations -->
+            <article class="module fade-in" id="module6">
+                <div class="module-header">
+                    <span class="module-icon">⚡</span>
+                    <div class="module-title">
+                        <h2>Module 6: Function Composition and Inverses</h2>
+                        <p class="module-meta">⏱️ Estimated Time: 30 minutes</p>
+                    </div>
+                </div>
+
+                <div class="objectives">
+                    <h3>🎯 Learning Objectives:</h3>
+                    <ul>
+                        <li>Compose functions correctly</li>
+                        <li>Understand composition is not commutative</li>
+                        <li>Determine when inverse functions exist</li>
+                        <li>Calculate inverse functions</li>
+                    </ul>
+                </div>
+
+                <h3>Function Composition</h3>
+
+                <div class="definition">
+                    <div class="definition-title">📖 Function Composition</div>
+                    <p>Given functions f: A → B and g: B → C, the <strong>composition</strong> g ∘ f is defined as:</p>
+                    <div class="math-block">
+                        (g ∘ f)(x) = g(f(x))
+                    </div>
+                    <p>Read as: "g composed with f" or "g circle f"</p>
+                    <p><strong>Process:</strong> Apply f first, then apply g to the result.</p>
+                </div>
+
+                <div class="warning">
+                    <div class="warning-title">⚠️ Order Matters!</div>
+                    <p>Function composition is <strong>NOT commutative</strong>:</p>
+                    <div class="math-block">
+                        g ∘ f ≠ f ∘ g (in general)
+                    </div>
+                    <p>The order in which you apply functions matters!</p>
+                </div>
+
+                <div class="example">
+                    <div class="example-title">💡 Example: Composition</div>
+                    <p>Let f(x) = 2x and g(x) = x + 3</p>
+                    
+                    <p><strong>(g ∘ f)(x) = g(f(x))</strong></p>
+                    <ul>
+                        <li>f(x) = 2x</li>
+                        <li>g(2x) = 2x + 3</li>
+                        <li>So (g ∘ f)(x) = 2x + 3</li>
+                    </ul>
+
+                    <p><strong>(f ∘ g)(x) = f(g(x))</strong></p>
+                    <ul>
+                        <li>g(x) = x + 3</li>
+                        <li>f(x + 3) = 2(x + 3) = 2x + 6</li>
+                        <li>So (f ∘ g)(x) = 2x + 6</li>
+                    </ul>
+
+                    <p><strong>Conclusion:</strong> 2x + 3 ≠ 2x + 6, so g ∘ f ≠ f ∘ g</p>
+                </div>
+
+                <div class="note">
+                    <div class="note-title">💡 Composition Properties</div>
+                    <p><strong>If f and g are both injective, then g ∘ f is injective.</strong></p>
+                    <p><strong>If f and g are both surjective, then g ∘ f is surjective.</strong></p>
+                    <p><strong>If f and g are both bijective, then g ∘ f is bijective.</strong></p>
+                </div>
+
+                <h3>Inverse Functions</h3>
+
+                <div class="definition">
+                    <div class="definition-title">📖 Inverse Function</div>
+                    <p>A function f: A → B has an <strong>inverse function</strong> f⁻¹: B → A if:</p>
+                    <div class="math-block">
+                        f⁻¹(f(x)) = x for all x ∈ A<br>
+                        f(f⁻¹(y)) = y for all y ∈ B
+                    </div>
+                    <p><strong>Key Fact:</strong> A function has an inverse if and only if it is <strong>bijective</strong>!</p>
+                </div>
+
+                <div class="warning">
+                    <div class="warning-title">⚠️ Important Distinction</div>
+                    <p><strong>f⁻¹(x) ≠ 1/f(x)</strong></p>
+                    <p>The superscript "-1" means inverse function, NOT reciprocal!</p>
+                    <ul>
+                        <li>Inverse function: f⁻¹(x) "undoes" f(x)</li>
+                        <li>Reciprocal: 1/f(x) is multiplicative inverse</li>
+                    </ul>
+                </div>
+
+                <div class="example">
+                    <div class="example-title">💡 Example: Finding Inverse</div>
+                    <p>Find the inverse of f(x) = 2x + 3</p>
+                    
+                    <p><strong>Step 1:</strong> Write y = f(x)</p>
+                    <div class="math-block">y = 2x + 3</div>
+
+                    <p><strong>Step 2:</strong> Solve for x in terms of y</p>
+                    <div class="math-block">
+                        y = 2x + 3<br>
+                        y - 3 = 2x<br>
+                        x = (y - 3)/2
+                    </div>
+
+                    <p><strong>Step 3:</strong> Replace y with x to get f⁻¹(x)</p>
+                    <div class="math-block">
+                        f⁻¹(x) = (x - 3)/2
+                    </div>
+
+                    <p><strong>Verification:</strong></p>
+                    <ul>
+                        <li>f(f⁻¹(x)) = f((x-3)/2) = 2((x-3)/2) + 3 = (x-3) + 3 = x ✓</li>
+                        <li>f⁻¹(f(x)) = f⁻¹(2x+3) = ((2x+3)-3)/2 = 2x/2 = x ✓</li>
+                    </ul>
+                </div>
+
+                <div class="example">
+                    <div class="example-title">💡 Example: No Inverse</div>
+                    <p>Does f: ℝ → ℝ where f(x) = x² have an inverse?</p>
+                    
+                    <p><strong>Analysis:</strong></p>
+                    <ul>
+                        <li>f is NOT injective: f(2) = 4 and f(-2) = 4</li>
+                        <li>f is NOT surjective: negative numbers are not in range</li>
+                        <li>Since f is not bijective, f⁻¹ does NOT exist</li>
+                    </ul>
+
+                    <p><strong>However:</strong> If we restrict the domain and codomain:</p>
+                    <p>f: ℝ≥₀ → ℝ≥₀ where f(x) = x² IS bijective!</p>
+                    <p>Then f⁻¹(x) = √x exists.</p>
+                </div>
+
+                <h3>Real-World Applications</h3>
+
+                <div class="example">
+                    <div class="example-title">💡 Composition in Programming</div>
+                    <p><strong>Data Processing Pipeline:</strong></p>
+                    <pre><code>
+// Function to clean data
+function cleanData(rawData) {
+    return rawData.trim().toLowerCase();
+}
+
+// Function to validate data
+function validateData(cleanData) {
+    return cleanData.length > 0;
+}
+
+// Composition: validate(clean(rawData))
+function processData(rawData) {
+    return validateData(cleanData(rawData));
+}
+                    </code></pre>
+                </div>
+
+                <div class="example">
+                    <div class="example-title">💡 Inverses in Encryption</div>
+                    <p><strong>Encryption/Decryption:</strong></p>
+                    <ul>
+                        <li><strong>Encrypt:</strong> E(plaintext) = ciphertext</li>
+                        <li><strong>Decrypt:</strong> D(ciphertext) = plaintext</li>
+                        <li>D must be the inverse of E: D(E(m)) = m</li>
+                        <li>E must be bijective for decryption to work!</li>
+                    </ul>
+                </div>
+
+                <div class="interactive-box">
+                    <div class="interactive-title">🎮 Interactive: Composition Calculator</div>
+                    <p>Enter two functions and calculate their composition.</p>
+                    
+                    <div class="input-group">
+                        <label for="func-f">Function f(x) = (use x as variable):</label>
+                        <input type="text" id="func-f" placeholder="2*x + 1">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="func-g">Function g(x) = (use x as variable):</label>
+                        <input type="text" id="func-g" placeholder="x^2">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="test-value">Test value x =:</label>
+                        <input type="number" id="test-value" value="2">
+                    </div>
+
+                    <button class="btn btn-primary" onclick="calculateComposition()">Calculate Compositions</button>
+
+                    <div id="compositionResults" class="result-display" style="display: none;">
+                        <!-- Results will be displayed here -->
+                    </div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">
+                        <strong>Final Check:</strong> If f(x) = x + 5 and g(x) = 2x, what is (f ∘ g)(3)?
+                    </div>
+                    <div class="quiz-options">
+                        <div class="quiz-option" onclick="checkCompQuiz(this, false)">
+                            A) 13
+                        </div>
+                        <div class="quiz-option" onclick="checkCompQuiz(this, true)">
+                            B) 11
+                        </div>
+                        <div class="quiz-option" onclick="checkCompQuiz(this, false)">
+                            C) 16
+                        </div>
+                        <div class="quiz-option" onclick="checkCompQuiz(this, false)">
+                            D) 8
+                        </div>
+                    </div>
+                    <div class="quiz-feedback" id="comp-quiz-feedback"></div>
+                </div>
+
+                <div style="text-align: center; margin-top: 30px;">
+                    <button class="btn btn-success" onclick="completeModule(6)">
+                        ✓ Complete Module 6
+                    </button>
+                </div>
+            </article>
+
+            <!-- Part Summary -->
+            <section class="module" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);">
+                <h2>🎉 Part 2 Complete!</h2>
+                <p>Excellent work! You've mastered functions and their classifications.</p>
+                
+                <h3>What You've Learned:</h3>
+                <ul>
+                    <li>✓ Functions as special relations</li>
+                    <li>✓ Domain, codomain, and range</li>
+                    <li>✓ Injective, surjective, and bijective functions</li>
+                    <li>✓ Function composition and properties</li>
+                    <li>✓ Inverse functions and when they exist</li>
+                </ul>
+
+                <div class="note" style="margin-top: 20px;">
+                    <div class="note-title">🚀 Ready for Part 3?</div>
+                    <p>Next, you'll explore the pigeonhole principle and its powerful applications in computer science!</p>
+                </div>
+
+                <div style="text-align: center; margin-top: 30px;">
+                    <a href="csc240_Week2_Part3.html" class="btn btn-primary" style="text-decoration: none; display: inline-block;">
+                        Continue to Part 3: Pigeonhole Principle →
+                    </a>
+                </div>
+            </section>
+        </main>
+
+        <footer role="contentinfo">
+            <p>&copy; 2026 Mendocino College Computer Science Department</p>
+            <p>CSC 240 - Discrete Structures | Week 2, Part 2 of 3</p>
+            <div class="footer-nav">
+                <a href="csc240_Week2_Part1.html">← Part 1: Relations</a>
+                <a href="csc240_Week2_Overview.html">Week 2 Overview</a>
+                <a href="csc240_Week2_Part3.html">Part 3: Pigeonhole →</a>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Session storage for progress tracking
+        const STORAGE_KEY = 'csc240_week2_part2_progress';
+
+        let progress = {
+            modules: {
+                module4: false,
+                module5: false,
+                module6: false
+            },
+            interactions: {
+                functionTest: false,
+                functionAnalysis: false,
+                compositionCalc: false
+            }
+        };
+
+        // Load progress
+        function loadProgress() {
+            const saved = sessionStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                progress = JSON.parse(saved);
+                updateProgressDisplay();
+            }
+        }
+
+        // Save progress
+        function saveProgress() {
+            sessionStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+            updateProgressDisplay();
+        }
+
+        // Update progress display
+        function updateProgressDisplay() {
+            const completed = Object.values(progress.modules).filter(v => v).length;
+            const total = Object.keys(progress.modules).length;
+            const percentage = (completed / total) * 100;
+
+            const progressBar = document.getElementById('progressBar');
+            progressBar.style.width = percentage + '%';
+            progressBar.textContent = Math.round(percentage) + '%';
+            progressBar.setAttribute('aria-valuenow', percentage);
+
+            Object.keys(progress.modules).forEach((module) => {
+                const badge = document.getElementById(`badge-${module}`);
+                if (progress.modules[module]) {
+                    badge.classList.add('completed');
+                }
+            });
+        }
+
+        // Complete module
+        function completeModule(moduleNum) {
+            const moduleKey = `module${moduleNum}`;
+            progress.modules[moduleKey] = true;
+            saveProgress();
+            
+            alert(`Module ${moduleNum} completed! Great job! 🎉`);
+            
+            if (moduleNum < 6) {
+                const nextModule = document.getElementById(`module${moduleNum + 1}`);
+                if (nextModule) {
+                    nextModule.scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+        }
+
+        // Function test questions
+        const functionTests = [
+            {
+                relation: "{(1,a), (2,b), (3,c)}",
+                isFunction: true,
+                explanation: "Each element in the domain maps to exactly one element in the codomain."
+            },
+            {
+                relation: "{(1,a), (1,b), (2,c)}",
+                isFunction: false,
+                explanation: "Element 1 maps to both a and b, violating the function definition."
+            },
+            {
+                relation: "{(1,a), (2,a), (3,a)}",
+                isFunction: true,
+                explanation: "Multiple domain elements can map to the same codomain element. This is still a function."
+            },
+            {
+                relation: "{(1,a), (2,b)}",
+                isFunction: false,
+                explanation: "If the domain is {1,2,3}, then element 3 doesn't map to anything. Not a total function."
+            }
+        ];
+
+        let currentTest = 0;
+
+        function initFunctionTest() {
+            const container = document.getElementById('functionTest');
+            showFunctionTest();
+        }
+
+        function showFunctionTest() {
+            if (currentTest < functionTests.length) {
+                const test = functionTests[currentTest];
+                const container = document.getElementById('functionTest');
+                
+                container.innerHTML = `
+                    <div style="margin: 20px 0;">
+                        <p style="font-size: 1.1em; margin-bottom: 15px;">
+                            <strong>Relation ${currentTest + 1}:</strong> ${test.relation}
+                        </p>
+                        <button class="btn btn-primary" onclick="answerFunctionTest(true)">
+                            This IS a function
+                        </button>
+                        <button class="btn btn-primary" onclick="answerFunctionTest(false)">
+                            This is NOT a function
+                        </button>
+                        <div id="testFeedback" style="margin-top: 15px;"></div>
+                    </div>
+                `;
+            } else {
+                document.getElementById('functionTest').innerHTML = 
+                    '<p style="text-align: center; font-size: 1.2em;">Test complete! 🎉</p>';
+                progress.interactions.functionTest = true;
+                saveProgress();
+            }
+        }
+
+        function answerFunctionTest(userAnswer) {
+            const test = functionTests[currentTest];
+            const correct = userAnswer === test.isFunction;
+            const feedback = document.getElementById('testFeedback');
+            
+            feedback.className = correct ? 'quiz-feedback show correct' : 'quiz-feedback show incorrect';
+            feedback.innerHTML = (correct ? '<strong>✓ Correct!</strong> ' : '<strong>✗ Incorrect.</strong> ') + test.explanation;
+            
+            setTimeout(() => {
+                currentTest++;
+                showFunctionTest();
+            }, 3000);
+        }
+
+        // Function analysis interactive
+        let selectedDomain = null;
+        let mappings = {};
+
+        function initFunctionAnalysis() {
+            const domain = ['a', 'b', 'c'];
+            const codomain = ['1', '2', '3', '4'];
+            
+            const domainDiv = document.getElementById('domainElements');
+            const codomainDiv = document.getElementById('codomainElements');
+            
+            domainDiv.innerHTML = domain.map(e => 
+                `<div class="element" onclick="selectDomain('${e}')" id="dom-${e}">${e}</div>`
+            ).join('');
+            
+            codomainDiv.innerHTML = codomain.map(e => 
+                `<div class="element" onclick="selectCodomain('${e}')" id="cod-${e}">${e}</div>`
+            ).join('');
+        }
+
+        function selectDomain(elem) {
+            document.querySelectorAll('#domainElements .element').forEach(e => 
+                e.classList.remove('selected'));
+            document.getElementById(`dom-${elem}`).classList.add('selected');
+            selectedDomain = elem;
+        }
+
+        function selectCodomain(elem) {
+            if (selectedDomain) {
+                mappings[selectedDomain] = elem;
+                document.getElementById(`dom-${selectedDomain}`).classList.remove('selected');
+                selectedDomain = null;
+                updateMappingDisplay();
+            }
+        }
+
+        function updateMappingDisplay() {
+            // Visual feedback for mappings
+            Object.keys(mappings).forEach(d => {
+                const domElem = document.getElementById(`dom-${d}`);
+                domElem.style.background = '#4caf50';
+                domElem.style.color = 'white';
+            });
+        }
+
+        function clearMappings() {
+            mappings = {};
+            selectedDomain = null;
+            initFunctionAnalysis();
+        }
+
+        function analyzeFunction() {
+            const domain = ['a', 'b', 'c'];
+            const codomain = ['1', '2', '3', '4'];
+            
+            // Check if it's a total function
+            const isTotal = domain.every(d => mappings[d]);
+            
+            if (!isTotal) {
+                alert('Not a valid function! Every domain element must map to something.');
+                return;
+            }
+            
+            // Check injective
+            const rangeValues = Object.values(mappings);
+            const isInjective = rangeValues.length === new Set(rangeValues).size;
+            
+            // Check surjective
+            const isSurjective = codomain.every(c => rangeValues.includes(c));
+            
+            // Display results
+            const results = document.getElementById('functionAnalysis');
+            results.style.display = 'block';
+            results.innerHTML = `
+                <h4>Analysis Results:</h4>
+                <div class="result-item">
+                    <span class="result-label">Mappings:</span>
+                    ${Object.entries(mappings).map(([k,v]) => `${k}→${v}`).join(', ')}
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Injective (One-to-One):</span>
+                    ${isInjective ? '✓ YES' : '✗ NO'}
+                    ${!isInjective ? ' (Multiple domain elements map to the same codomain element)' : ''}
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Surjective (Onto):</span>
+                    ${isSurjective ? '✓ YES' : '✗ NO'}
+                    ${!isSurjective ? ' (Not all codomain elements are mapped to)' : ''}
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Bijective:</span>
+                    ${isInjective && isSurjective ? '✓ YES' : '✗ NO'}
+                </div>
+            `;
+            
+            progress.interactions.functionAnalysis = true;
+            saveProgress();
+        }
+
+        // Composition calculator
+        function calculateComposition() {
+            const fStr = document.getElementById('func-f').value;
+            const gStr = document.getElementById('func-g').value;
+            const x = parseFloat(document.getElementById('test-value').value);
+            
+            try {
+                // Simple evaluation (in production, use a proper parser)
+                const f = new Function('x', `return ${fStr.replace(/\^/g, '**')}`);
+                const g = new Function('x', `return ${gStr.replace(/\^/g, '**')}`);
+                
+                const fx = f(x);
+                const gx = g(x);
+                const gfx = g(fx);
+                const fgx = f(gx);
+                
+                const results = document.getElementById('compositionResults');
+                results.style.display = 'block';
+                results.innerHTML = `
+                    <h4>Composition Results for x = ${x}:</h4>
+                    <div class="result-item">
+                        <span class="result-label">f(${x}) =</span> ${fx}
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">g(${x}) =</span> ${gx}
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">(g ∘ f)(${x}) = g(f(${x})) =</span> ${gfx}
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">(f ∘ g)(${x}) = f(g(${x})) =</span> ${fgx}
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Are they equal?</span>
+                        ${gfx === fgx ? 'YES ✓' : 'NO ✗ (composition is not commutative)'}
+                    </div>
+                `;
+                
+                progress.interactions.compositionCalc = true;
+                saveProgress();
+            } catch (error) {
+                alert('Error evaluating functions. Please check your syntax.');
+            }
+        }
+
+        // Quiz functions
+        function checkFunctionQuiz(element, isCorrect) {
+            const options = element.parentElement.querySelectorAll('.quiz-option');
+            options.forEach(opt => {
+                opt.style.pointerEvents = 'none';
+                if (opt === element) {
+                    opt.classList.add(isCorrect ? 'correct' : 'incorrect');
+                }
+            });
+            
+            const feedback = document.getElementById('function-quiz-feedback');
+            feedback.classList.add('show', isCorrect ? 'correct' : 'incorrect');
+            
+            if (isCorrect) {
+                feedback.innerHTML = '<strong>✓ Correct!</strong> This is a function because each element in domain A = {1,2,3} maps to exactly one element in codomain B = {a,b,c}.';
+            } else {
+                feedback.innerHTML = '<strong>✗ Incorrect.</strong> Check if each domain element maps to exactly one codomain element. Option A has 1 mapping to two elements. Option C is missing a mapping for element 3. Option D has 2 mapping to two elements.';
+            }
+        }
+
+        function checkTypeQuiz(element, isCorrect) {
+            const options = element.parentElement.querySelectorAll('.quiz-option');
+            options.forEach(opt => {
+                opt.style.pointerEvents = 'none';
+                if (opt === element) {
+                    opt.classList.add(isCorrect ? 'correct' : 'incorrect');
+                }
+            });
+            
+            const feedback = document.getElementById('type-quiz-feedback');
+            feedback.classList.add('show', isCorrect ? 'correct' : 'incorrect');
+            
+            if (isCorrect) {
+                feedback.innerHTML = '<strong>✓ Correct!</strong> f(x) = 3x is injective (different inputs give different outputs), but NOT surjective (numbers like 1, 2, 4, 5, etc. are not multiples of 3, so not in the range).';
+            } else {
+                feedback.innerHTML = '<strong>✗ Incorrect.</strong> Think about: (1) Does f(x₁) = f(x₂) imply x₁ = x₂? (injective test) (2) Is every integer in the codomain equal to 3 times some integer? (surjective test)';
+            }
+        }
+
+        function checkCompQuiz(element, isCorrect) {
+            const options = element.parentElement.querySelectorAll('.quiz-option');
+            options.forEach(opt => {
+                opt.style.pointerEvents = 'none';
+                if (opt === element) {
+                    opt.classList.add(isCorrect ? 'correct' : 'incorrect');
+                }
+            });
+            
+            const feedback = document.getElementById('comp-quiz-feedback');
+            feedback.classList.add('show', isCorrect ? 'correct' : 'incorrect');
+            
+            if (isCorrect) {
+                feedback.innerHTML = '<strong>✓ Correct!</strong> (f ∘ g)(3) = f(g(3)) = f(2·3) = f(6) = 6 + 5 = 11. Remember to apply g first, then f!';
+            } else {
+                feedback.innerHTML = '<strong>✗ Incorrect.</strong> Remember: (f ∘ g)(x) = f(g(x)). First calculate g(3) = 2·3 = 6, then calculate f(6) = 6 + 5 = 11.';
+            }
+        }
+
+        // Initialize on load
+        window.addEventListener('load', function() {
+            loadProgress();
+            initFunctionTest();
+            initFunctionAnalysis();
+        });
+
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
