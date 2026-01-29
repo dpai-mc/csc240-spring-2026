@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSC 240 Week 2: PE-02 Relations Property Checker</title>
+    <style>
+        /* General Reset & Variables */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --accent-color: #f093fb;
+            --success-color: #4caf50;
+            --warning-color: #ff9800;
+            --danger-color: #f44336;
+            --light-bg: #f8f9fa;
+            --dark-text: #333;
+            --border-color: #ddd;
+            --shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        /* Body & Layout */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark-text);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px; /* Adjust padding for background visibility */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Center content horizontally */
+        }
+
+        /* Header */
+        header {
+            width: 100%;
+            max-width: 800px; /* Constrain header width */
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 12px 12px 0 0;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        header h1 {
+            font-size: 2.2em;
+            margin-bottom: 8px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        /* Main Container - Single Column, Max Width 800px */
+        .container {
+            width: 100%;
+            max-width: 800px; /* Key for single column layout */
+            background: white;
+            border-radius: 0 0 12px 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            padding: 30px;
+            flex-grow: 1; /* Allows container to grow and push footer down */
+        }
+
+        /* Section Styling */
+        section {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px dashed var(--border-color);
+        }
+
+        section:last-of-type {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: 1.8em;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        h3 {
+            color: var(--secondary-color);
+            font-size: 1.4em;
+            margin-top: 25px;
+            margin-bottom: 10px;
+        }
+
+        h4 {
+            color: var(--dark-text);
+            font-size: 1.1em;
+            margin-top: 20px;
+            margin-bottom: 8px;
+        }
+
+        p {
+            margin-bottom: 10px;
+        }
+
+        ul {
+            list-style-type: disc;
+            margin-left: 25px;
+            margin-bottom: 10px;
+        }
+
+        ol {
+            list-style-type: decimal;
+            margin-left: 25px;
+            margin-bottom: 10px;
+        }
+
+        li {
+            margin-bottom: 5px;
+        }
+
+        /* Info Boxes & Callouts */
+        .info-box, .note-box, .warning-box, .objective-box {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            line-height: 1.5;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            color: #1976d2;
+        }
+        .info-box strong { color: #1976d2; }
+
+        .note-box {
+            background: #fff9c4;
+            border-left: 4px solid #fbc02d;
+            color: #f57f17;
+        }
+        .note-box strong { color: #f57f17; }
+
+        .warning-box {
+            background: #ffebee;
+            border-left: 4px solid #f44336;
+            color: #c62828;
+        }
+        .warning-box strong { color: #c62828; }
+
+        .objective-box {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            color: #388e3c;
+        }
+        .objective-box strong { color: #388e3c; }
+
+
+        /* Code & Preformatted Text */
+        code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        pre {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 15px 0;
+            white-space: pre-wrap; /* Ensures code wraps */
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid var(--border-color);
+        }
+
+        th {
+            background: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background: var(--light-bg);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 5px 0;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .btn:focus {
+            outline: 3px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Form Elements */
+        input[type="text"],
+        input[type="number"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 1em;
+            font-family: inherit;
+            margin-bottom: 10px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        /* Results Display */
+        .result-display {
+            background: var(--light-bg);
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .result-item {
+            padding: 8px 0;
+            border-bottom: 1px dashed var(--border-color);
+        }
+        .result-item:last-child {
+            border-bottom: none;
+        }
+        .result-label {
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-right: 10px;
+        }
+
+        /* Progress Bar (simple for assignments) */
+        .progress-bar {
+            background: #e0e0e0;
+            height: 25px;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-top: 15px;
+        }
+        .progress-fill {
+            background: var(--success-color);
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.8em;
+        }
+
+        /* Footer */
+        footer {
+            width: 100%;
+            max-width: 800px; /* Constrain footer width */
+            margin-top: 30px;
+            background: #333;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 0 0 12px 12px;
+        }
+
+        /* Accessibility */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+
+        /* Interactive element specific styles */
+        .interactive-section {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 25px;
+            border-radius: 8px;
+            margin: 25px 0;
+            box-shadow: var(--shadow);
+        }
+        .interactive-section h3 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+        .relation-input-display {
+            margin-top: 15px;
+            font-family: monospace;
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid var(--border-color);
+        }
+    </style>
+</head>
+<body>
+    <header role="banner">
+        <h1>Programming Exercise PE-02: Relations Property Checker</h1>
+        <p>CSC 240 - Discrete Structures | Week 2 Assignment</p>
+    </header>
+
+    <div class="container">
+        <section class="assignment-overview">
+            <div class="info-box">
+                <p><strong>Assignment:</strong> PE-02 - Relations Property Checker</p>
+                <p><strong>Week:</strong> 2</p>
+                <p><strong>Points:</strong> 15 points</p>
+                <p><strong>Estimated Time:</strong> 2-3 hours</p>
+                <p><strong>Programming Language:</strong> Java OR C++ (your choice)</p>
+                <p><strong>IDE Required:</strong> Visual Studio Code</p>
+            </div>
+        </section>
+
+        <section class="objective-box">
+            <h2>🎯 Learning Objectives</h2>
+            <p>This assignment reinforces <strong>CSLO 2: Apply combinatorics and set theory to counting problems</strong> by having you:</p>
+            <ul>
+                <li>Translate mathematical definitions of relation properties into working code.</li>
+                <li>Implement fundamental discrete structures concepts programmatically.</li>
+                <li>Practice with collections/data structures in your chosen language.</li>
+                <li>Develop problem-solving skills connecting theory to implementation.</li>
+            </ul>
+        </section>
+
+        <section class="assignment-description">
+            <h2>📝 Assignment Description</h2>
+            <p>You will create a program that analyzes a given binary relation on a set and determines if it possesses key properties: reflexive, symmetric, transitive, and antisymmetric. Your program should also identify if the relation is an equivalence relation based on these properties.</p>
+            <h3>What You're Building</h3>
+            <p>A command-line application that:</p>
+            <ul>
+                <li>Accepts a set of elements (e.g., {1, 2, 3}) as input.</li>
+                <li>Accepts a binary relation on that set as a list of ordered pairs (e.g., {(1,1), (1,2), (2,1), (2,2)}).</li>
+                <li>Determines if the relation is:
+                    <ul>
+                        <li>Reflexive</li>
+                        <li>Symmetric</li>
+                        <li>Transitive</li>
+                        <li>Antisymmetric</li>
+                    </ul>
+                </li>
+                <li>Identifies if the relation is an Equivalence Relation (must be reflexive, symmetric, AND transitive).</li>
+                <li>Displays all results clearly with explanations for each property.</li>
+            </ul>
+        </section>
+
+        <section class="requirements">
+            <h2>✅ Requirements</h2>
+            <h3>Functional Requirements</h3>
+            <p>Your program MUST:</p>
+            <ul>
+                <li><strong>Accept Input:</strong>
+                    <ul>
+                        <li>Prompt the user to enter elements for the set A (e.g., "1 2 3").</li>
+                        <li>Prompt the user to enter ordered pairs for the relation R (e.g., "(1,1) (1,2) (2,2)").</li>
+                        <li>Handle integer input appropriately for both set elements and pairs.</li>
+                        <li>Accept sets and relations of varying sizes (recommended min 2 elements, max 5 elements for the set for ease of testing).</li>
+                    </ul>
+                </li>
+                <li><strong>Represent Relations:</strong>
+                    <ul>
+                        <li>Internally represent the set A (e.g., as a `std::set<int>` or `HashSet<Integer>`).</li>
+                        <li>Internally represent the relation R (e.g., as a `std::vector<std::pair<int, int>>` or `ArrayList<Pair<Integer, Integer>>`).</li>
+                    </ul>
+                </li>
+                <li><strong>Implement Property Checks:</strong>
+                    <ul>
+                        <li>A function/method for `isReflexive(R, A)`</li>
+                        <li>A function/method for `isSymmetric(R, A)`</li>
+                        <li>A function/method for `isTransitive(R, A)`</li>
+                        <li>A function/method for `isAntisymmetric(R, A)`</li>
+                        <li>A function/method for `isEquivalenceRelation(R, A)` (which calls the first three)</li>
+                    </ul>
+                </li>
+                <li><strong>Display Output:</strong>
+                    <ul>
+                        <li>Show the original Set A and Relation R.</li>
+                        <li>For each property, state YES/NO and provide a brief justification/explanation (e.g., "Reflexive: YES - all elements relate to themselves").</li>
+                        <li>For non-properties, a simple "NO" is sufficient, but a counterexample is excellent for full credit (e.g., "Symmetric: NO - (1,2) is in R but (2,1) is not").</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h3>Technical Requirements</h3>
+            <ul>
+                <li><strong>Language:</strong> Java or C++ (choose ONE)</li>
+                <li><strong>IDE:</strong> Visual Studio Code (required for consistency)</li>
+                <li><strong>Input Method:</strong> Console/terminal input (Scanner in Java, cin in C++)</li>
+                <li><strong>Output Method:</strong> Console/terminal output (System.out in Java, cout in C++)</li>
+                <li><strong>File Structure:</strong>
+                    <ul>
+                        <li>Single source file (.java or .cpp)</li>
+                        <li><code>README.txt</code> with compilation and execution instructions</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section class="sample-io">
+            <h2>📤 Sample Input/Output</h2>
+            <p>Below is an example of expected interaction and output for your program.</p>
+            <pre><code>
+Enter elements for the set A (space-separated integers, e.g., 1 2 3): 1 2 3 4
+Enter relation as ordered pairs (space-separated, e.g., (1,1) (1,2)). Type 'done' when finished:
+Pair 1: (1,1)
+Pair 2: (2,2)
+Pair 3: (3,3)
+Pair 4: (4,4)
+Pair 5: (1,2)
+Pair 6: (2,1)
+Pair 7: done
+
+=== Analysis Results ===
+
+Set A: {1, 2, 3, 4}
+Relation R: {(1,1), (2,2), (3,3), (4,4), (1,2), (2,1)}
+
+Reflexive: YES
+  - All elements (1,1), (2,2), (3,3), (4,4) are in R.
+
+Symmetric: YES
+  - For every (a,b) in R, (b,a) is also in R.
+    (1,2) is in R, and (2,1) is in R.
+
+Transitive: YES
+  - No (a,b) and (b,c) exist such that (a,c) is not in R.
+    (1,2) and (2,1) are in R, and (1,1) is in R.
+
+Antisymmetric: NO
+  - Counterexample: (1,2) in R and (2,1) in R, but 1 != 2.
+
+Equivalence Relation: YES
+  - R is reflexive, symmetric, and transitive.
+            </code></pre>
+            <div class="note-box">
+                <strong>Note on Input:</strong> You can choose a simpler input format if parsing complex strings is too challenging for this assignment. For example, you could ask for the number of elements in the set, then list them, and then ask for `num_pairs` and list pairs one by one. The sample output above is an ideal goal.
+            </div>
+        </section>
+
+        <section class="interactive-section">
+            <h2>🎮 Interactive Self-Check: Relation Properties</h2>
+            <p>Use this tool to quickly test relations and verify properties. This can help you understand the definitions before coding.</p>
+            <div class="input-group">
+                <label for="interactiveSet">Set A (comma-separated, e.g., 1,2,3):</label>
+                <input type="text" id="interactiveSet" value="1,2,3">
+            </div>
+            <div class="input-group">
+                <label for="interactiveRelation">Relation R (comma-separated ordered pairs, e.g., (1,1),(1,2),(2,2)):</label>
+                <input type="text" id="interactiveRelation" value="(1,1),(2,2),(3,3),(1,2)">
+            </div>
+            <button class="btn btn-primary" onclick="checkInteractiveProperties()">Analyze Relation</button>
+            <button class="btn btn-secondary" onclick="clearInteractive()">Clear</button>
+
+            <div id="interactiveResults" class="result-display" style="display: none;">
+                <h4>Interactive Analysis:</h4>
+                <div id="iReflexive" class="result-item"></div>
+                <div id="iSymmetric" class="result-item"></div>
+                <div id="iTransitive" class="result-item"></div>
+                <div id="iAntisymmetric" class="result-item"></div>
+                <div id="iEquivalence" class="result-item"></div>
+            </div>
+            <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Interactive tool progress">
+                <div class="progress-fill" id="interactiveProgressBar">0%</div>
+            </div>
+        </section>
+
+        <section class="grading-rubric">
+            <h2>🎓 Grading Rubric (15 Points Total)</h2>
+            <h3>1. Correctness (8 points)</h3>
+            <p>Your program must correctly implement all property checks:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Property Check</th>
+                        <th>Points</th>
+                        <th>Criteria</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Reflexive</td>
+                        <td>2 points</td>
+                        <td>✓ Correctly identifies if all elements relate to themselves.</td>
+                    </tr>
+                    <tr>
+                        <td>Symmetric</td>
+                        <td>2 points</td>
+                        <td>✓ Correctly identifies if (a,b) implies (b,a) for all pairs.</td>
+                    </tr>
+                    <tr>
+                        <td>Transitive</td>
+                        <td>2 points</td>
+                        <td>✓ Correctly identifies if (a,b) and (b,c) implies (a,c) for all triples.</td>
+                    </tr>
+                    <tr>
+                        <td>Antisymmetric</td>
+                        <td>1 point</td>
+                        <td>✓ Correctly identifies if (a,b) and (b,a) implies a=b.</td>
+                    </tr>
+                    <tr>
+                        <td>Equivalence Relation</td>
+                        <td>1 point</td>
+                        <td>✓ Correctly identifies if all three (reflexive, symmetric, transitive) properties hold.</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="note-box">
+                <strong>Testing Criteria:</strong>
+                <ul>
+                    <li>Instructor will test with multiple input sets and relations.</li>
+                    <li>Edge cases: empty relations, relations on a single element set, relations with all possible pairs.</li>
+                    <li>Correctly handles non-properties by identifying violations (e.g., missing (a,a) for reflexive).</li>
+                </ul>
+            </div>
+
+            <h3>2. Code Quality (4 points)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Points</th>
+                        <th>Criteria</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Organization</td>
+                        <td>1.5 points</td>
+                        <td>✓ Logical structure with clear separation of concerns (e.g., functions for each property).<br>✓ Functions/methods used appropriately.<br>✓ No unnecessary code duplication.</td>
+                    </tr>
+                    <tr>
+                        <td>Readability</td>
+                        <td>1.5 points</td>
+                        <td>✓ Meaningful variable and function names.<br>✓ Consistent indentation and formatting.<br>✓ Code follows language conventions (Java: camelCase, C++: snake_case or camelCase).</td>
+                    </tr>
+                    <tr>
+                        <td>Error Handling</td>
+                        <td>1 point</td>
+                        <td>✓ Handles invalid input gracefully (e.g., malformed pairs, non-integer input).<br>✓ Provides helpful error messages.<br>✓ Program doesn't crash on unexpected input.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>3. Documentation (2 points)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Points</th>
+                        <th>Criteria</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Code Comments</td>
+                        <td>1 point</td>
+                        <td>✓ Header comment with your name, date, assignment number.<br>✓ Comments explaining complex logic.<br>✓ Function/method documentation (purpose, parameters, return value).</td>
+                    </tr>
+                    <tr>
+                        <td>README.txt</td>
+                        <td>1 point</td>
+                        <td>✓ Compilation instructions for your OS.<br>✓ Execution instructions.<br>✓ Any known limitations or assumptions.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>4. Compilation/Execution (1 point)</h3>
+            <ul>
+                <li>✓ Program compiles without errors.</li>
+                <li>✓ Program runs without crashing.</li>
+                <li>✓ Follows submission requirements.</li>
+            </ul>
+        </section>
+
+        <section class="submission-instructions">
+            <h2>📦 Submission Requirements</h2>
+            <h3>What to Submit</h3>
+            <p>Create a ZIP file containing:</p>
+            <ol>
+                <li><strong>Source Code File:</strong>
+                    <ul>
+                        <li>Java: <code>RelationsChecker.java</code> (or your main class name)</li>
+                        <li>C++: <code>relations_checker.cpp</code> (and any <code>.h</code> files if used)</li>
+                    </ul>
+                </li>
+                <li><strong><code>README.txt</code></strong> with the following information:
+                    <pre><code>
+Name: [Your Full Name]
+Assignment: PE-02 - Relations Property Checker
+Course: CSC 240 - Discrete Structures
+Date: [Submission Date]
+Language: [Java or C++]
+
+=== Compilation Instructions ===
+[Provide specific commands for your OS, e.g., javac MyProgram.java]
+
+=== Execution Instructions ===
+[How to run your program, e.g., java MyProgram]
+
+=== Known Limitations ===
+[Any assumptions or limitations of your implementation]
+                    </code></pre>
+                </li>
+            </ol>
+            <h3>File Naming Convention</h3>
+            <p>ZIP file name: <code>LastName_FirstName_PE02_Week2.zip</code></p>
+            <p>Example: <code>Smith_John_PE02_Week2.zip</code></p>
+            <h3>Where to Submit</h3>
+            <p>Submit to Canvas under "Assignments" → "PE-02: Relations Property Checker"</p>
+        </section>
+
+        <section class="getting-started-help">
+            <h2>💻 Getting Started & Help</h2>
+            <h3>1. Review Concepts</h3>
+            <p>Ensure you thoroughly understand the definitions of reflexive, symmetric, transitive, and antisymmetric relations from Week 2 learning modules and readings. Pay close attention to the quantifiers (∀ "for all", ∃ "there exists") in the definitions.</p>
+            <h3>2. Plan Your Approach</h3>
+            <p>Before coding, plan your solution:</p>
+            <ul>
+                <li><strong>Data Structures:</strong> How will you store the set of elements A and the set of ordered pairs R?</li>
+                <li><strong>Input Parsing:</strong> How will you convert user input strings into your chosen data structures?</li>
+                <li><strong>Algorithm for each property:</strong> Outline the logical steps to check each property. This is the core of the assignment.</li>
+            </ul>
+            <div class="note-box">
+                <strong>Pseudocode Example (Reflexive):</strong>
+                <pre><code>
+function isReflexive(relation R, set A):
+    for each element 'a' in A:
+        if (a,a) is NOT in R:
+            return false
+    return true
+                </code></pre>
+            </div>
+            <h3>3. Implement One Property at a Time</h3>
+            <p>Start with the easiest property (reflexive or symmetric) and thoroughly test it before moving to the next. Transitivity is often the most challenging, so save it for last.</p>
+            <h3>4. Test Thoroughly</h3>
+            <p>Test your program with:</p>
+            <ul>
+                <li>The sample input provided.</li>
+                <li>Relations that *do* have all properties.</li>
+                <li>Relations that *lack* one specific property (e.g., reflexive but not symmetric).</li>
+                <li>Edge cases: empty sets, relations with only one element.</li>
+            </ul>
+            <h3>🆘 Resources & Support</h3>
+            <ul>
+                <li><strong>Office Hours:</strong> Check Canvas for instructor office hours. Bring specific questions!</li>
+                <li><strong>Discussion Forum:</strong> Post conceptual questions or general debugging help on Canvas.</li>
+                <li><strong>Saylor.org CS202:</strong> Review Unit 1, Sections 1.3-1.4 (Relations and Properties).</li>
+                <li><strong>Online Tutorials:</strong> Refer to the supplementary resources listed in the Week 2 overview.</li>
+            </ul>
+            <div class="warning-box">
+                <strong>⚠️ Academic Integrity:</strong>
+                <p>This is an individual assignment. Discussion of concepts is encouraged, but sharing or copying code from any source (classmates, online, AI tools) is strictly prohibited and will result in a zero for the assignment and disciplinary action.</p>
+            </div>
+            <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Assignment completion progress">
+                <div class="progress-fill" id="assignmentProgressBar">0%</div>
+            </div>
+            <button class="btn btn-primary" onclick="markAsReviewed()">Mark as Reviewed</button>
+        </section>
+    </div>
+
+    <footer role="contentinfo">
+        <p>&copy; 2026 Mendocino College Computer Science Department</p>
+        <p>CSC 240 - Discrete Structures | Week 2 Assignment</p>
+        <p>Questions? Contact your instructor through Canvas or during office hours.</p>
+    </footer>
+
+    <script>
+        // Session storage key for this assignment
+        const PE02_PROGRESS_KEY = 'csc240_week2_pe02_progress';
+        let pe02Progress = { reviewed: false, interactive_used: false };
+
+        // Load progress from session storage
+        function loadPE02Progress() {
+            const savedProgress = sessionStorage.getItem(PE02_PROGRESS_KEY);
+            if (savedProgress) {
+                pe02Progress = JSON.parse(savedProgress);
+            }
+            updatePE02ProgressBar();
+        }
+
+        // Save progress to session storage
+        function savePE02Progress() {
+            sessionStorage.setItem(PE02_PROGRESS_KEY, JSON.stringify(pe02Progress));
+            updatePE02ProgressBar();
+        }
+
+        // Update progress bar
+        function updatePE02ProgressBar() {
+            let progressValue = 0;
+            if (pe02Progress.reviewed) progressValue += 50;
+            if (pe02Progress.interactive_used) progressValue += 50;
+
+            const progressBar = document.getElementById('assignmentProgressBar');
+            if (progressBar) {
+                progressBar.style.width = progressValue + '%';
+                progressBar.textContent = progressValue + '% Reviewed';
+                progressBar.setAttribute('aria-valuenow', progressValue);
+            }
+            // Also update interactive tool's progress bar if it exists
+            const interactiveProgressBar = document.getElementById('interactiveProgressBar');
+            if (interactiveProgressBar) {
+                interactiveProgressBar.style.width = (pe02Progress.interactive_used ? 100 : 0) + '%';
+                interactiveProgressBar.textContent = (pe02Progress.interactive_used ? '100% Used' : '0% Used');
+                interactiveProgressBar.setAttribute('aria-valuenow', pe02Progress.interactive_used ? 100 : 0);
+            }
+        }
+
+        // Mark assignment as reviewed
+        function markAsReviewed() {
+            pe02Progress.reviewed = true;
+            savePE02Progress();
+            alert('Assignment instructions marked as reviewed!');
+        }
+
+        // --- Interactive Relation Property Checker ---
+        function parseSet(setStr) {
+            return new Set(setStr.split(',').map(s => s.trim()).filter(s => s !== '').map(Number));
+        }
+
+        function parseRelation(relationStr) {
+            const pairs = [];
+            const regex = /$$(\d+),(\d+)$$/g;
+            let match;
+            while ((match = regex.exec(relationStr)) !== null) {
+                pairs.push([Number(match[1]), Number(match[2])]);
+            }
+            return pairs;
+        }
+
+        function checkReflexive(pairs, setElements) {
+            for (const elem of setElements) {
+                if (!pairs.some(p => p[0] === elem && p[1] === elem)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function checkSymmetric(pairs) {
+            for (const [a, b] of pairs) {
+                if (!pairs.some(p => p[0] === b && p[1] === a)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function checkTransitive(pairs) {
+            for (const [a, b] of pairs) {
+                for (const [x, y] of pairs) {
+                    if (b === x) { // If (a,b) and (b,y) exist
+                        if (!pairs.some(p => p[0] === a && p[1] === y)) { // Check if (a,y) exists
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+
+        function checkAntisymmetric(pairs) {
+            for (const [a, b] of pairs) {
+                if (a !== b) {
+                    if (pairs.some(p => p[0] === b && p[1] === a)) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        function checkInteractiveProperties() {
+            const setStr = document.getElementById('interactiveSet').value;
+            const relationStr = document.getElementById('interactiveRelation').value;
+
+            const setA = parseSet(setStr);
+            const relationR = parseRelation(relationStr);
+
+            const isReflexive = checkReflexive(relationR, setA);
+            const isSymmetric = checkSymmetric(relationR);
+            const isTransitive = checkTransitive(relationR);
+            const isAntisymmetric = checkAntisymmetric(relationR);
+            const isEquivalence = isReflexive && isSymmetric && isTransitive;
+
+            const resultsDiv = document.getElementById('interactiveResults');
+            resultsDiv.style.display = 'block';
+            document.getElementById('iReflexive').innerHTML = `<span class="result-label">Reflexive:</span> ${isReflexive ? '✓ YES' : '✗ NO'}`;
+            document.getElementById('iSymmetric').innerHTML = `<span class="result-label">Symmetric:</span> ${isSymmetric ? '✓ YES' : '✗ NO'}`;
+            document.getElementById('iTransitive').innerHTML = `<span class="result-label">Transitive:</span> ${isTransitive ? '✓ YES' : '✗ NO'}`;
+            document.getElementById('iAntisymmetric').innerHTML = `<span class="result-label">Antisymmetric:</span> ${isAntisymmetric ? '✓ YES' : '✗ NO'}`;
+            document.getElementById('iEquivalence').innerHTML = `<span class="result-label">Equivalence Relation:</span> ${isEquivalence ? '✓ YES' : '✗ NO'}`;
+
+            pe02Progress.interactive_used = true;
+            savePE02Progress();
+        }
+
+        function clearInteractive() {
+            document.getElementById('interactiveSet').value = '1,2,3';
+            document.getElementById('interactiveRelation').value = '(1,1),(2,2),(3,3),(1,2)';
+            document.getElementById('interactiveResults').style.display = 'none';
+        }
+
+        // Initialize on page load
+        window.addEventListener('load', loadPE02Progress);
+
+        // Smooth scrolling for navigation links (if any were present, good practice)
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
