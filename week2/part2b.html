@@ -33,20 +33,16 @@
             min-height: 100vh;
         }
 
-        .container {
+        /* Header Styles */
+        header {
             max-width: 1200px;
             margin: 0 auto;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            overflow: hidden;
-        }
-
-        header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             padding: 30px;
             text-align: center;
+            border-radius: 12px 12px 0 0;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
         }
 
         header h1 {
@@ -69,15 +65,17 @@
             font-weight: bold;
         }
 
-        /* Sticky Navigation */
+        /* TRULY STICKY Navigation - Outside container, no overflow issues */
         nav {
-            background: var(--light-bg);
-            padding: 15px 30px;
-            border-bottom: 3px solid var(--primary-color);
             position: sticky;
             top: 0;
             z-index: 1000;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 15px 30px;
+            border-bottom: 3px solid var(--primary-color);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
 
         .nav-links {
@@ -94,6 +92,7 @@
             border-radius: 5px;
             transition: all 0.3s ease;
             font-weight: 600;
+            white-space: nowrap;
         }
 
         .nav-links a:hover {
@@ -107,6 +106,15 @@
             outline-offset: 2px;
         }
 
+        /* Container for main content */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        /* Progress Tracker */
         .progress-section {
             padding: 30px;
             background: var(--light-bg);
@@ -598,10 +606,13 @@
         }
 
         footer {
+            max-width: 1200px;
+            margin: 0 auto;
             background: #333;
             color: white;
-            text-align: center;
             padding: 30px;
+            text-align: center;
+            border-radius: 0 0 12px 12px;
         }
 
         .footer-nav {
@@ -622,20 +633,21 @@
         }
 
         @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
             header h1 {
                 font-size: 1.8em;
             }
 
-            .content {
-                padding: 20px;
-            }
-
-            .module {
-                padding: 20px;
+            nav {
+                padding: 10px 15px;
             }
 
             .nav-links {
                 flex-direction: column;
+                gap: 10px;
             }
 
             .function-diagram {
@@ -696,24 +708,43 @@
             background: none;
             padding: 0;
         }
+
+        .mapping-line {
+            stroke: var(--primary-color);
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .mapping-line.highlight {
+            stroke: var(--success-color);
+            stroke-width: 3;
+        }
+
+        canvas {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: white;
+            max-width: 100%;
+        }
     </style>
 </head>
 <body>
+    <header role="banner">
+        <h1>Week 2: Relations and Functions</h1>
+        <p class="subtitle">Part 2: Functions & Classification</p>
+        <span class="part-indicator">Modules 4-6 | CSC 240 - Discrete Structures</span>
+    </header>
+
+    <!-- STICKY NAVIGATION - Now truly sticky, outside container -->
+    <nav role="navigation" aria-label="Module navigation">
+        <div class="nav-links">
+            <a href="#module4">Module 4: Functions Fundamentals</a>
+            <a href="#module5">Module 5: Function Types</a>
+            <a href="#module6">Module 6: Function Operations</a>
+        </div>
+    </nav>
+
     <div class="container">
-        <header role="banner">
-            <h1>Week 2: Relations and Functions</h1>
-            <p class="subtitle">Part 2: Functions & Classification</p>
-            <span class="part-indicator">Modules 4-6 | CSC 240 - Discrete Structures</span>
-        </header>
-
-        <nav role="navigation" aria-label="Module navigation">
-            <div class="nav-links">
-                <a href="#module4">Module 4: Functions Fundamentals</a>
-                <a href="#module5">Module 5: Function Types</a>
-                <a href="#module6">Module 6: Function Operations</a>
-            </div>
-        </nav>
-
         <section class="progress-section" aria-label="Learning progress">
             <div class="progress-header">
                 <div>
@@ -1372,15 +1403,15 @@ function processData(rawData) {
                 </div>
             </section>
         </main>
-
-        <footer role="contentinfo">
-            <p>&copy; 2026 Mendocino College Computer Science Department</p>
-            <p>CSC 240 - Discrete Structures | Week 2, Part 2 of 3</p>
-            <div class="footer-nav">
-                <a href="#module4">Back to Top</a>
-            </div>
-        </footer>
     </div>
+
+    <footer role="contentinfo">
+        <p>&copy; 2026 Mendocino College Computer Science Department</p>
+        <p>CSC 240 - Discrete Structures | Week 2, Part 2 of 3</p>
+        <div class="footer-nav">
+            <a href="#module4">Back to Top</a>
+        </div>
+    </footer>
 
     <script>
         // Session storage for progress tracking
@@ -1421,13 +1452,15 @@ function processData(rawData) {
             const percentage = (completed / total) * 100;
 
             const progressBar = document.getElementById('progressBar');
-            progressBar.style.width = percentage + '%';
-            progressBar.textContent = Math.round(percentage) + '%';
-            progressBar.setAttribute('aria-valuenow', percentage);
+            if (progressBar) {
+                progressBar.style.width = percentage + '%';
+                progressBar.textContent = Math.round(percentage) + '%';
+                progressBar.setAttribute('aria-valuenow', percentage);
+            }
 
             Object.keys(progress.modules).forEach((module) => {
                 const badge = document.getElementById(`badge-${module}`);
-                if (progress.modules[module]) {
+                if (badge && progress.modules[module]) {
                     badge.classList.add('completed');
                 }
             });
@@ -1730,13 +1763,18 @@ function processData(rawData) {
             initFunctionAnalysis();
         });
 
-        // Smooth scrolling
+        // Smooth scrolling for navigation links with offset for sticky nav
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
                 const target = document.querySelector(this.getAttribute('href'));
                 if (target) {
-                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    const navHeight = document.querySelector('nav').offsetHeight;
+                    const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - navHeight - 20; /* 20px for padding */
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
                 }
             });
         });
