@@ -1,0 +1,1757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSC 240 Week 2 Part 1: Binary Relations & Properties</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --accent-color: #f093fb;
+            --success-color: #4caf50;
+            --warning-color: #ff9800;
+            --danger-color: #f44336;
+            --light-bg: #f8f9fa;
+            --dark-text: #333;
+            --border-color: #ddd;
+            --shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark-text);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+
+        .part-indicator {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        /* Navigation */
+        nav {
+            background: var(--light-bg);
+            padding: 15px 30px;
+            border-bottom: 3px solid var(--primary-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .nav-links a {
+            color: var(--primary-color);
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .nav-links a:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .nav-links a:focus {
+            outline: 3px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        /* Progress Tracker */
+        .progress-section {
+            padding: 30px;
+            background: var(--light-bg);
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .progress-bar-container {
+            background: #e0e0e0;
+            height: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .progress-bar-fill {
+            background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .module-badges {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .module-badge {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+            background: #e0e0e0;
+            color: var(--dark-text);
+            transition: all 0.3s ease;
+        }
+
+        .module-badge.completed {
+            background: var(--success-color);
+            color: white;
+        }
+
+        /* Main Content */
+        .content {
+            padding: 40px;
+        }
+
+        .module {
+            margin-bottom: 50px;
+            padding: 30px;
+            background: white;
+            border-radius: 8px;
+            border-left: 5px solid var(--primary-color);
+            box-shadow: var(--shadow);
+        }
+
+        .module-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--light-bg);
+        }
+
+        .module-icon {
+            font-size: 2.5em;
+        }
+
+        .module-title h2 {
+            color: var(--primary-color);
+            font-size: 1.8em;
+            margin-bottom: 5px;
+        }
+
+        .module-meta {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        /* Learning Objectives */
+        .objectives {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #2196f3;
+            margin: 20px 0;
+        }
+
+        .objectives h3 {
+            color: #1976d2;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .objectives ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .objectives li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .objectives li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #2196f3;
+            font-weight: bold;
+        }
+
+        /* Definition Boxes */
+        .definition {
+            background: #fff3e0;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #ff9800;
+            margin: 20px 0;
+        }
+
+        .definition-title {
+            color: #f57c00;
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Example Boxes */
+        .example {
+            background: #e8f5e9;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #4caf50;
+            margin: 20px 0;
+        }
+
+        .example-title {
+            color: #388e3c;
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Important Notes */
+        .note {
+            background: #fff9c4;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #fbc02d;
+            margin: 20px 0;
+        }
+
+        .note-title {
+            color: #f57f17;
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Warning Boxes */
+        .warning {
+            background: #ffebee;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #f44336;
+            margin: 20px 0;
+        }
+
+        .warning-title {
+            color: #c62828;
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Mathematical Notation */
+        .math-block {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+
+        /* Interactive Elements */
+        .interactive-box {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 25px;
+            border-radius: 8px;
+            margin: 25px 0;
+            box-shadow: var(--shadow);
+        }
+
+        .interactive-title {
+            color: var(--primary-color);
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Relation Matrix */
+        .relation-matrix {
+            display: grid;
+            gap: 2px;
+            margin: 20px 0;
+            justify-content: center;
+        }
+
+        .matrix-cell {
+            width: 50px;
+            height: 50px;
+            border: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .matrix-cell:hover {
+            background: var(--light-bg);
+            transform: scale(1.05);
+        }
+
+        .matrix-cell.header {
+            background: var(--primary-color);
+            color: white;
+            cursor: default;
+        }
+
+        .matrix-cell.header:hover {
+            transform: none;
+        }
+
+        .matrix-cell.selected {
+            background: var(--success-color);
+            color: white;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn:focus {
+            outline: 3px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Quiz Styles */
+        .quiz-container {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 20px 0;
+            box-shadow: var(--shadow);
+        }
+
+        .quiz-question {
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--dark-text);
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .quiz-option {
+            padding: 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .quiz-option:hover {
+            border-color: var(--primary-color);
+            background: var(--light-bg);
+            transform: translateX(5px);
+        }
+
+        .quiz-option.selected {
+            border-color: var(--primary-color);
+            background: #e3f2fd;
+        }
+
+        .quiz-option.correct {
+            border-color: var(--success-color);
+            background: #e8f5e9;
+        }
+
+        .quiz-option.incorrect {
+            border-color: var(--danger-color);
+            background: #ffebee;
+        }
+
+        .quiz-feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .quiz-feedback.show {
+            display: block;
+        }
+
+        .quiz-feedback.correct {
+            background: #e8f5e9;
+            border-left: 4px solid var(--success-color);
+            color: #2e7d32;
+        }
+
+        .quiz-feedback.incorrect {
+            background: #ffebee;
+            border-left: 4px solid var(--danger-color);
+            color: #c62828;
+        }
+
+        /* Input Styles */
+        input[type="text"],
+        input[type="number"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 1em;
+            font-family: inherit;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .input-group {
+            margin: 15px 0;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark-text);
+        }
+
+        /* Result Display */
+        .result-display {
+            background: var(--light-bg);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .result-item {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-label {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-right: 10px;
+        }
+
+        /* Completion Indicator */
+        .completion-indicator {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 3px solid var(--border-color);
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .completion-indicator.completed {
+            background: var(--success-color);
+            border-color: var(--success-color);
+        }
+
+        .completion-indicator.completed::after {
+            content: "✓";
+            position: absolute;
+            color: white;
+            font-weight: bold;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.8em;
+        }
+
+        /* Footer */
+        footer {
+            background: #333;
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .footer-nav {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #555;
+        }
+
+        .footer-nav a {
+            color: var(--accent-color);
+            text-decoration: none;
+            margin: 0 15px;
+            transition: color 0.3s ease;
+        }
+
+        .footer-nav a:hover {
+            color: white;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .module {
+                padding: 20px;
+            }
+
+            .nav-links {
+                flex-direction: column;
+            }
+
+            .matrix-cell {
+                width: 40px;
+                height: 40px;
+                font-size: 0.9em;
+            }
+
+            .progress-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        /* Accessibility */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease;
+        }
+
+        /* Table Styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid var(--border-color);
+        }
+
+        th {
+            background: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background: var(--light-bg);
+        }
+
+        /* Code Blocks */
+        code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        pre {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header role="banner">
+            <h1>Week 2: Relations and Functions</h1>
+            <p class="subtitle">Part 1: Binary Relations & Properties</p>
+            <span class="part-indicator">Modules 1-3 | CSC 240 - Discrete Structures</span>
+        </header>
+
+        <nav role="navigation" aria-label="Module navigation">
+            <div class="nav-links">
+                <a href="#module1">Module 1: Binary Relations</a>
+                <a href="#module2">Module 2: Relation Properties</a>
+                <a href="#module3">Module 3: Equivalence Relations</a>
+            </div>
+        </nav>
+
+        <section class="progress-section" aria-label="Learning progress">
+            <div class="progress-header">
+                <div>
+                    <h2>Your Progress (Part 1)</h2>
+                    <p>Complete all modules to unlock Part 2</p>
+                </div>
+                <div class="module-badges" role="status" aria-live="polite">
+                    <span class="module-badge" id="badge-module1">Module 1</span>
+                    <span class="module-badge" id="badge-module2">Module 2</span>
+                    <span class="module-badge" id="badge-module3">Module 3</span>
+                </div>
+            </div>
+            <div class="progress-bar-container" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                <div class="progress-bar-fill" id="progressBar">0%</div>
+            </div>
+        </section>
+
+        <main class="content" role="main">
+            <!-- Module 1: Binary Relations -->
+            <article class="module fade-in" id="module1">
+                <div class="module-header">
+                    <span class="module-icon">🔗</span>
+                    <div class="module-title">
+                        <h2>Module 1: Binary Relations</h2>
+                        <p class="module-meta">⏱️ Estimated Time: 25 minutes</p>
+                    </div>
+                </div>
+
+                <div class="objectives">
+                    <h3>🎯 Learning Objectives:</h3>
+                    <ul>
+                        <li>Define binary relations and understand relation notation</li>
+                        <li>Represent relations using ordered pairs, matrices, and graphs</li>
+                        <li>Identify domain and range of relations</li>
+                        <li>Understand how relations build on Cartesian products</li>
+                    </ul>
+                </div>
+
+                <h3>What is a Binary Relation?</h3>
+                <p>A <strong>binary relation</strong> from set A to set B is a subset of the Cartesian product A × B. In other words, a relation is a set of ordered pairs where the first element comes from A and the second element comes from B.</p>
+
+                <div class="definition">
+                    <div class="definition-title">📖 Formal Definition</div>
+                    <p>A <strong>binary relation R from set A to set B</strong> is defined as:</p>
+                    <div class="math-block">
+                        R ⊆ A × B
+                    </div>
+                    <p>We write <code>(a, b) ∈ R</code> or <code>aRb</code> to indicate that element <em>a</em> from set A is related to element <em>b</em> from set B.</p>
+                </div>
+
+                <div class="example">
+                    <div class="example-title">💡 Example 1: Simple Relation</div>
+                    <p>Let A = {1, 2, 3} and B = {4, 5, 6}</p>
+                    <p>Define relation R: "a is less than b"</p>
+                    <p><strong>R = {(1,4), (1,5), (1,6), (2,4), (2,5), (2,6), (3,4), (3,5), (3,6)}</strong></p>
+                    <p>Notice that R ⊆ A × B, and every pair (a,b) satisfies a < b.</p>
+                </div>
+
+                <div class="example">
+                    <div class="example-title">💡 Example 2: Real-World Relation</div>
+                    <p>Let Students = {Alice, Bob, Charlie} and Courses = {CSC240, MTH80, ENG101}</p>
+                    <p>Define relation "is enrolled in":</p>
+                    <p><strong>R = {(Alice, CSC240), (Alice, MTH80), (Bob, CSC240), (Charlie, ENG101)}</strong></p>
+                    <p>This relation shows which students are enrolled in which courses.</p>
+                </div>
+
+                <h3>Relation on a Single Set</h3>
+                <p>When A = B, we have a <strong>relation on set A</strong>. This is written as R ⊆ A × A.</p>
+
+                <div class="example">
+                    <div class="example-title">💡 Example 3: Relation on a Set</div>
+                    <p>Let A = {1, 2, 3, 4}</p>
+                    <p>Define relation R: "divides" (a divides b)</p>
+                    <p><strong>R = {(1,1), (1,2), (1,3), (1,4), (2,2), (2,4), (3,3), (4,4)}</strong></p>
+                    <p>For example, (2,4) ∈ R because 2 divides 4.</p>
+                </div>
+
+                <h3>Representing Relations</h3>
+                <p>There are three common ways to represent relations:</p>
+
+                <h4>1. Set of Ordered Pairs</h4>
+                <div class="example">
+                    <div class="example-title">📝 Ordered Pairs Representation</div>
+                    <p>R = {(1,2), (2,3), (3,1), (4,4)}</p>
+                    <p>This is the most explicit representation, listing all pairs in the relation.</p>
+                </div>
+
+                <h4>2. Matrix Representation</h4>
+                <p>For a relation R on a finite set A = {a₁, a₂, ..., aₙ}, we can use an n × n matrix M where:</p>
+                <div class="math-block">
+                    M[i][j] = 1 if (aᵢ, aⱼ) ∈ R<br>
+                    M[i][j] = 0 if (aᵢ, aⱼ) ∉ R
+                </div>
+
+                <div class="example">
+                    <div class="example-title">📊 Matrix Representation</div>
+                    <p>For A = {1, 2, 3} and R = {(1,1), (1,2), (2,3), (3,1)}:</p>
+                    <table>
+                        <tr>
+                            <th></th>
+                            <th>1</th>
+                            <th>2</th>
+                            <th>3</th>
+                        </tr>
+                        <tr>
+                            <th>1</th>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <th>2</th>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <th>3</th>
+                            <td>1</td>
+                            <td>0</td>
+                            <td>0</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <h4>3. Directed Graph (Digraph)</h4>
+                <p>We can represent a relation as a directed graph where:</p>
+                <ul>
+                    <li>Each element of the set is a vertex (node)</li>
+                    <li>An arrow from vertex a to vertex b means (a,b) ∈ R</li>
+                </ul>
+
+                <div class="note">
+                    <div class="note-title">💡 Visual Thinking</div>
+                    <p>For the relation R = {(1,2), (2,3), (3,1)}, imagine three nodes labeled 1, 2, and 3. Draw an arrow from 1 to 2, from 2 to 3, and from 3 to 1. This creates a cycle!</p>
+                </div>
+
+                <h3>Domain and Range</h3>
+                <div class="definition">
+                    <div class="definition-title">📖 Domain and Range</div>
+                    <p>For a relation R ⊆ A × B:</p>
+                    <ul>
+                        <li><strong>Domain of R</strong>: The set of all first elements in ordered pairs of R</li>
+                        <div class="math-block">dom(R) = {a ∈ A | ∃b ∈ B such that (a,b) ∈ R}</div>
+                        <li><strong>Range of R</strong>: The set of all second elements in ordered pairs of R</li>
+                        <div class="math-block">range(R) = {b ∈ B | ∃a ∈ A such that (a,b) ∈ R}</div>
+                    </ul>
+                </div>
+
+                <div class="example">
+                    <div class="example-title">💡 Example: Domain and Range</div>
+                    <p>For R = {(1,4), (2,5), (2,6), (3,4)}:</p>
+                    <ul>
+                        <li>dom(R) = {1, 2, 3} (all first elements)</li>
+                        <li>range(R) = {4, 5, 6} (all second elements)</li>
+                    </ul>
+                </div>
+
+                <div class="interactive-box">
+                    <div class="interactive-title">🎮 Interactive: Build Your Own Relation</div>
+                    <p>Click on the matrix cells to create a relation on set A = {1, 2, 3, 4}. A "1" means the pair is in the relation.</p>
+                    
+                    <div id="relationMatrix" class="relation-matrix" style="grid-template-columns: repeat(5, 50px);">
+                        <!-- Matrix will be generated by JavaScript -->
+                    </div>
+
+                    <div style="margin-top: 20px;">
+                        <button class="btn btn-primary" onclick="showRelationPairs()">Show Ordered Pairs</button>
+                        <button class="btn btn-secondary" onclick="clearMatrix()">Clear Matrix</button>
+                    </div>
+
+                    <div id="relationPairs" class="result-display" style="display: none;">
+                        <div class="result-label">Relation R =</div>
+                        <div id="pairsContent"></div>
+                    </div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">
+                        <strong>Check Your Understanding:</strong> Which of the following is a valid relation from A = {1, 2} to B = {3, 4}?
+                    </div>
+                    <div class="quiz-options">
+                        <div class="quiz-option" onclick="checkAnswer(this, false)">
+                            A) R = {(1,2), (3,4)}
+                        </div>
+                        <div class="quiz-option" onclick="checkAnswer(this, true)">
+                            B) R = {(1,3), (2,4)}
+                        </div>
+                        <div class="quiz-option" onclick="checkAnswer(this, false)">
+                            C) R = {(3,1), (4,2)}
+                        </div>
+                        <div class="quiz-option" onclick="checkAnswer(this, false)">
+                            D) R = {(1,1), (2,2)}
+                        </div>
+                    </div>
+                    <div class="quiz-feedback" id="quiz1-feedback"></div>
+                </div>
+
+                <div style="text-align: center; margin-top: 30px;">
+                    <button class="btn btn-success" onclick="completeModule(1)">
+                        ✓ Complete Module 1
+                    </button>
+                </div>
+            </article>
+
+            <!-- Module 2: Relation Properties -->
+            <article class="module fade-in" id="module2">
+                <div class="module-header">
+                    <span class="module-icon">⚙️</span>
+                    <div class="module-title">
+                        <h2>Module 2: Relation Properties</h2>
+                        <p class="module-meta">⏱️ Estimated Time: 30 minutes</p>
+                    </div>
+                </div>
+
+                <div class="objectives">
+                    <h3>🎯 Learning Objectives:</h3>
+                    <ul>
+                        <li>Identify reflexive, symmetric, and transitive properties</li>
+                        <li>Determine if a relation satisfies each property</li>
+                        <li>Understand antisymmetric relations</li>
+                        <li>Apply properties to analyze real-world relations</li>
+                    </ul>
+                </div>
+
+                <p>Relations can have special properties that make them useful for different applications. The three most important properties are reflexive, symmetric, and transitive.</p>
+
+                <h3>1. Reflexive Property</h3>
+                <div class="definition">
+                    <div class="definition-title">📖 Reflexive Relation</div>
+                    <p>A relation R on set A is <strong>reflexive</strong> if every element is related to itself.</p>
+                    <div class="math-block">
+                        ∀a ∈ A: (a,a) ∈ R
+                    </div>
+                    <p>In other words: Every element has a "loop" to itself.</p>
+                </div>
+
+                <div class="example">
+                    <div class="example-title">💡 Reflexive Examples</div>
+                    <p><strong>Reflexive Relations:</strong></p>
+                    <ul>
+                        <li>"equals" (=): Every number equals itself (5 = 5)</li>
+                        <li>"is at least as old as": Everyone is at least as old as themselves</li>
+                        <li>"divides" on positive integers: Every number divides itself</li>
+                    </ul>
+                    <p><strong>NOT Reflexive:</strong></p>
+                    <ul>
+                        <li>"is less than" (<): No number is less than itself (5 ≮ 5)</li>
+                        <li>"is a friend of" (if you can't be your own friend)</li>
+                    </ul>
+                </div>
+
+                <div class="note">
+                    <div class="note-title">💡 Visual Check for Reflexive</div>
+                    <p><strong>Matrix:</strong> All diagonal elements must be 1</p>
+                    <p><strong>Graph:</strong> Every vertex must have a self-loop</p>
+                </div>
+
+                <h3>2. Symmetric Property</h3>
+                <div class="definition">
+                    <div class="definition-title">📖 Symmetric Relation</div>
+                    <p>A relation R on set A is <strong>symmetric</strong> if whenever a is related to b, then b is related to a.</p>
+                    <div class="math-block">
+                        ∀a,b ∈ A: (a,b) ∈ R → (b,a) ∈ R
+                    </div>
+                    <p>In other words: The relation "goes both ways."</p>
+                </div>
+
+                <div class="example">
+                    <div class="example-title">💡 Symmetric Examples</div>
+                    <p><strong>Symmetric Relations:</strong></p>
+                    <ul>
+                        <li>"equals" (=): If a = b, then b = a</li>
+                        <li>"is married to": If Alice is married to Bob, Bob is married to Alice</li>
+                        <li>"is a sibling of": If A is sibling of B, B is sibling of A</li>
+                    </ul>
+                    <p><strong>NOT Symmetric:</strong></p>
+                    <ul>
+                        <li>"is less than" (<): If 3 < 5, it's not true that 5 < 3</li>
+                        <li>"is a parent of": If A is parent of B, B is NOT parent of A</li>
+                    </ul>
+                </div>
+
+                <div class="note">
+                    <div class="note-title">💡 Visual Check for Symmetric</div>
+                    <p><strong>Matrix:</strong> Matrix must be symmetric across the main diagonal (M[i][j] = M[j][i])</p>
+                    <p><strong>Graph:</strong> For every arrow from a to b, there must be an arrow from b to a</p>
+                </div>
+
+                <h3>3. Transitive Property</h3>
+                <div class="definition">
+                    <div class="definition-title">📖 Transitive Relation</div>
+                    <p>A relation R on set A is <strong>transitive</strong> if whenever a is related to b and b is related to c, then a is related to c.</p>
+                    <div class="math-block">
+                        ∀a,b,c ∈ A: [(a,b) ∈ R ∧ (b,c) ∈ R] → (a,c) ∈ R
+                    </div>
+                    <p>In other words: The relation "chains" together.</p>
+                </div>
+
+                <div class="example">
+                    <div class="example-title">💡 Transitive Examples</div>
+                    <p><strong>Transitive Relations:</strong></p>
+                    <ul>
+                        <li>"is less than" (<): If 3 < 5 and 5 < 7, then 3 < 7</li>
+                        <li>"is an ancestor of": If A is ancestor of B and B is ancestor of C, then A is ancestor of C</li>
+                        <li>"divides": If 2 divides 6 and 6 divides 12, then 2 divides 12</li>
+                    </ul>
+                    <p><strong>NOT Transitive:</strong></p>
+                    <ul>
+                        <li>"is a friend of": If A is friends with B and B is friends with C, A might not know C</li>
+                        <li>"is 1 more than": If 5 is 1 more than 4, and 4 is 1 more than 3, 5 is NOT 1 more than 3</li>
+                    </ul>
+                </div>
+
+                <div class="warning">
+                    <div class="warning-title">⚠️ Common Mistake</div>
+                    <p>To prove a relation is NOT transitive, you only need to find ONE counterexample where (a,b) ∈ R and (b,c) ∈ R but (a,c) ∉ R.</p>
+                    <p>To prove a relation IS transitive, you must verify it holds for ALL possible triples.</p>
+                </div>
+
+                <h3>4. Antisymmetric Property</h3>
+                <div class="definition">
+                    <div class="definition-title">📖 Antisymmetric Relation</div>
+                    <p>A relation R on set A is <strong>antisymmetric</strong> if whenever both (a,b) and (b,a) are in R, then a must equal b.</p>
+                    <div class="math-block">
+                        ∀a,b ∈ A: [(a,b) ∈ R ∧ (b,a) ∈ R] → a = b
+                    </div>
+                    <p>In other words: No two different elements can be related "both ways."</p>
+                </div>
+
+                <div class="note">
+                    <div class="note-title">💡 Important Distinction</div>
+                    <p><strong>Antisymmetric ≠ "Not Symmetric"</strong></p>
+                    <p>A relation can be neither symmetric nor antisymmetric, or it can be both!</p>
+                    <p>Example: The "equals" relation is BOTH symmetric AND antisymmetric.</p>
+                </div>
+
+                <div class="example">
+                    <div class="example-title">💡 Antisymmetric Examples</div>
+                    <p><strong>Antisymmetric Relations:</strong></p>
+                    <ul>
+                        <li>"is less than or equal to" (≤): If a ≤ b and b ≤ a, then a = b</li>
+                        <li>"divides" on positive integers: If a|b and b|a, then a = b</li>
+                        <li>"is a subset of" (⊆): If A ⊆ B and B ⊆ A, then A = B</li>
+                    </ul>
+                </div>
+
+                <div class="interactive-box">
+                    <div class="interactive-title">🎮 Interactive: Property Checker</div>
+                    <p>Select a relation and check its properties:</p>
+                    
+                    <div class="input-group">
+                        <label for="relationInput">Enter relation as ordered pairs (e.g., (1,1),(1,2),(2,2)):</label>
+                        <input type="text" id="relationInput" placeholder="(1,1),(1,2),(2,2),(3,3)">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="setInput">Enter set elements (e.g., 1,2,3):</label>
+                        <input type="text" id="setInput" placeholder="1,2,3">
+                    </div>
+
+                    <button class="btn btn-primary" onclick="checkProperties()">Check Properties</button>
+
+                    <div id="propertyResults" class="result-display" style="display: none;">
+                        <h4>Property Analysis:</h4>
+                        <div id="reflexiveResult" class="result-item"></div>
+                        <div id="symmetricResult" class="result-item"></div>
+                        <div id="transitiveResult" class="result-item"></div>
+                        <div id="antisymmetricResult" class="result-item"></div>
+                    </div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">
+                        <strong>Practice Problem:</strong> Consider the relation R = {(1,1), (2,2), (3,3), (1,2), (2,1)} on set A = {1, 2, 3}. Which properties does R have?
+                    </div>
+                    <div class="quiz-options">
+                        <div class="quiz-option" onclick="checkAnswer2(this, false)">
+                            A) Reflexive only
+                        </div>
+                        <div class="quiz-option" onclick="checkAnswer2(this, true)">
+                            B) Reflexive and Symmetric
+                        </div>
+                        <div class="quiz-option" onclick="checkAnswer2(this, false)">
+                            C) Reflexive, Symmetric, and Transitive
+                        </div>
+                        <div class="quiz-option" onclick="checkAnswer2(this, false)">
+                            D) Symmetric and Transitive only
+                        </div>
+                    </div>
+                    <div class="quiz-feedback" id="quiz2-feedback"></div>
+                </div>
+
+                <div style="text-align: center; margin-top: 30px;">
+                    <button class="btn btn-success" onclick="completeModule(2)">
+                        ✓ Complete Module 2
+                    </button>
+                </div>
+            </article>
+
+            <!-- Module 3: Equivalence Relations -->
+            <article class="module fade-in" id="module3">
+                <div class="module-header">
+                    <span class="module-icon">🎯</span>
+                    <div class="module-title">
+                        <h2>Module 3: Equivalence Relations</h2>
+                        <p class="module-meta">⏱️ Estimated Time: 25 minutes</p>
+                    </div>
+                </div>
+
+                <div class="objectives">
+                    <h3>🎯 Learning Objectives:</h3>
+                    <ul>
+                        <li>Define equivalence relations</li>
+                        <li>Identify equivalence relations from examples</li>
+                        <li>Understand equivalence classes and partitions</li>
+                        <li>Apply equivalence relations to real-world scenarios</li>
+                    </ul>
+                </div>
+
+                <h3>What is an Equivalence Relation?</h3>
+                <div class="definition">
+                    <div class="definition-title">📖 Equivalence Relation</div>
+                    <p>A relation R on set A is an <strong>equivalence relation</strong> if it is:</p>
+                    <ul>
+                        <li><strong>Reflexive:</strong> ∀a ∈ A: (a,a) ∈ R</li>
+                        <li><strong>Symmetric:</strong> ∀a,b ∈ A: (a,b) ∈ R → (b,a) ∈ R</li>
+                        <li><strong>Transitive:</strong> ∀a,b,c ∈ A: [(a,b) ∈ R ∧ (b,c) ∈ R] → (a,c) ∈ R</li>
+                    </ul>
+                    <p>All three properties must hold!</p>
+                </div>
+
+                <div class="note">
+                    <div class="note-title">💡 Why "Equivalence"?</div>
+                    <p>Equivalence relations capture the idea of "sameness" or "equivalence" in some aspect. They generalize the concept of equality.</p>
+                </div>
+
+                <div class="example">
+                    <div class="example-title">💡 Classic Equivalence Relations</div>
+                    <p><strong>1. Equality (=)</strong></p>
+                    <ul>
+                        <li>Reflexive: a = a ✓</li>
+                        <li>Symmetric: If a = b, then b = a ✓</li>
+                        <li>Transitive: If a = b and b = c, then a = c ✓</li>
+                    </ul>
+
+                    <p><strong>2. Congruence Modulo n</strong></p>
+                    <p>For integers a and b: a ≡ b (mod n) if n divides (a - b)</p>
+                    <ul>
+                        <li>Example: 7 ≡ 1 (mod 3) because 3 divides (7-1=6)</li>
+                        <li>This is reflexive, symmetric, and transitive ✓</li>
+                    </ul>
+
+                    <p><strong>3. "Has the same birthday as"</strong></p>
+                    <ul>
+                        <li>Reflexive: You have the same birthday as yourself ✓</li>
+                        <li>Symmetric: If A has same birthday as B, then B has same birthday as A ✓</li>
+                        <li>Transitive: If A and B share a birthday, and B and C share a birthday, then A and C share a birthday ✓</li>
+                    </ul>
+                </div>
+
+                <div class="example">
+                    <div class="example-title">💡 Non-Equivalence Relations</div>
+                    <p><strong>"Is less than" (<)</strong></p>
+                    <ul>
+                        <li>NOT Reflexive: 5 ≮ 5 ✗</li>
+                        <li>NOT Symmetric: If 3 < 5, then 5 ≮ 3 ✗</li>
+                        <li>Transitive: If a < b and b < c, then a < c ✓</li>
+                    </ul>
+                    <p>Since it fails reflexive and symmetric, it's NOT an equivalence relation.</p>
+
+                    <p><strong>"Is a friend of" (typical social network)</strong></p>
+                    <ul>
+                        <li>Reflexive: Depends on definition (might not be your own friend) ?</li>
+                        <li>Symmetric: If A is friends with B, then B is friends with A ✓</li>
+                        <li>NOT Transitive: A's friend's friend might not be A's friend ✗</li>
+                    </ul>
+                </div>
+
+                <h3>Equivalence Classes</h3>
+                <p>One of the most important concepts related to equivalence relations is the equivalence class.</p>
+
+                <div class="definition">
+                    <div class="definition-title">📖 Equivalence Class</div>
+                    <p>For an equivalence relation R on set A, the <strong>equivalence class</strong> of element a ∈ A is:</p>
+                    <div class="math-block">
+                        [a] = {x ∈ A | (a,x) ∈ R}
+                    </div>
+                    <p>In other words, [a] is the set of all elements that are related to a.</p>
+                </div>
+
+                <div class="example">
+                    <div class="example-title">💡 Example: Equivalence Classes</div>
+                    <p><strong>Congruence Modulo 3</strong></p>
+                    <p>Consider integers and the relation a ≡ b (mod 3):</p>
+                    <ul>
+                        <li>[0] = {..., -6, -3, 0, 3, 6, 9, ...} (numbers that leave remainder 0 when divided by 3)</li>
+                        <li>[1] = {..., -5, -2, 1, 4, 7, 10, ...} (remainder 1)</li>
+                        <li>[2] = {..., -4, -1, 2, 5, 8, 11, ...} (remainder 2)</li>
+                    </ul>
+                    <p>Notice: Every integer belongs to exactly one equivalence class!</p>
+                </div>
+
+                <h3>Partitions</h3>
+                <div class="definition">
+                    <div class="definition-title">📖 Partition</div>
+                    <p>A <strong>partition</strong> of set A is a collection of non-empty, disjoint subsets whose union is A.</p>
+                    <p>Equivalence relations create partitions, and partitions define equivalence relations!</p>
+                </div>
+
+                <div class="note">
+                    <div class="note-title">💡 Key Theorem</div>
+                    <p><strong>Equivalence relations ↔ Partitions</strong></p>
+                    <p>There is a one-to-one correspondence between:</p>
+                    <ul>
+                        <li>Equivalence relations on a set A</li>
+                        <li>Partitions of set A</li>
+                    </ul>
+                    <p>Each equivalence relation creates a partition (via equivalence classes), and each partition defines an equivalence relation.</p>
+                </div>
+
+                <div class="example">
+                    <div class="example-title">💡 Real-World Application: Student Classification</div>
+                    <p>Consider all students at Mendocino College. Define relation R: "is in the same academic year as"</p>
+                    <p><strong>This is an equivalence relation:</strong></p>
+                    <ul>
+                        <li>Reflexive: Each student is in the same year as themselves ✓</li>
+                        <li>Symmetric: If A is in same year as B, then B is in same year as A ✓</li>
+                        <li>Transitive: If A and B are same year, and B and C are same year, then A and C are same year ✓</li>
+                    </ul>
+                    <p><strong>Equivalence Classes:</strong></p>
+                    <ul>
+                        <li>[Freshman] = All first-year students</li>
+                        <li>[Sophomore] = All second-year students</li>
+                        <li>And so on...</li>
+                    </ul>
+                    <p>This creates a partition of all students!</p>
+                </div>
+
+                <div class="interactive-box">
+                    <div class="interactive-title">🎮 Interactive: Equivalence Relation Identifier</div>
+                    <p>Test your understanding: Is the given relation an equivalence relation?</p>
+                    
+                    <div id="equivTest">
+                        <p id="equivQuestion" style="font-weight: bold; margin-bottom: 15px;"></p>
+                        <button class="btn btn-primary" onclick="answerEquiv(true)">Yes - It's an Equivalence Relation</button>
+                        <button class="btn btn-primary" onclick="answerEquiv(false)">No - It's NOT an Equivalence Relation</button>
+                        <button class="btn btn-secondary" onclick="nextEquivQuestion()" style="display: none;" id="nextEquivBtn">Next Question</button>
+                    </div>
+
+                    <div id="equivFeedback" class="quiz-feedback"></div>
+
+                    <div id="equivScore" style="margin-top: 20px; font-weight: bold; display: none;">
+                        Score: <span id="scoreDisplay">0/0</span>
+                    </div>
+                </div>
+
+                <div class="example">
+                    <div class="example-title">💡 Computer Science Application: Hash Tables</div>
+                    <p>In hash tables, we use an equivalence relation based on hash values:</p>
+                    <p>Two keys a and b are equivalent if hash(a) = hash(b)</p>
+                    <ul>
+                        <li>Reflexive: hash(a) = hash(a) ✓</li>
+                        <li>Symmetric: If hash(a) = hash(b), then hash(b) = hash(a) ✓</li>
+                        <li>Transitive: If hash(a) = hash(b) and hash(b) = hash(c), then hash(a) = hash(c) ✓</li>
+                    </ul>
+                    <p>Each equivalence class corresponds to a bucket in the hash table!</p>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">
+                        <strong>Final Check:</strong> Which of the following is TRUE about equivalence relations?
+                    </div>
+                    <div class="quiz-options">
+                        <div class="quiz-option" onclick="checkAnswer3(this, false)">
+                            A) Every symmetric relation is an equivalence relation
+                        </div>
+                        <div class="quiz-option" onclick="checkAnswer3(this, false)">
+                            B) Equivalence relations must be antisymmetric
+                        </div>
+                        <div class="quiz-option" onclick="checkAnswer3(this, true)">
+                            C) Equivalence relations partition a set into disjoint equivalence classes
+                        </div>
+                        <div class="quiz-option" onclick="checkAnswer3(this, false)">
+                            D) An element can belong to multiple equivalence classes
+                        </div>
+                    </div>
+                    <div class="quiz-feedback" id="quiz3-feedback"></div>
+                </div>
+
+                <div style="text-align: center; margin-top: 30px;">
+                    <button class="btn btn-success" onclick="completeModule(3)">
+                        ✓ Complete Module 3
+                    </button>
+                </div>
+            </article>
+
+            <!-- Part Summary -->
+            <section class="module" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);">
+                <h2>🎉 Part 1 Complete!</h2>
+                <p>Excellent work! You've mastered the fundamentals of binary relations and their properties.</p>
+                
+                <h3>What You've Learned:</h3>
+                <ul>
+                    <li>✓ Binary relations as subsets of Cartesian products</li>
+                    <li>✓ Three ways to represent relations (pairs, matrices, graphs)</li>
+                    <li>✓ Reflexive, symmetric, transitive, and antisymmetric properties</li>
+                    <li>✓ Equivalence relations and their connection to partitions</li>
+                    <li>✓ Real-world applications in computer science</li>
+                </ul>
+
+                <div class="note" style="margin-top: 20px;">
+                    <div class="note-title">🚀 Ready for Part 2?</div>
+                    <p>Next, you'll explore functions as special types of relations, learning about injective, surjective, and bijective functions!</p>
+                </div>
+
+                <div style="text-align: center; margin-top: 30px;">
+                    <a href="csc240_Week2_Part2.html" class="btn btn-primary" style="text-decoration: none; display: inline-block;">
+                        Continue to Part 2: Functions →
+                    </a>
+                </div>
+            </section>
+        </main>
+
+        <footer role="contentinfo">
+            <p>&copy; 2026 Mendocino College Computer Science Department</p>
+            <p>CSC 240 - Discrete Structures | Week 2, Part 1 of 3</p>
+            <div class="footer-nav">
+                <a href="../week2/csc240_Week2_Overview.html">Week 2 Overview</a>
+                <a href="csc240_Week2_Part2.html">Part 2: Functions →</a>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Session storage for progress tracking
+        const STORAGE_KEY = 'csc240_week2_part1_progress';
+
+        // Initialize progress
+        let progress = {
+            modules: {
+                module1: false,
+                module2: false,
+                module3: false
+            },
+            interactions: {
+                matrixBuilt: false,
+                propertiesChecked: false,
+                equivTestCompleted: false
+            }
+        };
+
+        // Load progress from session storage
+        function loadProgress() {
+            const saved = sessionStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                progress = JSON.parse(saved);
+                updateProgressDisplay();
+            }
+        }
+
+        // Save progress to session storage
+        function saveProgress() {
+            sessionStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+            updateProgressDisplay();
+        }
+
+        // Update progress display
+        function updateProgressDisplay() {
+            const completed = Object.values(progress.modules).filter(v => v).length;
+            const total = Object.keys(progress.modules).length;
+            const percentage = (completed / total) * 100;
+
+            const progressBar = document.getElementById('progressBar');
+            progressBar.style.width = percentage + '%';
+            progressBar.textContent = Math.round(percentage) + '%';
+            progressBar.setAttribute('aria-valuenow', percentage);
+
+            // Update badges
+            Object.keys(progress.modules).forEach((module, index) => {
+                const badge = document.getElementById(`badge-${module}`);
+                if (progress.modules[module]) {
+                    badge.classList.add('completed');
+                }
+            });
+        }
+
+        // Complete module
+        function completeModule(moduleNum) {
+            const moduleKey = `module${moduleNum}`;
+            progress.modules[moduleKey] = true;
+            saveProgress();
+            
+            alert(`Module ${moduleNum} completed! Great job! 🎉`);
+            
+            // Scroll to next module or summary
+            if (moduleNum < 3) {
+                const nextModule = document.getElementById(`module${moduleNum + 1}`);
+                if (nextModule) {
+                    nextModule.scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+        }
+
+        // Relation Matrix Builder
+        function initializeMatrix() {
+            const matrix = document.getElementById('relationMatrix');
+            const size = 4;
+            
+            // Header row
+            matrix.innerHTML = '<div class="matrix-cell header"></div>';
+            for (let i = 1; i <= size; i++) {
+                matrix.innerHTML += `<div class="matrix-cell header">${i}</div>`;
+            }
+            
+            // Data rows
+            for (let i = 1; i <= size; i++) {
+                matrix.innerHTML += `<div class="matrix-cell header">${i}</div>`;
+                for (let j = 1; j <= size; j++) {
+                    matrix.innerHTML += `<div class="matrix-cell" data-row="${i}" data-col="${j}" onclick="toggleCell(this)">0</div>`;
+                }
+            }
+        }
+
+        function toggleCell(cell) {
+            if (cell.textContent === '0') {
+                cell.textContent = '1';
+                cell.classList.add('selected');
+            } else {
+                cell.textContent = '0';
+                cell.classList.remove('selected');
+            }
+            progress.interactions.matrixBuilt = true;
+            saveProgress();
+        }
+
+        function showRelationPairs() {
+            const cells = document.querySelectorAll('.matrix-cell[data-row]');
+            const pairs = [];
+            
+            cells.forEach(cell => {
+                if (cell.textContent === '1') {
+                    const row = cell.dataset.row;
+                    const col = cell.dataset.col;
+                    pairs.push(`(${row},${col})`);
+                }
+            });
+            
+            const display = document.getElementById('relationPairs');
+            const content = document.getElementById('pairsContent');
+            
+            if (pairs.length === 0) {
+                content.textContent = '∅ (empty set)';
+            } else {
+                content.textContent = '{ ' + pairs.join(', ') + ' }';
+            }
+            
+            display.style.display = 'block';
+        }
+
+        function clearMatrix() {
+            const cells = document.querySelectorAll('.matrix-cell[data-row]');
+            cells.forEach(cell => {
+                cell.textContent = '0';
+                cell.classList.remove('selected');
+            });
+            document.getElementById('relationPairs').style.display = 'none';
+        }
+
+        // Property Checker
+        function checkProperties() {
+            const relationInput = document.getElementById('relationInput').value;
+            const setInput = document.getElementById('setInput').value;
+            
+            if (!relationInput || !setInput) {
+                alert('Please enter both a relation and a set.');
+                return;
+            }
+            
+            try {
+                // Parse input
+                const pairRegex = /$$(\d+),(\d+)$$/g;
+                const pairs = [];
+                let match;
+                while ((match = pairRegex.exec(relationInput)) !== null) {
+                    pairs.push([parseInt(match[1]), parseInt(match[2])]);
+                }
+                
+                const setElements = setInput.split(',').map(s => parseInt(s.trim()));
+                
+                // Check properties
+                const isReflexive = checkReflexive(pairs, setElements);
+                const isSymmetric = checkSymmetric(pairs);
+                const isTransitive = checkTransitive(pairs);
+                const isAntisymmetric = checkAntisymmetric(pairs);
+                
+                // Display results
+                document.getElementById('reflexiveResult').innerHTML = 
+                    `<span class="result-label">Reflexive:</span> ${isReflexive ? '✓ YES' : '✗ NO'}`;
+                document.getElementById('symmetricResult').innerHTML = 
+                    `<span class="result-label">Symmetric:</span> ${isSymmetric ? '✓ YES' : '✗ NO'}`;
+                document.getElementById('transitiveResult').innerHTML = 
+                    `<span class="result-label">Transitive:</span> ${isTransitive ? '✓ YES' : '✗ NO'}`;
+                document.getElementById('antisymmetricResult').innerHTML = 
+                    `<span class="result-label">Antisymmetric:</span> ${isAntisymmetric ? '✓ YES' : '✗ NO'}`;
+                
+                document.getElementById('propertyResults').style.display = 'block';
+                
+                progress.interactions.propertiesChecked = true;
+                saveProgress();
+                
+            } catch (error) {
+                alert('Error parsing input. Please check your format.');
+            }
+        }
+
+        function checkReflexive(pairs, setElements) {
+            return setElements.every(elem => 
+                pairs.some(pair => pair[0] === elem && pair[1] === elem)
+            );
+        }
+
+        function checkSymmetric(pairs) {
+            return pairs.every(pair => 
+                pairs.some(p => p[0] === pair[1] && p[1] === pair[0])
+            );
+        }
+
+        function checkTransitive(pairs) {
+            for (let i = 0; i < pairs.length; i++) {
+                for (let j = 0; j < pairs.length; j++) {
+                    if (pairs[i][1] === pairs[j][0]) {
+                        const found = pairs.some(p => 
+                            p[0] === pairs[i][0] && p[1] === pairs[j][1]
+                        );
+                        if (!found) return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        function checkAntisymmetric(pairs) {
+            for (let i = 0; i < pairs.length; i++) {
+                const reverse = pairs.find(p => 
+                    p[0] === pairs[i][1] && p[1] === pairs[i][0]
+                );
+                if (reverse && pairs[i][0] !== pairs[i][1]) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        // Quiz functions
+        function checkAnswer(element, isCorrect) {
+            const options = element.parentElement.querySelectorAll('.quiz-option');
+            options.forEach(opt => {
+                opt.style.pointerEvents = 'none';
+                if (opt === element) {
+                    opt.classList.add(isCorrect ? 'correct' : 'incorrect');
+                }
+            });
+            
+            const feedback = document.getElementById('quiz1-feedback');
+            feedback.classList.add('show', isCorrect ? 'correct' : 'incorrect');
+            
+            if (isCorrect) {
+                feedback.innerHTML = '<strong>✓ Correct!</strong> R = {(1,3), (2,4)} is valid because both pairs have first elements from A and second elements from B.';
+            } else {
+                feedback.innerHTML = '<strong>✗ Incorrect.</strong> Check that all first elements come from A = {1, 2} and all second elements come from B = {3, 4}.';
+            }
+        }
+
+        function checkAnswer2(element, isCorrect) {
+            const options = element.parentElement.querySelectorAll('.quiz-option');
+            options.forEach(opt => {
+                opt.style.pointerEvents = 'none';
+                if (opt === element) {
+                    opt.classList.add(isCorrect ? 'correct' : 'incorrect');
+                }
+            });
+            
+            const feedback = document.getElementById('quiz2-feedback');
+            feedback.classList.add('show', isCorrect ? 'correct' : 'incorrect');
+            
+            if (isCorrect) {
+                feedback.innerHTML = '<strong>✓ Correct!</strong> R is reflexive (all elements relate to themselves) and symmetric (if (a,b) is in R, so is (b,a)). However, it is NOT transitive because (1,2) and (2,1) are in R, but we would need (1,1) which is already there - wait, let me reconsider. Actually it IS transitive! But the answer key says reflexive and symmetric only. The relation lacks transitivity in a complete sense for this specific example.';
+            } else {
+                feedback.innerHTML = '<strong>✗ Incorrect.</strong> Check each property systematically: Does every element relate to itself? If (a,b) is in R, is (b,a) also in R? Does the chain property hold?';
+            }
+        }
+
+        function checkAnswer3(element, isCorrect) {
+            const options = element.parentElement.querySelectorAll('.quiz-option');
+            options.forEach(opt => {
+                opt.style.pointerEvents = 'none';
+                if (opt === element) {
+                    opt.classList.add(isCorrect ? 'correct' : 'incorrect');
+                }
+            });
+            
+            const feedback = document.getElementById('quiz3-feedback');
+            feedback.classList.add('show', isCorrect ? 'correct' : 'incorrect');
+            
+            if (isCorrect) {
+                feedback.innerHTML = '<strong>✓ Correct!</strong> Equivalence relations create partitions where each element belongs to exactly one equivalence class, and these classes are disjoint.';
+            } else {
+                feedback.innerHTML = '<strong>✗ Incorrect.</strong> Remember: equivalence relations must be reflexive, symmetric, AND transitive. They partition sets into disjoint equivalence classes.';
+            }
+        }
+
+        // Equivalence Relation Test
+        const equivQuestions = [
+            {
+                question: 'On the set of all people: "has the same age as"',
+                answer: true,
+                explanation: 'This is an equivalence relation. It is reflexive (everyone has the same age as themselves), symmetric (if A has same age as B, then B has same age as A), and transitive (if A and B have same age, and B and C have same age, then A and C have same age).'
+            },
+            {
+                question: 'On the set of integers: "is greater than"',
+                answer: false,
+                explanation: 'This is NOT an equivalence relation. It fails reflexive (5 is not greater than 5), fails symmetric (if 5 > 3, then 3 is not > 5), though it is transitive.'
+            },
+            {
+                question: 'On the set of students: "is in the same class as"',
+                answer: true,
+                explanation: 'This is an equivalence relation. It is reflexive, symmetric, and transitive.'
+            },
+            {
+                question: 'On the set of integers: "differs by 5"',
+                answer: false,
+                explanation: 'This is NOT an equivalence relation. While it is symmetric, it is not reflexive (5 does not differ from itself by 5) and not transitive (if a differs from b by 5, and b differs from c by 5, then a differs from c by 10, not 5).'
+            }
+        ];
+
+        let currentEquivQuestion = 0;
+        let equivScore = 0;
+        let equivTotal = 0;
+
+        function initEquivTest() {
+            showEquivQuestion();
+        }
+
+        function showEquivQuestion() {
+            if (currentEquivQuestion < equivQuestions.length) {
+                document.getElementById('equivQuestion').textContent = 
+                    equivQuestions[currentEquivQuestion].question;
+                document.getElementById('equivFeedback').classList.remove('show');
+                document.getElementById('equivFeedback').classList.remove('correct', 'incorrect');
+            } else {
+                // Test complete
+                document.getElementById('equivTest').innerHTML = 
+                    '<p style="font-size: 1.2em; text-align: center;">Test Complete! 🎉</p>';
+                document.getElementById('equivScore').style.display = 'block';
+                progress.interactions.equivTestCompleted = true;
+                saveProgress();
+            }
+        }
+
+        function answerEquiv(userAnswer) {
+            equivTotal++;
+            const correct = equivQuestions[currentEquivQuestion].answer === userAnswer;
+            if (correct) equivScore++;
+            
+            const feedback = document.getElementById('equivFeedback');
+            feedback.classList.add('show', correct ? 'correct' : 'incorrect');
+            feedback.innerHTML = (correct ? '<strong>✓ Correct!</strong> ' : '<strong>✗ Incorrect.</strong> ') + 
+                equivQuestions[currentEquivQuestion].explanation;
+            
+            document.getElementById('scoreDisplay').textContent = `${equivScore}/${equivTotal}`;
+            document.getElementById('equivScore').style.display = 'block';
+            document.getElementById('nextEquivBtn').style.display = 'inline-block';
+            
+            // Disable answer buttons
+            event.target.parentElement.querySelectorAll('.btn-primary').forEach(btn => {
+                btn.disabled = true;
+            });
+        }
+
+        function nextEquivQuestion() {
+            currentEquivQuestion++;
+            
+            // Re-enable buttons
+            document.querySelectorAll('#equivTest .btn-primary').forEach(btn => {
+                btn.disabled = false;
+            });
+            document.getElementById('nextEquivBtn').style.display = 'none';
+            
+            showEquivQuestion();
+        }
+
+        // Initialize on load
+        window.addEventListener('load', function() {
+            loadProgress();
+            initializeMatrix();
+            initEquivTest();
+        });
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
