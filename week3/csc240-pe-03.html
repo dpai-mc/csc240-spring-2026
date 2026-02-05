@@ -1,0 +1,4425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PE-03: Truth Table Generator | CSC 240 Week 3</title>
+    <style>
+        /* ===================================
+           PE-03: TRUTH TABLE GENERATOR
+           CSC 240 - Discrete Structures
+           Complete Embedded CSS
+           Max Width: 800px Single Column
+           =================================== */
+        
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --info-color: #9b59b6;
+            --light-bg: #ecf0f1;
+            --card-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            --border-radius: 8px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--primary-color);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        /* Header Section */
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        header .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 0.3rem;
+        }
+        
+        header .meta {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        /* Assignment Info Banner */
+        .assignment-info {
+            background: linear-gradient(135deg, var(--info-color), #8e44ad);
+            color: white;
+            padding: 1.5rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            text-align: center;
+        }
+        
+        .info-item {
+            padding: 0.5rem;
+        }
+        
+        .info-item .label {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            margin-bottom: 0.3rem;
+        }
+        
+        .info-item .value {
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+        
+        /* Content Sections */
+        .content {
+            padding: 2rem;
+        }
+        
+        .section {
+            margin-bottom: 2rem;
+        }
+        
+        .section h2 {
+            color: var(--primary-color);
+            font-size: 1.6rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid var(--secondary-color);
+        }
+        
+        .section h3 {
+            color: var(--secondary-color);
+            font-size: 1.3rem;
+            margin: 1.5rem 0 1rem 0;
+        }
+        
+        /* Objectives Box */
+        .objectives {
+            background: #e3f2fd;
+            border-left: 4px solid var(--secondary-color);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 4px;
+        }
+        
+        .objectives h3 {
+            color: var(--secondary-color);
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+        
+        .objectives ul {
+            list-style-position: inside;
+            padding-left: 1rem;
+        }
+        
+        .objectives li {
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Requirements Box */
+        .requirements {
+            background: #fff3e0;
+            border-left: 4px solid var(--warning-color);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 4px;
+        }
+        
+        .requirements h3 {
+            color: var(--warning-color);
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+        
+        /* Important/Warning Box */
+        .warning {
+            background: #ffebee;
+            border-left: 4px solid var(--accent-color);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 4px;
+        }
+        
+        .warning h3 {
+            color: var(--accent-color);
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+        
+        /* Success/Tip Box */
+        .tip {
+            background: #f1f8e9;
+            border-left: 4px solid var(--success-color);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 4px;
+        }
+        
+        .tip h3 {
+            color: var(--success-color);
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+        
+        /* Code Blocks */
+        pre {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 1.5rem;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+        
+        code {
+            font-family: 'Courier New', Courier, monospace;
+            background: #f4f4f4;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            color: #e74c3c;
+            font-size: 0.9em;
+        }
+        
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+        }
+        
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            background: white;
+            font-size: 0.95rem;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        /* Grading Rubric Table */
+        .rubric-table th {
+            background-color: var(--info-color);
+        }
+        
+        .rubric-table .category {
+            font-weight: bold;
+            background-color: #f0f0f0;
+        }
+        
+        /* Buttons */
+        button, .btn {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+            margin: 0.5rem 0.5rem 0.5rem 0;
+            display: inline-block;
+        }
+        
+        button:hover, .btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        button:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-success {
+            background-color: var(--success-color);
+        }
+        
+        .btn-success:hover {
+            background-color: #229954;
+        }
+        
+        .btn-warning {
+            background-color: var(--warning-color);
+        }
+        
+        .btn-warning:hover {
+            background-color: #e67e22;
+        }
+        
+        .btn-accent {
+            background-color: var(--accent-color);
+        }
+        
+        .btn-accent:hover {
+            background-color: #c0392b;
+        }
+        
+        /* Collapsible Sections */
+        .collapsible {
+            background-color: var(--secondary-color);
+            color: white;
+            cursor: pointer;
+            padding: 1rem;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 1.1rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+            transition: all 0.3s;
+        }
+        
+        .collapsible:hover {
+            background-color: #2980b9;
+        }
+        
+        .collapsible:after {
+            content: '\002B';
+            color: white;
+            font-weight: bold;
+            float: right;
+            margin-left: 5px;
+        }
+        
+        .collapsible.active:after {
+            content: "\2212";
+        }
+        
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            background-color: #f9f9f9;
+            border-radius: 0 0 5px 5px;
+        }
+        
+        .collapsible-content.active {
+            padding: 1.5rem;
+            border: 2px solid var(--secondary-color);
+            border-top: none;
+        }
+        
+        /* Lists */
+        ul, ol {
+            margin: 1rem 0;
+            padding-left: 2rem;
+        }
+        
+        li {
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Checklist */
+        .checklist {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .checklist li {
+            padding: 0.5rem;
+            margin: 0.5rem 0;
+            background: #f9f9f9;
+            border-radius: 5px;
+            padding-left: 2rem;
+            position: relative;
+        }
+        
+        .checklist li:before {
+            content: '☐';
+            position: absolute;
+            left: 0.5rem;
+            font-size: 1.2rem;
+            color: var(--secondary-color);
+        }
+        
+        /* Interactive Demo Section */
+        .demo-section {
+            background: #f5f5f5;
+            border: 2px solid var(--secondary-color);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        
+        .demo-section h3 {
+            color: var(--secondary-color);
+            margin-top: 0;
+        }
+        
+        /* Input Groups */
+        .input-group {
+            margin: 1rem 0;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        input[type="text"], textarea, select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-family: 'Courier New', monospace;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="text"]:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        /* Output Display */
+        .output {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 1.5rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .output.empty {
+            color: #95a5a6;
+            font-style: italic;
+        }
+        
+        /* Truth Table Display */
+        .truth-table-display {
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+        
+        .truth-table-display table {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            min-width: 100%;
+        }
+        
+        .truth-table-display th {
+            background-color: var(--secondary-color);
+            white-space: nowrap;
+        }
+        
+        .truth-table-display .result-col {
+            background-color: #fff9c4 !important;
+            font-weight: bold;
+        }
+        
+        /* Classification Badge */
+        .classification {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: bold;
+            margin: 0.5rem 0;
+        }
+        
+        .classification.tautology {
+            background-color: var(--success-color);
+            color: white;
+        }
+        
+        .classification.contradiction {
+            background-color: var(--accent-color);
+            color: white;
+        }
+        
+        .classification.contingency {
+            background-color: var(--warning-color);
+            color: white;
+        }
+        
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        
+        .feature-card {
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .feature-card:hover {
+            border-color: var(--secondary-color);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+        }
+        
+        .feature-card .icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .feature-card h4 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #ddd;
+            margin: 2rem 0 0 0;
+        }
+        
+        .tab {
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 1rem;
+            color: var(--primary-color);
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            margin: 0;
+        }
+        
+        .tab:hover {
+            background-color: var(--light-bg);
+        }
+        
+        .tab.active {
+            border-bottom-color: var(--secondary-color);
+            color: var(--secondary-color);
+            font-weight: 600;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 2rem 0;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Example Boxes */
+        .example-box {
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+        
+        .example-box h4 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+        
+        /* Operator Reference */
+        .operator-ref {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+        
+        .operator-ref .op {
+            background: #f0f0f0;
+            padding: 0.75rem;
+            border-radius: 5px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .operator-ref .op .symbol {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+        
+        .operator-ref .op .name {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 0.3rem;
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        footer p {
+            margin: 0.5rem 0;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .content {
+                padding: 1.5rem;
+            }
+            
+            header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .assignment-info {
+                grid-template-columns: 1fr;
+            }
+            
+            .tabs {
+                flex-wrap: wrap;
+            }
+            
+            .tab {
+                flex: 1;
+                min-width: 120px;
+            }
+        }
+        
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .container {
+                box-shadow: none;
+            }
+            
+            button, .btn, .demo-section {
+                display: none;
+            }
+            
+            .collapsible-content {
+                max-height: none !important;
+                display: block !important;
+                border: 1px solid #ddd !important;
+            }
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        /* Loading Spinner */
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--secondary-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 1rem auto;
+            display: none;
+        }
+        
+        .spinner.active {
+            display: block;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <header>
+            <h1>💻 PE-03: Truth Table Generator</h1>
+            <p class="subtitle">Programming Exercise - Week 3</p>
+            <p class="meta">CSC 240 - Discrete Structures | Mendocino College | Spring 2026</p>
+        </header>
+
+        <!-- Assignment Info Banner -->
+        <div class="assignment-info">
+            <div class="info-item">
+                <div class="label">Assignment Type</div>
+                <div class="value">Programming Exercise</div>
+            </div>
+            <div class="info-item">
+                <div class="label">Points</div>
+                <div class="value">15 pts</div>
+            </div>
+            <div class="info-item">
+                <div class="label">Estimated Time</div>
+                <div class="value">2-3 hours</div>
+            </div>
+            <div class="info-item">
+                <div class="label">Language</div>
+                <div class="value">Java or C++</div>
+            </div>
+            <div class="info-item">
+                <div class="label">Due Date</div>
+                <div class="value">End of Week 3</div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content">
+            <!-- Tab Navigation -->
+            <div class="tabs">
+                <button class="tab active" onclick="showTab('overview')">📋 Overview</button>
+                <button class="tab" onclick="showTab('requirements')">✅ Requirements</button>
+                <button class="tab" onclick="showTab('examples')">💡 Examples</button>
+                <button class="tab" onclick="showTab('demo')">🎮 Demo Tool</button>
+                <button class="tab" onclick="showTab('grading')">📊 Grading</button>
+                <button class="tab" onclick="showTab('submission')">📤 Submission</button>
+            </div>
+                        <!-- Tab 1: Overview -->
+            <div class="tab-content active" id="overview">
+                <div class="section">
+                    <h2>📋 Assignment Overview</h2>
+                    
+                    <p>Welcome to <strong>PE-03: Truth Table Generator</strong>! This programming exercise challenges you to create a working truth table generator that accepts logical expressions and produces complete, formatted truth tables. This assignment directly supports <strong>CSLO 1</strong> by having you implement the logical reasoning tools used to analyze program correctness.</p>
+
+                    <div class="objectives">
+                        <h3>🎯 Learning Objectives</h3>
+                        <ul>
+                            <li>Implement a parser for logical expressions with multiple operators</li>
+                            <li>Generate complete truth tables programmatically (2ⁿ rows for n variables)</li>
+                            <li>Evaluate compound propositions for all truth value combinations</li>
+                            <li>Classify expressions as tautologies, contradictions, or contingencies</li>
+                            <li>Apply propositional logic concepts in a programming context</li>
+                        </ul>
+                    </div>
+
+                    <h3>What You'll Build</h3>
+                    <p>Your program will accept logical expressions like <code>(p OR q) -> r</code> and produce:</p>
+                    
+                    <div class="example-box">
+                        <h4>Sample Output Preview</h4>
+                        <pre><code>=== Truth Table ===
+p | q | r | p OR q | (p OR q) -> r
+--+---+---+--------+--------------
+T | T | T |   T    |      T
+T | T | F |   T    |      F
+T | F | T |   T    |      T
+T | F | F |   T    |      F
+F | T | T |   T    |      T
+F | T | F |   T    |      F
+F | F | T |   F    |      T
+F | F | F |   F    |      T
+
+=== Analysis ===
+Type: CONTINGENCY
+- True in 6 out of 8 cases
+- False in 2 out of 8 cases</code></pre>
+                    </div>
+
+                    <h3>Why This Assignment Matters</h3>
+                    
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="icon">🧠</div>
+                            <h4>Logical Thinking</h4>
+                            <p>Implement systematic evaluation of Boolean expressions</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="icon">💻</div>
+                            <h4>Parsing Skills</h4>
+                            <p>Build an expression parser from scratch</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="icon">🔍</div>
+                            <h4>Algorithm Design</h4>
+                            <p>Generate all 2ⁿ combinations efficiently</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="icon">✅</div>
+                            <h4>Program Verification</h4>
+                            <p>Foundation for proving program correctness</p>
+                        </div>
+                    </div>
+
+                    <h3>Connection to Course Concepts</h3>
+                    <p>This assignment synthesizes multiple concepts from Week 3:</p>
+                    <ul>
+                        <li><strong>Propositional Logic:</strong> Understanding propositions and their truth values</li>
+                        <li><strong>Logical Connectives:</strong> Implementing AND, OR, NOT, implication, biconditional</li>
+                        <li><strong>Truth Tables:</strong> Generating all possible truth value combinations</li>
+                        <li><strong>Tautologies/Contradictions:</strong> Analyzing expression behavior</li>
+                        <li><strong>Boolean Expressions:</strong> Connecting logic to programming</li>
+                    </ul>
+
+                    <div class="tip">
+                        <h3>💡 Getting Started Tips</h3>
+                        <ul>
+                            <li><strong>Start early:</strong> This assignment takes 2-3 hours. Don't wait until the deadline!</li>
+                            <li><strong>Review Week 3 materials:</strong> Make sure you understand truth tables before coding</li>
+                            <li><strong>Test incrementally:</strong> Get basic operators working before adding complex features</li>
+                            <li><strong>Use the demo tool:</strong> Test your understanding with the interactive demo below</li>
+                            <li><strong>Ask questions:</strong> Use office hours and discussion forums if you get stuck</li>
+                        </ul>
+                    </div>
+
+                    <div class="warning">
+                        <h3>⚠️ Important Notes</h3>
+                        <ul>
+                            <li><strong>Language choice:</strong> You may use Java or C++ (your choice)</li>
+                            <li><strong>IDE requirement:</strong> Use Visual Studio Code (VS Code) for consistency</li>
+                            <li><strong>Academic integrity:</strong> This must be your own work. Collaboration on concepts is fine; sharing code is not.</li>
+                            <li><strong>Submission format:</strong> ZIP file containing source code and README</li>
+                            <li><strong>Late policy:</strong> 10% deduction per day, up to 3 days maximum</li>
+                        </ul>
+                    </div>
+
+                    <h3>Time Breakdown</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Phase</th>
+                                <th>Activity</th>
+                                <th>Estimated Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Planning</td>
+                                <td>Design program structure, plan data structures</td>
+                                <td>20-30 minutes</td>
+                            </tr>
+                            <tr>
+                                <td>Core Implementation</td>
+                                <td>Input parsing, truth table generation, basic operators</td>
+                                <td>60-90 minutes</td>
+                            </tr>
+                            <tr>
+                                <td>Classification</td>
+                                <td>Identify tautologies, contradictions, contingencies</td>
+                                <td>20-30 minutes</td>
+                            </tr>
+                            <tr>
+                                <td>Testing</td>
+                                <td>Test with various expressions, edge cases</td>
+                                <td>20-30 minutes</td>
+                            </tr>
+                            <tr>
+                                <td>Documentation</td>
+                                <td>Comments, README, compilation instructions</td>
+                                <td>15-20 minutes</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+                        <!-- Tab 2: Requirements -->
+            <div class="tab-content" id="requirements">
+                <div class="section">
+                    <h2>✅ Technical Requirements</h2>
+                    
+                    <div class="objectives">
+                        <h3>🎯 What Your Program Must Do</h3>
+                        <p>Your truth table generator must meet the following functional requirements:</p>
+                    </div>
+
+                    <h3>Core Functionality</h3>
+                    
+                    <div class="requirements">
+                        <h3>📋 Required Features</h3>
+                        <ol>
+                            <li><strong>Accept Logical Expressions as Input</strong>
+                                <ul>
+                                    <li>Support propositional variables: <code>p</code>, <code>q</code>, <code>r</code> (up to 3 variables)</li>
+                                    <li>Accept multiple notation styles for operators (see below)</li>
+                                    <li>Handle parentheses for grouping operations</li>
+                                    <li>Validate input and provide helpful error messages</li>
+                                </ul>
+                            </li>
+                            <li><strong>Generate Complete Truth Tables</strong>
+                                <ul>
+                                    <li>Calculate correct number of rows (2ⁿ for n variables)</li>
+                                    <li>List all possible truth value combinations</li>
+                                    <li>Evaluate the expression for each combination</li>
+                                    <li>Display intermediate columns for sub-expressions</li>
+                                </ul>
+                            </li>
+                            <li><strong>Format Output Clearly</strong>
+                                <ul>
+                                    <li>Create well-aligned, readable table format</li>
+                                    <li>Use clear column headers</li>
+                                    <li>Display T/F or 1/0 consistently</li>
+                                    <li>Separate sections with clear visual dividers</li>
+                                </ul>
+                            </li>
+                            <li><strong>Classify the Expression</strong>
+                                <ul>
+                                    <li>Identify if expression is a <strong>tautology</strong> (always true)</li>
+                                    <li>Identify if expression is a <strong>contradiction</strong> (always false)</li>
+                                    <li>Identify if expression is a <strong>contingency</strong> (sometimes true, sometimes false)</li>
+                                    <li>Display count: "True in X out of Y cases"</li>
+                                </ul>
+                            </li>
+                        </ol>
+                    </div>
+
+                    <h3>Operator Support</h3>
+                    <p>Your program must recognize the following logical operators using <strong>multiple notation styles</strong>:</p>
+                    
+                    <div class="operator-ref">
+                        <div class="op">
+                            <div class="symbol">¬ or NOT or !</div>
+                            <div class="name">Negation</div>
+                        </div>
+                        <div class="op">
+                            <div class="symbol">∧ or AND or &amp;</div>
+                            <div class="name">Conjunction</div>
+                        </div>
+                        <div class="op">
+                            <div class="symbol">∨ or OR or |</div>
+                            <div class="name">Disjunction</div>
+                        </div>
+                        <div class="op">
+                            <div class="symbol">→ or -> or IMP</div>
+                            <div class="name">Implication</div>
+                        </div>
+                        <div class="op">
+                            <div class="symbol">↔ or &lt;-> or IFF</div>
+                            <div class="name">Biconditional</div>
+                        </div>
+                    </div>
+
+                    <div class="tip">
+                        <h3>💡 Implementation Tip</h3>
+                        <p>Accept multiple notations to make your program user-friendly! For example:</p>
+                        <ul>
+                            <li><code>p AND q</code>, <code>p &amp; q</code>, and <code>p ∧ q</code> should all work</li>
+                            <li><code>NOT p</code>, <code>!p</code>, and <code>¬p</code> should all work</li>
+                            <li>This makes testing easier and shows thoughtful design!</li>
+                        </ul>
+                    </div>
+
+                    <h3>Programming Language Requirements</h3>
+                    
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="icon">☕</div>
+                            <h4>Java Option</h4>
+                            <p>Use Java 11 or later</p>
+                            <p>Console-based application</p>
+                            <p>Standard libraries only</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="icon">⚙️</div>
+                            <h4>C++ Option</h4>
+                            <p>Use C++11 or later</p>
+                            <p>Console-based application</p>
+                            <p>Standard library only</p>
+                        </div>
+                    </div>
+
+                    <div class="warning">
+                        <h3>⚠️ Development Environment</h3>
+                        <ul>
+                            <li><strong>Required IDE:</strong> Visual Studio Code (VS Code)</li>
+                            <li><strong>No GUI required:</strong> Console/terminal application is sufficient</li>
+                            <li><strong>Standard libraries only:</strong> Don't use external libraries or frameworks</li>
+                            <li><strong>Cross-platform:</strong> Should compile and run on Windows, macOS, or Linux</li>
+                        </ul>
+                    </div>
+
+                    <h3>Input/Output Specifications</h3>
+
+                    <h4>Input Requirements</h4>
+                    <div class="example-box">
+                        <h4>Acceptable Input Formats</h4>
+                        <p>Your program should accept expressions like:</p>
+                        <ul>
+                            <li><code>p AND q</code></li>
+                            <li><code>(p OR q) -> r</code></li>
+                            <li><code>NOT p AND (q OR r)</code></li>
+                            <li><code>p &lt;-> q</code></li>
+                            <li><code>(p -> q) AND (q -> p)</code></li>
+                        </ul>
+                        <p><strong>Variables:</strong> Must support p, q, and r (single lowercase letters)</p>
+                        <p><strong>Parentheses:</strong> Must respect grouping with ( and )</p>
+                        <p><strong>Whitespace:</strong> Should handle spaces flexibly</p>
+                    </div>
+
+                    <h4>Output Requirements</h4>
+                    <div class="example-box">
+                        <h4>Expected Output Format</h4>
+                        <p>Your program must display:</p>
+                        <ol>
+                            <li><strong>Echo the input:</strong> Show what expression was entered</li>
+                            <li><strong>Truth table:</strong> Formatted table with:
+                                <ul>
+                                    <li>Column headers for variables and sub-expressions</li>
+                                    <li>All 2ⁿ rows of truth value combinations</li>
+                                    <li>Clear separators (lines or spacing)</li>
+                                    <li>Aligned columns for readability</li>
+                                </ul>
+                            </li>
+                            <li><strong>Classification:</strong> State if expression is:
+                                <ul>
+                                    <li>TAUTOLOGY (with count)</li>
+                                    <li>CONTRADICTION (with count)</li>
+                                    <li>CONTINGENCY (with true/false counts)</li>
+                                </ul>
+                            </li>
+                        </ol>
+                    </div>
+
+                    <h3>Error Handling</h3>
+                    
+                    <div class="requirements">
+                        <h3>🛡️ Required Error Checking</h3>
+                        <p>Your program must gracefully handle:</p>
+                        <ul>
+                            <li><strong>Invalid operators:</strong> "Unknown operator: XYZ"</li>
+                            <li><strong>Invalid variables:</strong> "Only p, q, r are supported"</li>
+                            <li><strong>Mismatched parentheses:</strong> "Unbalanced parentheses detected"</li>
+                            <li><strong>Empty input:</strong> "Please enter a logical expression"</li>
+                            <li><strong>Syntax errors:</strong> "Invalid expression format"</li>
+                        </ul>
+                        <p><strong>User experience:</strong> Provide helpful error messages that guide users to correct their input!</p>
+                    </div>
+
+                    <h3>Code Quality Standards</h3>
+
+                    <ul class="checklist">
+                        <li><strong>Modular design:</strong> Use functions/methods to organize code logically</li>
+                        <li><strong>Meaningful names:</strong> Use descriptive variable and function names</li>
+                        <li><strong>Comments:</strong> Explain complex logic and algorithm steps</li>
+                        <li><strong>Consistent style:</strong> Follow Java or C++ style conventions</li>
+                        <li><strong>No magic numbers:</strong> Use named constants for important values</li>
+                        <li><strong>Input validation:</strong> Check all user input before processing</li>
+                        <li><strong>Proper indentation:</strong> Make code structure visually clear</li>
+                    </ul>
+
+                    <h3>Documentation Requirements</h3>
+                    
+                    <div class="requirements">
+                        <h3>📄 Required Documentation</h3>
+                        <p>Your submission must include a <code>README.txt</code> or <code>README.md</code> file containing:</p>
+                        <ol>
+                            <li><strong>Student Information</strong>
+                                <ul>
+                                    <li>Your name</li>
+                                    <li>Course: CSC 240</li>
+                                    <li>Assignment: PE-03</li>
+                                    <li>Date submitted</li>
+                                </ul>
+                            </li>
+                            <li><strong>Compilation Instructions</strong>
+                                <ul>
+                                    <li>How to compile (exact commands)</li>
+                                    <li>Required compiler version</li>
+                                    <li>Any special flags or settings</li>
+                                </ul>
+                            </li>
+                            <li><strong>Running Instructions</strong>
+                                <ul>
+                                    <li>How to run the program</li>
+                                    <li>Example commands</li>
+                                    <li>Expected input format</li>
+                                </ul>
+                            </li>
+                            <li><strong>Features Implemented</strong>
+                                <ul>
+                                    <li>List of all operators supported</li>
+                                    <li>Any extra features beyond requirements</li>
+                                    <li>Known limitations (if any)</li>
+                                </ul>
+                            </li>
+                            <li><strong>Test Cases</strong>
+                                <ul>
+                                    <li>At least 5 test expressions you used</li>
+                                    <li>Brief description of what each tests</li>
+                                </ul>
+                            </li>
+                            <li><strong>System Requirements</strong>
+                                <ul>
+                                    <li>Operating system tested on</li>
+                                    <li>Compiler version used</li>
+                                </ul>
+                            </li>
+                        </ol>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>Sample README.txt</h4>
+                        <pre><code>===============================================
+PE-03: Truth Table Generator
+CSC 240 - Discrete Structures
+===============================================
+
+Student: John Smith
+Date: February 10, 2026
+
+COMPILATION INSTRUCTIONS
+------------------------
+Java:
+  javac TruthTableGenerator.java
+
+C++:
+  g++ -std=c++11 -o truthtable truthtable.cpp
+
+RUNNING INSTRUCTIONS
+--------------------
+Java:
+  java TruthTableGenerator
+
+C++:
+  ./truthtable
+
+SUPPORTED OPERATORS
+-------------------
+- NOT: !, NOT, ¬
+- AND: &, AND, ∧
+- OR: |, OR, ∨
+- IMPLICATION: ->, IMP, →
+- BICONDITIONAL: <->, IFF, ↔
+
+FEATURES IMPLEMENTED
+--------------------
+✓ All 5 logical operators
+✓ Parentheses support
+✓ Multiple notation styles
+✓ Input validation
+✓ Tautology/Contradiction detection
+✓ Formatted truth table output
+
+TEST CASES
+----------
+1. p AND q - Basic conjunction
+2. (p OR q) -> r - Complex implication
+3. p <-> q - Biconditional
+4. NOT (p AND q) - Negation of compound
+5. p OR NOT p - Tautology test
+
+SYSTEM REQUIREMENTS
+-------------------
+OS: Windows 10
+Compiler: javac 17.0.2
+
+KNOWN LIMITATIONS
+-----------------
+- Maximum 3 variables (p, q, r)
+- Single-character variable names only</code></pre>
+                    </div>
+
+                    <h3>Submission Requirements</h3>
+
+                    <div class="warning">
+                        <h3>📦 What to Submit</h3>
+                        <p><strong>File Format:</strong> Single ZIP file</p>
+                        <p><strong>File Naming:</strong> <code>LastName_FirstName_PE03_Week3.zip</code></p>
+                        <p><strong>Example:</strong> <code>Smith_John_PE03_Week3.zip</code></p>
+                        
+                        <p style="margin-top: 1.5rem;"><strong>ZIP Contents:</strong></p>
+                        <ul>
+                            <li>All source code files (.java or .cpp/.h)</li>
+                            <li>README.txt or README.md</li>
+                            <li>No compiled files (.class, .exe, .o)</li>
+                            <li>No IDE-specific files (.vscode, .idea)</li>
+                        </ul>
+                        
+                        <p style="margin-top: 1.5rem;"><strong>Submission Location:</strong> Canvas → Assignments → PE-03: Truth Table Generator</p>
+                        <p><strong>Due Date:</strong> End of Week 3 (check Canvas for exact date/time)</p>
+                    </div>
+
+                    <h3>Optional Enhancements (Extra Credit)</h3>
+                    
+                    <div class="tip">
+                        <h3>🌟 Go Beyond the Requirements</h3>
+                        <p>Consider implementing these optional features for extra credit (up to 3 bonus points):</p>
+                        <ul>
+                            <li><strong>Support 4+ variables:</strong> Handle expressions with more than 3 variables (challenging!)</li>
+                            <li><strong>Expression simplification:</strong> Suggest simplified equivalent expressions</li>
+                            <li><strong>Export to file:</strong> Save truth table to a text file</li>
+                            <li><strong>Batch mode:</strong> Process multiple expressions from a file</li>
+                            <li><strong>Logical equivalence checker:</strong> Compare two expressions for equivalence</li>
+                            <li><strong>Interactive mode:</strong> Allow users to test multiple expressions without restarting</li>
+                            <li><strong>Color-coded output:</strong> Use ANSI colors to highlight tautologies/contradictions</li>
+                        </ul>
+                        <p><strong>Note:</strong> Document any extra features clearly in your README!</p>
+                    </div>
+
+                    <h3>Development Checklist</h3>
+
+                    <ul class="checklist">
+                        <li>Set up development environment (Java JDK or C++ compiler + VS Code)</li>
+                        <li>Plan program structure (classes/functions needed)</li>
+                        <li>Implement input parsing and validation</li>
+                        <li>Implement truth value generation (2ⁿ combinations)</li>
+                        <li>Implement expression evaluation logic</li>
+                        <li>Implement each operator (NOT, AND, OR, ->, <->)</li>
+                        <li>Implement truth table formatting and display</li>
+                        <li>Implement tautology/contradiction/contingency classification</li>
+                        <li>Test with sample expressions (see Examples tab)</li>
+                        <li>Test edge cases (single variable, all operators, etc.)</li>
+                        <li>Write comprehensive README</li>
+                        <li>Add code comments and documentation</li>
+                        <li>Create ZIP file with correct naming</li>
+                        <li>Submit to Canvas before deadline</li>
+                    </ul>
+
+                </div>
+            </div>
+                        <!-- Tab 3: Examples -->
+            <div class="tab-content" id="examples">
+                <div class="section">
+                    <h2>💡 Examples and Test Cases</h2>
+                    
+                    <p>This section provides comprehensive examples to help you understand what your program should do. Use these as test cases for your implementation!</p>
+
+                    <h3>Example 1: Simple Conjunction</h3>
+                    
+                    <div class="example-box">
+                        <h4>Input Expression</h4>
+                        <pre><code>p AND q</code></pre>
+                        
+                        <h4>Expected Output</h4>
+                        <pre><code>=== Truth Table for: p AND q ===
+Variables identified: p, q
+Number of rows: 4 (2^2)
+
+p | q | p AND q
+--+---+--------
+T | T |   T
+T | F |   F
+F | T |   F
+F | F |   F
+
+=== Analysis ===
+Type: CONTINGENCY
+- True in 1 out of 4 cases (25%)
+- False in 3 out of 4 cases (75%)</code></pre>
+                    </div>
+
+                    <h3>Example 2: Implication</h3>
+                    
+                    <div class="example-box">
+                        <h4>Input Expression</h4>
+                        <pre><code>p -> q</code></pre>
+                        
+                        <h4>Expected Output</h4>
+                        <pre><code>=== Truth Table for: p -> q ===
+Variables identified: p, q
+Number of rows: 4 (2^2)
+
+p | q | p -> q
+--+---+-------
+T | T |   T
+T | F |   F
+F | T |   T
+F | F |   T
+
+=== Analysis ===
+Type: CONTINGENCY
+- True in 3 out of 4 cases (75%)
+- False in 1 out of 4 cases (25%)
+
+Note: Implication is false only when p is true and q is false.</code></pre>
+                    </div>
+
+                    <h3>Example 3: Tautology (Law of Excluded Middle)</h3>
+                    
+                    <div class="example-box">
+                        <h4>Input Expression</h4>
+                        <pre><code>p OR NOT p</code></pre>
+                        
+                        <h4>Expected Output</h4>
+                        <pre><code>=== Truth Table for: p OR NOT p ===
+Variables identified: p
+Number of rows: 2 (2^1)
+
+p | NOT p | p OR NOT p
+--+-------+-----------
+T |   F   |     T
+F |   T   |     T
+
+=== Analysis ===
+Type: TAUTOLOGY
+- True in 2 out of 2 cases (100%)
+- False in 0 out of 2 cases (0%)
+
+This is a logical law called the "Law of Excluded Middle".</code></pre>
+                    </div>
+
+                    <h3>Example 4: Contradiction</h3>
+                    
+                    <div class="example-box">
+                        <h4>Input Expression</h4>
+                        <pre><code>p AND NOT p</code></pre>
+                        
+                        <h4>Expected Output</h4>
+                        <pre><code>=== Truth Table for: p AND NOT p ===
+Variables identified: p
+Number of rows: 2 (2^1)
+
+p | NOT p | p AND NOT p
+--+-------+------------
+T |   F   |     F
+F |   T   |     F
+
+=== Analysis ===
+Type: CONTRADICTION
+- True in 0 out of 2 cases (0%)
+- False in 2 out of 2 cases (100%)
+
+This is always false - a logical contradiction.</code></pre>
+                    </div>
+
+                    <h3>Example 5: Complex Expression with Three Variables</h3>
+                    
+                    <div class="example-box">
+                        <h4>Input Expression</h4>
+                        <pre><code>(p OR q) -> r</code></pre>
+                        
+                        <h4>Expected Output</h4>
+                        <pre><code>=== Truth Table for: (p OR q) -> r ===
+Variables identified: p, q, r
+Number of rows: 8 (2^3)
+
+p | q | r | p OR q | (p OR q) -> r
+--+---+---+--------+--------------
+T | T | T |   T    |      T
+T | T | F |   T    |      F
+T | F | T |   T    |      T
+T | F | F |   T    |      F
+F | T | T |   T    |      T
+F | T | F |   T    |      F
+F | F | T |   F    |      T
+F | F | F |   F    |      T
+
+=== Analysis ===
+Type: CONTINGENCY
+- True in 6 out of 8 cases (75%)
+- False in 2 out of 8 cases (25%)</code></pre>
+                    </div>
+
+                    <h3>Example 6: Biconditional</h3>
+                    
+                    <div class="example-box">
+                        <h4>Input Expression</h4>
+                        <pre><code>p <-> q</code></pre>
+                        
+                        <h4>Expected Output</h4>
+                        <pre><code>=== Truth Table for: p <-> q ===
+Variables identified: p, q
+Number of rows: 4 (2^2)
+
+p | q | p <-> q
+--+---+--------
+T | T |   T
+T | F |   F
+F | T |   F
+F | F |   T
+
+=== Analysis ===
+Type: CONTINGENCY
+- True in 2 out of 4 cases (50%)
+- False in 2 out of 4 cases (50%)
+
+Biconditional is true when both propositions have the same truth value.</code></pre>
+                    </div>
+
+                    <h3>Example 7: De Morgan's Law Verification</h3>
+                    
+                    <div class="example-box">
+                        <h4>Input Expression</h4>
+                        <pre><code>NOT (p AND q)</code></pre>
+                        
+                        <h4>Expected Output</h4>
+                        <pre><code>=== Truth Table for: NOT (p AND q) ===
+Variables identified: p, q
+Number of rows: 4 (2^2)
+
+p | q | p AND q | NOT (p AND q)
+--+---+---------+--------------
+T | T |    T    |      F
+T | F |    F    |      T
+F | T |    F    |      T
+F | F |    F    |      T
+
+=== Analysis ===
+Type: CONTINGENCY
+- True in 3 out of 4 cases (75%)
+- False in 1 out of 4 cases (25%)
+
+Note: This is equivalent to (NOT p) OR (NOT q) - De Morgan's Law!</code></pre>
+                    </div>
+
+                    <h3>Example 8: Nested Parentheses</h3>
+                    
+                    <div class="example-box">
+                        <h4>Input Expression</h4>
+                        <pre><code>((p -> q) AND (q -> r)) -> (p -> r)</code></pre>
+                        
+                        <h4>Expected Output</h4>
+                        <pre><code>=== Truth Table for: ((p -> q) AND (q -> r)) -> (p -> r) ===
+Variables identified: p, q, r
+Number of rows: 8 (2^3)
+
+p | q | r | p->q | q->r | (p->q)AND(q->r) | p->r | Final
+--+---+---+------+------+-----------------+------+------
+T | T | T |  T   |  T   |       T         |  T   |  T
+T | T | F |  T   |  F   |       F         |  F   |  T
+T | F | T |  F   |  T   |       F         |  T   |  T
+T | F | F |  F   |  T   |       F         |  F   |  T
+F | T | T |  T   |  T   |       T         |  T   |  T
+F | T | F |  T   |  F   |       F         |  T   |  T
+F | F | T |  T   |  T   |       T         |  T   |  T
+F | F | F |  T   |  T   |       T         |  T   |  T
+
+=== Analysis ===
+Type: TAUTOLOGY
+- True in 8 out of 8 cases (100%)
+- False in 0 out of 8 cases (0%)
+
+This is the Hypothetical Syllogism - a fundamental logical law!</code></pre>
+                    </div>
+
+                    <h3>Required Test Cases</h3>
+                    
+                    <div class="requirements">
+                        <h3>📋 Minimum Test Cases</h3>
+                        <p>Your program must be tested with AT LEAST these expressions:</p>
+                        <ol>
+                            <li><code>p AND q</code> - Basic conjunction</li>
+                            <li><code>p OR q</code> - Basic disjunction</li>
+                            <li><code>NOT p</code> - Simple negation</li>
+                            <li><code>p -> q</code> - Implication</li>
+                            <li><code>p <-> q</code> - Biconditional</li>
+                            <li><code>p OR NOT p</code> - Tautology test</li>
+                            <li><code>p AND NOT p</code> - Contradiction test</li>
+                            <li><code>(p OR q) -> r</code> - Three variables</li>
+                            <li><code>NOT (p AND q)</code> - De Morgan's Law</li>
+                            <li><code>(p -> q) AND (q -> p)</code> - Biconditional equivalence</li>
+                        </ol>
+                        <p><strong>Document your test results</strong> in your README file!</p>
+                    </div>
+
+                    <h3>Edge Cases to Consider</h3>
+                    
+                    <div class="warning">
+                        <h3>⚠️ Test These Edge Cases</h3>
+                        <ul>
+                            <li><strong>Single variable:</strong> <code>p</code> (should produce 2 rows)</li>
+                            <li><strong>Single operator:</strong> <code>NOT p</code></li>
+                            <li><strong>Multiple negations:</strong> <code>NOT NOT p</code></li>
+                            <li><strong>Nested parentheses:</strong> <code>((p AND q) OR r)</code></li>
+                            <li><strong>All three variables:</strong> <code>p AND q AND r</code></li>
+                            <li><strong>Mixed operators:</strong> <code>(p OR q) AND (q OR r)</code></li>
+                            <li><strong>Complex nesting:</strong> <code>(p -> (q -> r))</code></li>
+                        </ul>
+                    </div>
+
+                    <h3>Common Mistakes to Avoid</h3>
+                    
+                    <div class="tip">
+                        <h3>💡 Learn from Common Errors</h3>
+                        
+                        <h4>Mistake 1: Incorrect Implication Logic</h4>
+                        <p><strong>Wrong:</strong> Treating <code>p -> q</code> as false when p is false</p>
+                        <p><strong>Correct:</strong> Implication is false ONLY when p is true and q is false</p>
+                        
+                        <h4>Mistake 2: Wrong Row Count</h4>
+                        <p><strong>Wrong:</strong> Counting variables incorrectly (e.g., counting 'p' twice in "p AND p")</p>
+                        <p><strong>Correct:</strong> Count DISTINCT variables only. "p AND p" has 1 variable = 2 rows</p>
+                        
+                        <h4>Mistake 3: Operator Precedence</h4>
+                        <p><strong>Wrong:</strong> Evaluating <code>p AND q OR r</code> as <code>p AND (q OR r)</code></p>
+                        <p><strong>Correct:</strong> AND has higher precedence, so it's <code>(p AND q) OR r</code></p>
+                        <p><strong>Best practice:</strong> Always use parentheses for clarity!</p>
+                        
+                        <h4>Mistake 4: Parentheses Matching</h4>
+                        <p><strong>Wrong:</strong> Missing closing parenthesis: <code>(p AND q OR r</code></p>
+                        <p><strong>Correct:</strong> Every opening parenthesis needs a closing one</p>
+                        
+                        <h4>Mistake 5: Case Sensitivity</h4>
+                        <p><strong>Issue:</strong> Treating 'P' and 'p' as different variables</p>
+                        <p><strong>Recommendation:</strong> Convert all input to lowercase or uppercase for consistency</p>
+                    </div>
+
+                    <h3>Sample Test Session</h3>
+                    
+                    <div class="example-box">
+                        <h4>Interactive Testing Session</h4>
+                        <pre><code>Welcome to Truth Table Generator!
+Enter a logical expression (or 'quit' to exit):
+> p AND q
+
+=== Truth Table for: p AND q ===
+p | q | p AND q
+--+---+--------
+T | T |   T
+T | F |   F
+F | T |   F
+F | F |   F
+
+Type: CONTINGENCY (True: 1/4, False: 3/4)
+
+Enter another expression (or 'quit' to exit):
+> p OR NOT p
+
+=== Truth Table for: p OR NOT p ===
+p | NOT p | p OR NOT p
+--+-------+-----------
+T |   F   |     T
+F |   T   |     T
+
+Type: TAUTOLOGY (Always true!)
+
+Enter another expression (or 'quit' to exit):
+> (p -> q) <-> (NOT p OR q)
+
+=== Truth Table for: (p -> q) <-> (NOT p OR q) ===
+p | q | p->q | NOT p | NOT p OR q | Final
+--+---+------+-------+------------+------
+T | T |  T   |   F   |     T      |  T
+T | F |  F   |   F   |     F      |  T
+F | T |  T   |   T   |     T      |  T
+F | F |  T   |   T   |     T      |  T
+
+Type: TAUTOLOGY (Always true!)
+This verifies that implication can be rewritten as disjunction!
+
+Enter another expression (or 'quit' to exit):
+> quit
+
+Thank you for using Truth Table Generator!</code></pre>
+                    </div>
+
+                    <h3>Validation Examples</h3>
+
+                    <h4>Example: Invalid Input Handling</h4>
+                    
+                    <div class="example-box">
+                        <h4>Test Invalid Inputs</h4>
+                        <pre><code>Enter expression: p XOR q
+ERROR: Unknown operator 'XOR'
+Supported operators: AND, OR, NOT, ->, <->
+
+Enter expression: p AND
+ERROR: Incomplete expression - missing operand after AND
+
+Enter expression: (p AND q
+ERROR: Unbalanced parentheses - missing closing )
+
+Enter expression: p AND 5
+ERROR: Invalid variable '5' - only p, q, r are supported
+
+Enter expression: 
+ERROR: Empty expression - please enter a logical expression</code></pre>
+                    </div>
+
+                    <h3>Comprehensive Test Suite</h3>
+                    
+                    <div class="requirements">
+                        <h3>📋 Complete Test Suite for Your Program</h3>
+                        <p>Test your program with ALL of these expressions and document the results:</p>
+                        
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Expression</th>
+                                    <th>Variables</th>
+                                    <th>Rows</th>
+                                    <th>Expected Type</th>
+                                    <th>Purpose</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>p</td>
+                                    <td>1</td>
+                                    <td>2</td>
+                                    <td>Contingency</td>
+                                    <td>Single variable</td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>NOT p</td>
+                                    <td>1</td>
+                                    <td>2</td>
+                                    <td>Contingency</td>
+                                    <td>Simple negation</td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td>p AND q</td>
+                                    <td>2</td>
+                                    <td>4</td>
+                                    <td>Contingency</td>
+                                    <td>Basic conjunction</td>
+                                </tr>
+                                <tr>
+                                    <td>4</td>
+                                    <td>p OR q</td>
+                                    <td>2</td>
+                                    <td>4</td>
+                                    <td>Contingency</td>
+                                    <td>Basic disjunction</td>
+                                </tr>
+                                <tr>
+                                    <td>5</td>
+                                    <td>p -> q</td>
+                                    <td>2</td>
+                                    <td>4</td>
+                                    <td>Contingency</td>
+                                    <td>Implication</td>
+                                </tr>
+                                <tr>
+                                    <td>6</td>
+                                    <td>p <-> q</td>
+                                    <td>2</td>
+                                    <td>4</td>
+                                    <td>Contingency</td>
+                                    <td>Biconditional</td>
+                                </tr>
+                                <tr>
+                                    <td>7</td>
+                                    <td>p OR NOT p</td>
+                                    <td>1</td>
+                                    <td>2</td>
+                                    <td>Tautology</td>
+                                    <td>Excluded middle</td>
+                                </tr>
+                                <tr>
+                                    <td>8</td>
+                                    <td>p AND NOT p</td>
+                                    <td>1</td>
+                                    <td>2</td>
+                                    <td>Contradiction</td>
+                                    <td>Logical impossibility</td>
+                                </tr>
+                                <tr>
+                                    <td>9</td>
+                                    <td>(p OR q) -> r</td>
+                                    <td>3</td>
+                                    <td>8</td>
+                                    <td>Contingency</td>
+                                    <td>Three variables</td>
+                                </tr>
+                                <tr>
+                                    <td>10</td>
+                                    <td>NOT (p AND q)</td>
+                                    <td>2</td>
+                                    <td>4</td>
+                                    <td>Contingency</td>
+                                    <td>De Morgan's Law</td>
+                                </tr>
+                                <tr>
+                                    <td>11</td>
+                                    <td>(p -> q) AND (q -> p)</td>
+                                    <td>2</td>
+                                    <td>4</td>
+                                    <td>Contingency</td>
+                                    <td>Biconditional equiv</td>
+                                </tr>
+                                <tr>
+                                    <td>12</td>
+                                    <td>p AND q AND r</td>
+                                    <td>3</td>
+                                    <td>8</td>
+                                    <td>Contingency</td>
+                                    <td>Multiple ANDs</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3>Sample README.txt Template</h3>
+                    
+                    <button class="collapsible">Show Complete README Template</button>
+                    <div class="collapsible-content">
+                        <pre><code>===============================================
+PE-03: Truth Table Generator
+CSC 240 - Discrete Structures - Week 3
+===============================================
+
+STUDENT INFORMATION
+-------------------
+Name: [Your Full Name]
+Student ID: [Your ID]
+Course: CSC 240 - Discrete Structures
+Assignment: PE-03 - Truth Table Generator
+Date Submitted: [Date]
+Language Used: [Java or C++]
+
+COMPILATION INSTRUCTIONS
+-------------------------
+[Java Example:]
+javac TruthTableGenerator.java
+
+[C++ Example:]
+g++ -std=c++11 -o truthtable main.cpp parser.cpp evaluator.cpp
+
+RUNNING INSTRUCTIONS
+--------------------
+[Java Example:]
+java TruthTableGenerator
+
+[C++ Example:]
+./truthtable
+
+The program will prompt you to enter logical expressions.
+
+SUPPORTED OPERATORS
+-------------------
+Negation:
+  - NOT, !, ¬
+
+Conjunction:
+  - AND, &, ∧
+
+Disjunction:
+  - OR, |, ∨
+
+Implication:
+  - ->, IMP, →
+
+Biconditional:
+  - <->, IFF, ↔
+
+SUPPORTED VARIABLES
+-------------------
+- p, q, r (single lowercase letters)
+- Maximum 3 variables per expression
+
+INPUT FORMAT
+------------
+Examples of valid input:
+  - p AND q
+  - (p OR q) -> r
+  - NOT p AND (q OR r)
+  - p <-> q
+  - ((p -> q) AND (q -> r)) -> (p -> r)
+
+Parentheses are used for grouping operations.
+Spaces are optional but improve readability.
+
+PROGRAM FEATURES
+----------------
+✓ Accepts logical expressions with all 5 operators
+✓ Supports multiple notation styles for each operator
+✓ Handles parentheses for operation grouping
+✓ Generates complete truth tables (2^n rows)
+✓ Displays intermediate sub-expression columns
+✓ Classifies expressions as:
+  - TAUTOLOGY (always true)
+  - CONTRADICTION (always false)
+  - CONTINGENCY (sometimes true, sometimes false)
+✓ Provides statistical analysis (true/false counts)
+✓ Input validation with helpful error messages
+✓ Interactive mode (enter multiple expressions)
+
+DESIGN DECISIONS
+----------------
+[Describe your approach:]
+- How you parse expressions
+- Data structures used
+- Algorithm for generating truth value combinations
+- How you evaluate expressions
+
+TESTING
+-------
+All required test cases passed:
+
+Test 1: p AND q
+  Result: CONTINGENCY (1/4 true)
+  Status: ✓ PASS
+
+Test 2: p OR q
+  Result: CONTINGENCY (3/4 true)
+  Status: ✓ PASS
+
+[Continue for all 12 required test cases...]
+
+KNOWN LIMITATIONS
+-----------------
+- Maximum 3 variables (p, q, r)
+- Single-character variable names only
+- Does not simplify expressions
+- Does not support XOR operator directly
+
+EXTRA FEATURES IMPLEMENTED
+---------------------------
+[If you implemented optional features:]
+- Feature 1: Description
+- Feature 2: Description
+
+SYSTEM REQUIREMENTS
+--------------------
+Operating System: [Windows 10 / macOS / Linux]
+Compiler: [javac 17.0.2 / g++ 11.2.0]
+IDE: Visual Studio Code 1.85
+
+REFERENCES
+----------
+- CSC 240 Course Materials (Week 3)
+- Saylor.org CS202 - Unit 3: Mathematical Logic
+- [Any other resources consulted]
+
+ACADEMIC INTEGRITY STATEMENT
+-----------------------------
+I certify that this is my original work. I have not copied code
+from any other source except as noted in the references above.
+
+Signature: [Your Name]
+Date: [Date]</code></pre>
+                    </div>
+
+                </div>
+            </div>
+                        <!-- Tab 4: Interactive Demo Tool -->
+            <div class="tab-content" id="demo">
+                <div class="section">
+                    <h2>🎮 Interactive Truth Table Demo</h2>
+                    
+                    <p>Use this interactive tool to test your understanding of truth tables before implementing your own program. This tool demonstrates the functionality your PE-03 program should have.</p>
+
+                    <div class="warning">
+                        <h3>⚠️ Important Note</h3>
+                        <p>This demo tool is for <strong>learning and testing purposes only</strong>. Your PE-03 submission must be your own original code in Java or C++. Do not copy this JavaScript implementation!</p>
+                    </div>
+
+                    <h3>How to Use This Tool</h3>
+                    <ol>
+                        <li>Enter a logical expression using p, q, or r as variables</li>
+                        <li>Use supported operators: AND, OR, NOT, ->, <-></li>
+                        <li>Include parentheses for grouping operations</li>
+                        <li>Click "Generate Truth Table" to see results</li>
+                        <li>The tool will classify the expression and show the complete truth table</li>
+                    </ol>
+
+                    <div class="demo-section">
+                        <h3>🛠️ Truth Table Generator Demo</h3>
+                        
+                        <div class="input-group">
+                            <label for="demoExpression">Enter Logical Expression:</label>
+                            <input type="text" id="demoExpression" placeholder="Example: (p OR q) -> r">
+                            <p style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;">
+                                <strong>Operators:</strong> AND (or &), OR (or |), NOT (or !), -> (implication), <-> (biconditional)
+                            </p>
+                        </div>
+
+                        <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin: 1rem 0;">
+                            <button onclick="generateDemoTable()">Generate Truth Table</button>
+                            <button class="btn-warning" onclick="loadSampleExpression('p AND q')">Sample: p AND q</button>
+                            <button class="btn-warning" onclick="loadSampleExpression('(p OR q) -> r')">Sample: (p OR q) -> r</button>
+                            <button class="btn-warning" onclick="loadSampleExpression('p OR NOT p')">Sample: Tautology</button>
+                            <button class="btn-warning" onclick="loadSampleExpression('p AND NOT p')">Sample: Contradiction</button>
+                            <button class="btn-accent" onclick="clearDemo()">Clear</button>
+                        </div>
+
+                        <div class="spinner" id="demoSpinner"></div>
+
+                        <div id="demoOutput" class="output empty">
+Enter an expression above and click "Generate Truth Table" to see results...
+                        </div>
+
+                        <div id="demoClassification" style="margin-top: 1rem; display: none;">
+                            <!-- Classification badge will appear here -->
+                        </div>
+                    </div>
+
+                    <h3>Understanding the Output</h3>
+                    
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="icon">📋</div>
+                            <h4>Header Section</h4>
+                            <p>Shows the expression being evaluated and identifies all variables</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="icon">📊</div>
+                            <h4>Truth Table</h4>
+                            <p>Displays all 2ⁿ rows with intermediate columns for sub-expressions</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="icon">🏷️</div>
+                            <h4>Classification</h4>
+                            <p>Identifies if expression is a tautology, contradiction, or contingency</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="icon">📈</div>
+                            <h4>Statistics</h4>
+                            <p>Shows count and percentage of true vs false cases</p>
+                        </div>
+                    </div>
+
+                    <h3>Testing Strategy</h3>
+                    
+                    <div class="tip">
+                        <h3>💡 How to Test Your Program</h3>
+                        <ol>
+                            <li><strong>Start simple:</strong> Test single variables (p) and simple negations (NOT p)</li>
+                            <li><strong>Test each operator:</strong> Verify AND, OR, NOT, ->, <-> work correctly</li>
+                            <li><strong>Test combinations:</strong> Try expressions with multiple operators</li>
+                            <li><strong>Test parentheses:</strong> Verify grouping works: (p AND q) OR r vs p AND (q OR r)</li>
+                            <li><strong>Test edge cases:</strong> Empty input, invalid operators, mismatched parentheses</li>
+                            <li><strong>Test special cases:</strong> Tautologies, contradictions, all three variables</li>
+                            <li><strong>Compare with demo:</strong> Use this tool to verify your program's output</li>
+                        </ol>
+                    </div>
+
+                    <h3>Quick Reference: Operator Notation</h3>
+                    
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Operator</th>
+                                <th>Symbol</th>
+                                <th>Alternative Notations</th>
+                                <th>Programming</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Negation</td>
+                                <td>¬</td>
+                                <td>NOT, !, ~</td>
+                                <td>!p (Java/C++)</td>
+                            </tr>
+                            <tr>
+                                <td>Conjunction</td>
+                                <td>∧</td>
+                                <td>AND, &, *</td>
+                                <td>p && q (Java/C++)</td>
+                            </tr>
+                            <tr>
+                                <td>Disjunction</td>
+                                <td>∨</td>
+                                <td>OR, |, +</td>
+                                <td>p || q (Java/C++)</td>
+                            </tr>
+                            <tr>
+                                <td>Implication</td>
+                                <td>→</td>
+                                <td>->, IMP, =></td>
+                                <td>!p || q (Java/C++)</td>
+                            </tr>
+                            <tr>
+                                <td>Biconditional</td>
+                                <td>↔</td>
+                                <td><->, IFF, <=></td>
+                                <td>p == q (Java/C++)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h3>Comparing Your Output</h3>
+                    
+                    <div class="example-box">
+                        <h4>What to Check</h4>
+                        <p>When comparing your program's output with this demo:</p>
+                        <ul>
+                            <li><strong>Variable identification:</strong> Same variables detected?</li>
+                            <li><strong>Row count:</strong> Correct number of rows (2ⁿ)?</li>
+                            <li><strong>Truth values:</strong> All T/F values match?</li>
+                            <li><strong>Classification:</strong> Same tautology/contradiction/contingency result?</li>
+                            <li><strong>Statistics:</strong> Same true/false counts?</li>
+                        </ul>
+                        <p><strong>Format differences are OK!</strong> Your output doesn't need to look exactly like this demo. Focus on correctness of logic, not visual formatting.</p>
+                    </div>
+
+                    <h3>Common Implementation Challenges</h3>
+                    
+                    <button class="collapsible">Challenge 1: Parsing Expressions</button>
+                    <div class="collapsible-content">
+                        <h4>The Problem</h4>
+                        <p>Converting a string like "(p OR q) -> r" into something your program can evaluate.</p>
+                        
+                        <h4>Approaches</h4>
+                        <ul>
+                            <li><strong>Simple approach:</strong> Replace operators with function calls
+                                <ul>
+                                    <li>Replace "AND" with a function that returns true only when both operands are true</li>
+                                    <li>Use string manipulation to identify operators and operands</li>
+                                </ul>
+                            </li>
+                            <li><strong>Advanced approach:</strong> Build a recursive descent parser
+                                <ul>
+                                    <li>More complex but handles nested expressions better</li>
+                                    <li>Optional for this assignment</li>
+                                </ul>
+                            </li>
+                        </ul>
+                        
+                        <h4>Tip</h4>
+                        <p>Start by handling simple expressions first (like "p AND q"), then gradually add support for parentheses and nesting.</p>
+                    </div>
+
+                    <button class="collapsible">Challenge 2: Generating All Combinations</button>
+                    <div class="collapsible-content">
+                        <h4>The Problem</h4>
+                        <p>Generating all 2ⁿ combinations of truth values for n variables.</p>
+                        
+                        <h4>Solution Strategy</h4>
+                        <p>Think of binary counting! For 3 variables (p, q, r):</p>
+                        <pre><code>Row 0: 000 → F F F
+Row 1: 001 → F F T
+Row 2: 010 → F T F
+Row 3: 011 → F T T
+Row 4: 100 → T F F
+Row 5: 101 → T F T
+Row 6: 110 → T T F
+Row 7: 111 → T T T</code></pre>
+                        
+                        <h4>Implementation Hint</h4>
+                        <p>Loop from 0 to 2ⁿ - 1, and use bit operations to extract individual truth values:</p>
+                        <pre><code>// Java example
+for (int i = 0; i < Math.pow(2, numVars); i++) {
+    boolean p = ((i >> 2) & 1) == 1; // bit 2
+    boolean q = ((i >> 1) & 1) == 1; // bit 1
+    boolean r = (i & 1) == 1;        // bit 0
+    // Now evaluate expression with these values
+}</code></pre>
+                    </div>
+
+                    <button class="collapsible">Challenge 3: Evaluating Expressions</button>
+                    <div class="collapsible-content">
+                        <h4>The Problem</h4>
+                        <p>Evaluating compound expressions like "(p AND q) OR (NOT r)" for given truth values.</p>
+                        
+                        <h4>Solution Strategy</h4>
+                        <ol>
+                            <li>Parse the expression into a tree or postfix notation</li>
+                            <li>Substitute truth values for variables</li>
+                            <li>Evaluate operators according to their definitions</li>
+                            <li>Work from innermost parentheses outward</li>
+                        </ol>
+                        
+                        <h4>Key Functions to Implement</h4>
+                        <ul>
+                            <li><code>not(p)</code>: Returns !p</li>
+                            <li><code>and(p, q)</code>: Returns p && q</li>
+                            <li><code>or(p, q)</code>: Returns p || q</li>
+                            <li><code>implies(p, q)</code>: Returns !p || q</li>
+                            <li><code>biconditional(p, q)</code>: Returns p == q</li>
+                        </ul>
+                    </div>
+
+                    <button class="collapsible">Challenge 4: Output Formatting</button>
+                    <div class="collapsible-content">
+                        <h4>The Problem</h4>
+                        <p>Creating nicely aligned, readable truth table output in the console.</p>
+                        
+                        <h4>Solution Strategy</h4>
+                        <ul>
+                            <li>Calculate column widths based on header lengths</li>
+                            <li>Use printf/cout with formatting specifiers</li>
+                            <li>Add separator lines for readability</li>
+                            <li>Center or align text appropriately</li>
+                        </ul>
+                        
+                        <h4>Java Example</h4>
+                        <pre><code>// Format with fixed widths
+System.out.printf("%-5s | %-5s | %-10s%n", "p", "q", "p AND q");
+System.out.println("------+-------+-----------");
+System.out.printf("%-5s | %-5s | %-10s%n", "T", "T", "T");</code></pre>
+                        
+                        <h4>C++ Example</h4>
+                        <pre><code>#include <iomanip>
+cout << left << setw(5) << "p" << " | " 
+     << setw(5) << "q" << " | " 
+     << setw(10) << "p AND q" << endl;</code></pre>
+                    </div>
+
+                    <h3>Debugging Tips</h3>
+                    
+                    <div class="tip">
+                        <h3>🐛 Common Bugs and Fixes</h3>
+                        
+                        <h4>Bug: Wrong number of rows</h4>
+                        <p><strong>Symptom:</strong> Your table has 6 rows instead of 8 for a 3-variable expression</p>
+                        <p><strong>Cause:</strong> Counting variables incorrectly (maybe counting 'p' twice in "p AND p")</p>
+                        <p><strong>Fix:</strong> Count DISTINCT variables only. Use a Set data structure.</p>
+                        
+                        <h4>Bug: Implication always true</h4>
+                        <p><strong>Symptom:</strong> p -> q shows all T's in your output</p>
+                        <p><strong>Cause:</strong> Incorrect implication logic (maybe treating it like biconditional)</p>
+                        <p><strong>Fix:</strong> Implication is: <code>!p || q</code> (false only when p is true and q is false)</p>
+                        
+                        <h4>Bug: Parentheses not working</h4>
+                        <p><strong>Symptom:</strong> "(p OR q) AND r" gives same result as "p OR (q AND r)"</p>
+                        <p><strong>Cause:</strong> Not respecting parentheses during evaluation</p>
+                        <p><strong>Fix:</strong> Parse parentheses first, evaluate innermost expressions first</p>
+                        
+                        <h4>Bug: Classification incorrect</h4>
+                        <p><strong>Symptom:</strong> Calling "p AND q" a tautology</p>
+                        <p><strong>Cause:</strong> Not checking ALL rows, or logic error in classification</p>
+                        <p><strong>Fix:</strong> Tautology = ALL true, Contradiction = ALL false, Contingency = mixed</p>
+                    </div>
+
+                    <h3>Sample Expressions to Test</h3>
+                    
+                    <div class="example-box">
+                        <h4>Try These in the Demo Tool</h4>
+                        <p>Click each button to load the expression:</p>
+                        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem;">
+                            <button class="btn-success" onclick="loadSampleExpression('p')">p</button>
+                            <button class="btn-success" onclick="loadSampleExpression('NOT p')">NOT p</button>
+                            <button class="btn-success" onclick="loadSampleExpression('p AND q')">p AND q</button>
+                            <button class="btn-success" onclick="loadSampleExpression('p OR q')">p OR q</button>
+                            <button class="btn-success" onclick="loadSampleExpression('p -> q')">p -> q</button>
+                            <button class="btn-success" onclick="loadSampleExpression('p <-> q')">p <-> q</button>
+                            <button class="btn-success" onclick="loadSampleExpression('(p OR q) -> r')">(p OR q) -> r</button>
+                            <button class="btn-success" onclick="loadSampleExpression('NOT (p AND q)')">NOT (p AND q)</button>
+                            <button class="btn-success" onclick="loadSampleExpression('p OR NOT p')">p OR NOT p</button>
+                            <button class="btn-success" onclick="loadSampleExpression('p AND NOT p')">p AND NOT p</button>
+                            <button class="btn-success" onclick="loadSampleExpression('(p -> q) AND (q -> p)')">(p -> q) AND (q -> p)</button>
+                            <button class="btn-success" onclick="loadSampleExpression('((p -> q) AND (q -> r)) -> (p -> r)')">Hypothetical Syllogism</button>
+                        </div>
+                    </div>
+
+                    <h3>From Demo to Code</h3>
+                    
+                    <div class="requirements">
+                        <h3>🔄 Translating Demo Functionality to Your Program</h3>
+                        <p>This demo implements the same functionality you need in PE-03. Here's how to approach it:</p>
+                        
+                        <h4>Step 1: Input Handling</h4>
+                        <ul>
+                            <li>Read expression from user (Scanner in Java, cin in C++)</li>
+                            <li>Accept multiple operator notations (AND, &, ∧)</li>
+                            <li>Validate input before processing</li>
+                        </ul>
+                        
+                        <h4>Step 2: Variable Extraction</h4>
+                        <ul>
+                            <li>Scan expression for p, q, r</li>
+                            <li>Store distinct variables (use Set/unordered_set)</li>
+                            <li>Determine n = number of variables</li>
+                        </ul>
+                        
+                        <h4>Step 3: Truth Table Generation</h4>
+                        <ul>
+                            <li>Calculate rows = 2ⁿ</li>
+                            <li>Generate all combinations (binary counting method)</li>
+                            <li>For each combination, evaluate expression</li>
+                        </ul>
+                        
+                        <h4>Step 4: Expression Evaluation</h4>
+                        <ul>
+                            <li>Substitute truth values for variables</li>
+                            <li>Evaluate operators according to their definitions</li>
+                            <li>Return final truth value</li>
+                        </ul>
+                        
+                        <h4>Step 5: Classification</h4>
+                        <ul>
+                            <li>Count true and false results</li>
+                            <li>If all true → Tautology</li>
+                            <li>If all false → Contradiction</li>
+                            <li>If mixed → Contingency</li>
+                        </ul>
+                        
+                        <h4>Step 6: Output Formatting</h4>
+                        <ul>
+                            <li>Display table with proper alignment</li>
+                            <li>Show classification and statistics</li>
+                            <li>Make output clear and professional</li>
+                        </ul>
+                    </div>
+
+                    <h3>Performance Considerations</h3>
+                    
+                    <div class="warning">
+                        <h3>⚠️ Complexity Analysis</h3>
+                        <p><strong>Time Complexity:</strong> O(2ⁿ × m) where n = number of variables, m = expression complexity</p>
+                        <p><strong>Why?</strong> You must evaluate the expression for each of 2ⁿ rows</p>
+                        <p><strong>Practical limit:</strong> 3-4 variables is reasonable (8-16 rows)</p>
+                        <p><strong>Beyond 5 variables:</strong> 32+ rows becomes unwieldy for console display</p>
+                        <p><strong>For PE-03:</strong> Supporting up to 3 variables (p, q, r) is sufficient</p>
+                    </div>
+
+                </div>
+            </div>
+                        <!-- Tab 5: Grading Rubric -->
+            <div class="tab-content" id="grading">
+                <div class="section">
+                    <h2>📊 Grading Rubric and Evaluation Criteria</h2>
+                    
+                    <p>PE-03 is worth <strong>15 points</strong> and will be evaluated based on four main criteria: Correctness, Code Quality, Documentation, and Testing. This rubric provides detailed expectations for each category.</p>
+
+                    <div class="objectives">
+                        <h3>🎯 Overall Grading Breakdown</h3>
+                        <table class="rubric-table">
+                            <thead>
+                                <tr>
+                                    <th>Category</th>
+                                    <th>Points</th>
+                                    <th>Percentage</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Correctness</strong></td>
+                                    <td>7.5 pts</td>
+                                    <td>50%</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Code Quality</strong></td>
+                                    <td>3.75 pts</td>
+                                    <td>25%</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Documentation</strong></td>
+                                    <td>2.25 pts</td>
+                                    <td>15%</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Testing</strong></td>
+                                    <td>1.5 pts</td>
+                                    <td>10%</td>
+                                </tr>
+                                <tr class="category">
+                                    <td><strong>TOTAL</strong></td>
+                                    <td><strong>15 pts</strong></td>
+                                    <td><strong>100%</strong></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3>Category 1: Correctness (7.5 points / 50%)</h3>
+                    
+                    <div class="requirements">
+                        <h3>✅ What "Correctness" Means</h3>
+                        <p>Your program must produce accurate truth tables and correct classifications. This is the most heavily weighted category because a program that doesn't work correctly has limited value.</p>
+                    </div>
+
+                    <table class="rubric-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 15%;">Points</th>
+                                <th style="width: 20%;">Level</th>
+                                <th>Criteria</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>7.0-7.5</td>
+                                <td><strong>Excellent</strong></td>
+                                <td>
+                                    <ul>
+                                        <li>✓ All 5 operators (NOT, AND, OR, ->, <->) work correctly</li>
+                                        <li>✓ Truth tables are 100% accurate for all test cases</li>
+                                        <li>✓ Correct row count (2ⁿ) for any number of variables</li>
+                                        <li>✓ Tautology/Contradiction/Contingency classification is always correct</li>
+                                        <li>✓ Handles complex nested expressions correctly</li>
+                                        <li>✓ Parentheses grouping works properly</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>6.0-6.9</td>
+                                <td><strong>Good</strong></td>
+                                <td>
+                                    <ul>
+                                        <li>✓ All operators implemented</li>
+                                        <li>✓ Truth tables mostly correct (1-2 minor errors)</li>
+                                        <li>✓ Classification correct for most cases</li>
+                                        <li>⚠ Minor issues with edge cases</li>
+                                        <li>⚠ Parentheses handling has minor bugs</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>5.0-5.9</td>
+                                <td><strong>Satisfactory</strong></td>
+                                <td>
+                                    <ul>
+                                        <li>✓ Most operators work correctly</li>
+                                        <li>⚠ Truth tables have some errors (3-4 issues)</li>
+                                        <li>⚠ Classification sometimes incorrect</li>
+                                        <li>⚠ Issues with 3-variable expressions</li>
+                                        <li>⚠ Parentheses handling incomplete</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>3.0-4.9</td>
+                                <td><strong>Needs Work</strong></td>
+                                <td>
+                                    <ul>
+                                        <li>⚠ Only 2-3 operators work correctly</li>
+                                        <li>✗ Significant errors in truth table generation</li>
+                                        <li>✗ Classification often wrong</li>
+                                        <li>✗ Major logic errors in evaluation</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>0-2.9</td>
+                                <td><strong>Incomplete</strong></td>
+                                <td>
+                                    <ul>
+                                        <li>✗ Program doesn't compile or run</li>
+                                        <li>✗ Only 0-1 operators work</li>
+                                        <li>✗ Truth tables completely incorrect</li>
+                                        <li>✗ Missing core functionality</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h3>Category 2: Code Quality (3.75 points / 25%)</h3>
+                    
+                    <div class="requirements">
+                        <h3>✅ What "Code Quality" Means</h3>
+                        <p>Well-organized, readable code that follows best practices. Code should be easy to understand, maintain, and modify.</p>
+                    </div>
+
+                    <table class="rubric-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 15%;">Points</th>
+                                <th style="width: 20%;">Level</th>
+                                <th>Criteria</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>3.5-3.75</td>
+                                <td><strong>Excellent</strong></td>
+                                <td>
+                                    <ul>
+                                        <li>✓ Modular design with well-organized functions/methods</li>
+                                        <li>✓ Descriptive variable and function names</li>
+                                        <li>✓ Consistent indentation and formatting</li>
+                                        <li>✓ No code duplication (DRY principle)</li>
+                                        <li>✓ Appropriate use of data structures</li>
+                                        <li>✓ Follows language-specific style conventions</li>
+                                        <li>✓ Clean, professional code</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>3.0-3.4</td>
+                                <td><strong>Good</strong></td>
+                                <td>
+                                    <ul>
+                                        <li>✓ Generally well-organized</li>
+                                        <li>✓ Mostly descriptive names</li>
+                                        <li>✓ Consistent formatting</li>
+                                        <li>⚠ Some minor code duplication</li>
+                                        <li>⚠ Could use better data structures in places</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2.5-2.9</td>
+                                <td><strong>Satisfactory</strong></td>
+                                <td>
+                                    <ul>
+                                        <li>⚠ Code works but organization could be better</li>
+                                        <li>⚠ Some unclear variable names (x, y, temp)</li>
+                                        <li>⚠ Inconsistent formatting</li>
+                                        <li>⚠ Significant code duplication</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>1.5-2.4</td>
+                                <td><strong>Needs Work</strong></td>
+                                <td>
+                                    <ul>
+                                        <li>✗ Poor organization, hard to follow</li>
+                                        <li>✗ Cryptic variable names (a, b, c, x1, x2)</li>
+                                        <li>✗ Inconsistent or missing indentation</li>
+                                        <li>✗ One long main function with no modularity</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>0-1.4</td>
+                                <td><strong>Unacceptable</strong></td>
+                                <td>
+                                    <ul>
+                                        <li>✗ Extremely messy, unreadable code</li>
+                                        <li>✗ No clear structure or organization</li>
+                                        <li>✗ Appears to be copied without understanding</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="tip">
+                        <h3>💡 Code Quality Tips</h3>
+                        <ul>
+                            <li><strong>Use meaningful names:</strong> <code>evaluateExpression()</code> instead of <code>eval()</code></li>
+                            <li><strong>Break into functions:</strong> Separate parsing, evaluation, and display logic</li>
+                            <li><strong>Avoid magic numbers:</strong> Use constants like <code>MAX_VARIABLES = 3</code></li>
+                            <li><strong>Follow conventions:</strong> camelCase for Java, snake_case or camelCase for C++</li>
+                            <li><strong>Keep functions short:</strong> Each function should do one thing well</li>
+                        </ul>
+                    </div>
+
+                    <h3>Category 3: Documentation (2.25 points / 15%)</h3>
+                    
+                    <div class="requirements">
+                        <h3>✅ What "Documentation" Means</h3>
+                        <p>Clear comments in code and comprehensive README file that explains how to compile, run, and use your program.</p>
+                    </div>
+
+                    <table class="rubric-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 15%;">Points</th>
+                                <th style="width: 20%;">Level</th>
+                                <th>Criteria</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2.0-2.25</td>
+                                <td><strong>Excellent</strong></td>
+                                <td>
+                                    <ul>
+                                        <li>✓ Comprehensive README with all required sections</li>
+                                        <li>✓ Clear compilation and running instructions</li>
+                                        <li>✓ All complex logic explained with comments</li>
+                                        <li>✓ Function/method headers document parameters and return values</li>
+                                        <li>✓ Includes examples of input/output</li>
+                                        <li>✓ Documents design decisions and algorithms used</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>1.7-1.9</td>
+                                <td><strong>Good</strong></td>
+                                <td>
+                                    <ul>
+                                        <li>✓ Good README with most required sections</li>
+                                        <li>✓ Compilation instructions present</li>
+                                        <li>✓ Key functions have comments</li>
+                                        <li>⚠ Some sections could use more detail</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>1.4-1.6</td>
+                                <td><strong>Satisfactory</strong></td>
+                                <td>
+                                    <ul>
+                                        <li>⚠ Basic README present but missing details</li>
+                                        <li>⚠ Minimal comments in code</li>
+                                        <li>⚠ Compilation instructions unclear or incomplete</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>0.7-1.3</td>
+                                <td><strong>Needs Work</strong></td>
+                                <td>
+                                    <ul>
+                                        <li>✗ Minimal or missing README</li>
+                                        <li>✗ Very few or no comments</li>
+                                        <li>✗ No compilation instructions</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>0-0.6</td>
+                                <td><strong>Unacceptable</strong></td>
+                                <td>
+                                    <ul>
+                                        <li>✗ No README file</li>
+                                        <li>✗ No comments whatsoever</li>
+                                        <li>✗ Cannot determine how to compile or run</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="example-box">
+                        <h4>Required README Sections</h4>
+                        <p>Your README.txt or README.md must include:</p>
+                        <ol>
+                            <li><strong>Student Information:</strong> Name, course, assignment, date</li>
+                            <li><strong>Compilation Instructions:</strong> Exact commands to compile</li>
+                            <li><strong>Running Instructions:</strong> How to execute the program</li>
+                            <li><strong>Supported Operators:</strong> List all operators and their notations</li>
+                            <li><strong>Features Implemented:</strong> What your program can do</li>
+                            <li><strong>Test Cases:</strong> List of expressions tested with results</li>
+                            <li><strong>System Requirements:</strong> OS, compiler version</li>
+                            <li><strong>Known Limitations:</strong> Any restrictions or issues (if applicable)</li>
+                        </ol>
+                    </div>
+
+                    <h3>Category 4: Testing (1.5 points / 10%)</h3>
+                    
+                    <div class="requirements">
+                        <h3>✅ What "Testing" Means</h3>
+                        <p>Comprehensive test cases that demonstrate your program works correctly for various scenarios including edge cases.</p>
+                    </div>
+
+                    <table class="rubric-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 15%;">Points</th>
+                                <th style="width: 20%;">Level</th>
+                                <th>Criteria</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1.4-1.5</td>
+                                <td><strong>Excellent</strong></td>
+                                <td>
+                                    <ul>
+                                        <li>✓ All 12 required test cases documented</li>
+                                        <li>✓ Additional edge cases tested</li>
+                                        <li>✓ Test results clearly documented in README</li>
+                                        <li>✓ Tests cover all operators</li>
+                                        <li>✓ Tests include tautology, contradiction, contingency</li>
+                                        <li>✓ Tests include 1, 2, and 3 variable expressions</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>1.2-1.3</td>
+                                <td><strong>Good</strong></td>
+                                <td>
+                                    <ul>
+                                        <li>✓ Most required test cases present (10-11)</li>
+                                        <li>✓ Tests documented</li>
+                                        <li>⚠ Missing 1-2 test cases</li>
+                                        <li>⚠ Could test more edge cases</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>1.0-1.1</td>
+                                <td><strong>Satisfactory</strong></td>
+                                <td>
+                                    <ul>
+                                        <li>⚠ Some test cases present (7-9)</li>
+                                        <li>⚠ Basic documentation of tests</li>
+                                        <li>⚠ Missing several required tests</li>
+                                        <li>⚠ Limited variety in test cases</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>0.5-0.9</td>
+                                <td><strong>Needs Work</strong></td>
+                                <td>
+                                    <ul>
+                                        <li>✗ Minimal testing (fewer than 7 cases)</li>
+                                        <li>✗ Poor or no documentation of tests</li>
+                                        <li>✗ Missing most required test cases</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>0-0.4</td>
+                                <td><strong>Unacceptable</strong></td>
+                                <td>
+                                    <ul>
+                                        <li>✗ No documented test cases</li>
+                                        <li>✗ No evidence of systematic testing</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h3>Detailed Correctness Breakdown</h3>
+                    
+                    <div class="example-box">
+                        <h4>How Each Operator is Evaluated (1.5 points each)</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Operator</th>
+                                    <th>Points</th>
+                                    <th>Test Criteria</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>NOT (¬)</strong></td>
+                                    <td>1.5</td>
+                                    <td>Correctly negates truth values in all cases</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>AND (∧)</strong></td>
+                                    <td>1.5</td>
+                                    <td>True only when both operands are true</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>OR (∨)</strong></td>
+                                    <td>1.5</td>
+                                    <td>True when at least one operand is true</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Implication (→)</strong></td>
+                                    <td>1.5</td>
+                                    <td>False only when p is true and q is false</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Biconditional (↔)</strong></td>
+                                    <td>1.5</td>
+                                    <td>True when both operands have same truth value</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p><strong>Note:</strong> Partial credit available if operators mostly work but have minor bugs.</p>
+                    </div>
+
+                    <h3>Common Deductions</h3>
+                    
+                    <div class="warning">
+                        <h3>⚠️ Point Deductions to Avoid</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Issue</th>
+                                    <th>Deduction</th>
+                                    <th>How to Avoid</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Program doesn't compile</td>
+                                    <td>-5 points</td>
+                                    <td>Test compilation before submitting</td>
+                                </tr>
+                                <tr>
+                                    <td>Missing README</td>
+                                    <td>-2 points</td>
+                                    <td>Include README.txt in ZIP file</td>
+                                </tr>
+                                <tr>
+                                    <td>Incorrect file naming</td>
+                                    <td>-0.5 points</td>
+                                    <td>Use: LastName_FirstName_PE03_Week3.zip</td>
+                                </tr>
+                                <tr>
+                                    <td>No comments in code</td>
+                                    <td>-1 point</td>
+                                    <td>Comment complex logic and functions</td>
+                                </tr>
+                                <tr>
+                                    <td>Implication logic wrong</td>
+                                    <td>-1.5 points</td>
+                                    <td>Review truth table: false only when T→F</td>
+                                </tr>
+                                <tr>
+                                    <td>Wrong number of rows</td>
+                                    <td>-1 point</td>
+                                    <td>Use formula: 2ⁿ rows for n variables</td>
+                                </tr>
+                                <tr>
+                                    <td>Classification incorrect</td>
+                                    <td>-0.5 points</td>
+                                    <td>Check all rows: all T = tautology, all F = contradiction</td>
+                                </tr>
+                                <tr>
+                                    <td>No error handling</td>
+                                    <td>-0.5 points</td>
+                                    <td>Validate input, handle invalid expressions</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3>Extra Credit Opportunities (+3 points maximum)</h3>
+                    
+                    <div class="tip">
+                        <h3>🌟 Bonus Features</h3>
+                        <p>Implement optional features to earn up to 3 bonus points:</p>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Feature</th>
+                                    <th>Bonus Points</th>
+                                    <th>Requirements</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Support 4+ Variables</strong></td>
+                                    <td>+1.5</td>
+                                    <td>Handle expressions with 4 or more variables (16+ rows)</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Expression Simplification</strong></td>
+                                    <td>+1.0</td>
+                                    <td>Suggest simplified equivalent expressions using laws</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Export to File</strong></td>
+                                    <td>+0.5</td>
+                                    <td>Save truth table to text file</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Interactive Mode</strong></td>
+                                    <td>+0.5</td>
+                                    <td>Allow multiple expressions without restarting</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Equivalence Checker</strong></td>
+                                    <td>+1.0</td>
+                                    <td>Compare two expressions for logical equivalence</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Color-Coded Output</strong></td>
+                                    <td>+0.5</td>
+                                    <td>Use ANSI colors to highlight results</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p><strong>Important:</strong> Document all extra features clearly in your README!</p>
+                    </div>
+
+                    <h3>Self-Assessment Checklist</h3>
+                    
+                    <div class="requirements">
+                        <h3>📋 Before Submitting, Verify:</h3>
+                        <ul class="checklist">
+                            <li>Program compiles without errors</li>
+                            <li>Program runs without crashing</li>
+                            <li>All 5 operators work correctly (NOT, AND, OR, ->, <->)</li>
+                            <li>Truth tables have correct number of rows (2ⁿ)</li>
+                            <li>All truth values are accurate</li>
+                            <li>Classification (tautology/contradiction/contingency) is correct</li>
+                            <li>Code is well-organized with functions/methods</li>
+                            <li>Variable and function names are descriptive</li>
+                            <li>Code has consistent indentation and formatting</li>
+                            <li>Complex logic has explanatory comments</li>
+                            <li>README.txt is complete with all required sections</li>
+                            <li>Compilation instructions are clear and tested</li>
+                            <li>At least 10-12 test cases documented</li>
+                            <li>ZIP file named correctly: LastName_FirstName_PE03_Week3.zip</li>
+                            <li>No compiled files (.class, .exe) in ZIP</li>
+                            <li>Academic integrity statement included (if required)</li>
+                        </ul>
+                    </div>
+
+                    <h3>Grade Estimation Tool</h3>
+                    
+                    <div class="demo-section">
+                        <h3>🧮 Estimate Your Grade</h3>
+                        <p>Use this tool to estimate your expected grade based on the rubric:</p>
+                        
+                        <div class="input-group">
+                            <label>Correctness (0-7.5 points):</label>
+                            <input type="number" id="correctnessPoints" min="0" max="7.5" step="0.5" value="0">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label>Code Quality (0-3.75 points):</label>
+                            <input type="number" id="qualityPoints" min="0" max="3.75" step="0.25" value="0">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label>Documentation (0-2.25 points):</label>
+                            <input type="number" id="docPoints" min="0" max="2.25" step="0.25" value="0">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label>Testing (0-1.5 points):</label>
+                            <input type="number" id="testPoints" min="0" max="1.5" step="0.1" value="0">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label>Extra Credit (0-3 points - optional):</label>
+                            <input type="number" id="bonusPoints" min="0" max="3" step="0.5" value="0">
+                        </div>
+                        
+                        <button onclick="calculateGrade()">Calculate Estimated Grade</button>
+                        
+                        <div id="gradeResult" style="display: none; margin-top: 1rem; padding: 1.5rem; background: #f0f0f0; border-radius: 5px;">
+                            <h4>Your Estimated Grade:</h4>
+                            <p style="font-size: 2rem; font-weight: bold; margin: 1rem 0;" id="gradeDisplay">0.0 / 15</p>
+                            <p id="gradePercentage" style="font-size: 1.5rem; margin: 0.5rem 0;">0%</p>
+                            <p id="gradeLetter" style="font-size: 1.5rem; font-weight: bold;"></p>
+                        </div>
+                    </div>
+
+                    <h3>Academic Integrity</h3>
+                    
+                    <div class="warning">
+                        <h3>⚠️ Academic Integrity Policy</h3>
+                        <p><strong>This assignment must be your own original work.</strong></p>
+                        
+                        <h4>✅ Acceptable:</h4>
+                        <ul>
+                            <li>Discussing concepts and approaches with classmates</li>
+                            <li>Using course materials and recommended resources</li>
+                            <li>Asking clarifying questions to instructor</li>
+                            <li>Looking up syntax and language features</li>
+                            <li>Using the demo tool to test your understanding</li>
+                        </ul>
+                        
+                        <h4>❌ NOT Acceptable:</h4>
+                        <ul>
+                            <li>Copying code from other students</li>
+                            <li>Copying code from internet sources</li>
+                            <li>Sharing your solution code with classmates</li>
+                            <li>Using AI tools to generate your solution</li>
+                            <li>Submitting work done by someone else</li>
+                        </ul>
+                        
+                        <h4>Consequences:</h4>
+                        <ul>
+                            <li><strong>First offense:</strong> 0 on assignment + meeting with instructor</li>
+                            <li><strong>Second offense:</strong> F in course + referral to academic affairs</li>
+                            <li><strong>All incidents:</strong> Reported to department</li>
+                        </ul>
+                    </div>
+
+                    <h3>Late Submission Policy</h3>
+                    
+                    <div class="warning">
+                        <h3>📅 Late Policy for PE-03</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Submission Time</th>
+                                    <th>Penalty</th>
+                                    <th>Example</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>On time</td>
+                                    <td>No penalty</td>
+                                    <td>15/15 possible</td>
+                                </tr>
+                                <tr>
+                                    <td>Up to 24 hours late</td>
+                                    <td>-10%</td>
+                                    <td>13.5/15 maximum</td>
+                                </tr>
+                                <tr>
+                                    <td>24-48 hours late</td>
+                                    <td>-20%</td>
+                                    <td>12/15 maximum</td>
+                                </tr>
+                                <tr>
+                                    <td>48-72 hours late</td>
+                                    <td>-30%</td>
+                                    <td>10.5/15 maximum</td>
+                                </tr>
+                                <tr>
+                                    <td>More than 72 hours late</td>
+                                    <td>0 points</td>
+                                    <td>0/15 (but must still submit)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p><strong>Important:</strong> Even if you're beyond 72 hours, you must still submit to receive credit for completing the course.</p>
+                    </div>
+
+                    <h3>Resubmission Policy</h3>
+                    
+                    <div class="tip">
+                        <h3>🔄 Can I Resubmit?</h3>
+                        <p><strong>One-time resubmission allowed</strong> for PE-03 if:</p>
+                        <ul>
+                            <li>Original submission was on time</li>
+                            <li>Original score was below 12/15 (80%)</li>
+                            <li>Resubmission is within 3 days of grade posting</li>
+                            <li>You meet with instructor to discuss improvements</li>
+                        </ul>
+                        <p><strong>Resubmission grading:</strong> Maximum score is 13.5/15 (90%)</p>
+                        <p><strong>Purpose:</strong> This policy supports learning, not grade inflation. Use it to improve understanding!</p>
+                    </div>
+
+                </div>
+            </div>
+                        <!-- Tab 6: Submission Guidelines -->
+            <div class="tab-content" id="submission">
+                <div class="section">
+                    <h2>📤 Submission Guidelines</h2>
+                    
+                    <p>Follow these instructions carefully to ensure your assignment is submitted correctly and can be graded without issues.</p>
+
+                    <h3>Submission Checklist</h3>
+                    
+                    <div class="objectives">
+                        <h3>✅ Before You Submit</h3>
+                        <ul class="checklist">
+                            <li>Program compiles without errors on your system</li>
+                            <li>Program runs and produces correct output</li>
+                            <li>All required test cases completed and documented</li>
+                            <li>README.txt or README.md is complete</li>
+                            <li>Code has appropriate comments</li>
+                            <li>All source files are included</li>
+                            <li>NO compiled files (.class, .exe, .o) included</li>
+                            <li>NO IDE folders (.vscode, .idea, .vs) included</li>
+                            <li>ZIP file is named correctly</li>
+                            <li>ZIP file is under 5 MB</li>
+                        </ul>
+                    </div>
+
+                    <h3>File Naming Convention</h3>
+                    
+                    <div class="requirements">
+                        <h3>📁 Required Naming Format</h3>
+                        <p><strong>ZIP File Name:</strong></p>
+                        <pre><code>LastName_FirstName_PE03_Week3.zip</code></pre>
+                        
+                        <p><strong>Examples:</strong></p>
+                        <ul>
+                            <li>Smith_John_PE03_Week3.zip</li>
+                            <li>Garcia_Maria_PE03_Week3.zip</li>
+                            <li>Johnson_Sarah_PE03_Week3.zip</li>
+                        </ul>
+                        
+                        <p style="margin-top: 1rem;"><strong>⚠️ Important:</strong></p>
+                        <ul>
+                            <li>Use your actual first and last name</li>
+                            <li>No spaces in filename (use underscores)</li>
+                            <li>Exact format: LastName_FirstName_PE03_Week3</li>
+                            <li>Must be a .zip file (not .rar, .7z, or other formats)</li>
+                        </ul>
+                    </div>
+
+                    <h3>ZIP File Contents</h3>
+                    
+                    <div class="example-box">
+                        <h4>Required Files in Your ZIP</h4>
+                        
+                        <h4>For Java Submissions:</h4>
+                        <pre><code>Smith_John_PE03_Week3.zip
+├── README.txt (or README.md)
+├── TruthTableGenerator.java
+└── [any additional .java files]</code></pre>
+                        
+                        <h4>For C++ Submissions:</h4>
+                        <pre><code>Smith_John_PE03_Week3.zip
+├── README.txt (or README.md)
+├── main.cpp
+├── parser.cpp (if using multiple files)
+├── parser.h
+├── evaluator.cpp
+├── evaluator.h
+└── [any additional .cpp/.h files]</code></pre>
+                        
+                        <p style="margin-top: 1rem;"><strong>✅ Include:</strong></p>
+                        <ul>
+                            <li>All source code files (.java or .cpp/.h)</li>
+                            <li>README.txt or README.md</li>
+                            <li>Any additional documentation</li>
+                        </ul>
+                        
+                        <p><strong>❌ Do NOT Include:</strong></p>
+                        <ul>
+                            <li>Compiled files (.class, .exe, .o, .obj)</li>
+                            <li>IDE configuration folders (.vscode, .idea, .vs, .settings)</li>
+                            <li>Build directories (bin/, build/, out/)</li>
+                            <li>Package manager files (if using any)</li>
+                            <li>Temporary or backup files</li>
+                        </ul>
+                    </div>
+
+                    <h3>README.txt Requirements</h3>
+                    
+                    <div class="requirements">
+                        <h3>📄 Complete README Template</h3>
+                        <p>Your README must include these sections:</p>
+                    </div>
+
+                    <button class="collapsible">Show Complete README Template</button>
+                    <div class="collapsible-content">
+                        <pre><code>===============================================
+PE-03: Truth Table Generator
+CSC 240 - Discrete Structures - Week 3
+===============================================
+
+STUDENT INFORMATION
+-------------------
+Name: [Your Full Name]
+Student ID: [Your Student ID]
+Course: CSC 240 - Discrete Structures
+Assignment: PE-03 - Truth Table Generator
+Date Submitted: [Submission Date]
+Programming Language: [Java or C++]
+
+COMPILATION INSTRUCTIONS
+-------------------------
+[Provide exact commands to compile your program]
+
+Java Example:
+  javac TruthTableGenerator.java
+
+C++ Example:
+  g++ -std=c++11 -o truthtable main.cpp parser.cpp evaluator.cpp
+
+RUNNING INSTRUCTIONS
+--------------------
+[Provide exact commands to run your program]
+
+Java Example:
+  java TruthTableGenerator
+
+C++ Example:
+  ./truthtable
+  (Windows: truthtable.exe)
+
+PROGRAM DESCRIPTION
+-------------------
+[Brief description of what your program does - 2-3 sentences]
+
+This program generates complete truth tables for logical 
+expressions containing up to 3 propositional variables (p, q, r).
+It supports all five logical operators and classifies expressions
+as tautologies, contradictions, or contingencies.
+
+SUPPORTED OPERATORS
+-------------------
+Negation:
+  - NOT, !, ¬
+
+Conjunction:
+  - AND, &, ∧
+
+Disjunction:
+  - OR, |, ∨
+
+Implication:
+  - ->, IMP, →
+
+Biconditional:
+  - <->, IFF, ↔
+
+SUPPORTED VARIABLES
+-------------------
+- p, q, r (single lowercase letters)
+- Maximum 3 variables per expression
+
+INPUT FORMAT
+------------
+Examples of valid input:
+  - p AND q
+  - (p OR q) -> r
+  - NOT p AND (q OR r)
+  - p <-> q
+  - ((p -> q) AND (q -> r)) -> (p -> r)
+
+Parentheses are used for grouping operations.
+Spaces are optional but improve readability.
+
+FEATURES IMPLEMENTED
+--------------------
+✓ All 5 logical operators (NOT, AND, OR, ->, <->)
+✓ Multiple notation styles for each operator
+✓ Parentheses support for grouping
+✓ Automatic variable detection
+✓ Complete truth table generation (2^n rows)
+✓ Intermediate sub-expression columns
+✓ Expression classification (tautology/contradiction/contingency)
+✓ Statistical analysis (true/false counts and percentages)
+✓ Input validation with error messages
+✓ [List any additional features you implemented]
+
+DESIGN DECISIONS
+----------------
+[Explain your approach - 3-5 sentences]
+
+Example:
+I used a recursive descent parser to handle nested expressions
+and parentheses. Truth value combinations are generated using
+binary counting (0 to 2^n - 1). Each operator is implemented
+as a separate function for modularity. The program uses a 
+Set/HashSet to identify distinct variables.
+
+ALGORITHM OVERVIEW
+------------------
+1. Parse input expression and extract variables
+2. Generate all 2^n truth value combinations
+3. For each combination:
+   - Substitute values into expression
+   - Evaluate expression step-by-step
+   - Record result
+4. Classify based on results (all T, all F, or mixed)
+5. Display formatted truth table and analysis
+
+DATA STRUCTURES USED
+--------------------
+[List key data structures and their purpose]
+
+Example:
+- Set<Character>: Store distinct variables (p, q, r)
+- ArrayList<Boolean>: Store truth values for each row
+- String: Store and manipulate expressions
+
+TESTING RESULTS
+---------------
+All required test cases completed:
+
+Test 1: p AND q
+  Variables: p, q
+  Rows: 4
+  Result: CONTINGENCY (1/4 true, 3/4 false)
+  Status: ✓ PASS
+
+Test 2: p OR q
+  Variables: p, q
+  Rows: 4
+  Result: CONTINGENCY (3/4 true, 1/4 false)
+  Status: ✓ PASS
+
+Test 3: NOT p
+  Variables: p
+  Rows: 2
+  Result: CONTINGENCY (1/2 true, 1/2 false)
+  Status: ✓ PASS
+
+Test 4: p -> q
+  Variables: p, q
+  Rows: 4
+  Result: CONTINGENCY (3/4 true, 1/4 false)
+  Status: ✓ PASS
+
+Test 5: p <-> q
+  Variables: p, q
+  Rows: 4
+  Result: CONTINGENCY (2/4 true, 2/4 false)
+  Status: ✓ PASS
+
+Test 6: p OR NOT p
+  Variables: p
+  Rows: 2
+  Result: TAUTOLOGY (2/2 true)
+  Status: ✓ PASS
+
+Test 7: p AND NOT p
+  Variables: p
+  Rows: 2
+  Result: CONTRADICTION (0/2 true)
+  Status: ✓ PASS
+
+Test 8: (p OR q) -> r
+  Variables: p, q, r
+  Rows: 8
+  Result: CONTINGENCY (6/8 true, 2/8 false)
+  Status: ✓ PASS
+
+Test 9: NOT (p AND q)
+  Variables: p, q
+  Rows: 4
+  Result: CONTINGENCY (3/4 true, 1/4 false)
+  Status: ✓ PASS
+
+Test 10: (p -> q) AND (q -> p)
+  Variables: p, q
+  Rows: 4
+  Result: CONTINGENCY (2/4 true, 2/4 false)
+  Note: Equivalent to p <-> q
+  Status: ✓ PASS
+
+Test 11: p AND q AND r
+  Variables: p, q, r
+  Rows: 8
+  Result: CONTINGENCY (1/8 true, 7/8 false)
+  Status: ✓ PASS
+
+Test 12: ((p -> q) AND (q -> r)) -> (p -> r)
+  Variables: p, q, r
+  Rows: 8
+  Result: TAUTOLOGY (8/8 true)
+  Note: Hypothetical Syllogism
+  Status: ✓ PASS
+
+EDGE CASES TESTED
+-----------------
+✓ Single variable: p
+✓ Double negation: NOT NOT p
+✓ Nested parentheses: ((p AND q) OR r)
+✓ All three variables: p AND q AND r
+✓ Complex nesting: (p -> (q -> r))
+✓ Invalid input: proper error messages
+
+KNOWN LIMITATIONS
+-----------------
+[List any limitations - be honest!]
+
+Example:
+- Maximum 3 variables (p, q, r)
+- Single-character variable names only
+- Does not simplify expressions
+- Requires proper spacing around operators
+
+SYSTEM REQUIREMENTS
+--------------------
+Operating System: [Windows 10 / macOS Ventura / Ubuntu 22.04]
+Compiler: [javac 17.0.2 / g++ 11.3.0]
+IDE: Visual Studio Code 1.85
+Java Version: [If Java] OpenJDK 17
+C++ Standard: [If C++] C++11 or later
+
+DEVELOPMENT ENVIRONMENT
+-----------------------
+IDE: Visual Studio Code
+Extensions Used: [List any VS Code extensions]
+  - Java: Extension Pack for Java (if Java)
+  - C++: C/C++ Extension Pack (if C++)
+
+EXTRA FEATURES (if any)
+------------------------
+[Document any bonus features you implemented]
+
+Example:
+✓ Interactive mode - can enter multiple expressions
+✓ Color-coded output (green for tautology, red for contradiction)
+✓ Export truth table to file
+✓ Support for 4 variables
+
+CHALLENGES FACED
+----------------
+[Optional: Describe 1-2 challenges and how you solved them]
+
+Example:
+Challenge 1: Parsing nested parentheses
+Solution: Implemented recursive descent parser
+
+Challenge 2: Generating all 2^n combinations
+Solution: Used binary counting with bit operations
+
+TIME SPENT
+----------
+Planning: [X hours]
+Implementation: [X hours]
+Testing: [X hours]
+Documentation: [X hours]
+Total: [X hours]
+
+RESOURCES CONSULTED
+-------------------
+[List any resources you used - be specific]
+
+- CSC 240 Week 3 Learning Materials
+- Saylor.org CS202 Unit 3: Mathematical Logic
+- Java/C++ Documentation for [specific features]
+- [Any other legitimate resources]
+
+ACADEMIC INTEGRITY STATEMENT
+-----------------------------
+I certify that this is my original work. I have not copied
+code from any other source except as noted in the references
+above. I understand that submitting plagiarized work will
+result in a zero on this assignment and potential further
+academic consequences.
+
+Signature: [Your Name]
+Date: [Date]
+
+INSTRUCTOR USE ONLY
+--------------------
+Grade: _____ / 15
+Comments:
+
+
+</code></pre>
+                    </div>
+
+                    <h3>How to Create Your ZIP File</h3>
+
+                    <h4>Windows Instructions:</h4>
+                    <div class="example-box">
+                        <ol>
+                            <li>Create a new folder named <code>PE03_Submission</code></li>
+                            <li>Copy all required files into this folder</li>
+                            <li>Right-click the folder</li>
+                            <li>Select "Send to" → "Compressed (zipped) folder"</li>
+                            <li>Rename the ZIP file to: <code>LastName_FirstName_PE03_Week3.zip</code></li>
+                            <li>Verify the ZIP file opens correctly</li>
+                        </ol>
+                    </div>
+
+                    <h4>macOS Instructions:</h4>
+                    <div class="example-box">
+                        <ol>
+                            <li>Create a new folder named <code>PE03_Submission</code></li>
+                            <li>Copy all required files into this folder</li>
+                            <li>Right-click (or Control-click) the folder</li>
+                            <li>Select "Compress [folder name]"</li>
+                            <li>Rename the ZIP file to: <code>LastName_FirstName_PE03_Week3.zip</code></li>
+                            <li>Verify the ZIP file opens correctly</li>
+                        </ol>
+                    </div>
+
+                    <h4>Linux Instructions:</h4>
+                    <div class="example-box">
+                        <ol>
+                            <li>Create a new folder: <code>mkdir PE03_Submission</code></li>
+                            <li>Copy files: <code>cp *.java PE03_Submission/</code> (or *.cpp)</li>
+                            <li>Create ZIP: <code>zip -r LastName_FirstName_PE03_Week3.zip PE03_Submission/</code></li>
+                            <li>Verify: <code>unzip -l LastName_FirstName_PE03_Week3.zip</code></li>
+                        </ol>
+                    </div>
+
+                    <h3>Canvas Submission Process</h3>
+                    
+                    <div class="requirements">
+                        <h3>📤 Step-by-Step Submission</h3>
+                        <ol>
+                            <li><strong>Log in to Canvas</strong>
+                                <ul>
+                                    <li>Go to: <a href="https://canvas.mendocino.edu" target="_blank">canvas.mendocino.edu</a></li>
+                                    <li>Log in with your Mendocino College credentials</li>
+                                </ul>
+                            </li>
+                            <li><strong>Navigate to Assignment</strong>
+                                <ul>
+                                    <li>Click on CSC 240 course</li>
+                                    <li>Go to "Assignments" in left menu</li>
+                                    <li>Find "PE-03: Truth Table Generator"</li>
+                                    <li>Click on the assignment title</li>
+                                </ul>
+                            </li>
+                            <li><strong>Upload Your File</strong>
+                                <ul>
+                                    <li>Click "Submit Assignment" button</li>
+                                    <li>Click "Choose File" or drag-and-drop your ZIP</li>
+                                    <li>Select your <code>LastName_FirstName_PE03_Week3.zip</code></li>
+                                    <li>Verify the correct file is selected</li>
+                                </ul>
+                            </li>
+                            <li><strong>Add Comments (Optional)</strong>
+                                <ul>
+                                    <li>Use the comment box to note anything special</li>
+                                    <li>Example: "Implemented extra credit feature X"</li>
+                                    <li>Example: "Had trouble with Y, would appreciate feedback"</li>
+                                </ul>
+                            </li>
+                            <li><strong>Submit</strong>
+                                <ul>
+                                    <li>Click "Submit Assignment" button</li>
+                                    <li>Wait for confirmation message</li>
+                                    <li>You should see "Submitted!" with timestamp</li>
+                                </ul>
+                            </li>
+                            <li><strong>Verify Submission</strong>
+                                <ul>
+                                    <li>Check that submission shows in Canvas</li>
+                                    <li>Download your submitted file to verify it's correct</li>
+                                    <li>Keep a backup copy on your computer</li>
+                                </ul>
+                            </li>
+                        </ol>
+                    </div>
+
+                    <div class="warning">
+                        <h3>⚠️ Common Submission Mistakes</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Mistake</th>
+                                    <th>Problem</th>
+                                    <th>Solution</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Wrong file type</td>
+                                    <td>Submitted .rar or .7z instead of .zip</td>
+                                    <td>Use .zip format only</td>
+                                </tr>
+                                <tr>
+                                    <td>Included compiled files</td>
+                                    <td>.class or .exe files in ZIP</td>
+                                    <td>Delete all compiled files before zipping</td>
+                                </tr>
+                                <tr>
+                                    <td>Missing README</td>
+                                    <td>No README.txt in ZIP</td>
+                                    <td>Always include README with instructions</td>
+                                </tr>
+                                <tr>
+                                    <td>Wrong filename</td>
+                                    <td>PE03.zip or Assignment3.zip</td>
+                                    <td>Use exact format: LastName_FirstName_PE03_Week3.zip</td>
+                                </tr>
+                                <tr>
+                                    <td>Submitted to wrong place</td>
+                                    <td>Uploaded to wrong assignment</td>
+                                    <td>Double-check you're in PE-03 assignment</td>
+                                </tr>
+                                <tr>
+                                    <td>File too large</td>
+                                    <td>ZIP over 5 MB (Canvas limit)</td>
+                                    <td>Remove compiled files, IDE folders, unnecessary files</td>
+                                </tr>
+                                <tr>
+                                    <td>Code doesn't compile</td>
+                                    <td>Instructor can't test your program</td>
+                                    <td>Test compilation on clean system before submitting</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3>Verification Steps</h3>
+                    
+                    <div class="tip">
+                        <h3>✅ Final Verification Process</h3>
+                        <p>Before submitting, perform these verification steps:</p>
+                        
+                        <h4>Step 1: Clean Build Test</h4>
+                        <ol>
+                            <li>Create a new temporary folder</li>
+                            <li>Extract your ZIP file into this folder</li>
+                            <li>Follow your own README compilation instructions</li>
+                            <li>Verify program compiles without errors</li>
+                            <li>Run your program and test with sample expressions</li>
+                        </ol>
+                        
+                        <h4>Step 2: Content Check</h4>
+                        <ul>
+                            <li>✓ README.txt is present and complete</li>
+                            <li>✓ All source files (.java or .cpp/.h) are included</li>
+                            <li>✓ No compiled files (.class, .exe) present</li>
+                            <li>✓ No IDE folders (.vscode, etc.) present</li>
+                        </ul>
+                        
+                        <h4>Step 3: Filename Check</h4>
+                        <ul>
+                            <li>✓ ZIP file named: LastName_FirstName_PE03_Week3.zip</li>
+                            <li>✓ No spaces in filename</li>
+                            <li>✓ Correct capitalization</li>
+                        </ul>
+                        
+                        <h4>Step 4: Canvas Check</h4>
+                        <ul>
+                            <li>✓ Submitted to correct assignment (PE-03)</li>
+                            <li>✓ Submission confirmed with timestamp</li>
+                            <li>✓ Can download and verify submitted file</li>
+                        </ul>
+                    </div>
+
+                    <h3>Deadline and Late Policy</h3>
+                    
+                    <div class="warning">
+                        <h3>📅 Important Dates</h3>
+                        <p><strong>Due Date:</strong> End of Week 3 (check Canvas for exact date and time)</p>
+                        <p><strong>Typical Deadline:</strong> Sunday, 11:59 PM Pacific Time</p>
+                        
+                        <h4>Late Submission Penalties:</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Time Late</th>
+                                    <th>Penalty</th>
+                                    <th>Max Score</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>0-24 hours</td>
+                                    <td>-10% (-1.5 pts)</td>
+                                    <td>13.5 / 15</td>
+                                </tr>
+                                <tr>
+                                    <td>24-48 hours</td>
+                                    <td>-20% (-3 pts)</td>
+                                    <td>12 / 15</td>
+                                </tr>
+                                <tr>
+                                    <td>48-72 hours</td>
+                                    <td>-30% (-4.5 pts)</td>
+                                    <td>10.5 / 15</td>
+                                </tr>
+                                <tr>
+                                    <td>Over 72 hours</td>
+                                    <td>0 points</td>
+                                    <td>0 / 15</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <p><strong>Note:</strong> Even if over 72 hours late, you must still submit for course completion.</p>
+                    </div>
+
+                    <h3>Getting Help Before Submission</h3>
+                    
+                    <div class="tip">
+                        <h3>🆘 Resources Available</h3>
+                        
+                        <h4>Office Hours</h4>
+                        <p>Check Canvas for instructor office hours. Best times to visit:</p>
+                        <ul>
+                            <li><strong>Early in the week:</strong> Discuss design and approach</li>
+                            <li><strong>Mid-week:</strong> Get help with implementation issues</li>
+                            <li><strong>Before deadline:</strong> Final questions and verification</li>
+                        </ul>
+                        
+                        <h4>Discussion Forum</h4>
+                        <p>Post questions on Canvas discussion board:</p>
+                        <ul>
+                            <li>✓ Ask about concepts and approaches</li>
+                            <li>✓ Share general debugging strategies</li>
+                            <li>✓ Help classmates with conceptual questions</li>
+                            <li>❌ Don't post or share actual code solutions</li>
+                        </ul>
+                        
+                        <h4>MESA Tutoring</h4>
+                        <p>Free tutoring available for CSC courses:</p>
+                        <ul>
+                            <li>Check Canvas for current schedule</li>
+                            <li>Bring specific questions and code</li>
+                            <li>Tutors can help with concepts and debugging</li>
+                        </ul>
+                        
+                        <h4>Demo Tool</h4>
+                        <p>Use the Interactive Demo Tool (Tab 4) to:</p>
+                        <ul>
+                            <li>Test your understanding of truth tables</li>
+                            <li>Verify your program's output</li>
+                            <li>Explore different expressions</li>
+                        </ul>
+                    </div>
+
+                    <h3>After Submission</h3>
+                    
+                    <div class="requirements">
+                        <h3>📊 What Happens Next</h3>
+                        
+                        <h4>Grading Timeline</h4>
+                        <ul>
+                            <li><strong>Grading period:</strong> 5-7 days after deadline</li>
+                            <li><strong>Feedback provided:</strong> Comments on Canvas and in code</li>
+                            <li><strong>Grade posted:</strong> Available in Canvas gradebook</li>
+                        </ul>
+                        
+                        <h4>What Instructor Tests</h4>
+                        <ol>
+                            <li><strong>Compilation:</strong> Does it compile with provided instructions?</li>
+                            <li><strong>Execution:</strong> Does it run without crashing?</li>
+                            <li><strong>Required test cases:</strong> All 12 test expressions</li>
+                            <li><strong>Edge cases:</strong> Single variable, nested parentheses, etc.</li>
+                            <li><strong>Error handling:</strong> Invalid input, empty input</li>
+                            <li><strong>Code review:</strong> Organization, style, comments</li>
+                            <li><strong>Documentation review:</strong> README completeness</li>
+                        </ol>
+                        
+                        <h4>Feedback You'll Receive</h4>
+                        <ul>
+                            <li>Overall score with breakdown by category</li>
+                            <li>Specific comments on what worked well</li>
+                            <li>Suggestions for improvement</li>
+                            <li>Common errors to avoid in future</li>
+                        </ul>
+                    </div>
+
+                    <h3>Resubmission Process (If Eligible)</h3>
+                    
+                    <button class="collapsible">Show Resubmission Guidelines</button>
+                    <div class="collapsible-content">
+                        <h4>Eligibility Requirements</h4>
+                        <ul>
+                            <li>✓ Original submission was on time (no late penalty)</li>
+                            <li>✓ Original score was below 12/15 (80%)</li>
+                            <li>✓ Request made within 3 days of grade posting</li>
+                            <li>✓ Must meet with instructor to discuss improvements</li>
+                        </ul>
+                        
+                        <h4>Resubmission Process</h4>
+                        <ol>
+                            <li>Review graded feedback carefully</li>
+                            <li>Schedule meeting with instructor (required)</li>
+                            <li>Discuss what needs improvement</li>
+                            <li>Make corrections to your code</li>
+                            <li>Update README with "RESUBMISSION NOTES" section explaining changes</li>
+                            <li>Create new ZIP with "_RESUBMIT" suffix: <code>LastName_FirstName_PE03_Week3_RESUBMIT.zip</code></li>
+                            <li>Submit to "PE-03 Resubmission" assignment on Canvas</li>
+                        </ol>
+                        
+                        <h4>Resubmission Grading</h4>
+                        <ul>
+                            <li>Maximum score: 13.5/15 (90%)</li>
+                            <li>Graded using same rubric</li>
+                            <li>Must show significant improvement</li>
+                            <li>Only one resubmission allowed per assignment</li>
+                        </ul>
+                    </div>
+
+                    <h3>Technical Support</h3>
+                    
+                    <div class="warning">
+                        <h3>🔧 If You Have Technical Issues</h3>
+                        
+                        <h4>Canvas Upload Problems:</h4>
+                        <ul>
+                            <li>Try a different browser (Chrome recommended)</li>
+                            <li>Clear browser cache and cookies</li>
+                            <li>Check file size (must be under 5 MB)</li>
+                            <li>Contact Canvas support: <a href="mailto:canvas@mendocino.edu">canvas@mendocino.edu</a></li>
+                        </ul>
+                        
+                        <h4>Compilation Issues:</h4>
+                        <ul>
+                            <li>Verify you're using correct compiler version</li>
+                            <li>Check that all files are in ZIP</li>
+                            <li>Test on a clean system (not just your development machine)</li>
+                            <li>Document any special requirements in README</li>
+                        </ul>
+                        
+                        <h4>Last-Minute Problems:</h4>
+                        <p>If you encounter problems close to the deadline:</p>
+                        <ol>
+                            <li>Email instructor immediately with details</li>
+                            <li>Submit what you have (partial credit better than zero)</li>
+                            <li>Document the issue in your submission comments</li>
+                            <li>Follow up during office hours</li>
+                        </ol>
+                    </div>
+
+                    <h3>Final Reminders</h3>
+                    
+                    <div class="objectives">
+                        <h3>🎯 Key Points to Remember</h3>
+                        <ul>
+                            <li>✓ Start early - don't wait until the last day</li>
+                            <li>✓ Test thoroughly before submitting</li>
+                            <li>✓ Follow naming conventions exactly</li>
+                            <li>✓ Include complete README with all sections</li>
+                            <li>✓ Verify your ZIP file opens and compiles</li>
+                            <li>✓ Submit to correct assignment on Canvas</li>
+                            <li>✓ Keep backup copies of your work</li>
+                            <li>✓ Check Canvas for confirmation of submission</li>
+                        </ul>
+                    </div>
+
+                    <div class="tip">
+                        <h3>💡 Success Strategy</h3>
+                        <p><strong>Recommended Timeline:</strong></p>
+                        <ul>
+                            <li><strong>Day 1-2:</strong> Review requirements, plan design, set up development environment</li>
+                            <li><strong>Day 3-4:</strong> Implement core functionality (parsing, basic operators)</li>
+                            <li><strong>Day 5:</strong> Add remaining operators and features</li>
+                            <li><strong>Day 6:</strong> Testing and debugging</li>
+                            <li><strong>Day 7:</strong> Documentation (README, comments), create ZIP, submit</li>
+                        </ul>
+                        <p><strong>Don't procrastinate!</strong> Starting early gives you time to ask questions and fix problems.</p>
+                    </div>
+
+                </div>
+            </div>
+
+        </div> <!-- End of content div -->
+                <!-- Completion Message (shown after viewing all tabs) -->
+        <div class="completion-banner" id="completionMessage">
+            <h2>🎉 You're Ready to Start PE-03!</h2>
+            <p>You've reviewed all the assignment information. Now it's time to start coding!</p>
+            <h3 style="margin-top: 1.5rem;">✅ Next Steps:</h3>
+            <ul style="text-align: left; display: inline-block; margin-top: 1rem;">
+                <li>Set up your development environment (VS Code + Java/C++)</li>
+                <li>Review the examples and test cases</li>
+                <li>Plan your program structure</li>
+                <li>Start with basic operators (NOT, AND, OR)</li>
+                <li>Test incrementally as you build</li>
+                <li>Use the demo tool to verify your output</li>
+                <li>Document your code as you write it</li>
+                <li>Submit before the deadline!</li>
+            </ul>
+            <p style="margin-top: 1.5rem;"><strong>Good luck! 🚀</strong></p>
+        </div>
+
+    </div> <!-- End of container -->
+
+    <!-- Footer -->
+    <footer>
+        <p><strong>CSC 240 - Discrete Structures</strong> | PE-03: Truth Table Generator</p>
+        <p>Mendocino College Computer Science Department</p>
+        <p style="margin-top: 1rem; font-size: 0.9rem;">© 2026 Mendocino College | All Rights Reserved</p>
+        <p style="margin-top: 0.5rem; font-size: 0.9rem;">Questions? Contact your instructor through Canvas or during office hours.</p>
+    </footer>
+
+    <!-- Complete Embedded JavaScript -->
+    <script>
+        // ===================================
+        //  PE-03: TRUTH TABLE GENERATOR
+        //  Complete Embedded JavaScript
+        //  All Interactive Functionality
+        // ===================================
+
+        // Tab Navigation System
+        function showTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            const selectedContent = document.getElementById(tabName);
+            if (selectedContent) {
+                selectedContent.classList.add('active');
+            }
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+            
+            // Track tab views for completion message
+            trackTabView(tabName);
+            
+            // Scroll to top of content
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Track which tabs have been viewed
+        let viewedTabs = new Set();
+        const totalTabs = 6;
+
+        function trackTabView(tabName) {
+            viewedTabs.add(tabName);
+            
+            // Show completion message if all tabs viewed
+            if (viewedTabs.size === totalTabs) {
+                const completionMsg = document.getElementById('completionMessage');
+                if (completionMsg) {
+                    completionMsg.style.display = 'block';
+                }
+            }
+        }
+
+        // Collapsible sections functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const collapsibles = document.querySelectorAll('.collapsible');
+            collapsibles.forEach(button => {
+                button.addEventListener('click', function() {
+                    this.classList.toggle('active');
+                    const content = this.nextElementSibling;
+                    if (content.style.maxHeight) {
+                        content.style.maxHeight = null;
+                        content.classList.remove('active');
+                    } else {
+                        content.style.maxHeight = content.scrollHeight + "px";
+                        content.classList.add('active');
+                    }
+                });
+            });
+        });
+
+        // ===================================
+        //  INTERACTIVE DEMO TOOL
+        //  Truth Table Generator
+        // ===================================
+
+        function loadSampleExpression(expr) {
+            document.getElementById('demoExpression').value = expr;
+        }
+
+        function clearDemo() {
+            document.getElementById('demoExpression').value = '';
+            document.getElementById('demoOutput').innerHTML = 'Enter an expression above and click "Generate Truth Table" to see results...';
+            document.getElementById('demoOutput').className = 'output empty';
+            document.getElementById('demoClassification').style.display = 'none';
+        }
+
+        function generateDemoTable() {
+            const expression = document.getElementById('demoExpression').value.trim();
+            const outputDiv = document.getElementById('demoOutput');
+            const classificationDiv = document.getElementById('demoClassification');
+            const spinner = document.getElementById('demoSpinner');
+            
+            // Clear previous results
+            outputDiv.innerHTML = '';
+            classificationDiv.style.display = 'none';
+            
+            // Validate input
+            if (!expression) {
+                outputDiv.className = 'output';
+                outputDiv.textContent = 'ERROR: Please enter a logical expression.';
+                return;
+            }
+            
+            // Show loading spinner
+            spinner.classList.add('active');
+            
+            // Simulate processing delay for realism
+            setTimeout(() => {
+                try {
+                    const result = evaluateExpression(expression);
+                    displayTruthTable(result, outputDiv, classificationDiv);
+                } catch (error) {
+                    outputDiv.className = 'output';
+                    outputDiv.textContent = 'ERROR: ' + error.message;
+                } finally {
+                    spinner.classList.remove('active');
+                }
+            }, 300);
+        }
+
+        // Parse and evaluate expression
+        function evaluateExpression(expr) {
+            // Normalize expression
+            expr = expr.toUpperCase()
+                .replace(/NOT/g, '!')
+                .replace(/¬/g, '!')
+                .replace(/AND/g, '&')
+                .replace(/∧/g, '&')
+                .replace(/OR/g, '|')
+                .replace(/∨/g, '|')
+                .replace(/->/g, '=>')
+                .replace(/→/g, '=>')
+                .replace(/<->/g, '<==>')
+                .replace(/↔/g, '<==>')
+                .replace(/IMP/g, '=>')
+                .replace(/IFF/g, '<==>');
+            
+            // Extract variables
+            const variables = extractVariables(expr);
+            
+            if (variables.length === 0) {
+                throw new Error('No valid variables found. Use p, q, or r.');
+            }
+            
+            if (variables.length > 3) {
+                throw new Error('Maximum 3 variables supported (p, q, r).');
+            }
+            
+            // Generate truth table
+            const numRows = Math.pow(2, variables.length);
+            const rows = [];
+            
+            for (let i = 0; i < numRows; i++) {
+                const values = {};
+                for (let j = 0; j < variables.length; j++) {
+                    values[variables[j]] = ((i >> (variables.length - 1 - j)) & 1) === 1;
+                }
+                
+                const result = evaluateWithValues(expr, values);
+                rows.push({ values, result });
+            }
+            
+            return {
+                expression: document.getElementById('demoExpression').value,
+                variables,
+                rows,
+                numRows
+            };
+        }
+
+        function extractVariables(expr) {
+            const vars = new Set();
+            const matches = expr.match(/[PQR]/g);
+            if (matches) {
+                matches.forEach(v => vars.add(v));
+            }
+            return Array.from(vars).sort();
+        }
+
+        function evaluateWithValues(expr, values) {
+            // Replace variables with their values
+            let evalExpr = expr;
+            for (const [variable, value] of Object.entries(values)) {
+                const regex = new RegExp(variable, 'g');
+                evalExpr = evalExpr.replace(regex, value ? 'true' : 'false');
+            }
+            
+            // Evaluate logical operators
+            evalExpr = evalExpr.replace(/!/g, '~'); // Temporarily use ~ for NOT
+            
+            // Replace logical operators with JavaScript equivalents
+            while (evalExpr.includes('~')) {
+                evalExpr = evalExpr.replace(/~(true|false)/, (match, p1) => {
+                    return p1 === 'true' ? 'false' : 'true';
+                });
+            }
+            
+            // Handle implication: A => B is equivalent to !A || B
+            while (evalExpr.includes('=>')) {
+                evalExpr = evalExpr.replace(/$$(true|false)$$\s*=>\s*$$(true|false)$$/, (match, p1, p2) => {
+                    return (p1 === 'false' || p2 === 'true') ? 'true' : 'false';
+                });
+                evalExpr = evalExpr.replace(/(true|false)\s*=>\s*(true|false)/, (match, p1, p2) => {
+                    return (p1 === 'false' || p2 === 'true') ? 'true' : 'false';
+                });
+            }
+            
+            // Handle biconditional: A <==> B is true when both have same value
+            while (evalExpr.includes('<===>')) {
+                evalExpr = evalExpr.replace(/$$(true|false)$$\s*<===>\s*$$(true|false)$$/, (match, p1, p2) => {
+                    return p1 === p2 ? 'true' : 'false';
+                });
+                evalExpr = evalExpr.replace(/(true|false)\s*<===>\s*(true|false)/, (match, p1, p2) => {
+                    return p1 === p2 ? 'true' : 'false';
+                });
+            }
+            
+            // Replace & and | with && and ||
+            evalExpr = evalExpr.replace(/&/g, '&&').replace(/\|/g, '||');
+            
+            // Evaluate the expression
+            try {
+                return eval(evalExpr);
+            } catch (e) {
+                throw new Error('Invalid expression format');
+            }
+        }
+
+        function displayTruthTable(result, outputDiv, classificationDiv) {
+            const { expression, variables, rows, numRows } = result;
+            
+            // Build output text
+            let output = `=== Truth Table for: ${expression} ===\n`;
+            output += `Variables identified: ${variables.join(', ')}\n`;
+            output += `Number of rows: ${numRows} (2^${variables.length})\n\n`;
+            
+            // Table header
+            const headerParts = variables.map(v => v.toLowerCase());
+            headerParts.push('Result');
+            output += headerParts.join(' | ') + '\n';
+            output += headerParts.map(() => '--').join('+') + '\n';
+            
+            // Table rows
+            let trueCount = 0;
+            let falseCount = 0;
+            
+            rows.forEach(row => {
+                const rowParts = variables.map(v => row.values[v] ? 'T' : 'F');
+                rowParts.push(row.result ? 'T' : 'F');
+                output += rowParts.join(' | ') + '\n';
+                
+                if (row.result) trueCount++;
+                else falseCount++;
+            });
+            
+            // Classification
+            output += '\n=== Analysis ===\n';
+            let classification = '';
+            
+            if (trueCount === numRows) {
+                classification = 'TAUTOLOGY';
+                output += 'Type: TAUTOLOGY\n';
+                output += `- True in ${trueCount} out of ${numRows} cases (100%)\n`;
+                output += '- This expression is always true!\n';
+            } else if (falseCount === numRows) {
+                classification = 'CONTRADICTION';
+                output += 'Type: CONTRADICTION\n';
+                output += `- False in ${falseCount} out of ${numRows} cases (100%)\n`;
+                output += '- This expression is always false!\n';
+            } else {
+                classification = 'CONTINGENCY';
+                output += 'Type: CONTINGENCY\n';
+                output += `- True in ${trueCount} out of ${numRows} cases (${Math.round(trueCount/numRows*100)}%)\n`;
+                output += `- False in ${falseCount} out of ${numRows} cases (${Math.round(falseCount/numRows*100)}%)\n`;
+            }
+            
+            // Display output
+            outputDiv.className = 'output';
+            outputDiv.textContent = output;
+            
+            // Display classification badge
+            classificationDiv.innerHTML = `<span class="classification ${classification.toLowerCase()}">${classification}</span>`;
+            classificationDiv.style.display = 'block';
+        }
+
+        // ===================================
+        //  GRADE CALCULATOR
+        // ===================================
+
+        function calculateGrade() {
+            const correctness = parseFloat(document.getElementById('correctnessPoints').value) || 0;
+            const quality = parseFloat(document.getElementById('qualityPoints').value) || 0;
+            const documentation = parseFloat(document.getElementById('docPoints').value) || 0;
+            const testing = parseFloat(document.getElementById('testPoints').value) || 0;
+            const bonus = parseFloat(document.getElementById('bonusPoints').value) || 0;
+            
+            // Validate inputs
+            if (correctness > 7.5 || quality > 3.75 || documentation > 2.25 || testing > 1.5 || bonus > 3) {
+                alert('Please enter valid point values within the allowed ranges.');
+                return;
+            }
+            
+            const total = correctness + quality + documentation + testing + bonus;
+            const baseTotal = 15;
+            const percentage = (total / baseTotal) * 100;
+            
+            // Determine letter grade
+            let letter = '';
+            if (percentage >= 90) letter = 'A';
+            else if (percentage >= 80) letter = 'B';
+            else if (percentage >= 70) letter = 'C';
+            else if (percentage >= 60) letter = 'D';
+            else letter = 'F';
+            
+            // Display results
+            const resultDiv = document.getElementById('gradeResult');
+            resultDiv.style.display = 'block';
+            
+            document.getElementById('gradeDisplay').textContent = `${total.toFixed(2)} / 15`;
+            document.getElementById('gradePercentage').textContent = `${percentage.toFixed(1)}%`;
+            
+            const letterDisplay = document.getElementById('gradeLetter');
+            letterDisplay.textContent = `Letter Grade: ${letter}`;
+            
+            // Color code the letter grade
+            if (letter === 'A') letterDisplay.style.color = '#27ae60';
+            else if (letter === 'B') letterDisplay.style.color = '#3498db';
+            else if (letter === 'C') letterDisplay.style.color = '#f39c12';
+            else if (letter === 'D') letterDisplay.style.color = '#e67e22';
+            else letterDisplay.style.color = '#e74c3c';
+            
+            if (bonus > 0) {
+                const bonusNote = document.createElement('p');
+                bonusNote.textContent = `(Includes ${bonus} bonus points)`;
+                bonusNote.style.fontSize = '0.9rem';
+                bonusNote.style.color = '#27ae60';
+                bonusNote.style.marginTop = '0.5rem';
+                resultDiv.appendChild(bonusNote);
+            }
+            
+            // Scroll to results
+            resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+                // ===================================
+        //  DEMO TOOL: ADVANCED EXPRESSION EVALUATOR
+        //  Handles complex nested expressions
+        // ===================================
+
+        // Tokenizer for parsing expressions
+        function tokenize(expr) {
+            const tokens = [];
+            let i = 0;
+            expr = expr.trim();
+            
+            while (i < expr.length) {
+                // Skip whitespace
+                if (expr[i] === ' ') {
+                    i++;
+                    continue;
+                }
+                
+                // Parentheses
+                if (expr[i] === '(' || expr[i] === ')') {
+                    tokens.push(expr[i]);
+                    i++;
+                    continue;
+                }
+                
+                // Variables (P, Q, R)
+                if (/[PQR]/.test(expr[i])) {
+                    tokens.push(expr[i]);
+                    i++;
+                    continue;
+                }
+                
+                // NOT operator (!)
+                if (expr[i] === '!') {
+                    tokens.push('NOT');
+                    i++;
+                    continue;
+                }
+                
+                // AND operator (&)
+                if (expr[i] === '&') {
+                    tokens.push('AND');
+                    i++;
+                    continue;
+                }
+                
+                // OR operator (|)
+                if (expr[i] === '|') {
+                    tokens.push('OR');
+                    i++;
+                    continue;
+                }
+                
+                // Implication (=>)
+                if (expr.substr(i, 2) === '=>') {
+                    tokens.push('IMP');
+                    i += 2;
+                    continue;
+                }
+                
+                // Biconditional (<==>)
+                if (expr.substr(i, 4) === '<==>') {
+                    tokens.push('IFF');
+                    i += 4;
+                    continue;
+                }
+                
+                // Unknown character
+                throw new Error(`Unknown character at position ${i}: '${expr[i]}'`);
+            }
+            
+            return tokens;
+        }
+
+        // Recursive expression evaluator
+        function evaluateTokens(tokens, values) {
+            let pos = 0;
+            
+            function parseExpression() {
+                return parseBiconditional();
+            }
+            
+            function parseBiconditional() {
+                let left = parseImplication();
+                
+                while (pos < tokens.length && tokens[pos] === 'IFF') {
+                    pos++; // consume IFF
+                    const right = parseImplication();
+                    left = (left === right); // Biconditional: same truth value
+                }
+                
+                return left;
+            }
+            
+            function parseImplication() {
+                let left = parseOr();
+                
+                while (pos < tokens.length && tokens[pos] === 'IMP') {
+                    pos++; // consume IMP
+                    const right = parseOr();
+                    left = (!left || right); // p -> q is !p || q
+                }
+                
+                return left;
+            }
+            
+            function parseOr() {
+                let left = parseAnd();
+                
+                while (pos < tokens.length && tokens[pos] === 'OR') {
+                    pos++; // consume OR
+                    const right = parseAnd();
+                    left = left || right;
+                }
+                
+                return left;
+            }
+            
+            function parseAnd() {
+                let left = parseNot();
+                
+                while (pos < tokens.length && tokens[pos] === 'AND') {
+                    pos++; // consume AND
+                    const right = parseNot();
+                    left = left && right;
+                }
+                
+                return left;
+            }
+            
+            function parseNot() {
+                if (pos < tokens.length && tokens[pos] === 'NOT') {
+                    pos++; // consume NOT
+                    return !parseNot(); // Handle multiple NOTs
+                }
+                
+                return parsePrimary();
+            }
+            
+            function parsePrimary() {
+                // Handle parentheses
+                if (pos < tokens.length && tokens[pos] === '(') {
+                    pos++; // consume (
+                    const result = parseExpression();
+                    if (pos >= tokens.length || tokens[pos] !== ')') {
+                        throw new Error('Missing closing parenthesis');
+                    }
+                    pos++; // consume )
+                    return result;
+                }
+                
+                // Handle variables
+                if (pos < tokens.length && /[PQR]/.test(tokens[pos])) {
+                    const variable = tokens[pos];
+                    pos++;
+                    if (values.hasOwnProperty(variable)) {
+                        return values[variable];
+                    }
+                    throw new Error(`Unknown variable: ${variable}`);
+                }
+                
+                throw new Error('Expected variable or opening parenthesis');
+            }
+            
+            return parseExpression();
+        }
+
+        function displayTruthTable(result, outputDiv, classificationDiv) {
+            const { expression, variables, rows, numRows } = result;
+            
+            // Build output
+            let output = `=== Truth Table for: ${expression} ===\n`;
+            output += `Variables identified: ${variables.map(v => v.toLowerCase()).join(', ')}\n`;
+            output += `Number of rows: ${numRows} (2^${variables.length})\n\n`;
+            
+            // Create table header
+            const colWidth = 5;
+            const varHeaders = variables.map(v => v.toLowerCase().padEnd(colWidth));
+            output += varHeaders.join('| ') + '| ' + 'Result'.padEnd(colWidth) + '\n';
+            output += varHeaders.map(() => '-'.repeat(colWidth)).join('+') + '+' + '-'.repeat(colWidth) + '\n';
+            
+            // Create table rows
+            let trueCount = 0;
+            let falseCount = 0;
+            
+            rows.forEach(row => {
+                const rowData = variables.map(v => 
+                    (row.values[v] ? 'T' : 'F').padEnd(colWidth)
+                );
+                rowData.push((row.result ? 'T' : 'F').padEnd(colWidth));
+                output += rowData.join('| ') + '\n';
+                
+                if (row.result) trueCount++;
+                else falseCount++;
+            });
+            
+            // Analysis section
+            output += '\n=== Analysis ===\n';
+            let classification = '';
+            
+            if (trueCount === numRows) {
+                classification = 'TAUTOLOGY';
+                output += 'Type: TAUTOLOGY\n';
+                output += `- True in ${trueCount} out of ${numRows} cases (100%)\n`;
+                output += '- False in 0 cases (0%)\n';
+                output += '\nThis expression is ALWAYS TRUE regardless of variable values!';
+            } else if (falseCount === numRows) {
+                classification = 'CONTRADICTION';
+                output += 'Type: CONTRADICTION\n';
+                output += `- True in 0 cases (0%)\n`;
+                output += `- False in ${falseCount} out of ${numRows} cases (100%)\n`;
+                output += '\nThis expression is ALWAYS FALSE regardless of variable values!';
+            } else {
+                classification = 'CONTINGENCY';
+                output += 'Type: CONTINGENCY\n';
+                output += `- True in ${trueCount} out of ${numRows} cases (${Math.round(trueCount/numRows*100)}%)\n`;
+                output += `- False in ${falseCount} out of ${numRows} cases (${Math.round(falseCount/numRows*100)}%)\n`;
+                output += '\nThis expression is sometimes true and sometimes false.';
+            }
+            
+            // Display results
+            outputDiv.className = 'output';
+            outputDiv.textContent = output;
+            
+            // Display classification badge
+            classificationDiv.innerHTML = `
+                <div style="text-align: center;">
+                    <span class="classification ${classification.toLowerCase()}">${classification}</span>
+                </div>
+            `;
+            classificationDiv.style.display = 'block';
+        }
+
+        // ===================================
+        //  INITIALIZATION
+        // ===================================
+
+        // Initialize on page load
+        window.addEventListener('load', function() {
+            // Track that overview tab was viewed
+            trackTabView('overview');
+            
+            // Initialize collapsibles
+            const collapsibles = document.querySelectorAll('.collapsible');
+            collapsibles.forEach(button => {
+                button.addEventListener('click', function() {
+                    this.classList.toggle('active');
+                    const content = this.nextElementSibling;
+                    if (content.style.maxHeight) {
+                        content.style.maxHeight = null;
+                        content.classList.remove('active');
+                    } else {
+                        content.style.maxHeight = content.scrollHeight + 'px';
+                        content.classList.add('active');
+                    }
+                });
+            });
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Print functionality
+        function printPage() {
+            window.print();
+        }
+
+        // Download README template
+        function downloadReadme() {
+            const readmeContent = `===============================================
+PE-03: Truth Table Generator
+CSC 240 - Discrete Structures - Week 3
+===============================================
+
+STUDENT INFORMATION
+-------------------
+Name: [Your Full Name]
+Student ID: [Your Student ID]
+Course: CSC 240 - Discrete Structures
+Assignment: PE-03 - Truth Table Generator
+Date Submitted: [Submission Date]
+Programming Language: [Java or C++]
+
+COMPILATION INSTRUCTIONS
+-------------------------
+[Provide exact commands to compile your program]
+
+RUNNING INSTRUCTIONS
+--------------------
+[Provide exact commands to run your program]
+
+PROGRAM DESCRIPTION
+-------------------
+[Brief description of what your program does]
+
+SUPPORTED OPERATORS
+-------------------
+[List all operators your program supports]
+
+FEATURES IMPLEMENTED
+--------------------
+[List all features]
+
+TESTING RESULTS
+---------------
+[Document your test cases and results]
+
+SYSTEM REQUIREMENTS
+--------------------
+Operating System: [Your OS]
+Compiler: [Your compiler version]
+IDE: Visual Studio Code
+
+ACADEMIC INTEGRITY STATEMENT
+-----------------------------
+I certify that this is my original work.
+
+Signature: [Your Name]
+Date: [Date]
+`;
+            
+            const blob = new Blob([readmeContent], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'README_Template.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Add download button functionality if needed
+        const downloadButtons = document.querySelectorAll('[onclick*="downloadReadme"]');
+        downloadButtons.forEach(btn => {
+            btn.onclick = downloadReadme;
+        });
+
+    </script>
+</body>
+</html>
