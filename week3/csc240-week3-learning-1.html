@@ -1,0 +1,1848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="CSC 240 Week 3: Cardinality and Countability - Interactive learning module covering finite and infinite set sizes, bijections, and countable vs uncountable sets">
+    <title>CSC 240 Week 3: Cardinality & Countability - Interactive Learning</title>
+    <style>
+        /* ===== CSS RESET & BASE STYLES ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Color Palette - Professional & Accessible */
+            --primary-blue: #0066cc;
+            --primary-blue-dark: #004c99;
+            --primary-blue-light: #e3f2fd;
+            --secondary-teal: #008080;
+            --accent-purple: #7b1fa2;
+            --accent-orange: #ff6b35;
+            --success-green: #28a745;
+            --info-blue: #17a2b8;
+            --warning-yellow: #ffc107;
+            --bg-light: #f8f9fa;
+            --bg-white: #ffffff;
+            --text-dark: #212529;
+            --text-medium: #495057;
+            --text-light: #6c757d;
+            --border-color: #dee2e6;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.15);
+            --shadow-lg: 0 8px 16px rgba(0,0,0,0.2);
+            
+            /* Spacing */
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 1.5rem;
+            --spacing-lg: 2rem;
+            --spacing-xl: 3rem;
+            
+            /* Typography */
+            --font-primary: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            --font-mono: "Courier New", Courier, monospace;
+        }
+
+        body {
+            font-family: var(--font-primary);
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: var(--bg-light);
+            font-size: 16px;
+        }
+
+        /* ===== SKIP LINK (ADA Compliance) ===== */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: var(--primary-blue);
+            color: white;
+            padding: 8px;
+            text-decoration: none;
+            z-index: 100;
+            font-weight: 600;
+        }
+
+        .skip-link:focus {
+            top: 0;
+        }
+
+        /* ===== HEADER ===== */
+        header {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-teal) 100%);
+            color: white;
+            padding: var(--spacing-lg) var(--spacing-md);
+            box-shadow: var(--shadow-md);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .course-code {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: var(--spacing-xs);
+            font-weight: 500;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: var(--spacing-xs);
+            line-height: 1.2;
+        }
+
+        .module-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            font-weight: 400;
+        }
+
+        /* ===== MAIN CONTAINER ===== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--spacing-lg) var(--spacing-md);
+        }
+
+        /* ===== PROGRESS BAR ===== */
+        .progress-container {
+            background: var(--bg-white);
+            border-radius: 12px;
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-sm);
+            flex-wrap: wrap;
+            gap: var(--spacing-sm);
+        }
+
+        .progress-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .progress-percentage {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+
+        .progress-bar-wrapper {
+            width: 100%;
+            height: 24px;
+            background-color: var(--bg-light);
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-blue) 0%, var(--secondary-teal) 100%);
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: var(--spacing-sm);
+            color: white;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        /* ===== NAVIGATION TABS ===== */
+        .nav-tabs {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-lg);
+            border-bottom: 2px solid var(--border-color);
+            flex-wrap: wrap;
+        }
+
+        .nav-tab {
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-medium);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-tab:hover {
+            color: var(--primary-blue);
+            background-color: var(--bg-light);
+        }
+
+        .nav-tab.active {
+            color: var(--primary-blue);
+            border-bottom-color: var(--primary-blue);
+        }
+
+        .nav-tab:focus {
+            outline: 3px solid var(--primary-blue);
+            outline-offset: 2px;
+        }
+
+        .nav-tab .checkmark {
+            display: inline-block;
+            margin-left: var(--spacing-xs);
+            color: var(--success-green);
+            font-weight: 700;
+        }
+
+        /* ===== MODULE SECTIONS ===== */
+        .module-section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .module-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===== CONTENT CARDS ===== */
+        .content-card {
+            background: var(--bg-white);
+            border-radius: 12px;
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+            box-shadow: var(--shadow-sm);
+            border-left: 5px solid var(--primary-blue);
+        }
+
+        .content-card h2 {
+            font-size: 1.5rem;
+            color: var(--text-dark);
+            margin-bottom: var(--spacing-md);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .content-card h3 {
+            font-size: 1.2rem;
+            color: var(--text-dark);
+            margin-top: var(--spacing-md);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .content-card p {
+            margin-bottom: var(--spacing-sm);
+            line-height: 1.7;
+        }
+
+        .icon {
+            font-size: 1.8rem;
+        }
+
+        /* ===== DEFINITION BOXES ===== */
+        .definition-box {
+            background: linear-gradient(135deg, var(--primary-blue-light) 0%, #bbdefb 100%);
+            border-left: 5px solid var(--primary-blue);
+            border-radius: 8px;
+            padding: var(--spacing-md);
+            margin: var(--spacing-md) 0;
+        }
+
+        .definition-box h4 {
+            font-size: 1.1rem;
+            color: var(--primary-blue-dark);
+            margin-bottom: var(--spacing-sm);
+            font-weight: 700;
+        }
+
+        .definition-box p {
+            color: var(--text-dark);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .math-formula {
+            font-family: var(--font-mono);
+            background: var(--bg-white);
+            padding: var(--spacing-sm);
+            border-radius: 6px;
+            margin: var(--spacing-sm) 0;
+            display: block;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        /* ===== EXAMPLE BOXES ===== */
+        .example-box {
+            background: #fff3cd;
+            border-left: 5px solid var(--warning-yellow);
+            border-radius: 8px;
+            padding: var(--spacing-md);
+            margin: var(--spacing-md) 0;
+        }
+
+        .example-box h4 {
+            font-size: 1.1rem;
+            color: #856404;
+            margin-bottom: var(--spacing-sm);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+
+        .example-box p {
+            color: var(--text-dark);
+        }
+
+        /* ===== KEY CONCEPT BOXES ===== */
+        .key-concept {
+            background: #d1ecf1;
+            border-left: 5px solid var(--info-blue);
+            border-radius: 8px;
+            padding: var(--spacing-md);
+            margin: var(--spacing-md) 0;
+        }
+
+        .key-concept h4 {
+            font-size: 1.1rem;
+            color: #0c5460;
+            margin-bottom: var(--spacing-sm);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+
+        /* ===== INTERACTIVE ELEMENTS ===== */
+        .interactive-section {
+            background: var(--bg-white);
+            border: 2px solid var(--primary-blue);
+            border-radius: 12px;
+            padding: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+        }
+
+        .interactive-section h3 {
+            color: var(--primary-blue);
+            margin-bottom: var(--spacing-md);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        /* ===== BIJECTION BUILDER ===== */
+        .bijection-builder {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: var(--spacing-lg);
+            align-items: center;
+            margin: var(--spacing-md) 0;
+        }
+
+        .set-column {
+            background: var(--bg-light);
+            border-radius: 8px;
+            padding: var(--spacing-md);
+        }
+
+        .set-column h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: var(--spacing-sm);
+            color: var(--text-dark);
+        }
+
+        .set-element {
+            background: var(--bg-white);
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            padding: var(--spacing-sm);
+            margin-bottom: var(--spacing-xs);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .set-element:hover {
+            border-color: var(--primary-blue);
+            background-color: var(--primary-blue-light);
+        }
+
+        .set-element.selected {
+            background-color: var(--primary-blue);
+            color: white;
+            border-color: var(--primary-blue-dark);
+        }
+
+        .set-element.mapped {
+            background-color: var(--success-green);
+            color: white;
+            border-color: #1e7e34;
+        }
+
+        .arrow-column {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+            align-items: center;
+        }
+
+        .mapping-arrow {
+            padding: var(--spacing-xs) var(--spacing-sm);
+            background: var(--primary-blue-light);
+            border-radius: 6px;
+            font-size: 0.85rem;
+            color: var(--text-dark);
+            min-height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-blue-dark);
+        }
+
+        .btn-secondary {
+            background: var(--text-light);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: var(--text-medium);
+        }
+
+        .btn-success {
+            background: var(--success-green);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn:focus {
+            outline: 3px solid var(--primary-blue);
+            outline-offset: 2px;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .button-group {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-md);
+            flex-wrap: wrap;
+        }
+
+        /* ===== QUIZ SECTION ===== */
+        .quiz-question {
+            background: var(--bg-white);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .quiz-question h4 {
+            font-size: 1.1rem;
+            margin-bottom: var(--spacing-sm);
+            color: var(--text-dark);
+        }
+
+        .quiz-options {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .quiz-option {
+            padding: var(--spacing-sm);
+            margin-bottom: var(--spacing-xs);
+            background: var(--bg-light);
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .quiz-option:hover {
+            background: var(--primary-blue-light);
+            border-color: var(--primary-blue);
+        }
+
+        .quiz-option.selected {
+            background: var(--primary-blue-light);
+            border-color: var(--primary-blue);
+        }
+
+        .quiz-option.correct {
+            background: #d4edda;
+            border-color: var(--success-green);
+        }
+
+        .quiz-option.incorrect {
+            background: #f8d7da;
+            border-color: #dc3545;
+        }
+
+        .quiz-feedback {
+            margin-top: var(--spacing-sm);
+            padding: var(--spacing-sm);
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        .quiz-feedback.correct {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .quiz-feedback.incorrect {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        /* ===== COMPARISON TABLE ===== */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: var(--spacing-md) 0;
+            background: var(--bg-white);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: var(--spacing-sm);
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .comparison-table th {
+            background: var(--primary-blue);
+            color: white;
+            font-weight: 600;
+        }
+
+        .comparison-table tr:hover {
+            background: var(--bg-light);
+        }
+
+        /* ===== LIST STYLES ===== */
+        .styled-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .styled-list li {
+            padding: var(--spacing-xs) 0;
+            padding-left: 2rem;
+            position: relative;
+        }
+
+        .styled-list li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--success-green);
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        /* ===== CARDINALITY CALCULATOR ===== */
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-md);
+            margin: var(--spacing-md) 0;
+        }
+
+        .calculator-input {
+            background: var(--bg-light);
+            padding: var(--spacing-md);
+            border-radius: 8px;
+        }
+
+        .calculator-input label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: var(--spacing-xs);
+            color: var(--text-dark);
+        }
+
+        .calculator-input input {
+            width: 100%;
+            padding: var(--spacing-sm);
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .calculator-input input:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+        }
+
+        .calculator-result {
+            background: var(--primary-blue-light);
+            padding: var(--spacing-md);
+            border-radius: 8px;
+            margin-top: var(--spacing-md);
+            border-left: 5px solid var(--primary-blue);
+        }
+
+        .calculator-result h4 {
+            color: var(--primary-blue-dark);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        /* ===== VISUALIZATION CANVAS ===== */
+        .visualization-container {
+            background: var(--bg-white);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: var(--spacing-md);
+            margin: var(--spacing-md) 0;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .visualization-canvas {
+            width: 100%;
+            max-width: 600px;
+            height: 300px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            background: var(--text-dark);
+            color: white;
+            padding: var(--spacing-lg) var(--spacing-md);
+            margin-top: var(--spacing-xl);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        /* ===== RESPONSIVE DESIGN ===== */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .bijection-builder {
+                grid-template-columns: 1fr;
+            }
+
+            .arrow-column {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+
+            .nav-tabs {
+                overflow-x: auto;
+                flex-wrap: nowrap;
+            }
+        }
+
+        /* ===== ACCESSIBILITY ===== */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+
+        *:focus {
+            outline: 3px solid var(--primary-blue);
+            outline-offset: 2px;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* ===== COMPLETION BADGES ===== */
+        .completion-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-left: var(--spacing-sm);
+        }
+
+        .completion-badge.complete {
+            background: var(--success-green);
+            color: white;
+        }
+
+        .completion-badge.incomplete {
+            background: var(--text-light);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Skip Link -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <!-- Header -->
+    <header role="banner">
+        <div class="header-content">
+            <div class="course-code">CSC 240 - Discrete Structures | Week 3</div>
+            <h1>Cardinality & Countability</h1>
+            <div class="module-subtitle">Understanding Set Sizes: Finite, Countable, and Uncountable</div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="main-content" class="container" role="main">
+        
+        <!-- Progress Tracker -->
+        <section class="progress-container" aria-labelledby="progress-title">
+            <div class="progress-header">
+                <h2 id="progress-title" class="progress-title">Your Learning Progress</h2>
+                <div class="progress-percentage" id="progress-percentage" aria-live="polite">0%</div>
+            </div>
+            <div class="progress-bar-wrapper" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-labelledby="progress-title">
+                <div class="progress-bar" id="progress-bar" style="width: 0%;">
+                    <span id="progress-text"></span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Navigation Tabs -->
+        <nav class="nav-tabs" role="tablist" aria-label="Module navigation">
+            <button class="nav-tab active" role="tab" aria-selected="true" aria-controls="module1" id="tab1" data-module="1">
+                Introduction
+                <span class="checkmark" style="display: none;" aria-label="completed">✓</span>
+            </button>
+            <button class="nav-tab" role="tab" aria-selected="false" aria-controls="module2" id="tab2" data-module="2">
+                Finite Sets
+                <span class="checkmark" style="display: none;" aria-label="completed">✓</span>
+            </button>
+            <button class="nav-tab" role="tab" aria-selected="false" aria-controls="module3" id="tab3" data-module="3">
+                Bijections
+                <span class="checkmark" style="display: none;" aria-label="completed">✓</span>
+            </button>
+            <button class="nav-tab" role="tab" aria-selected="false" aria-controls="module4" id="tab4" data-module="4">
+                Countable Sets
+                <span class="checkmark" style="display: none;" aria-label="completed">✓</span>
+            </button>
+            <button class="nav-tab" role="tab" aria-selected="false" aria-controls="module5" id="tab5" data-module="5">
+                Uncountable Sets
+                <span class="checkmark" style="display: none;" aria-label="completed">✓</span>
+            </button>
+            <button class="nav-tab" role="tab" aria-selected="false" aria-controls="module6" id="tab6" data-module="6">
+                Practice
+                <span class="checkmark" style="display: none;" aria-label="completed">✓</span>
+            </button>
+        </nav>
+
+        <!-- Module 1: Introduction to Cardinality -->
+        <section id="module1" class="module-section active" role="tabpanel" aria-labelledby="tab1">
+            <div class="content-card">
+                <h2><span class="icon">🔢</span> Introduction to Cardinality</h2>
+                
+                <p>Welcome to the study of <strong>cardinality</strong>—one of the most fascinating concepts in discrete mathematics! Cardinality helps us answer the fundamental question: "How big is a set?"</p>
+
+                <div class="definition-box">
+                    <h4>📖 Definition: Cardinality</h4>
+                    <p><strong>Cardinality</strong> is the number of elements in a set. For a set A, we write |A| to denote its cardinality.</p>
+                    <div class="math-formula">|A| = number of elements in A</div>
+                </div>
+
+                <h3>Simple Examples</h3>
+                
+                <div class="example-box">
+                    <h4>💡 Example: Finite Set Cardinalities</h4>
+                    <ul>
+                        <li><strong>A = {1, 2, 3, 4, 5}</strong> → |A| = 5</li>
+                        <li><strong>B = {red, blue, green}</strong> → |B| = 3</li>
+                        <li><strong>C = {Java}</strong> → |C| = 1</li>
+                        <li><strong>D = ∅</strong> (empty set) → |D| = 0</li>
+                    </ul>
+                </div>
+
+                <h3>Why Cardinality Matters in Computer Science</h3>
+                
+                <div class="key-concept">
+                    <h4>💻 CS Applications</h4>
+                    <ul class="styled-list">
+                        <li><strong>Data Structures:</strong> Understanding set sizes helps analyze space complexity</li>
+                        <li><strong>Databases:</strong> Counting records, understanding table sizes</li>
+                        <li><strong>Algorithm Analysis:</strong> Input size affects runtime complexity</li>
+                        <li><strong>Information Theory:</strong> Counting possible states or configurations</li>
+                        <li><strong>Cryptography:</strong> Key space size determines security</li>
+                    </ul>
+                </div>
+
+                <h3>The Big Question: Can We Compare Infinite Sets?</h3>
+                
+                <p>For finite sets, comparing sizes is straightforward—just count! But what about infinite sets?</p>
+                
+                <div class="example-box">
+                    <h4>🤔 Interesting Questions</h4>
+                    <ul>
+                        <li>Are there more natural numbers ℕ = {1, 2, 3, ...} than even numbers {2, 4, 6, ...}?</li>
+                        <li>Do integers ℤ and natural numbers ℕ have the same "size"?</li>
+                        <li>Are there more real numbers ℝ than natural numbers ℕ?</li>
+                    </ul>
+                    <p><strong>Spoiler:</strong> The answers might surprise you! We'll explore these questions in the modules ahead.</p>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="completeModule(1)">Mark as Complete</button>
+                    <button class="btn btn-success" onclick="nextModule(2)">Next: Finite Sets →</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Module 2: Finite Sets and Cardinality -->
+        <section id="module2" class="module-section" role="tabpanel" aria-labelledby="tab2">
+            <div class="content-card">
+                <h2><span class="icon">📊</span> Finite Sets and Cardinality</h2>
+                
+                <p>Let's start with what we know: <strong>finite sets</strong>—sets with a specific, countable number of elements.</p>
+
+                <div class="definition-box">
+                    <h4>📖 Definition: Finite Set</h4>
+                    <p>A set A is <strong>finite</strong> if it contains a specific number n of elements, where n is a non-negative integer.</p>
+                    <div class="math-formula">|A| = n, where n ∈ {0, 1, 2, 3, ...}</div>
+                </div>
+
+                <h3>Comparing Finite Sets</h3>
+                
+                <p>For finite sets, comparing cardinalities is straightforward:</p>
+                
+                <ul class="styled-list">
+                    <li>If |A| = |B|, sets A and B have the <strong>same size</strong></li>
+                    <li>If |A| < |B|, set A is <strong>smaller</strong> than set B</li>
+                    <li>If |A| > |B|, set A is <strong>larger</strong> than set B</li>
+                </ul>
+
+                <div class="example-box">
+                    <h4>💡 Example: Comparing Finite Sets</h4>
+                    <p><strong>A = {1, 2, 3, 4, 5}</strong> → |A| = 5</p>
+                    <p><strong>B = {a, b, c, d, e}</strong> → |B| = 5</p>
+                    <p><strong>C = {red, blue}</strong> → |C| = 2</p>
+                    <p><strong>Comparisons:</strong></p>
+                    <ul>
+                        <li>|A| = |B| → A and B have the same cardinality</li>
+                        <li>|C| < |A| → C is smaller than A</li>
+                        <li>|A| > |C| → A is larger than C</li>
+                    </ul>
+                </div>
+
+                <h3>Interactive: Cardinality Calculator</h3>
+                
+                <div class="interactive-section">
+                    <h3><span class="icon">🧮</span> Calculate Set Cardinality</h3>
+                    <p>Enter elements of a set (comma-separated) to calculate its cardinality:</p>
+                    
+                    <div class="calculator-grid">
+                        <div class="calculator-input">
+                            <label for="set-input">Enter Set Elements:</label>
+                            <input type="text" id="set-input" placeholder="e.g., 1, 2, 3, 4, 5" aria-describedby="set-input-help">
+                            <small id="set-input-help">Separate elements with commas. Duplicates will be removed.</small>
+                        </div>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="calculateCardinality()">Calculate Cardinality</button>
+                        <button class="btn btn-secondary" onclick="clearCalculator()">Clear</button>
+                    </div>
+                    
+                    <div id="cardinality-result" class="calculator-result" style="display: none;">
+                        <h4>Result:</h4>
+                        <p id="result-text"></p>
+                    </div>
+                </div>
+
+                <h3>Set Operations and Cardinality</h3>
+                
+                <div class="key-concept">
+                    <h4>📐 Important Properties</h4>
+                    <p>For finite sets A and B:</p>
+                    <ul class="styled-list">
+                        <li><strong>Union:</strong> |A ∪ B| = |A| + |B| - |A ∩ B|</li>
+                        <li><strong>Disjoint Sets:</strong> If A ∩ B = ∅, then |A ∪ B| = |A| + |B|</li>
+                        <li><strong>Subset:</strong> If A ⊆ B, then |A| ≤ |B|</li>
+                        <li><strong>Power Set:</strong> |P(A)| = 2<sup>|A|</sup></li>
+                        <li><strong>Cartesian Product:</strong> |A × B| = |A| × |B|</li>
+                    </ul>
+                </div>
+
+                <div class="example-box">
+                    <h4>💡 Example: Set Operations</h4>
+                    <p>Let A = {1, 2, 3} and B = {3, 4, 5}</p>
+                    <ul>
+                        <li>|A| = 3, |B| = 3</li>
+                        <li>A ∩ B = {3}, so |A ∩ B| = 1</li>
+                        <li>A ∪ B = {1, 2, 3, 4, 5}, so |A ∪ B| = 5</li>
+                        <li>Verify: |A ∪ B| = |A| + |B| - |A ∩ B| = 3 + 3 - 1 = 5 ✓</li>
+                    </ul>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-secondary" onclick="previousModule(1)">← Previous: Introduction</button>
+                    <button class="btn btn-primary" onclick="completeModule(2)">Mark as Complete</button>
+                    <button class="btn btn-success" onclick="nextModule(3)">Next: Bijections →</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Module 3: Bijections and Cardinality -->
+        <section id="module3" class="module-section" role="tabpanel" aria-labelledby="tab3">
+            <div class="content-card">
+                <h2><span class="icon">🔗</span> Bijections and Cardinality</h2>
+                
+                <p>Here's a powerful idea: Two sets have the same cardinality if we can create a <strong>perfect pairing</strong> between their elements.</p>
+
+                <div class="definition-box">
+                    <h4>📖 Key Concept: Cardinality via Bijections</h4>
+                    <p>Two sets A and B have the <strong>same cardinality</strong> (written |A| = |B|) if and only if there exists a <strong>bijective function</strong> f: A → B.</p>
+                    <div class="math-formula">|A| = |B| ⟺ ∃ bijection f: A → B</div>
+                    <p><strong>Bijection means:</strong> One-to-one (injective) AND onto (surjective)</p>
+                </div>
+
+                <h3>Why Bijections Matter</h3>
+                
+                <div class="key-concept">
+                    <h4>🎯 The Power of Bijections</h4>
+                    <p>Bijections let us compare set sizes <strong>without counting</strong>! This is crucial for infinite sets where we can't count directly.</p>
+                    <ul class="styled-list">
+                        <li>Each element in A maps to exactly one element in B</li>
+                        <li>Each element in B is mapped to by exactly one element in A</li>
+                        <li>Perfect one-to-one correspondence</li>
+                        <li>Works for both finite AND infinite sets!</li>
+                    </ul>
+                </div>
+
+                <div class="example-box">
+                    <h4>💡 Example: Simple Bijection</h4>
+                    <p><strong>A = {1, 2, 3}</strong> and <strong>B = {a, b, c}</strong></p>
+                    <p>Define f: A → B as:</p>
+                    <ul>
+                        <li>f(1) = a</li>
+                        <li>f(2) = b</li>
+                        <li>f(3) = c</li>
+                    </ul>
+                    <p>This is a bijection! Each element in A pairs with exactly one element in B, and vice versa.</p>
+                    <p><strong>Conclusion:</strong> |A| = |B| = 3</p>
+                </div>
+
+                <h3>Interactive: Build Your Own Bijection</h3>
+                
+                <div class="interactive-section">
+                    <h3><span class="icon">🎨</span> Bijection Builder</h3>
+                    <p>Create mappings between sets A and B. Click an element in A, then click an element in B to create a mapping.</p>
+                    
+                    <div class="bijection-builder">
+                        <div class="set-column">
+                            <h4>Set A (Domain)</h4>
+                            <div id="setA-elements">
+                                <div class="set-element" data-value="1" onclick="selectFromA(1)">1</div>
+                                <div class="set-element" data-value="2" onclick="selectFromA(2)">2</div>
+                                <div class="set-element" data-value="3" onclick="selectFromA(3)">3</div>
+                                <div class="set-element" data-value="4" onclick="selectFromA(4)">4</div>
+                            </div>
+                        </div>
+                        
+                        <div class="arrow-column" id="mappings">
+                            <div style="color: var(--text-light); text-align: center;">
+                                <p>→</p>
+                                <small>Click A, then B</small>
+                            </div>
+                        </div>
+                        
+                        <div class="set-column">
+                            <h4>Set B (Codomain)</h4>
+                            <div id="setB-elements">
+                                <div class="set-element" data-value="a" onclick="selectFromB('a')">a</div>
+                                <div class="set-element" data-value="b" onclick="selectFromB('b')">b</div>
+                                <div class="set-element" data-value="c" onclick="selectFromB('c')">c</div>
+                                <div class="set-element" data-value="d" onclick="selectFromB('d')">d</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="checkBijection()">Check if Bijection</button>
+                        <button class="btn btn-secondary" onclick="resetBijection()">Reset</button>
+                    </div>
+                    
+                    <div id="bijection-feedback" style="display: none; margin-top: var(--spacing-md);"></div>
+                </div>
+
+                <h3>Bijections for Infinite Sets</h3>
+                
+                <p>The real power of bijections shows when comparing infinite sets:</p>
+                
+                <div class="example-box">
+                    <h4>💡 Example: Natural Numbers and Even Numbers</h4>
+                    <p>Are there "more" natural numbers than even numbers?</p>
+                    <p><strong>Natural numbers:</strong> ℕ = {1, 2, 3, 4, 5, ...}</p>
+                    <p><strong>Even numbers:</strong> E = {2, 4, 6, 8, 10, ...}</p>
+                    <p><strong>Bijection:</strong> f(n) = 2n</p>
+                    <ul>
+                        <li>f(1) = 2</li>
+                        <li>f(2) = 4</li>
+                        <li>f(3) = 6</li>
+                        <li>f(n) = 2n for any n ∈ ℕ</li>
+                    </ul>
+                    <p><strong>Conclusion:</strong> |ℕ| = |E|! They have the same cardinality, even though E seems "smaller"!</p>
+                </div>
+
+                <div class="key-concept">
+                    <h4>🤯 Mind-Bending Insight</h4>
+                    <p>For infinite sets, a set can have the same cardinality as one of its proper subsets! This never happens with finite sets.</p>
+                    <p>The even numbers are a proper subset of natural numbers (E ⊂ ℕ), yet |E| = |ℕ|!</p>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-secondary" onclick="previousModule(2)">← Previous: Finite Sets</button>
+                    <button class="btn btn-primary" onclick="completeModule(3)">Mark as Complete</button>
+                    <button class="btn btn-success" onclick="nextModule(4)">Next: Countable Sets →</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Module 4: Countable Sets -->
+        <section id="module4" class="module-section" role="tabpanel" aria-labelledby="tab4">
+            <div class="content-card">
+                <h2><span class="icon">∞</span> Countably Infinite Sets</h2>
+                
+                <p>Now we explore a special class of infinite sets: those that are <strong>countable</strong>.</p>
+
+                <div class="definition-box">
+                    <h4>📖 Definition: Countably Infinite</h4>
+                    <p>A set A is <strong>countably infinite</strong> if there exists a bijection between A and the natural numbers ℕ.</p>
+                    <div class="math-formula">A is countably infinite ⟺ |A| = |ℕ|</div>
+                    <p>Equivalently: A can be "listed" as a sequence a₁, a₂, a₃, ...</p>
+                </div>
+
+                <h3>The Standard: Natural Numbers</h3>
+                
+                <p>The natural numbers ℕ = {1, 2, 3, 4, ...} serve as our "measuring stick" for countable infinity.</p>
+                
+                <div class="key-concept">
+                    <h4>💡 Intuition: Countable = Listable</h4>
+                    <p>A set is countably infinite if you can arrange its elements in a sequence (even if it takes forever to list them all):</p>
+                    <p>first element, second element, third element, ...</p>
+                    <p>Each element gets a "number" from ℕ.</p>
+                </div>
+
+                <h3>Examples of Countably Infinite Sets</h3>
+
+                <div class="example-box">
+                    <h4>💡 Example 1: Even Natural Numbers</h4>
+                    <p><strong>E = {2, 4, 6, 8, ...}</strong></p>
+                    <p><strong>Bijection:</strong> f(n) = 2n</p>
+                    <p><strong>Listing:</strong> 2, 4, 6, 8, 10, ...</p>
+                    <p><strong>Conclusion:</strong> |E| = |ℕ| (countably infinite)</p>
+                </div>
+
+                <div class="example-box">
+                    <h4>💡 Example 2: All Integers ℤ</h4>
+                    <p><strong>ℤ = {..., -2, -1, 0, 1, 2, ...}</strong></p>
+                    <p>How can we list integers? Use interleaving:</p>
+                    <p><strong>Listing:</strong> 0, 1, -1, 2, -2, 3, -3, 4, -4, ...</p>
+                    <p><strong>Bijection f: ℕ → ℤ:</strong></p>
+                    <ul>
+                        <li>f(1) = 0</li>
+                        <li>f(2) = 1</li>
+                        <li>f(3) = -1</li>
+                        <li>f(4) = 2</li>
+                        <li>f(5) = -2</li>
+                        <li>Pattern: f(2k) = k, f(2k+1) = -k</li>
+                    </ul>
+                    <p><strong>Conclusion:</strong> |ℤ| = |ℕ| (countably infinite)</p>
+                </div>
+
+                <div class="example-box">
+                    <h4>💡 Example 3: Rational Numbers ℚ</h4>
+                    <p><strong>ℚ = {p/q | p, q ∈ ℤ, q ≠ 0}</strong></p>
+                    <p>This one is surprising! We can list all rational numbers using <strong>Cantor's diagonal argument</strong>:</p>
+                    <p>Arrange fractions in a grid and traverse diagonally:</p>
+                    <pre style="background: var(--bg-light); padding: var(--spacing-sm); border-radius: 6px; overflow-x: auto;">
+1/1  1/2  1/3  1/4  1/5  ...
+2/1  2/2  2/3  2/4  2/5  ...
+3/1  3/2  3/3  3/4  3/5  ...
+4/1  4/2  4/3  4/4  4/5  ...
+...  ...  ...  ...  ...  ...
+                    </pre>
+                    <p><strong>Diagonal path:</strong> 1/1 → 2/1 → 1/2 → 1/3 → 2/2 → 3/1 → ...</p>
+                    <p>Skip duplicates (like 2/2 = 1/1)</p>
+                    <p><strong>Conclusion:</strong> |ℚ| = |ℕ| (countably infinite)!</p>
+                </div>
+
+                <h3>Visualization: Counting Integers</h3>
+                
+                <div class="interactive-section">
+                    <h3><span class="icon">🎯</span> Integer Listing Visualizer</h3>
+                    <p>See how we create a bijection between ℕ and ℤ by interleaving:</p>
+                    
+                    <div class="visualization-container">
+                        <table class="comparison-table">
+                            <thead>
+                                <tr>
+                                    <th>n ∈ ℕ</th>
+                                    <th>f(n) ∈ ℤ</th>
+                                    <th>Pattern</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>1</td><td>0</td><td>Start at zero</td></tr>
+                                <tr><td>2</td><td>1</td><td>Positive 1</td></tr>
+                                <tr><td>3</td><td>-1</td><td>Negative 1</td></tr>
+                                <tr><td>4</td><td>2</td><td>Positive 2</td></tr>
+                                <tr><td>5</td><td>-2</td><td>Negative 2</td></tr>
+                                <tr><td>6</td><td>3</td><td>Positive 3</td></tr>
+                                <tr><td>7</td><td>-3</td><td>Negative 3</td></tr>
+                                <tr><td>...</td><td>...</td><td>Continues forever</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p style="text-align: center; margin-top: var(--spacing-sm); color: var(--text-medium);">
+                        Every integer appears exactly once in this sequence!
+                    </p>
+                </div>
+
+                <h3>Properties of Countable Sets</h3>
+                
+                <div class="key-concept">
+                    <h4>📐 Important Theorems</h4>
+                    <ul class="styled-list">
+                        <li>Any subset of a countable set is countable</li>
+                        <li>The union of two countable sets is countable</li>
+                        <li>The union of countably many countable sets is countable</li>
+                        <li>The Cartesian product of two countable sets is countable</li>
+                        <li>ℕ, ℤ, and ℚ are all countably infinite</li>
+                    </ul>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-secondary" onclick="previousModule(3)">← Previous: Bijections</button>
+                    <button class="btn btn-primary" onclick="completeModule(4)">Mark as Complete</button>
+                    <button class="btn btn-success" onclick="nextModule(5)">Next: Uncountable Sets →</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Module 5: Uncountable Sets -->
+        <section id="module5" class="module-section" role="tabpanel" aria-labelledby="tab5">
+            <div class="content-card">
+                <h2><span class="icon">♾️</span> Uncountably Infinite Sets</h2>
+                
+                <p>Now for the big reveal: Not all infinite sets are countable! Some infinities are "bigger" than others.</p>
+
+                <div class="definition-box">
+                    <h4>📖 Definition: Uncountable</h4>
+                    <p>A set A is <strong>uncountable</strong> if it is infinite but NOT countably infinite.</p>
+                    <p>In other words: There is NO bijection between A and ℕ.</p>
+                    <div class="math-formula">A is uncountable ⟺ |A| > |ℕ|</div>
+                </div>
+
+                <h3>The Real Numbers ℝ</h3>
+                
+                <p>The most important example of an uncountable set is the <strong>real numbers</strong> ℝ.</p>
+                
+                <div class="key-concept">
+                    <h4>🤯 Cantor's Diagonal Argument</h4>
+                    <p>Georg Cantor proved that ℝ is uncountable using a brilliant proof by contradiction called the <strong>diagonal argument</strong>.</p>
+                    <p><strong>Proof sketch:</strong></p>
+                    <ol style="padding-left: 2rem;">
+                        <li>Assume ℝ is countable (for contradiction)</li>
+                        <li>Then we could list all real numbers: r₁, r₂, r₃, ...</li>
+                        <li>Write each as a decimal: r₁ = 0.d₁₁d₁₂d₁₃..., r₂ = 0.d₂₁d₂₂d₂₃..., etc.</li>
+                        <li>Construct a new number x = 0.x₁x₂x₃... where xᵢ ≠ dᵢᵢ (differ on diagonal)</li>
+                        <li>x is a real number, but x ≠ rᵢ for any i (differs in position i)</li>
+                        <li>Contradiction! x is not in our "complete" list</li>
+                        <li>Therefore, ℝ cannot be listed → ℝ is uncountable</li>
+                    </ol>
+                </div>
+
+                <div class="example-box">
+                    <h4>💡 Visual Example: Diagonal Argument</h4>
+                    <p>Suppose we tried to list all real numbers between 0 and 1:</p>
+                    <pre style="background: var(--bg-light); padding: var(--spacing-sm); border-radius: 6px; overflow-x: auto;">
+r₁ = 0.<span style="background: yellow;">3</span>14159265...
+r₂ = 0.2<span style="background: yellow;">7</span>1828182...
+r₃ = 0.57<span style="background: yellow;">7</span>215664...
+r₄ = 0.123<span style="background: yellow;">4</span>56789...
+r₅ = 0.9876<span style="background: yellow;">5</span>4321...
+...
+                    </pre>
+                    <p>Construct x by making its nth digit different from the nth digit of rₙ (highlighted):</p>
+                    <p>x = 0.<strong>4</strong><strong>8</strong><strong>8</strong><strong>5</strong><strong>6</strong>... (each digit ≠ diagonal)</p>
+                    <p>x differs from r₁ in position 1, from r₂ in position 2, etc.</p>
+                    <p><strong>Conclusion:</strong> x is not in our list! The list is incomplete.</p>
+                </div>
+
+                <h3>More Uncountable Sets</h3>
+                
+                <div class="example-box">
+                    <h4>💡 Other Uncountable Sets</h4>
+                    <ul class="styled-list">
+                        <li><strong>Any interval of real numbers:</strong> (0, 1), [0, 1], (a, b), etc.</li>
+                        <li><strong>Power set of ℕ:</strong> P(ℕ) = all subsets of natural numbers</li>
+                        <li><strong>Set of all functions:</strong> f: ℕ → {0, 1}</li>
+                        <li><strong>Set of all infinite sequences:</strong> of 0s and 1s</li>
+                    </ul>
+                </div>
+
+                <h3>Cardinality Notation</h3>
+                
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Set</th>
+                            <th>Cardinality</th>
+                            <th>Symbol</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Finite sets</td>
+                            <td>n</td>
+                            <td>0, 1, 2, 3, ...</td>
+                            <td>Natural number</td>
+                        </tr>
+                        <tr>
+                            <td>ℕ, ℤ, ℚ</td>
+                            <td>Countably infinite</td>
+                            <td>ℵ₀ (aleph-null)</td>
+                            <td>Smallest infinite cardinality</td>
+                        </tr>
+                        <tr>
+                            <td>ℝ, intervals</td>
+                            <td>Uncountable</td>
+                            <td>c (continuum)</td>
+                            <td>Cardinality of the continuum</td>
+                        </tr>
+                        <tr>
+                            <td>P(ℕ)</td>
+                            <td>Uncountable</td>
+                            <td>2<sup>ℵ₀</sup> = c</td>
+                            <td>Power set of naturals</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Comparing Infinite Cardinalities</h3>
+                
+                <div class="key-concept">
+                    <h4>📊 Hierarchy of Infinities</h4>
+                    <div class="math-formula">
+                        |Finite| < ℵ₀ < c < 2<sup>c</sup> < 2<sup>2<sup>c</sup></sup> < ...
+                    </div>
+                    <p>There are infinitely many different sizes of infinity!</p>
+                    <ul class="styled-list">
+                        <li>ℵ₀ (aleph-null) = |ℕ| = |ℤ| = |ℚ|</li>
+                        <li>c (continuum) = |ℝ| = |(0,1)| = |[0,1]|</li>
+                        <li>ℵ₀ < c (countable infinity is smaller than uncountable)</li>
+                        <li>c = 2<sup>ℵ₀</sup> (cardinality of continuum = power set of naturals)</li>
+                    </ul>
+                </div>
+
+                <div class="example-box">
+                    <h4>🤔 The Continuum Hypothesis</h4>
+                    <p>Is there a cardinality between ℵ₀ and c?</p>
+                    <p>The <strong>Continuum Hypothesis</strong> says NO—there is no set whose cardinality is strictly between |ℕ| and |ℝ|.</p>
+                    <p><strong>Fascinating fact:</strong> This statement is independent of standard set theory! It can neither be proved nor disproved from the usual axioms.</p>
+                </div>
+
+                <h3>Why This Matters in CS</h3>
+                
+                <div class="key-concept">
+                    <h4>💻 Computer Science Implications</h4>
+                    <ul class="styled-list">
+                        <li><strong>Computability:</strong> Countably many programs, uncountably many functions → most functions are not computable!</li>
+                        <li><strong>Data Representation:</strong> Computers can only represent countable sets (finite precision)</li>
+                        <li><strong>Real numbers:</strong> Cannot be perfectly represented in computers</li>
+                        <li><strong>Floating point:</strong> Only represents a countable subset of ℝ</li>
+                        <li><strong>Theoretical limits:</strong> Understanding what's computable vs. what exists</li>
+                    </ul>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-secondary" onclick="previousModule(4)">← Previous: Countable Sets</button>
+                    <button class="btn btn-primary" onclick="completeModule(5)">Mark as Complete</button>
+                    <button class="btn btn-success" onclick="nextModule(6)">Next: Practice →</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Module 6: Practice and Assessment -->
+        <section id="module6" class="module-section" role="tabpanel" aria-labelledby="tab6">
+            <div class="content-card">
+                <h2><span class="icon">✍️</span> Practice Problems & Self-Assessment</h2>
+                
+                <p>Test your understanding of cardinality and countability with these practice problems!</p>
+
+                <!-- Question 1 -->
+                <div class="quiz-question">
+                    <h4>Question 1: Finite Cardinality</h4>
+                    <p>What is the cardinality of the set A = {x ∈ ℤ | -5 ≤ x ≤ 5}?</p>
+                    <ul class="quiz-options" id="q1-options">
+                        <li class="quiz-option" onclick="selectOption(1, 'A', false)">A) 10</li>
+                        <li class="quiz-option" onclick="selectOption(1, 'B', true)">B) 11</li>
+                        <li class="quiz-option" onclick="selectOption(1, 'C', false)">C) 9</li>
+                        <li class="quiz-option" onclick="selectOption(1, 'D', false)">D) 12</li>
+                    </ul>
+                    <div id="q1-feedback" class="quiz-feedback" style="display: none;"></div>
+                </div>
+
+                <!-- Question 2 -->
+                <div class="quiz-question">
+                    <h4>Question 2: Bijection Understanding</h4>
+                    <p>Which of the following is true about bijections and cardinality?</p>
+                    <ul class="quiz-options" id="q2-options">
+                        <li class="quiz-option" onclick="selectOption(2, 'A', false)">A) A bijection exists only between finite sets</li>
+                        <li class="quiz-option" onclick="selectOption(2, 'B', true)">B) If a bijection exists between A and B, then |A| = |B|</li>
+                        <li class="quiz-option" onclick="selectOption(2, 'C', false)">C) Bijections cannot exist between infinite sets</li>
+                        <li class="quiz-option" onclick="selectOption(2, 'D', false)">D) All functions are bijections</li>
+                    </ul>
+                    <div id="q2-feedback" class="quiz-feedback" style="display: none;"></div>
+                </div>
+
+                <!-- Question 3 -->
+                <div class="quiz-question">
+                    <h4>Question 3: Countability</h4>
+                    <p>Which of the following sets is countably infinite?</p>
+                    <ul class="quiz-options" id="q3-options">
+                        <li class="quiz-option" onclick="selectOption(3, 'A', false)">A) The real numbers ℝ</li>
+                        <li class="quiz-option" onclick="selectOption(3, 'B', true)">B) The integers ℤ</li>
+                        <li class="quiz-option" onclick="selectOption(3, 'C', false)">C) The interval (0, 1)</li>
+                        <li class="quiz-option" onclick="selectOption(3, 'D', false)">D) The power set P(ℕ)</li>
+                    </ul>
+                    <div id="q3-feedback" class="quiz-feedback" style="display: none;"></div>
+                </div>
+
+                <!-- Question 4 -->
+                <div class="quiz-question">
+                    <h4>Question 4: Rational Numbers</h4>
+                    <p>The rational numbers ℚ are:</p>
+                    <ul class="quiz-options" id="q4-options">
+                        <li class="quiz-option" onclick="selectOption(4, 'A', false)">A) Uncountable, like the real numbers</li>
+                        <li class="quiz-option" onclick="selectOption(4, 'B', true)">B) Countably infinite, like the natural numbers</li>
+                        <li class="quiz-option" onclick="selectOption(4, 'C', false)">C) Finite</li>
+                        <li class="quiz-option" onclick="selectOption(4, 'D', false)">D) Larger than the real numbers</li>
+                    </ul>
+                    <div id="q4-feedback" class="quiz-feedback" style="display: none;"></div>
+                </div>
+
+                <!-- Question 5 -->
+                <div class="quiz-question">
+                    <h4>Question 5: Comparing Cardinalities</h4>
+                    <p>Which statement is TRUE about infinite cardinalities?</p>
+                    <ul class="quiz-options" id="q5-options">
+                        <li class="quiz-option" onclick="selectOption(5, 'A', false)">A) All infinite sets have the same cardinality</li>
+                        <li class="quiz-option" onclick="selectOption(5, 'B', false)">B) |ℕ| > |ℤ| because ℤ includes negative numbers</li>
+                        <li class="quiz-option" onclick="selectOption(5, 'C', true)">C) |ℕ| < |ℝ| because real numbers are uncountable</li>
+                        <li class="quiz-option" onclick="selectOption(5, 'D', false)">D) |ℚ| > |ℕ| because there are more fractions than integers</li>
+                    </ul>
+                    <div id="q5-feedback" class="quiz-feedback" style="display: none;"></div>
+                </div>
+
+                <!-- Question 6 -->
+                <div class="quiz-question">
+                    <h4>Question 6: Application</h4>
+                    <p>A proper subset of a set can have the same cardinality as the original set. This is true for:</p>
+                    <ul class="quiz-options" id="q6-options">
+                        <li class="quiz-option" onclick="selectOption(6, 'A', false)">A) Only finite sets</li>
+                        <li class="quiz-option" onclick="selectOption(6, 'B', true)">B) Only infinite sets</li>
+                        <li class="quiz-option" onclick="selectOption(6, 'C', false)">C) Both finite and infinite sets</li>
+                        <li class="quiz-option" onclick="selectOption(6, 'D', false)">D) Neither finite nor infinite sets</li>
+                    </ul>
+                    <div id="q6-feedback" class="quiz-feedback" style="display: none;"></div>
+                </div>
+
+                <h3>Challenge Problem</h3>
+                
+                <div class="example-box">
+                    <h4>🧠 Think About It</h4>
+                    <p><strong>Problem:</strong> Prove that the set of all even integers has the same cardinality as the set of all odd integers.</p>
+                    <p><strong>Hint:</strong> Construct an explicit bijection between the two sets.</p>
+                    <details style="margin-top: var(--spacing-sm);">
+                        <summary style="cursor: pointer; font-weight: 600; color: var(--primary-blue);">Click to see solution</summary>
+                        <div style="padding: var(--spacing-sm); background: var(--bg-light); border-radius: 6px; margin-top: var(--spacing-xs);">
+                            <p><strong>Solution:</strong></p>
+                            <p>Let E = {even integers} and O = {odd integers}</p>
+                            <p>Define f: E → O by f(n) = n + 1</p>
+                            <ul>
+                                <li>f is well-defined: if n is even, n+1 is odd</li>
+                                <li>f is injective: if f(m) = f(n), then m+1 = n+1, so m = n</li>
+                                <li>f is surjective: for any odd k, k-1 is even and f(k-1) = k</li>
+                            </ul>
+                            <p>Therefore f is a bijection, so |E| = |O|. ∎</p>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-secondary" onclick="previousModule(5)">← Previous: Uncountable Sets</button>
+                    <button class="btn btn-primary" onclick="completeModule(6)">Mark as Complete</button>
+                    <button class="btn btn-success" onclick="checkAllAnswers()">Check All Answers</button>
+                </div>
+            </div>
+
+            <!-- Summary Section -->
+            <div class="content-card" style="margin-top: var(--spacing-lg);">
+                <h2><span class="icon">📚</span> Module Summary</h2>
+                
+                <h3>Key Takeaways</h3>
+                
+                <ul class="styled-list">
+                    <li><strong>Cardinality</strong> measures the "size" of a set</li>
+                    <li><strong>Bijections</strong> prove two sets have the same cardinality</li>
+                    <li><strong>Countably infinite</strong> sets can be listed in a sequence (|A| = |ℕ|)</li>
+                    <li><strong>Uncountable</strong> sets are "larger" than countable sets (|A| > |ℕ|)</li>
+                    <li>ℕ, ℤ, and ℚ are all countably infinite (ℵ₀)</li>
+                    <li>ℝ and intervals are uncountable (c)</li>
+                    <li>There are infinitely many different sizes of infinity!</li>
+                </ul>
+
+                <h3>Connections to Week 2</h3>
+                
+                <div class="key-concept">
+                    <h4>🔗 Building on Functions</h4>
+                    <p>This week's content directly builds on Week 2:</p>
+                    <ul class="styled-list">
+                        <li><strong>Bijective functions</strong> from Week 2 are the tool for comparing cardinalities</li>
+                        <li><strong>Injective and surjective</strong> properties ensure perfect pairing</li>
+                        <li><strong>Function composition</strong> helps build complex bijections</li>
+                        <li><strong>Pigeonhole principle</strong> relates to non-injective functions</li>
+                    </ul>
+                </div>
+
+                <h3>Preparing for Logic (Week 3 Part 2)</h3>
+                
+                <p>Next, we'll explore propositional logic, which will use many concepts from cardinality:</p>
+                <ul class="styled-list">
+                    <li>Truth tables involve finite sets of truth values</li>
+                    <li>Logical equivalences relate to bijections between truth assignments</li>
+                    <li>Quantifiers (∀, ∃) will formalize "for all" and "there exists"</li>
+                </ul>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer role="contentinfo">
+        <div class="footer-content">
+            <p><strong>CSC 240 - Discrete Structures</strong></p>
+            <p>Week 3: Cardinality & Countability | Interactive Learning Module</p>
+            <p>Mendocino College Computer Science Department</p>
+            <p style="margin-top: var(--spacing-md);">
+                © 2026 Mendocino College | All Rights Reserved
+            </p>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // ===== SESSION STORAGE KEY =====
+        const STORAGE_KEY = 'csc240_week3_cardinality_progress';
+
+        // ===== STATE MANAGEMENT =====
+        let currentModule = 1;
+        let completedModules = new Set();
+        let selectedFromAElement = null;
+        let bijectionMappings = {};
+        let quizAnswers = {};
+
+        // ===== INITIALIZATION =====
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProgress();
+            updateProgress();
+        });
+
+        // ===== PROGRESS TRACKING =====
+        function loadProgress() {
+            const saved = sessionStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                const data = JSON.parse(saved);
+                completedModules = new Set(data.completed || []);
+                currentModule = data.current || 1;
+                quizAnswers = data.quizAnswers || {};
+                
+                // Update UI
+                completedModules.forEach(m => {
+                    const tab = document.getElementById(`tab${m}`);
+                    if (tab) {
+                        const checkmark = tab.querySelector('.checkmark');
+                        if (checkmark) checkmark.style.display = 'inline';
+                    }
+                });
+            }
+        }
+
+        function saveProgress() {
+            const data = {
+                completed: Array.from(completedModules),
+                current: currentModule,
+                quizAnswers: quizAnswers
+            };
+            sessionStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        }
+
+        function updateProgress() {
+            const total = 6;
+            const completed = completedModules.size;
+            const percentage = Math.round((completed / total) * 100);
+            
+            document.getElementById('progress-percentage').textContent = percentage + '%';
+            document.getElementById('progress-bar').style.width = percentage + '%';
+            document.getElementById('progress-text').textContent = percentage + '%';
+            
+            const progressBar = document.querySelector('.progress-bar-wrapper');
+            progressBar.setAttribute('aria-valuenow', percentage);
+        }
+
+        function completeModule(moduleNum) {
+            completedModules.add(moduleNum);
+            const tab = document.getElementById(`tab${moduleNum}`);
+            if (tab) {
+                const checkmark = tab.querySelector('.checkmark');
+                if (checkmark) checkmark.style.display = 'inline';
+            }
+            saveProgress();
+            updateProgress();
+            
+            // Show success message
+            alert(`Module ${moduleNum} marked as complete! Great job! 🎉`);
+        }
+
+        // ===== MODULE NAVIGATION =====
+        function switchModule(moduleNum) {
+            // Hide all modules
+            document.querySelectorAll('.module-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show selected module
+            const targetModule = document.getElementById(`module${moduleNum}`);
+            if (targetModule) {
+                targetModule.classList.add('active');
+                currentModule = moduleNum;
+                saveProgress();
+                
+                // Update tabs
+                document.querySelectorAll('.nav-tab').forEach(tab => {
+                    tab.classList.remove('active');
+                    tab.setAttribute('aria-selected', 'false');
+                });
+                
+                const activeTab = document.getElementById(`tab${moduleNum}`);
+                if (activeTab) {
+                    activeTab.classList.add('active');
+                    activeTab.setAttribute('aria-selected', 'true');
+                }
+                
+                // Scroll to top
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function nextModule(moduleNum) {
+            if (moduleNum <= 6) {
+                switchModule(moduleNum);
+            }
+        }
+
+        function previousModule(moduleNum) {
+            if (moduleNum >= 1) {
+                switchModule(moduleNum);
+            }
+        }
+
+        // Add click handlers to tabs
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                const moduleNum = parseInt(this.dataset.module);
+                switchModule(moduleNum);
+            });
+        });
+
+        // ===== CARDINALITY CALCULATOR =====
+        function calculateCardinality() {
+            const input = document.getElementById('set-input').value.trim();
+            const resultDiv = document.getElementById('cardinality-result');
+            const resultText = document.getElementById('result-text');
+            
+            if (!input) {
+                alert('Please enter some elements!');
+                return;
+            }
+            
+            // Parse input and remove duplicates
+            const elements = input.split(',').map(e => e.trim()).filter(e => e);
+            const uniqueElements = [...new Set(elements)];
+            
+            const cardinality = uniqueElements.length;
+            
+            resultText.innerHTML = `
+                <strong>Set:</strong> {${uniqueElements.join(', ')}}<br>
+                <strong>Cardinality:</strong> |A| = ${cardinality}<br>
+                ${elements.length !== uniqueElements.length ? 
+                    `<em>Note: ${elements.length - uniqueElements.length} duplicate(s) removed.</em>` : ''}
+            `;
+            
+            resultDiv.style.display = 'block';
+        }
+
+        function clearCalculator() {
+            document.getElementById('set-input').value = '';
+            document.getElementById('cardinality-result').style.display = 'none';
+        }
+
+        // ===== BIJECTION BUILDER =====
+        function selectFromA(value) {
+            // Deselect all A elements
+            document.querySelectorAll('#setA-elements .set-element').forEach(el => {
+                el.classList.remove('selected');
+            });
+            
+            // Select clicked element
+            const element = document.querySelector(`#setA-elements .set-element[data-value="${value}"]`);
+            if (element && !element.classList.contains('mapped')) {
+                element.classList.add('selected');
+                selectedFromAElement = value;
+            } else {
+                selectedFromAElement = null;
+            }
+        }
+
+        function selectFromB(value) {
+            if (!selectedFromAElement) {
+                alert('Please select an element from Set A first!');
+                return;
+            }
+            
+            const bElement = document.querySelector(`#setB-elements .set-element[data-value="${value}"]`);
+            if (bElement.classList.contains('mapped')) {
+                alert('This element is already mapped!');
+                return;
+            }
+            
+            // Create mapping
+            bijectionMappings[selectedFromAElement] = value;
+            
+            // Update UI
+            const aElement = document.querySelector(`#setA-elements .set-element[data-value="${selectedFromAElement}"]`);
+            aElement.classList.remove('selected');
+            aElement.classList.add('mapped');
+            bElement.classList.add('mapped');
+            
+            // Add arrow
+            updateMappingDisplay();
+            
+            selectedFromAElement = null;
+        }
+
+        function updateMappingDisplay() {
+            const mappingsDiv = document.getElementById('mappings');
+            mappingsDiv.innerHTML = '';
+            
+            if (Object.keys(bijectionMappings).length === 0) {
+                mappingsDiv.innerHTML = '<div style="color: var(--text-light); text-align: center;"><p>→</p><small>Click A, then B</small></div>';
+            } else {
+                Object.entries(bijectionMappings).forEach(([a, b]) => {
+                    const arrow = document.createElement('div');
+                    arrow.className = 'mapping-arrow';
+                    arrow.textContent = `${a} → ${b}`;
+                    mappingsDiv.appendChild(arrow);
+                });
+            }
+        }
+
+        function checkBijection() {
+            const feedbackDiv = document.getElementById('bijection-feedback');
+            const aElements = ['1', '2', '3', '4'];
+            const bElements = ['a', 'b', 'c', 'd'];
+            
+            const mappedA = Object.keys(bijectionMappings);
+            const mappedB = Object.values(bijectionMappings);
+            
+            let feedback = '';
+            let isValid = true;
+            
+            // Check if all A elements are mapped
+            if (mappedA.length < aElements.length) {
+                feedback += `<p style="color: #dc3545;">❌ Not all elements in Set A are mapped (${mappedA.length}/${aElements.length})</p>`;
+                isValid = false;
+            } else {
+                feedback += `<p style="color: var(--success-green);">✓ All elements in Set A are mapped</p>`;
+            }
+            
+            // Check if all B elements are mapped (surjective)
+            const unmappedB = bElements.filter(b => !mappedB.includes(b));
+            if (unmappedB.length > 0) {
+                feedback += `<p style="color: #dc3545;">❌ Not surjective: Elements {${unmappedB.join(', ')}} in Set B are not mapped to</p>`;
+                isValid = false;
+            } else {
+                feedback += `<p style="color: var(--success-green);">✓ Surjective: All elements in Set B are mapped to</p>`;
+            }
+            
+            // Check for duplicates (injective)
+            const uniqueMappedB = [...new Set(mappedB)];
+            if (uniqueMappedB.length < mappedB.length) {
+                feedback += `<p style="color: #dc3545;">❌ Not injective: Some elements in Set B are mapped to multiple times</p>`;
+                isValid = false;
+            } else {
+                feedback += `<p style="color: var(--success-green);">✓ Injective: Each element in Set A maps to a unique element in Set B</p>`;
+            }
+            
+            if (isValid) {
+                feedback += `<p style="color: var(--success-green); font-weight: 700; margin-top: var(--spacing-sm);">🎉 This IS a bijection! The sets have the same cardinality.</p>`;
+            } else {
+                feedback += `<p style="color: #dc3545; font-weight: 700; margin-top: var(--spacing-sm);">This is NOT a bijection yet. Keep trying!</p>`;
+            }
+            
+            feedbackDiv.innerHTML = feedback;
+            feedbackDiv.style.display = 'block';
+        }
+
+        function resetBijection() {
+            bijectionMappings = {};
+            selectedFromAElement = null;
+            
+            document.querySelectorAll('.set-element').forEach(el => {
+                el.classList.remove('selected', 'mapped');
+            });
+            
+            updateMappingDisplay();
+            
+            const feedbackDiv = document.getElementById('bijection-feedback');
+            feedbackDiv.style.display = 'none';
+        }
+
+        // ===== QUIZ FUNCTIONALITY =====
+        function selectOption(questionNum, option, isCorrect) {
+            const optionsContainer = document.getElementById(`q${questionNum}-options`);
+            const options = optionsContainer.querySelectorAll('.quiz-option');
+            const feedbackDiv = document.getElementById(`q${questionNum}-feedback`);
+            
+            // Remove previous selections
+            options.forEach(opt => {
+                opt.classList.remove('selected', 'correct', 'incorrect');
+            });
+            
+            // Mark selected option
+            const selectedOption = Array.from(options).find(opt => opt.textContent.startsWith(option));
+            if (selectedOption) {
+                selectedOption.classList.add('selected');
+                
+                if (isCorrect) {
+                    selectedOption.classList.add('correct');
+                    feedbackDiv.className = 'quiz-feedback correct';
+                    feedbackDiv.textContent = '✓ Correct! Well done!';
+                    quizAnswers[questionNum] = true;
+                } else {
+                    selectedOption.classList.add('incorrect');
+                    feedbackDiv.className = 'quiz-feedback incorrect';
+                    feedbackDiv.textContent = '✗ Incorrect. Try again or review the material.';
+                    quizAnswers[questionNum] = false;
+                }
+                
+                feedbackDiv.style.display = 'block';
+                saveProgress();
+            }
+        }
+
+        function checkAllAnswers() {
+            const total = 6;
+            const answered = Object.keys(quizAnswers).length;
+            const correct = Object.values(quizAnswers).filter(v => v).length;
+            
+            if (answered < total) {
+                alert(`You've answered ${answered} out of ${total} questions. Try to answer all questions!`);
+            } else {
+                alert(`Quiz Complete!\n\nYou got ${correct} out of ${total} correct (${Math.round(correct/total*100)}%).\n\n${correct === total ? 'Perfect score! 🎉' : 'Review the material and try again!'}`);
+            }
+        }
+
+        // ===== KEYBOARD NAVIGATION =====
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' && currentModule < 6) {
+                nextModule(currentModule + 1);
+            } else if (e.key === 'ArrowLeft' && currentModule > 1) {
+                previousModule(currentModule - 1);
+            }
+        });
+    </script>
+</body>
+</html>
