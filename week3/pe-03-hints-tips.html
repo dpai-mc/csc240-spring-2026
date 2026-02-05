@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PE-03: Truth Table Generator - Hints & Tips | CSC 240 Week 3</title>
+    <style>
+        /* ===================================
+           PE-03: TRUTH TABLE GENERATOR - HINTS
+           CSC 240 - Discrete Structures
+           Complete Embedded CSS
+           Max Width: 800px Single Column
+           =================================== */
+        
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --info-color: #9b59b6;
+            --light-bg: #ecf0f1;
+            --card-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            --border-radius: 8px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--primary-color);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        /* Header Section */
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        header .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 0.3rem;
+        }
+        
+        header .meta {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        /* Content Sections */
+        .content {
+            padding: 2rem;
+        }
+        
+        .section {
+            margin-bottom: 2rem;
+        }
+        
+        .section h2 {
+            color: var(--primary-color);
+            font-size: 1.6rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid var(--secondary-color);
+        }
+        
+        .section h3 {
+            color: var(--secondary-color);
+            font-size: 1.3rem;
+            margin: 1.5rem 0 1rem 0;
+        }
+        
+        /* Tip Box */
+        .tip {
+            background: #f1f8e9;
+            border-left: 4px solid var(--success-color);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 4px;
+        }
+        
+        .tip h3 {
+            color: var(--success-color);
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+
+        /* Warning Box */
+        .warning {
+            background: #ffebee;
+            border-left: 4px solid var(--accent-color);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 4px;
+        }
+        
+        .warning h3 {
+            color: var(--accent-color);
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+        
+        /* Code Blocks */
+        pre {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 1.5rem;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+        
+        code {
+            font-family: 'Courier New', Courier, monospace;
+            background: #f4f4f4;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            color: #e74c3c;
+            font-size: 0.9em;
+        }
+        
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+        }
+        
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            background: white;
+            font-size: 0.95rem;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        /* Lists */
+        ul, ol {
+            margin: 1rem 0;
+            padding-left: 2rem;
+        }
+        
+        li {
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Collapsible Sections */
+        .collapsible {
+            background-color: var(--secondary-color);
+            color: white;
+            cursor: pointer;
+            padding: 1rem;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 1.1rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+            transition: all 0.3s;
+        }
+        
+        .collapsible:hover {
+            background-color: #2980b9;
+        }
+        
+        .collapsible:after {
+            content: '\002B';
+            color: white;
+            font-weight: bold;
+            float: right;
+            margin-left: 5px;
+        }
+        
+        .collapsible.active:after {
+            content: "\2212";
+        }
+        
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            background-color: #f9f9f9;
+            border-radius: 0 0 5px 5px;
+        }
+        
+        .collapsible-content.active {
+            padding: 1.5rem;
+            border: 2px solid var(--secondary-color);
+            border-top: none;
+        }
+        
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        
+        .feature-card {
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .feature-card:hover {
+            border-color: var(--secondary-color);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+        }
+        
+        .feature-card .icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .feature-card h4 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        footer p {
+            margin: 0.5rem 0;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .content {
+                padding: 1.5rem;
+            }
+            
+            header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .container {
+                box-shadow: none;
+            }
+            
+            button, .btn {
+                display: none;
+            }
+            
+            .collapsible-content {
+                max-height: none !important;
+                display: block !important;
+                border: 1px solid #ddd !important;
+            }
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>💡 PE-03: Truth Table Generator - Hints & Tips</h1>
+            <p class="subtitle">Supplementary Guide for Programming Exercise - Week 3</p>
+            <p class="meta">CSC 240 - Discrete Structures | Mendocino College | Spring 2026</p>
+        </header>
+
+        <div class="content">
+            <div class="section">
+                <h2>Welcome to PE-03!</h2>
+                <p>This document provides additional guidance, strategies, and tips to help you successfully complete PE-03: Truth Table Generator. Remember, the goal is for you to build the solution, so these are hints, not direct answers!</p>
+
+                <div class="tip">
+                    <h3>💡 Key Challenge: Parsing and Evaluation</h3>
+                    <p>The most challenging aspect of this assignment is converting the input logical expression string into a format your program can understand and evaluate. This involves two main steps:</p>
+                    <ol>
+                        <li><strong>Parsing:</strong> Breaking the string into meaningful components (tokens) and understanding its structure.</li>
+                        <li><strong>Evaluation:</strong> Calculating the truth value of the expression for given variable assignments.</li>
+                    </ol>
+                </div>
+
+                <h3>Recommended Workflow</h3>
+                <p>Don't try to implement everything at once! Follow these incremental steps, building on the provided starter code:</p>
+                <ol>
+                    <li><strong>Understand the Starter Code:</strong> Get the provided template (Java or C++) compiling and running. Understand its structure for input, variable extraction, and output placeholders.</li>
+                    <li><strong>Refine Variable Detection:</strong> Ensure your <code>extractVariables</code> function correctly identifies 'p', 'q', 'r' and handles case-insensitivity. Consider adding basic validation for non-logical characters.</li>
+                    <li><strong>Generate Truth Value Combinations:</strong> Focus on the loop that generates all 2^n rows. Make sure you can correctly assign T/F to p, q, r for each row using bitwise operations.</li>
+                    <li><strong>Standardize Input Expression:</strong> Implement a step to convert all operator notations (e.g., "AND", "&", "∧") to a single internal representation (e.g., "&") and handle whitespace.</li>
+                    <li><strong>Basic Evaluation (No Parentheses, Simple Expressions):</strong>
+                        <ul>
+                            <li>Start with simple expressions like <code>!p</code>, <code>p & q</code>, <code>p | q</code>.</li>
+                            <li>Your first version of <code>placeholderEvaluate</code> (which you will rename and expand) should handle these basic forms. You might use simple <code>if-else if</code> statements to detect these patterns.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Implement Operator Precedence:</strong> Introduce logic to correctly handle operator precedence (e.g., NOT before AND, AND before OR). This is where a parser becomes useful.</li>
+                    <li><strong>Handle Parentheses:</strong> This is often the trickiest part. Think about how to evaluate innermost expressions first. This is a core feature of recursive descent parsing.</li>
+                    <li><strong>Add Implication and Biconditional:</strong> Implement the truth rules for these operators. Remember their equivalences (e.g., <code>p -> q</code> is <code>!p || q</code>). You can convert them to AND/OR/NOT forms internally.</li>
+                    <li><strong>Intermediate Columns:</strong> Extend your output formatting to include truth values for sub-expressions. This requires your evaluation logic to store and return intermediate results.</li>
+                    <li><strong>Error Handling:</strong> Add robust checks for invalid input, unbalanced parentheses, unknown operators, and provide helpful error messages.</li>
+                    <li><strong>Classification:</strong> Implement the logic to determine Tautology, Contradiction, or Contingency based on the final column of your truth table.</li>
+                    <li><strong>Thorough Testing:</strong> Use all sample cases and edge cases provided in the PE-03 assignment description.</li>
+                </ol>
+
+                <h3>Core Implementation Strategies</h3>
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="icon">💬</div>
+                        <h4>Input Handling</h4>
+                        <p>Use <code>Scanner</code> (Java) or <code>std::getline</code> with <code>std::cin</code> (C++) to read the full expression string. Be sure to trim leading/trailing whitespace.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon">🔍</div>
+                        <h4>Variable Extraction</h4>
+                        <p>Iterate through the input string. Store unique variables (p, q, r) in a <code>Set</code> (Java) or <code>std::set</code> (C++). Sorting them ensures consistent column order.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon">🔄</div>
+                        <h4>Truth Value Generation</h4>
+                        <p>Loop from <code>0</code> to <code>2^n - 1</code>. Use bitwise operations to assign T/F to variables for each row. This is demonstrated in the starter code.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon">⚙️</div>
+                        <h4>Expression Evaluation</h4>
+                        <p>This is the most complex part. Consider a **recursive descent parser** for a structured approach. An **Abstract Syntax Tree (AST)** is an advanced way to represent the expression for evaluation.</p>
+                    </div>
+                </div>
+
+                <h3>Detailed Hints for Parsing and Evaluation</h3>
+
+                <button class="collapsible">Hint 1: Standardizing the Input Expression</button>
+                <div class="collapsible-content">
+                    <h4>Strategy: Normalization</h4>
+                    <p>Before evaluating, it's highly recommended to standardize the expression. This simplifies the parsing logic significantly.</p>
+                    <ul>
+                        <li><strong>Convert to Uppercase:</strong> Convert the entire input string to uppercase. This means you only need to check for "AND", "OR", "NOT", "P", "Q", "R".</li>
+                        <li><strong>Standardize Operators:</strong> Replace all alternative notations with a single, consistent symbol.
+                            <ul>
+                                <li><code>NOT</code>, <code>!</code>, <code>¬</code> all become <code>!</code></li>
+                                <li><code>AND</code>, <code>&</code>, <code>∧</code> all become <code>&</code></li>
+                                <li><code>OR</code>, <code>|</code>, <code>∨</code> all become <code>|</code></li>
+                                <li><code>-></code>, <code>IMP</code>, <code>→</code> all become <code>-></code> (or `=>` internally)</li>
+                                <li><code><-></code>, <code>IFF</code>, <code>↔</code> all become <code><-></code> (or `<=>` internally)</li>
+                            </ul>
+                        </li>
+                        <li><strong>Consistent Spacing:</strong> You might want to add spaces around operators to make tokenization easier (e.g., <code>pANDq</code> becomes <code>p AND q</code>).</li>
+                        <li><strong>Convert Implication/Biconditional:</strong> For simpler parsing, you can convert these into their equivalent forms using `AND`, `OR`, `NOT`:
+                            <ul>
+                                <li><code>p -> q</code> is logically equivalent to <code>!p | q</code></li>
+                                <li><code>p <-> q</code> is logically equivalent to <code>(p & q) | (!p & !q)</code></li>
+                            </ul>
+                            **Be careful with parentheses** when doing these transformations to maintain correct order of operations!</li>
+                    </ul>
+                    <pre><code>// Java example for standardization (part of your parsing logic)
+String standardizedExpr = expression.toUpperCase();
+standardizedExpr = standardizedExpr.replace("NOT", "!");
+standardizedExpr = standardizedExpr.replace("AND", "&");
+standardizedExpr = standardizedExpr.replace("OR", "|");
+// Add more replacements for ->, <->, etc.
+// Example: standardizedExpr = standardizedExpr.replace("->", "=>");
+// Then you would later convert "A => B" to "(!A | B)" in your evaluation logic.
+</code></pre>
+                </div>
+
+                <button class="collapsible">Hint 2: Handling Operator Precedence and Parentheses (Recursive Descent)</button>
+                <div class="collapsible-content">
+                    <h4>Method: Recursive Descent Parsing</h4>
+                    <p>This is a common and manageable approach for this assignment. It involves breaking down the expression into smaller, self-similar parts using a set of functions, where each function handles a specific level of operator precedence.</p>
+                    <p><strong>Operator Precedence (Highest to Lowest):</strong></p>
+                    <ol>
+                        <li>Parentheses <code>()</code></li>
+                        <li>Negation <code>!</code></li>
+                        <li>Conjunction <code>&</code> (AND)</li>
+                        <li>Disjunction <code>|</code> (OR)</li>
+                        <li>Implication <code>-></code> (or `=>`)</li>
+                        <li>Biconditional <code><-></code> (or `<=>`)</li>
+                    </ol>
+                    <p>Your parser will consist of a series of functions, each responsible for parsing expressions at a certain precedence level. A higher-precedence function will call a lower-precedence function.</p>
+                    <pre><code>// Pseudocode for Recursive Descent Structure (within your evaluate method)
+
+// Global or class-level variable to track current position in token list
+// int currentTokenIndex; 
+// List&lt;String&gt; tokens; // Result of tokenizing the expression
+
+// boolean parseExpression() { return parseBiconditional(); } // Lowest precedence
+// boolean parseBiconditional() {
+//   boolean left = parseImplication();
+//   while (currentTokenIndex &lt; tokens.size() && tokens.get(currentTokenIndex).equals("<->")) {
+//     currentTokenIndex++; // Consume "<->"
+//     boolean right = parseImplication();
+//     left = (left == right); // Evaluate biconditional
+//   }
+//   return left;
+// }
+// boolean parseImplication() {
+//   boolean left = parseOr();
+//   while (currentTokenIndex &lt; tokens.size() && tokens.get(currentTokenIndex).equals("->")) {
+//     currentTokenIndex++; // Consume "->"
+//     boolean right = parseOr();
+//     left = (!left || right); // Evaluate implication (p -> q is !p || q)
+//   }
+//   return left;
+// }
+// boolean parseOr() {
+//   boolean left = parseAnd();
+//   while (currentTokenIndex &lt; tokens.size() && tokens.get(currentTokenIndex).equals("|")) {
+//     currentTokenIndex++; // Consume "|"
+//     boolean right = parseAnd();
+//     left = left || right; // Evaluate OR
+//   }
+//   return left;
+// }
+// boolean parseAnd() {
+//   boolean left = parseNot();
+//   while (currentTokenIndex &lt; tokens.size() && tokens.get(currentTokenIndex).equals("&")) {
+//     currentTokenIndex++; // Consume "&"
+//     boolean right = parseNot();
+//     left = left && right; // Evaluate AND
+//   }
+//   return left;
+// }
+// boolean parseNot() {
+//   if (currentTokenIndex &lt; tokens.size() && tokens.get(currentTokenIndex).equals("!")) {
+//     currentTokenIndex++; // Consume "!"
+//     return !parseNot(); // Recursively handle multiple NOTs (e.g., "!!p")
+//   }
+//   return parsePrimary();
+// }
+// boolean parsePrimary() { // Highest precedence: variables or parenthesized expressions
+//   String token = tokens.get(currentTokenIndex);
+//   if (token.equals("(")) {
+//     currentTokenIndex++; // Consume "("
+//     boolean result = parseExpression(); // Recursive call for inner expression
+//     if (currentTokenIndex &lt; tokens.size() && tokens.get(currentTokenIndex).equals(")")) {
+//       currentTokenIndex++; // Consume ")"
+//       return result;
+//     } else {
+//       throw new IllegalArgumentException("Unbalanced parentheses: Missing ')'");
+//     }
+//   } else if (token.equals("p") || token.equals("q") || token.equals("r")) {
+//     currentTokenIndex++; // Consume variable
+//     return currentTruthValues.get(token.charAt(0)); // Get truth value from map
+//   } else {
+//     throw new IllegalArgumentException("Unexpected token: " + token);
+//   }
+// }
+</code></pre>
+                    <p>This approach naturally handles parentheses (by calling <code>parseExpression</code> within <code>parsePrimary</code>) and precedence (by having higher-precedence parsers call lower-precedence ones).</p>
+                </div>
+
+                <button class="collapsible">Hint 3: Tokenization</button>
+                <div class="collapsible-content">
+                    <h4>Breaking the String into Tokens</h4>
+                    <p>Before parsing, you'll need to convert your standardized input string into a list of "tokens" (individual meaningful units like variables, operators, or parentheses).</p>
+                    <p>For example, <code>(p AND q) -> r</code> might become tokens: <code>(</code>, <code>p</code>, <code>AND</code>, <code>q</code>, <code>)</code>, <code>-></code>, <code>r</code>.</p>
+                    <pre><code>// Java example: Simple Tokenizer
+// This is a basic example; you'll need to expand it for all operators and potential multi-character operators.
+public List&lt;String&gt; tokenize(String expression) {
+    List&lt;String&gt; tokens = new ArrayList&lt;&gt;();
+    StringBuilder currentToken = new StringBuilder();
+    for (int i = 0; i < expression.length(); i++) {
+        char c = expression.charAt(i);
+        if (Character.isWhitespace(c)) {
+            if (currentToken.length() > 0) {
+                tokens.add(currentToken.toString());
+                currentToken.setLength(0);
+            }
+        } else if (c == '(' || c == ')' || c == '!' || c == '&' || c == '|') { // Basic single-char ops
+            if (currentToken.length() > 0) {
+                tokens.add(currentToken.toString());
+                currentToken.setLength(0);
+            }
+            tokens.add(String.valueOf(c));
+        } else {
+            currentToken.append(c);
+        }
+    }
+    if (currentToken.length() > 0) {
+        tokens.add(currentToken.toString());
+    }
+    return tokens;
+}
+</code></pre>
+                    <p>Remember to handle multi-character operators like <code>-></code> and <code><-></code> carefully in your tokenizer (e.g., check for `->` before checking for just `-`).</p>
+                </div>
+
+                <button class="collapsible">Hint 4: Generating Truth Value Combinations</button>
+                <div class="collapsible-content">
+                    <h4>Strategy: Bitwise Operations</h4>
+                    <p>You need to generate all $$2^n$$ combinations of TRUE/FALSE for $$n$$ variables. Think of this like binary counting.</p>
+                    <p>For $$n$$ variables, loop from $$0$$ to $$2^n - 1$$. Each number $$i$$ in this loop represents a row in your truth table. The bits of $$i$$ can be mapped to the truth values of your variables.</p>
+                    <pre><code>// Java Example for 3 variables (p, q, r)
+// Assumes 'variables' list is ['p', 'q', 'r']
+List&lt;Character&gt; variables = new ArrayList&lt;&gt;(Arrays.asList('p', 'q', 'r')); 
+int numVars = variables.size(); // 3
+int numRows = (int) Math.pow(2, numVars); // 8
+
+for (int i = 0; i < numRows; i++) {
+    Map&lt;Character, Boolean&gt; currentTruthValues = new HashMap&lt;&gt;();
+    // For row i=0 (000), i=1 (001), i=2 (010), ..., i=7 (111)
+    
+    // Iterate through variables in sorted order to assign bits
+    for (int j = 0; j < numVars; j++) {
+        // The bit to check for the j-th variable (0-indexed) from the left
+        // is at position (numVars - 1 - j) in the binary representation of 'i'.
+        boolean value = ((i >> (numVars - 1 - j)) & 1) == 1;
+        currentTruthValues.put(variables.get(j), value);
+    }
+    
+    // Now evaluate your expression using currentTruthValues
+    // ...
+}
+</code></pre>
+                    <pre><code>// C++ Example for 3 variables (p, q, r)
+// Assumes 'variables' vector is {'p', 'q', 'r'}
+std::vector&lt;char&gt; variables = {'p', 'q', 'r'}; 
+int numVars = variables.size(); // 3
+int numRows = static_cast&lt;int&gt;(std::pow(2, numVars)); // 8
+
+for (int i = 0; i < numRows; ++i) {
+    std::map&lt;char, bool&gt; currentTruthValues;
+    // For row i=0 (000), i=1 (001), i=2 (010), ..., i=7 (111)
+    
+    // Iterate through variables in sorted order to assign bits
+    for (int j = 0; j < numVars; ++j) {
+        // The bit to check for the j-th variable (0-indexed) from the left
+        // is at position (numVars - 1 - j) in the binary representation of 'i'.
+        bool value = ((i >> (numVars - 1 - j)) & 1) == 1;
+        currentTruthValues[variables[j]] = value;
+    }
+    
+    // Now evaluate your expression using currentTruthValues
+    // ...
+}
+</code></pre>
+                </div>
+
+                <button class="collapsible">Hint 5: Representing Truth Values and Operators</button>
+                <div class="collapsible-content">
+                    <h4>Truth Values</h4>
+                    <ul>
+                        <li>Use standard <code>boolean</code> types in Java/C++.</li>
+                        <li>When printing, convert <code>true</code> to 'T' and <code>false</code> to 'F'.</li>
+                    </ul>
+                    <h4>Operator Helper Functions</h4>
+                    <p>Create small helper functions for each logical operation. This makes your evaluation logic cleaner and easier to test.</p>
+                    <pre><code>// Java
+public static boolean NOT(boolean p) { return !p; }
+public static boolean AND(boolean p, boolean q) { return p && q; }
+public static boolean OR(boolean p, boolean q) { return p || q; }
+// Implication: p -> q is equivalent to !p || q
+public static boolean IMPLIES(boolean p, boolean q) { return !p || q; }
+// Biconditional: p <-> q is equivalent to (p == q)
+public static boolean IFF(boolean p, boolean q) { return p == q; }
+</code></pre>
+                    <pre><code>// C++
+bool logical_not(bool p) { return !p; }
+bool logical_and(bool p, bool q) { return p && q; }
+bool logical_or(bool p, bool q) { return p || q; }
+// Implication: p -> q is equivalent to !p || q
+bool logical_implies(bool p, bool q) { return !p || q; }
+// Biconditional: p <-> q is equivalent to (p == q)
+bool logical_iff(bool p, bool q) { return p == q; }
+</code></pre>
+                </div>
+
+                <button class="collapsible">Hint 6: Output Formatting (Intermediate Columns)</button>
+                <div class="collapsible-content">
+                    <h4>Printing Sub-expressions</h4>
+                    <p>To show intermediate columns (e.g., for <code>(p OR q) -> r</code>, you need columns for <code>p OR q</code> and <code>(p OR q) -> r</code>), your parser needs to identify these sub-expressions and your evaluator needs to store their results for each row.</p>
+                    <p>If you build an Abstract Syntax Tree (AST), each node's evaluation result is an intermediate step. For a simpler approach, you can identify parenthesized sub-expressions or major operations.</p>
+                    <p>You'll need to store a list of all column headers (variables, sub-expressions, final expression) and their corresponding truth values for each row.</p>
+                    <pre><code>// Java example for formatting output
+// Use String.format for aligned columns. Adjust widths as needed.
+// Example:
+// System.out.printf("%-5s | %-5s | %-10s | %-15s%n", "p", "q", "p OR q", "(p OR q) -> r");
+// System.out.println("------+-------+------------+-----------------");
+// System.out.printf("%-5s | %-5s | %-10s | %-15s%n", "T", "T", "T", "T");
+</code></pre>
+                    <pre><code>// C++ example for formatting output
+#include &lt;iomanip&gt; // For std::setw
+// ...
+// std::cout &lt;&lt; std::left &lt;&lt; std::setw(5) &lt;&lt; "p" &lt;&lt; " | "
+//           &lt;&lt; std::setw(5) &lt;&lt; "q" &lt;&lt; " | "
+//           &lt;&lt; std::setw(10) &lt;&lt; "p OR q" &lt;&lt; " | "
+//           &lt;&lt; std::setw(15) &lt;&lt; "(p OR q) -> r" &lt;&lt; std::endl;
+// // ...
+// std::cout &lt;&lt; std::left &lt;&lt; std::setw(5) &lt;&lt; "T" &lt;&lt; " | "
+//           &lt;&lt; std::setw(5) &lt;&lt; "T" &lt;&lt; " | "
+//           &lt;&lt; std::setw(10) &lt;&lt; "T" &lt;&lt; " | "
+//           &lt;&lt; std::setw(15) &lt;&lt; "T" &lt;&lt; std::endl;
+</code></pre>
+                </div>
+
+                <h3>Common Pitfalls & Debugging Tips</h3>
+
+                <div class="warning">
+                    <h3>⚠️ Common Pitfalls</h3>
+                    <ul>
+                        <li><strong>Operator Precedence:</strong> Forgetting the correct order of operations (e.g., <code>p AND q OR r</code> is <code>(p AND q) OR r</code>, not <code>p AND (q OR r)</code>). Always use parentheses for clarity if unsure.</li>
+                        <li><strong>Implication Logic:</strong> Remembering that <code>p -> q</code> is false ONLY when <code>p</code> is true AND <code>q</code> is false. It's true in all other cases.</li>
+                        <li><strong>Parentheses Mismatch:</strong> Unbalanced parentheses (missing an opening or closing one) will cause parsing errors. Implement a simple counter to check this.</li>
+                        <li><strong>Case Sensitivity:</strong> Ensure your parser handles both uppercase and lowercase for operators and variables by standardizing the input.</li>
+                        <li><strong>Duplicate Variable Counting:</strong> Only count distinct variables (p, q, r) when determining <code>n</code> for <code>2^n</code> rows. The starter code handles this with <code>Set</code>.</li>
+                        <li><strong>Off-by-One Errors:</strong> Be careful with array/list indices, especially in loops and bitwise operations.</li>
+                    </ul>
+                </div>
+
+                <div class="tip">
+                    <h3>🐛 Debugging Strategies</h3>
+                    <ul>
+                        <li><strong>Print Intermediate Steps:</strong> During parsing, print the tokens. During evaluation, print the values of sub-expressions. This helps you see where logic goes wrong.</li>
+                        <li><strong>Start Simple:</strong> Get <code>!p</code>, <code>p & q</code>, <code>p | q</code> working perfectly before adding complexity like parentheses or implication.</li>
+                        <li><strong>Test Each Operator:</strong> Create dedicated test cases for each operator to verify its truth table individually.</li>
+                        <li><strong>Use the PE-03 Demo Tool:</strong> Input your expressions into the interactive demo on the assignment page and compare its output to your program's output. This is your best friend for correctness verification!</li>
+                        <li><strong>Manual Trace:</strong> For complex expressions, manually draw out the truth table on paper, row-by-row, and compare it with your program's output.</li>
+                        <li><strong>Isolate the Problem:</strong> If an expression fails, try to reduce it to the smallest part that still fails. This helps pinpoint the faulty logic.</li>
+                    </ul>
+                </div>
+
+                <h3>Useful Data Structures</h3>
+                
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="icon">📚</div>
+                        <h4><code>Map&lt;Character, Boolean&gt;</code> (Java) / <code>std::map&lt;char, bool&gt;</code> (C++)</h4>
+                        <p>Excellent for storing the current truth values of variables (p=T, q=F, r=T) for each row in your truth table loop.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon">🔗</div>
+                        <h4><code>List&lt;String&gt;</code> (Java) / <code>std::vector&lt;std::string&gt;</code> (C++)</h4>
+                        <p>For storing the sequence of tokens after you've broken down the input expression string.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon">🌳</div>
+                        <h4>Abstract Syntax Tree (AST) (Advanced)</h4>
+                        <p>If you're feeling ambitious and want a very robust parser, represent the parsed expression as a tree. Nodes are operators, leaves are variables. This makes evaluation (especially with intermediate columns) very natural through recursion.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon">📦</div>
+                        <h4><code>Stack</code> (Java) / <code>std::stack</code> (C++)</h4>
+                        <p>Useful if you implement the Shunting-Yard algorithm for parsing, or for managing operator precedence during evaluation.</p>
+                    </div>
+                </div>
+
+                <h3>External Resources</h3>
+                <ul>
+                    <li><strong>Saylor.org CS202 - Unit 3: Mathematical Logic (Sections 3.1-3.2):</strong> Your primary textbook resource for propositional logic and truth tables.</li>
+                    <li><strong>Online Truth Table Generators:</strong> Use these to check your manual work or your program's output.
+                        <ul>
+                            <li><a href="https://web.stanford.edu/class/cs103/tools/truth-table-tool/" target="_blank">Stanford Truth Table Tool</a></li>
+                            <li><a href="https://www.dcode.fr/boolean-expressions-calculator" target="_blank">DCode Boolean Expression Calculator</a></li>
+                        </ul>
+                    </li>
+                    <li><strong>Java Documentation:</strong> For <code>Scanner</code>, <code>String</code> manipulation, <code>Set</code>, <code>Map</code>, <code>List</code>.</li>
+                    <li><strong>C++ Reference:</strong> For <code>std::string</code>, <code>std::cin</code>, <code>std::set</code>, <code>std::map</code>, <code>std::vector</code>, <code>std::stack</code>.</li>
+                    <li><strong>Parsing Tutorials:</strong> Search for "recursive descent parser tutorial Java" or "recursive descent parser C++" if you choose that approach.</li>
+                </ul>
+
+                <div class="tip">
+                    <h3>💡 Remember the Goal!</h3>
+                    <p>This assignment is about understanding and implementing the foundational logic concepts you've learned. Don't just aim for a working program; aim for a program that *you understand* how it works at every step. This will build crucial skills for later in the course and in your CS career.</p>
+                    <p>Good luck, and don't hesitate to ask your instructor for help during office hours or on the discussion board!</p>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p><strong>CSC 240 - Discrete Structures</strong> | PE-03: Truth Table Generator Hints</p>
+            <p>Mendocino College Computer Science Department</p>
+            <p style="margin-top: 1rem; font-size: 0.9rem;">© 2026 Mendocino College | All Rights Reserved</p>
+            <p style="margin-top: 0.5rem; font-size: 0.9rem;">Questions? Contact your instructor through Canvas or during office hours.</p>
+        </footer>
+    </div>
+    <script>
+        // Simple JavaScript for collapsible sections
+        document.addEventListener('DOMContentLoaded', function() {
+            const collapsibles = document.querySelectorAll('.collapsible');
+            collapsibles.forEach(button => {
+                button.addEventListener('click', function() {
+                    this.classList.toggle('active');
+                    const content = this.nextElementSibling;
+                    if (content.style.maxHeight) {
+                        content.style.maxHeight = null;
+                        content.classList.remove('active');
+                    } else {
+                        content.style.maxHeight = content.scrollHeight + "px";
+                        content.classList.add('active');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
