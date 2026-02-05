@@ -1,0 +1,2146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PS-03: Cardinality and Logic | CSC 240 Week 3</title>
+    <style>
+        /* ===================================
+           PS-03: CARDINALITY AND LOGIC
+           CSC 240 - Discrete Structures
+           Complete Embedded CSS
+           Max Width: 800px Single Column
+           =================================== */
+        
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --info-color: #9b59b6;
+            --light-bg: #ecf0f1;
+            --card-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            --border-radius: 8px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--primary-color);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        /* Header Section */
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        header .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 0.3rem;
+        }
+        
+        header .meta {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        /* Assignment Info Banner */
+        .assignment-info {
+            background: linear-gradient(135deg, var(--success-color), #27ae60);
+            color: white;
+            padding: 1.5rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            text-align: center;
+        }
+        
+        .info-item {
+            padding: 0.5rem;
+        }
+        
+        .info-item .label {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            margin-bottom: 0.3rem;
+        }
+        
+        .info-item .value {
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+        
+        /* Content Sections */
+        .content {
+            padding: 2rem;
+        }
+        
+        .section {
+            margin-bottom: 2rem;
+        }
+        
+        .section h2 {
+            color: var(--primary-color);
+            font-size: 1.6rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid var(--secondary-color);
+        }
+        
+        .section h3 {
+            color: var(--secondary-color);
+            font-size: 1.3rem;
+            margin: 1.5rem 0 1rem 0;
+        }
+        
+        .section h4 {
+            color: var(--primary-color);
+            font-size: 1.1rem;
+            margin: 1rem 0 0.5rem 0;
+        }
+        
+        /* Problem Boxes */
+        .problem-box {
+            background: #f9f9f9;
+            border: 2px solid var(--secondary-color);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        
+        .problem-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #ddd;
+        }
+        
+        .problem-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .problem-points {
+            background: var(--secondary-color);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        
+        .problem-content {
+            margin: 1rem 0;
+        }
+        
+        .problem-parts {
+            margin-left: 1.5rem;
+        }
+        
+        .problem-parts > div {
+            margin: 1rem 0;
+        }
+        
+        /* Objectives Box */
+        .objectives {
+            background: #e3f2fd;
+            border-left: 4px solid var(--secondary-color);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 4px;
+        }
+        
+        .objectives h3 {
+            color: var(--secondary-color);
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+        
+        .objectives ul {
+            list-style-position: inside;
+            padding-left: 1rem;
+        }
+        
+        .objectives li {
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Requirements Box */
+        .requirements {
+            background: #fff3e0;
+            border-left: 4px solid var(--warning-color);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 4px;
+        }
+        
+        .requirements h3 {
+            color: var(--warning-color);
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+        
+        /* Tip Box */
+        .tip {
+            background: #f1f8e9;
+            border-left: 4px solid var(--success-color);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 4px;
+        }
+        
+        .tip h3 {
+            color: var(--success-color);
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+        
+        /* Warning Box */
+        .warning {
+            background: #ffebee;
+            border-left: 4px solid var(--accent-color);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 4px;
+        }
+        
+        .warning h3 {
+            color: var(--accent-color);
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+        
+        /* Hint Box - FIXED */
+        .hint-box {
+            background: #fff9e6;
+            border: 2px dashed var(--warning-color);
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            margin: 1rem 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        
+        .hint-box.active {
+            max-height: 1000px;
+            padding: 1rem;
+        }
+        
+        .hint-box h4 {
+            color: var(--warning-color);
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Solution Box */
+        .solution-box {
+            background: #e8f5e9;
+            border: 2px solid var(--success-color);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin: 1rem 0;
+            display: none;
+        }
+        
+        .solution-box.show {
+            display: block;
+        }
+        
+        .solution-box h4 {
+            color: var(--success-color);
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+        
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            background: white;
+            font-size: 0.95rem;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        /* Truth Table Specific */
+        .truth-table {
+            font-family: 'Courier New', monospace;
+            text-align: center;
+        }
+        
+        .truth-table th {
+            background-color: var(--secondary-color);
+        }
+        
+        .truth-table .highlight {
+            background-color: #fff9c4 !important;
+            font-weight: bold;
+        }
+        
+        /* Code Blocks */
+        pre {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 1.5rem;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+        
+        code {
+            font-family: 'Courier New', Courier, monospace;
+            background: #f4f4f4;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            color: #e74c3c;
+            font-size: 0.9em;
+        }
+        
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+        }
+        
+        /* Buttons */
+        button, .btn {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+            margin: 0.5rem 0.5rem 0.5rem 0;
+            display: inline-block;
+        }
+        
+        button:hover, .btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        button:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-success {
+            background-color: var(--success-color);
+        }
+        
+        .btn-success:hover {
+            background-color: #229954;
+        }
+        
+        .btn-warning {
+            background-color: var(--warning-color);
+        }
+        
+        .btn-warning:hover {
+            background-color: #e67e22;
+        }
+        
+        .btn-accent {
+            background-color: var(--accent-color);
+        }
+        
+        .btn-accent:hover {
+            background-color: #c0392b;
+        }
+        
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+        
+        /* Collapsible Sections - FIXED */
+        .collapsible {
+            background-color: var(--secondary-color);
+            color: white;
+            cursor: pointer;
+            padding: 1rem;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 1rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+            transition: all 0.3s;
+            display: block;
+        }
+        
+        .collapsible:hover {
+            background-color: #2980b9;
+        }
+        
+        .collapsible:after {
+            content: ' ▼';
+            float: right;
+            font-size: 0.9rem;
+        }
+        
+        .collapsible.active:after {
+            content: ' ▲';
+        }
+        
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out;
+            background-color: #fff9e6;
+            border: 2px dashed var(--warning-color);
+            border-radius: var(--border-radius);
+        }
+        
+        .collapsible-content.active {
+            max-height: 2000px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .collapsible-content h4 {
+            color: var(--warning-color);
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+        
+        /* Input Elements */
+        input[type="text"], textarea, select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+            margin: 0.5rem 0;
+        }
+        
+        input[type="text"]:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 150px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+        }
+        
+        input[type="text"] {
+            font-family: 'Courier New', monospace;
+        }
+        
+        /* Workspace Area - FIXED */
+        .workspace {
+            background: #fafafa;
+            border: 2px dashed #ccc;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+        
+        .workspace h4 {
+            color: #666;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .workspace textarea {
+            width: 100%;
+            min-height: 200px;
+            max-height: 400px;
+            resize: vertical;
+            padding: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        
+        /* Progress Tracker */
+        .progress-tracker {
+            background: white;
+            border: 2px solid var(--secondary-color);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        
+        .progress-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+            background: #f9f9f9;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        
+        .progress-item:hover {
+            background: #e3f2fd;
+        }
+        
+        .progress-checkbox {
+            width: 24px;
+            height: 24px;
+            margin-right: 1rem;
+            cursor: pointer;
+        }
+        
+        .progress-label {
+            flex: 1;
+            cursor: pointer;
+        }
+        
+        .progress-points {
+            color: var(--secondary-color);
+            font-weight: bold;
+        }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #ddd;
+            margin: 0;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 1rem;
+            color: var(--primary-color);
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            margin: 0;
+        }
+        
+        .tab:hover {
+            background-color: var(--light-bg);
+        }
+        
+        .tab.active {
+            border-bottom-color: var(--secondary-color);
+            color: var(--secondary-color);
+            font-weight: 600;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 2rem 0;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Lists */
+        ul, ol {
+            margin: 1rem 0;
+            padding-left: 2rem;
+        }
+        
+        li {
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Checklist */
+        .checklist {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .checklist li {
+            padding: 0.5rem;
+            margin: 0.5rem 0;
+            background: #f9f9f9;
+            border-radius: 5px;
+            padding-left: 2rem;
+            position: relative;
+        }
+        
+        .checklist li:before {
+            content: '☐';
+            position: absolute;
+            left: 0.5rem;
+            font-size: 1.2rem;
+            color: var(--secondary-color);
+        }
+        
+        /* Math notation helper */
+        .math {
+            font-family: 'Times New Roman', serif;
+            font-style: italic;
+        }
+        
+        /* Input group for calculator */
+        .input-group {
+            margin: 1rem 0;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .input-group input[type="number"] {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        /* Demo section */
+        .demo-section {
+            background: #f5f5f5;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            margin: 1.5rem 0;
+        }
+        
+        /* Example box */
+        .example-box {
+            background: #e8f5e9;
+            border-left: 4px solid var(--success-color);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 4px;
+        }
+        
+        .example-box h4 {
+            color: var(--success-color);
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        footer p {
+            margin: 0.5rem 0;
+        }
+        
+        /* Completion banner */
+        .completion-banner {
+            background: linear-gradient(135deg, var(--success-color), #27ae60);
+            color: white;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            text-align: center;
+            margin: 2rem 0;
+            display: none;
+        }
+        
+        .completion-banner h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .content {
+                padding: 1.5rem;
+            }
+            
+            header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .assignment-info {
+                grid-template-columns: 1fr;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                border-bottom: 1px solid #ddd;
+                border-left: 3px solid transparent;
+            }
+            
+            .tab.active {
+                border-bottom: 1px solid #ddd;
+                border-left-color: var(--secondary-color);
+            }
+        }
+        
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .container {
+                box-shadow: none;
+            }
+            
+            button, .btn, .tabs {
+                display: none;
+            }
+            
+            .tab-content {
+                display: block !important;
+            }
+            
+            .collapsible-content {
+                max-height: none !important;
+                display: block !important;
+                border: 1px solid #ddd !important;
+                padding: 1rem !important;
+            }
+            
+            .problem-box {
+                page-break-inside: avoid;
+            }
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        /* Score Calculator */
+        .score-display {
+            background: linear-gradient(135deg, var(--success-color), #27ae60);
+            color: white;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            text-align: center;
+            margin: 1.5rem 0;
+            display: none;
+        }
+        
+        .score-display.show {
+            display: block;
+        }
+        
+        .score-display .score {
+            font-size: 3rem;
+            font-weight: bold;
+            margin: 1rem 0;
+        }
+        
+        .score-display .percentage {
+            font-size: 1.5rem;
+            margin: 0.5rem 0;
+        }
+    </style>
+</head>
+
+            <!-- Tab 1: Overview -->
+            <div class="tab-content active" id="overview">
+                <div class="section">
+                    <h2>📋 Assignment Overview</h2>
+                    
+                    <p>Welcome to <strong>PS-03: Cardinality and Logic</strong>! This problem set is designed to test your understanding of key concepts from Week 3, including comparing the sizes of sets (cardinality), classifying different types of infinite sets, and applying propositional logic. This assignment directly supports <strong>CSLO 1</strong> and <strong>CSLO 2</strong> by having you apply symbolic logic and set theory to theoretical problems.</p>
+
+                    <div class="objectives">
+                        <h3>🎯 Learning Objectives</h3>
+                        <ul>
+                            <li>Compare cardinalities of finite and infinite sets.</li>
+                            <li>Distinguish between countable and uncountable sets.</li>
+                            <li>Determine if a statement is a logical proposition and its truth value.</li>
+                            <li>Construct truth tables for compound propositions.</li>
+                            <li>Identify tautologies, contradictions, and contingencies.</li>
+                            <li>Use truth tables to verify logical equivalences.</li>
+                        </ul>
+                    </div>
+
+                    <h3>Why This Problem Set Matters</h3>
+                    
+                    <div class="tip">
+                        <h3>💡 Key Connections</h3>
+                        <p>This problem set reinforces foundational concepts crucial for advanced topics in computer science:</p>
+                        <ul>
+                            <li><strong>Cardinality:</strong> Essential for understanding data structures, algorithm complexity, and computability theory (e.g., why some problems are unsolvable).</li>
+                            <li><strong>Propositional Logic:</strong> The bedrock of programming logic, digital circuit design, and formal verification of software and hardware systems.</li>
+                            <li><strong>Truth Tables:</strong> A fundamental tool for analyzing and debugging complex Boolean expressions, ensuring program correctness.</li>
+                        </ul>
+                    </div>
+
+                    <h3>Connection to Course Concepts</h3>
+                    <p>This problem set synthesizes multiple concepts from Week 3 and builds upon previous weeks:</p>
+                    <ul>
+                        <li><strong>Week 1 & 2 Sets & Functions:</strong> Directly uses concepts of sets, elements, and especially bijective functions for cardinality comparison.</li>
+                        <li><strong>Week 3 Cardinality:</strong> Applies definitions of finite, countably infinite, and uncountably infinite sets.</li>
+                        <li><strong>Week 3 Propositional Logic:</strong> Requires understanding propositions, logical connectives, and constructing truth tables.</li>
+                        <li><strong>Week 3 Logical Equivalences:</strong> Uses truth tables to prove if two expressions are equivalent.</li>
+                    </ul>
+
+                    <div class="warning">
+                        <h3>⚠️ Important Notes</h3>
+                        <ul>
+                            <li><strong>Show All Work:</strong> For full credit, you must show all steps for proofs, calculations, and truth table constructions. Partial credit will be awarded.</li>
+                            <li><strong>Format:</strong> Submit a single PDF file. Handwritten solutions are acceptable if legible and scanned clearly.</li>
+                            <li><strong>Academic Integrity:</strong> This must be your own work. Collaboration on concepts is fine; copying solutions is not.</li>
+                            <li><strong>Submission:</strong> Upload to Canvas by the end of Week 3.</li>
+                            <li><strong>Late Policy:</strong> 10% deduction per day, up to 3 days maximum.</li>
+                        </ul>
+                    </div>
+
+                    <h3>Time Breakdown</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Section</th>
+                                <th>Activity</th>
+                                <th>Estimated Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Problem 1: Cardinality</td>
+                                <td>Constructing a bijection, explanation</td>
+                                <td>20-30 minutes</td>
+                            </tr>
+                            <tr>
+                                <td>Problem 2: Countability</td>
+                                <td>Classifying sets, justifications</td>
+                                <td>15-20 minutes</td>
+                            </tr>
+                            <tr>
+                                <td>Problem 3: Propositions</td>
+                                <td>Identifying propositions, truth values</td>
+                                <td>10-15 minutes</td>
+                            </tr>
+                            <tr>
+                                <td>Problem 4: Truth Tables</td>
+                                <td>Constructing 3 truth tables, classification</td>
+                                <td>30-45 minutes</td>
+                            </tr>
+                            <tr>
+                                <td>Problem 5: Logical Equivalence</td>
+                                <td>Verifying 2 equivalences with truth tables</td>
+                                <td>15-20 minutes</td>
+                            </tr>
+                            <tr>
+                                <td>Review & Formatting</td>
+                                <td>Checking answers, converting to PDF</td>
+                                <td>10-15 minutes</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+                        <!-- Tab 2: Problems -->
+            <div class="tab-content" id="problems">
+                <div class="section">
+                    <h2>📝 Problem Set: Cardinality and Logic</h2>
+                    
+                    <p>This problem set covers concepts from Week 3, focusing on cardinality, countability, propositions, truth tables, and logical equivalences. Remember to show all your work for full credit!</p>
+
+                    <div class="warning">
+                        <h3>⚠️ Important Instructions</h3>
+                        <ul>
+                            <li><strong>Show All Work:</strong> For all problems, especially proofs and truth tables, clearly show every step of your reasoning.</li>
+                            <li><strong>Justify Answers:</strong> Explain <em>why</em> your answer is correct, citing definitions or theorems where appropriate.</li>
+                            <li><strong>Truth Table Format:</strong> For Problem 4 and 5, construct complete truth tables with intermediate columns as demonstrated in the learning modules.</li>
+                            <li><strong>Submission:</strong> Compile all your answers into a single PDF document.</li>
+                        </ul>
+                    </div>
+
+                    <!-- Problem 1 -->
+                    <div class="problem-box fade-in">
+                        <div class="problem-header">
+                            <div class="problem-title">Problem 1: Cardinality and Bijections</div>
+                            <div class="problem-points">2 points</div>
+                        </div>
+                        <div class="problem-content">
+                            <p><strong>a) (1 point)</strong> Prove that the set of even natural numbers E = {2, 4, 6, 8, ...} has the same cardinality as ℕ (the set of natural numbers ℕ = {1, 2, 3, 4, ...}) by constructing an explicit bijection.</p>
+                            <p><strong>b) (1 point)</strong> Explain why this result is counterintuitive. What does it tell us about infinite sets?</p>
+                            
+                            <button class="collapsible btn-small btn-warning" onclick="toggleHint(event)">💡 Show Hint for Problem 1a</button>
+                            <div class="hint-box">
+                                <h4>💡 Hint: For constructing a bijection</h4>
+                                <p>A bijection needs to be one-to-one (injective) and onto (surjective). Think about a simple arithmetic operation that maps each natural number to a unique even natural number, and vice-versa.</p>
+                                <ul>
+                                    <li>Define a function f: ℕ → E.</li>
+                                    <li>Prove f is injective: if f(n₁) = f(n₂), then n₁ = n₂.</li>
+                                    <li>Prove f is surjective: for every e ∈ E, there exists an n ∈ ℕ such that f(n) = e.</li>
+                                </ul>
+                                <p><strong>Example approach:</strong> Consider f(n) = 2n. Does this map every natural number to a unique even number?</p>
+                            </div>
+                            
+                            <button class="collapsible btn-small btn-warning" onclick="toggleHint(event)">💡 Show Hint for Problem 1b</button>
+                            <div class="hint-box">
+                                <h4>💡 Hint: For the intuitive aspect</h4>
+                                <p>Consider the relationship between a set and its proper subset. How does our intuition about finite sets apply (or fail to apply) to infinite sets in terms of "size"?</p>
+                                <p><strong>Think about:</strong> For finite sets, a proper subset is always smaller. Does this hold for infinite sets?</p>
+                                <p><strong>Key insight:</strong> The even numbers are a proper subset of natural numbers (E ⊂ ℕ), yet they have the same cardinality!</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Problem 2 -->
+                    <div class="problem-box fade-in">
+                        <div class="problem-header">
+                            <div class="problem-title">Problem 2: Countability</div>
+                            <div class="problem-points">2 points</div>
+                        </div>
+                        <div class="problem-content">
+                            <p>Determine whether each set is finite, countably infinite, or uncountably infinite. Justify your answers.</p>
+                            <div class="problem-parts">
+                                <div><strong>a) (0.5 points)</strong> The set of all integers between -1000 and 1000</div>
+                                <div><strong>b) (0.5 points)</strong> The set of all negative integers</div>
+                                <div><strong>c) (0.5 points)</strong> The set of all real numbers between 0 and 1 (exclusive)</div>
+                                <div><strong>d) (0.5 points)</strong> The set of all rational numbers between 0 and 1 (exclusive)</div>
+                            </div>
+                            
+                            <button class="collapsible btn-small btn-warning" onclick="toggleHint(event)">💡 Show Hint for Problem 2</button>
+                            <div class="hint-box">
+                                <h4>💡 Hint: Definitions of countability</h4>
+                                <ul>
+                                    <li><strong>Finite:</strong> Can be counted, there's a last element. Has cardinality n for some natural number n.</li>
+                                    <li><strong>Countably Infinite:</strong> Can be put into a one-to-one correspondence with the natural numbers ℕ. Think "listable" - you can enumerate elements as a₁, a₂, a₃, ...</li>
+                                    <li><strong>Uncountably Infinite:</strong> Cannot be put into a one-to-one correspondence with ℕ. Think "too many to list."</li>
+                                </ul>
+                                <p><strong>Key facts to remember:</strong></p>
+                                <ul>
+                                    <li>ℕ, ℤ, and ℚ are all countably infinite</li>
+                                    <li>ℝ and any interval of real numbers are uncountably infinite</li>
+                                    <li>Recall Cantor's diagonal argument for real numbers</li>
+                                    <li>A finite subset of any set is finite</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Problem 3 -->
+                    <div class="problem-box fade-in">
+                        <div class="problem-header">
+                            <div class="problem-title">Problem 3: Logical Propositions</div>
+                            <div class="problem-points">2 points</div>
+                        </div>
+                        <div class="problem-content">
+                            <p>For each statement, determine if it is a proposition. If it is, state its truth value (TRUE or FALSE). If it is not a proposition, explain why.</p>
+                            <div class="problem-parts">
+                                <div><strong>a) (0.4 points)</strong> "2 + 3 = 5"</div>
+                                <div><strong>b) (0.4 points)</strong> "Is it raining?"</div>
+                                <div><strong>c) (0.4 points)</strong> "This statement is false"</div>
+                                <div><strong>d) (0.4 points)</strong> "All prime numbers greater than 2 are odd"</div>
+                                <div><strong>e) (0.4 points)</strong> "x² = 9"</div>
+                            </div>
+                            
+                            <button class="collapsible btn-small btn-warning" onclick="toggleHint(event)">💡 Show Hint for Problem 3</button>
+                            <div class="hint-box">
+                                <h4>💡 Hint: Definition of a proposition</h4>
+                                <p>A proposition must be a declarative statement that is <strong>either true or false, but not both</strong>.</p>
+                                <p><strong>NOT propositions:</strong></p>
+                                <ul>
+                                    <li><strong>Questions</strong> are not propositions (they ask, not state).</li>
+                                    <li><strong>Commands</strong> are not propositions (they direct action).</li>
+                                    <li><strong>Statements with variables</strong> are generally not propositions unless the variable is quantified or has a specific value.</li>
+                                    <li><strong>Paradoxical statements</strong> (like "This statement is false") are not propositions because they can't consistently be true or false.</li>
+                                    <li><strong>Opinions</strong> without objective truth values are not propositions.</li>
+                                </ul>
+                                <p><strong>For each statement, ask:</strong></p>
+                                <ol>
+                                    <li>Is it a declarative statement?</li>
+                                    <li>Does it have a definite truth value?</li>
+                                    <li>Can it be definitely true or definitely false (not both)?</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Problem 4 -->
+                    <div class="problem-box fade-in">
+                        <div class="problem-header">
+                            <div class="problem-title">Problem 4: Truth Tables</div>
+                            <div class="problem-points">3 points</div>
+                        </div>
+                        <div class="problem-content">
+                            <p>Construct complete truth tables for the following expressions. For each, identify whether it is a tautology, contradiction, or contingency.</p>
+                            <div class="problem-parts">
+                                <div><strong>a) (1 point)</strong> ¬p ∧ q</div>
+                                <div><strong>b) (1 point)</strong> (p → q) ∧ (q → p)</div>
+                                <div><strong>c) (1 point)</strong> (p ∨ q) ∧ ¬(p ∧ q) (This is exclusive OR, p ⊕ q)</div>
+                            </div>
+                            
+                            <button class="collapsible btn-small btn-warning" onclick="toggleHint(event)">💡 Show Hint for Problem 4</button>
+                            <div class="hint-box">
+                                <h4>💡 Hint: Truth table construction</h4>
+                                <p><strong>Step-by-step process:</strong></p>
+                                <ol>
+                                    <li><strong>Step 1:</strong> Identify all distinct propositional variables. This tells you the number of rows (2ⁿ).</li>
+                                    <li><strong>Step 2:</strong> Create columns for each variable and list all possible truth value combinations.</li>
+                                    <li><strong>Step 3:</strong> Create intermediate columns for sub-expressions, following operator precedence (¬ highest, then ∧, ∨, →, ↔ lowest).</li>
+                                    <li><strong>Step 4:</strong> The last column is for the complete expression.</li>
+                                    <li><strong>Step 5:</strong> Classify the result:
+                                        <ul>
+                                            <li>All T's = Tautology</li>
+                                            <li>All F's = Contradiction</li>
+                                            <li>Mixed = Contingency</li>
+                                        </ul>
+                                    </li>
+                                </ol>
+                                <p><strong>Remember:</strong></p>
+                                <ul>
+                                    <li>p ∧ q is true only when BOTH are true</li>
+                                    <li>p ∨ q is false only when BOTH are false</li>
+                                    <li>p → q is false only when p is TRUE and q is FALSE</li>
+                                    <li>¬ flips the truth value</li>
+                                </ul>
+                                <p><strong>Example table format:</strong></p>
+                                <pre style="background: #f5f5f5; padding: 1rem; border-radius: 5px; font-size: 0.85rem;">p | q | ¬p | ¬p ∧ q
+--|---|----|---------
+T | T | F  | F
+T | F | F  | F
+F | T | T  | T
+F | F | T  | F
+
+Classification: Contingency</pre>
+                            </div>
+
+                            <div class="workspace">
+                                <h4>💼 Your Workspace for Truth Tables:</h4>
+                                <textarea id="workspace4" placeholder="Use this space to draft your truth tables and classifications for Problem 4. You can use T/F or 1/0 for truth values.
+
+Example format:
+Problem 4a: ¬p ∧ q
+
+p | q | ¬p | ¬p ∧ q
+--|---|----|---------
+T | T | F  | F
+T | F | F  | F
+F | T | T  | T
+F | F | T  | F
+
+Classification: Contingency (has both T and F)
+
+Problem 4b: (p → q) ∧ (q → p)
+
+[Your work here...]
+
+Problem 4c: (p ∨ q) ∧ ¬(p ∧ q)
+
+[Your work here...]"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Problem 5 -->
+                    <div class="problem-box fade-in">
+                        <div class="problem-header">
+                            <div class="problem-title">Problem 5: Logical Equivalence</div>
+                            <div class="problem-points">1 point</div>
+                        </div>
+                        <div class="problem-content">
+                            <p>Use truth tables to determine whether the following pairs of expressions are logically equivalent. Clearly state your conclusion for each pair.</p>
+                            <div class="problem-parts">
+                                <div><strong>a) (0.5 points)</strong> p → q and ¬p ∨ q</div>
+                                <div><strong>b) (0.5 points)</strong> ¬(p → q) and p ∧ ¬q</div>
+                            </div>
+                            
+                            <button class="collapsible btn-small btn-warning" onclick="toggleHint(event)">💡 Show Hint for Problem 5</button>
+                            <div class="hint-box">
+                                <h4>💡 Hint: Verifying logical equivalence</h4>
+                                <p>Two expressions are logically equivalent if and only if their truth tables are identical.</p>
+                                <p><strong>Method:</strong></p>
+                                <ol>
+                                    <li>Construct a single truth table for each pair</li>
+                                    <li>Include columns for both expressions</li>
+                                    <li>Compare their final columns row by row</li>
+                                    <li>If all rows match → expressions are equivalent</li>
+                                    <li>If even one row differs → not equivalent</li>
+                                </ol>
+                                <p><strong>Example format:</strong></p>
+                                <pre style="background: #f5f5f5; padding: 1rem; border-radius: 5px; font-size: 0.85rem;">p | q | p → q | ¬p | ¬p ∨ q
+--|---|-------|----|---------
+T | T |   T   | F  |    T
+T | F |   F   | F  |    F
+F | T |   T   | T  |    T
+F | F |   T   | T  |    T
+
+Columns 3 and 5 match → Equivalent!</pre>
+                            </div>
+
+                            <div class="workspace">
+                                <h4>💼 Your Workspace for Logical Equivalence:</h4>
+                                <textarea id="workspace5" placeholder="Use this space to draft your truth tables and conclusions for Problem 5.
+
+Problem 5a: Compare p → q and ¬p ∨ q
+
+p | q | p → q | ¬p | ¬p ∨ q | Equivalent?
+--|---|-------|----|---------|-----------
+T | T |       |    |         |
+T | F |       |    |         |
+F | T |       |    |         |
+F | F |       |    |         |
+
+Conclusion: [Are they equivalent? Explain why or why not]
+
+Problem 5b: Compare ¬(p → q) and p ∧ ¬q
+
+p | q | p → q | ¬(p → q) | ¬q | p ∧ ¬q | Equivalent?
+--|---|-------|----------|----|---------|-----------
+T | T |       |          |    |         |
+T | F |       |          |    |         |
+F | T |       |          |    |         |
+F | F |       |          |    |         |
+
+Conclusion: [Your analysis here...]"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tip">
+                        <h3>💡 Before You Finish</h3>
+                        <ul>
+                            <li><strong>Review:</strong> Reread each problem and your answer. Does it fully address the question?</li>
+                            <li><strong>Check Math:</strong> Double-check all calculations and truth values.</li>
+                            <li><strong>Clarity:</strong> Is your writing clear, concise, and easy to follow?</li>
+                            <li><strong>Justification:</strong> Have you justified all your answers as required?</li>
+                            <li><strong>Format:</strong> Are your truth tables properly formatted with clear columns?</li>
+                            <li><strong>Completeness:</strong> Have you answered all sub-parts of each problem?</li>
+                        </ul>
+                    </div>
+
+                    <button class="btn-success" onclick="markSectionComplete('problems')">✓ Problems Reviewed and Understood</button>
+                </div>
+            </div>
+
+                        <!-- Tab 3: Grading Rubric -->
+            <div class="tab-content" id="grading">
+                <div class="section">
+                    <h2>📊 Grading Rubric and Evaluation Criteria</h2>
+                    
+                    <p>PS-03 is worth <strong>10 points</strong> and will be evaluated based on four main criteria: Mathematical Correctness, Proof Structure, Clarity, and Completeness. This rubric provides detailed expectations for each category.</p>
+
+                    <div class="objectives">
+                        <h3>🎯 Overall Grading Breakdown</h3>
+                        <table class="rubric-table">
+                            <thead>
+                                <tr>
+                                    <th>Category</th>
+                                    <th>Points</th>
+                                    <th>Percentage</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Mathematical Correctness</strong></td>
+                                    <td>6.0 pts</td>
+                                    <td>60%</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Proof Structure / Logic</strong></td>
+                                    <td>2.0 pts</td>
+                                    <td>20%</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Clarity / Presentation</strong></td>
+                                    <td>1.5 pts</td>
+                                    <td>15%</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Completeness</strong></td>
+                                    <td>0.5 pts</td>
+                                    <td>5%</td>
+                                </tr>
+                                <tr style="background-color: var(--light-bg); font-weight: bold;">
+                                    <td><strong>TOTAL</strong></td>
+                                    <td><strong>10 pts</strong></td>
+                                    <td><strong>100%</strong></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p style="margin-top: 1rem;"><strong>Note:</strong> Each problem has specific point values as indicated in the "Problems" tab, which will be distributed across these categories.</p>
+                    </div>
+
+                    <h3>Category 1: Mathematical Correctness (6.0 points / 60%)</h3>
+                    
+                    <div class="requirements">
+                        <h3>✅ What "Correctness" Means</h3>
+                        <p>Your solutions must be mathematically sound. This includes accurate calculations, correct logical derivations, and precise application of definitions and theorems for cardinality, countability, propositions, and truth tables.</p>
+                    </div>
+
+                    <table class="rubric-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 15%;">Points</th>
+                                <th style="width: 20%;">Level</th>
+                                <th>Criteria</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>5.5-6.0</td>
+                                <td><strong>Excellent</strong></td>
+                                <td>
+                                    <ul>
+                                        <li>✓ All mathematical calculations and derivations are 100% accurate.</li>
+                                        <li>✓ Bijections are correctly constructed and proven.</li>
+                                        <li>✓ Set classifications (finite, countable, uncountable) are correct and fully justified.</li>
+                                        <li>✓ Propositions are correctly identified with accurate truth values.</li>
+                                        <li>✓ Truth tables are flawlessly constructed with correct intermediate and final truth values.</li>
+                                        <li>✓ Tautology/Contradiction/Contingency classifications are always correct.</li>
+                                        <li>✓ Logical equivalence conclusions are accurate and well-supported by truth tables.</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>4.5-5.4</td>
+                                <td><strong>Good</strong></td>
+                                <td>
+                                    <ul>
+                                        <li>✓ Most mathematical aspects are correct (1-2 minor calculation or logic errors).</li>
+                                        <li>✓ Bijections are mostly correct but may have minor flaws in proof.</li>
+                                        <li>✓ Most set classifications and justifications are correct.</li>
+                                        <li>✓ Truth tables are largely correct but may have a few minor truth value errors.</li>
+                                        <li>⚠ Minor issues in classification or equivalence verification.</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>3.5-4.4</td>
+                                <td><strong>Satisfactory</strong></td>
+                                <td>
+                                    <ul>
+                                        <li>✓ Fundamental concepts are understood, but several errors exist.</li>
+                                        <li>⚠ Significant errors in bijection construction or proof.</li>
+                                        <li>⚠ Several incorrect set classifications or missing justifications.</li>
+                                        <li>⚠ Truth tables contain multiple errors, affecting final results.</li>
+                                        <li>⚠ Classification and equivalence conclusions are frequently incorrect.</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2.0-3.4</td>
+                                <td><strong>Needs Work</strong></td>
+                                <td>
+                                    <ul>
+                                        <li>✗ Major mathematical errors or conceptual misunderstandings.</li>
+                                        <li>✗ Incomplete or entirely incorrect bijection attempts.</li>
+                                        <li>✗ Consistent errors in proposition identification or truth values.</li>
+                                        <li>✗ Truth tables are largely incorrect or missing key components.</li>
+                                        <li>✗ Demonstrates a lack of understanding of core logical concepts.</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>0-1.9</td>
+                                <td><strong>Incomplete</strong></td>
+                                <td>
+                                    <ul>
+                                        <li>✗ No meaningful attempt at solving problems.</li>
+                                        <li>✗ Answers are consistently wrong without any logical basis.</li>
+                                        <li>✗ Missing most problems or provides irrelevant information.</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h3>Category 2: Proof Structure / Logic (2.0 points / 20%)</h3>
+                    
+                    <div class="requirements">
+                        <h3>✅ What "Proof Structure / Logic" Means</h3>
+                        <p>Your arguments and justifications must be logically sound and well-structured. For proofs, follow a clear step-by-step process. For justifications, clearly state your reasoning.</p>
+                    </div>
+
+                    <table class="rubric-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 15%;">Points</th>
+                                <th style="width: 20%;">Level</th>
+                                <th>Criteria</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1.8-2.0</td>
+                                <td><strong>Excellent</strong></td>
+                                <td>
+                                    <ul>
+                                        <li>✓ Proofs (e.g., bijection proof) are logically flawless and follow standard mathematical structure.</li>
+                                        <li>✓ Justifications for countability and propositions are precise and well-reasoned.</li>
+                                        <li>✓ Truth table construction shows clear, step-by-step derivation of intermediate columns.</li>
+                                        <li>✓ Logical connections between steps are explicit and easy to follow.</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>1.5-1.7</td>
+                                <td><strong>Good</strong></td>
+                                <td>
+                                    <ul>
+                                        <li>✓ Proofs and justifications are mostly logical.</li>
+                                        <li>⚠ Minor gaps in logical flow or slightly unclear reasoning in one or two places.</li>
+                                        <li>✓ Truth tables show good step-by-step process.</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>1.2-1.4</td>
+                                <td><strong>Satisfactory</strong></td>
+                                <td>
+                                    <ul>
+                                        <li>⚠ Logical structure is present but inconsistent or difficult to follow.</li>
+                                        <li>⚠ Proofs may skip steps or have incomplete arguments.</li>
+                                        <li>⚠ Justifications are weak or partially missing.</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>0.8-1.1</td>
+                                <td><strong>Needs Work</strong></td>
+                                <td>
+                                    <ul>
+                                        <li>✗ Significant logical errors or leaps in reasoning.</li>
+                                        <li>✗ Proofs are unstructured or lack fundamental components.</li>
+                                        <li>✗ Justifications are absent or incorrect.</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>0-0.7</td>
+                                <td><strong>Unacceptable</strong></td>
+                                <td>
+                                    <ul>
+                                        <li>✗ No discernible logical structure or attempt at proof.</li>
+                                        <li>✗ Entirely unsupported claims.</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h3>Category 3: Clarity / Presentation (1.5 points / 15%)</h3>
+                    
+                    <div class="requirements">
+                        <h3>✅ What "Clarity / Presentation" Means</h3>
+                        <p>Your solutions must be clearly presented, legible, and easy for the grader to understand. Use proper mathematical notation and formatting.</p>
+                    </div>
+
+                    <table class="rubric-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 15%;">Points</th>
+                                <th style="width: 20%;">Level</th>
+                                <th>Criteria</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1.4-1.5</td>
+                                <td><strong>Excellent</strong></td>
+                                <td>
+                                    <ul>
+                                        <li>✓ Solutions are exceptionally clear, well-organized, and easy to read.</li>
+                                        <li>✓ Proper mathematical notation is used consistently.</li>
+                                        <li>✓ Truth tables are neatly formatted and aligned.</li>
+                                        <li>✓ Handwritten work is perfectly legible; typed work is professionally formatted.</li>
+                                        <li>✓ Final answers are clearly identified.</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>1.2-1.3</td>
+                                <td><strong>Good</strong></td>
+                                <td>
+                                    <ul>
+                                        <li>✓ Solutions are generally clear and readable.</li>
+                                        <li>✓ Good use of mathematical notation.</li>
+                                        <li>⚠ Minor formatting issues or occasional lack of neatness.</li>
+                                        <li>⚠ Truth tables are mostly clear but might have slight alignment issues.</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>1.0-1.1</td>
+                                <td><strong>Satisfactory</strong></td>
+                                <td>
+                                    <ul>
+                                        <li>⚠ Solutions are understandable but lack consistent organization or neatness.</li>
+                                        <li>⚠ Inconsistent or incorrect mathematical notation.</li>
+                                        <li>⚠ Truth tables are messy or difficult to follow.</li>
+                                        <li>⚠ Handwritten work is sometimes hard to decipher.</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>0.6-0.9</td>
+                                <td><strong>Needs Work</strong></td>
+                                <td>
+                                    <ul>
+                                        <li>✗ Solutions are poorly organized and difficult to read.</li>
+                                        <li>✗ Significant misuse of mathematical notation.</li>
+                                        <li>✗ Truth tables are disorganized and hard to interpret.</li>
+                                        <li>✗ Illegible handwriting makes understanding challenging.</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>0-0.5</td>
+                                <td><strong>Unacceptable</strong></td>
+                                <td>
+                                    <ul>
+                                        <li>✗ Completely unreadable or incomprehensible.</li>
+                                        <li>✗ No attempt at structured presentation.</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h3>Category 4: Completeness (0.5 points / 5%)</h3>
+                    
+                    <div class="requirements">
+                        <h3>✅ What "Completeness" Means</h3>
+                        <p>All parts of every problem are attempted and addressed as specified in the assignment instructions.</p>
+                    </div>
+
+                    <table class="rubric-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 15%;">Points</th>
+                                <th style="width: 20%;">Level</th>
+                                <th>Criteria</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>0.5</td>
+                                <td><strong>Excellent</strong></td>
+                                <td>
+                                    <ul>
+                                        <li>✓ All problems and all sub-parts are fully attempted.</li>
+                                        <li>✓ No questions left unanswered.</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>0.3-0.4</td>
+                                <td><strong>Good</strong></td>
+                                <td>
+                                    <ul>
+                                        <li>⚠ One minor sub-part is incomplete or missing.</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>0.1-0.2</td>
+                                <td><strong>Needs Work</strong></td>
+                                <td>
+                                    <ul>
+                                        <li>✗ Multiple sub-parts or one full problem is missing.</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>0</td>
+                                <td><strong>Unacceptable</strong></td>
+                                <td>
+                                    <ul>
+                                        <li>✗ More than one full problem is missing.</li>
+                                        <li>✗ Substantial portions of the assignment are left blank.</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h3>Common Deductions</h3>
+                    
+                    <div class="warning">
+                        <h3>⚠️ Point Deductions to Avoid</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Issue</th>
+                                    <th>Deduction</th>
+                                    <th>How to Avoid</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Missing justification for an answer</td>
+                                    <td>-0.5 to -1.0 pts</td>
+                                    <td>Always explain your reasoning and cite definitions/theorems.</td>
+                                </tr>
+                                <tr>
+                                    <td>Incorrect truth value in a truth table</td>
+                                    <td>-0.25 to -0.5 pts per error</td>
+                                    <td>Double-check each cell. Use intermediate columns to catch errors.</td>
+                                </tr>
+                                <tr>
+                                    <td>Missing intermediate columns in truth table</td>
+                                    <td>-0.5 pts</td>
+                                    <td>Show all steps as demonstrated in learning modules.</td>
+                                </tr>
+                                <tr>
+                                    <td>Wrong classification (tautology, etc.)</td>
+                                    <td>-0.5 pts</td>
+                                    <td>Check the final column thoroughly.</td>
+                                </tr>
+                                <tr>
+                                    <td>Incomplete bijection proof</td>
+                                    <td>-0.5 to -1.0 pts</td>
+                                    <td>Ensure you prove both injectivity and surjectivity.</td>
+                                </tr>
+                                <tr>
+                                    <td>Unreadable handwriting / poor scan</td>
+                                    <td>-1.0 pts</td>
+                                    <td>Write neatly and ensure your PDF is clear. Consider typing solutions.</td>
+                                </tr>
+                                <tr>
+                                    <td>Submitted wrong file type (e.g., .docx)</td>
+                                    <td>-0.5 pts</td>
+                                    <td>Always submit as a PDF.</td>
+                                </tr>
+                                <tr>
+                                    <td>Incorrect file naming</td>
+                                    <td>-0.25 pts</td>
+                                    <td>Follow: LastName_FirstName_PS03.pdf</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3>Academic Integrity</h3>
+                    
+                    <div class="warning">
+                        <h3>⚠️ Academic Integrity Policy</h3>
+                        <p><strong>This assignment must be your own original work.</strong></p>
+                        
+                        <h4>✅ Acceptable:</h4>
+                        <ul>
+                            <li>Discussing concepts and approaches with classmates.</li>
+                            <li>Using course materials and recommended textbook resources.</li>
+                            <li>Asking clarifying questions to the instructor.</li>
+                            <li>Using online tools (like truth table generators) to <em>check</em> your work, not generate it.</li>
+                        </ul>
+                        
+                        <h4>❌ NOT Acceptable:</h4>
+                        <ul>
+                            <li>Copying solutions from other students or online sources.</li>
+                            <li>Sharing your solutions with classmates.</li>
+                            <li>Using AI tools to generate your solutions.</li>
+                            <li>Submitting work done by someone else.</li>
+                        </ul>
+                        
+                        <h4>Consequences:</h4>
+                        <ul>
+                            <li><strong>First offense:</strong> 0 on assignment + meeting with instructor.</li>
+                            <li><strong>Second offense:</strong> F in course + referral to academic affairs.</li>
+                            <li><strong>All incidents:</strong> Reported to department.</li>
+                        </ul>
+                    </div>
+
+                    <h3>Late Submission Policy</h3>
+                    
+                    <div class="warning">
+                        <h3>📅 Late Policy for PS-03</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Submission Time</th>
+                                    <th>Penalty</th>
+                                    <th>Example</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>On time</td>
+                                    <td>No penalty</td>
+                                    <td>10/10 possible</td>
+                                </tr>
+                                <tr>
+                                    <td>Up to 24 hours late</td>
+                                    <td>-10%</td>
+                                    <td>9/10 maximum</td>
+                                </tr>
+                                <tr>
+                                    <td>24-48 hours late</td>
+                                    <td>-20%</td>
+                                    <td>8/10 maximum</td>
+                                </tr>
+                                <tr>
+                                    <td>48-72 hours late</td>
+                                    <td>-30%</td>
+                                    <td>7/10 maximum</td>
+                                </tr>
+                                <tr>
+                                    <td>More than 72 hours late</td>
+                                    <td>0 points</td>
+                                    <td>0/10 (but must still submit)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p><strong>Important:</strong> Even if you're beyond 72 hours, you must still submit to receive credit for completing the course.</p>
+                    </div>
+
+                    <h3>Self-Assessment Checklist</h3>
+                    
+                    <div class="requirements">
+                        <h3>📋 Before Submitting, Verify:</h3>
+                        <ul class="checklist">
+                            <li>All problems and sub-parts are attempted.</li>
+                            <li>All answers are mathematically correct.</li>
+                            <li>All proofs and justifications are logically sound.</li>
+                            <li>Truth tables are complete, formatted, and accurate.</li>
+                            <li>The document is clear, legible, and uses proper notation.</li>
+                            <li>The file is saved as a single PDF document.</li>
+                            <li>The PDF file is named correctly: <code>LastName_FirstName_PS03.pdf</code>.</li>
+                            <li>Academic integrity policy has been followed.</li>
+                        </ul>
+                    </div>
+
+                    <h3>Grade Estimation Tool</h3>
+                    
+                    <div class="demo-section">
+                        <h3>🧮 Estimate Your Grade</h3>
+                        <p>Use this tool to estimate your expected grade based on the rubric:</p>
+                        
+                        <div class="input-group">
+                            <label>Mathematical Correctness (0-6.0 points):</label>
+                            <input type="number" id="correctnessPoints" min="0" max="6.0" step="0.5" value="0">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label>Proof Structure / Logic (0-2.0 points):</label>
+                            <input type="number" id="structurePoints" min="0" max="2.0" step="0.25" value="0">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label>Clarity / Presentation (0-1.5 points):</label>
+                            <input type="number" id="clarityPoints" min="0" max="1.5" step="0.25" value="0">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label>Completeness (0-0.5 points):</label>
+                            <input type="number" id="completenessPoints" min="0" max="0.5" step="0.1" value="0">
+                        </div>
+                        
+                        <button onclick="calculateGrade()">Calculate Estimated Grade</button>
+                        
+                        <div id="gradeResult" style="display: none; margin-top: 1rem; padding: 1.5rem; background: #f0f0f0; border-radius: 5px;">
+                            <h4>Your Estimated Grade:</h4>
+                            <p style="font-size: 2rem; font-weight: bold; margin: 1rem 0;" id="gradeDisplay">0.0 / 10</p>
+                            <p id="gradePercentage" style="font-size: 1.5rem; margin: 0.5rem 0;">0%</p>
+                            <p id="gradeLetter" style="font-size: 1.5rem; font-weight: bold;"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+                        <!-- Tab 4: Submission Guidelines -->
+            <div class="tab-content" id="submission">
+                <div class="section">
+                    <h2>📤 Submission Guidelines</h2>
+                    
+                    <p>Follow these instructions carefully to ensure your problem set is submitted correctly and can be graded without issues.</p>
+
+                    <h3>Submission Checklist</h3>
+                    
+                    <div class="objectives">
+                        <h3>✅ Before You Submit</h3>
+                        <ul class="checklist">
+                            <li>All problems and sub-parts are attempted.</li>
+                            <li>All answers are mathematically correct and justified.</li>
+                            <li>Truth tables (if applicable) are complete, formatted, and accurate.</li>
+                            <li>The entire document is clear, legible, and uses proper notation.</li>
+                            <li>The file is saved as a single PDF document.</li>
+                            <li>The PDF file is named correctly.</li>
+                            <li>Academic integrity policy has been followed.</li>
+                            <li>You have kept a backup copy of your work.</li>
+                        </ul>
+                    </div>
+
+                    <h3>File Naming Convention</h3>
+                    
+                    <div class="requirements">
+                        <h3>📁 Required Naming Format</h3>
+                        <p><strong>PDF File Name:</strong></p>
+                        <pre><code>LastName_FirstName_PS03.pdf</code></pre>
+                        
+                        <p><strong>Examples:</strong></p>
+                        <ul>
+                            <li>Smith_John_PS03.pdf</li>
+                            <li>Garcia_Maria_PS03.pdf</li>
+                            <li>Johnson_Sarah_PS03.pdf</li>
+                        </ul>
+                        
+                        <p style="margin-top: 1rem;"><strong>⚠️ Important:</strong></p>
+                        <ul>
+                            <li>Use your actual first and last name.</li>
+                            <li>No spaces in filename (use underscores).</li>
+                            <li>Exact format: LastName_FirstName_PS03.pdf.</li>
+                            <li>Must be a .pdf file (not .docx, .jpg, .heic, etc.).</li>
+                        </ul>
+                    </div>
+
+                    <h3>PDF Content Requirements</h3>
+                    
+                    <div class="example-box">
+                        <h4>What Your PDF Should Contain</h4>
+                        <p>Your single PDF file should include:</p>
+                        <ol>
+                            <li><strong>Your Name and Student ID:</strong> Clearly visible at the top of the first page.</li>
+                            <li><strong>Problem Numbering:</strong> Clearly label each problem (e.g., "Problem 1", "Problem 2a").</li>
+                            <li><strong>Complete Solutions:</strong> Show all steps, calculations, and justifications.</li>
+                            <li><strong>Truth Tables:</strong> For problems requiring them, ensure they are fully constructed with intermediate columns.</li>
+                            <li><strong>Legibility:</strong> If handwritten, ensure your writing is neat and easily readable. Scan at a high enough resolution.</li>
+                        </ol>
+                        <p style="margin-top: 1rem;"><strong>Tip:</strong> You can type your solutions using a word processor (like Microsoft Word or Google Docs) and then export to PDF. For math notation, consider using a tool like LaTeX or a word processor's equation editor.</p>
+                    </div>
+
+                    <h3>Canvas Submission Process</h3>
+                    
+                    <div class="requirements">
+                        <h3>📤 Step-by-Step Submission</h3>
+                        <ol>
+                            <li><strong>Log in to Canvas</strong>
+                                <ul>
+                                    <li>Go to: <a href="https://canvas.mendocino.edu" target="_blank">canvas.mendocino.edu</a></li>
+                                    <li>Log in with your Mendocino College credentials</li>
+                                </ul>
+                            </li>
+                            <li><strong>Navigate to Assignment</strong>
+                                <ul>
+                                    <li>Click on CSC 240 course</li>
+                                    <li>Go to "Assignments" in left menu</li>
+                                    <li>Find "PS-03: Cardinality and Logic"</li>
+                                    <li>Click on the assignment title</li>
+                                </ul>
+                            </li>
+                            <li><strong>Upload Your File</strong>
+                                <ul>
+                                    <li>Click "Submit Assignment" button</li>
+                                    <li>Click "Choose File" or drag-and-drop your PDF</li>
+                                    <li>Select your <code>LastName_FirstName_PS03.pdf</code></li>
+                                    <li>Verify the correct file is selected</li>
+                                </ul>
+                            </li>
+                            <li><strong>Add Comments (Optional)</strong>
+                                <ul>
+                                    <li>Use the comment box to note anything special</li>
+                                    <li>Example: "Had trouble with Problem 2c, would appreciate feedback"</li>
+                                </ul>
+                            </li>
+                            <li><strong>Submit</strong>
+                                <ul>
+                                    <li>Click "Submit Assignment" button</li>
+                                    <li>Wait for confirmation message</li>
+                                    <li>You should see "Submitted!" with timestamp</li>
+                                </ul>
+                            </li>
+                            <li><strong>Verify Submission</strong>
+                                <ul>
+                                    <li>Check that submission shows in Canvas</li>
+                                    <li>Download your submitted file to verify it's correct</li>
+                                    <li>Keep a backup copy on your computer</li>
+                                </ul>
+                            </li>
+                        </ol>
+                    </div>
+
+                    <div class="warning">
+                        <h3>⚠️ Common Submission Mistakes</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Mistake</th>
+                                    <th>Problem</th>
+                                    <th>Solution</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Wrong file type</td>
+                                    <td>Submitted .docx, .jpg, .png instead of .pdf</td>
+                                    <td>Convert your document to PDF before uploading.</td>
+                                </tr>
+                                <tr>
+                                    <td>Unreadable scan</td>
+                                    <td>Handwritten work is blurry or too dark</td>
+                                    <td>Ensure good lighting, high resolution scan. Use a scanning app.</td>
+                                </tr>
+                                <tr>
+                                    <td>Missing problems</td>
+                                    <td>Some problems or sub-parts are left blank</td>
+                                    <td>Review the "Completeness" section of the rubric.</td>
+                                </tr>
+                                <tr>
+                                    <td>Wrong filename</td>
+                                    <td>PS03.pdf or Assignment3.pdf</td>
+                                    <td>Use exact format: LastName_FirstName_PS03.pdf</td>
+                                </tr>
+                                <tr>
+                                    <td>Submitted to wrong place</td>
+                                    <td>Uploaded to wrong assignment (e.g., PE-03)</td>
+                                    <td>Double-check you're in the PS-03 assignment.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3>Deadline and Late Policy</h3>
+                    
+                    <div class="warning">
+                        <h3>📅 Important Dates</h3>
+                        <p><strong>Due Date:</strong> End of Week 3 (check Canvas for exact date and time)</p>
+                        <p><strong>Typical Deadline:</strong> Sunday, 11:59 PM Pacific Time</p>
+                        
+                        <h4>Late Submission Penalties:</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Time Late</th>
+                                    <th>Penalty</th>
+                                    <th>Max Score</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>0-24 hours</td>
+                                    <td>-10% (-1.0 pts)</td>
+                                    <td>9.0 / 10</td>
+                                </tr>
+                                <tr>
+                                    <td>24-48 hours</td>
+                                    <td>-20% (-2.0 pts)</td>
+                                    <td>8.0 / 10</td>
+                                </tr>
+                                <tr>
+                                    <td>48-72 hours</td>
+                                    <td>-30% (-3.0 pts)</td>
+                                    <td>7.0 / 10</td>
+                                </tr>
+                                <tr>
+                                    <td>Over 72 hours</td>
+                                    <td>0 points</td>
+                                    <td>0 / 10</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <p><strong>Note:</strong> Even if over 72 hours late, you must still submit to receive credit for completing the course.</p>
+                    </div>
+
+                    <h3>Getting Help Before Submission</h3>
+                    
+                    <div class="tip">
+                        <h3>🆘 Resources Available</h3>
+                        
+                        <h4>Office Hours</h4>
+                        <p>Check Canvas for instructor office hours. Come prepared with specific questions about any problem or concept.</p>
+                        
+                        <h4>Discussion Forum</h4>
+                        <p>Post conceptual questions on the Canvas discussion board. Help classmates when you can—teaching reinforces your own understanding.</p>
+                        
+                        <h4>MESA Tutoring</h4>
+                        <p>Free tutoring available for CSC courses. Check Canvas for current schedule and location.</p>
+                        
+                        <h4>Learning Modules & Textbook</h4>
+                        <p>Revisit the Week 3 learning modules on Cardinality, Propositional Logic, and Truth Tables, as well as the Saylor.org textbook sections.</p>
+                    </div>
+
+                    <h3>After Submission</h3>
+                    
+                    <div class="requirements">
+                        <h3>📊 What Happens Next</h3>
+                        
+                        <h4>Grading Timeline</h4>
+                        <ul>
+                            <li><strong>Grading period:</strong> 5-7 days after deadline.</li>
+                            <li><strong>Feedback provided:</strong> Comments on Canvas.</li>
+                            <li><strong>Grade posted:</strong> Available in Canvas gradebook.</li>
+                        </ul>
+                        
+                        <h4>Feedback You'll Receive</h4>
+                        <ul>
+                            <li>Overall score with breakdown by category.</li>
+                            <li>Specific comments on what worked well.</li>
+                            <li>Suggestions for improvement.</li>
+                            <li>Corrections for common mathematical errors.</li>
+                        </ul>
+                    </div>
+
+                    <h3>Final Reminders</h3>
+                    
+                    <div class="objectives">
+                        <h3>🎯 Key Points to Remember</h3>
+                        <ul>
+                            <li>✓ Start early - don't wait until the last day.</li>
+                            <li>✓ Show all your work and justify all answers.</li>
+                            <li>✓ Ensure your truth tables are complete and accurate.</li>
+                            <li>✓ Save as a single, legible PDF.</li>
+                            <li>✓ Follow naming conventions exactly.</li>
+                            <li>✓ Submit to the correct assignment on Canvas.</li>
+                            <li>✓ Keep backup copies of your work.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div> <!-- End of content div -->
+
+        <!-- Completion Message (shown after viewing all tabs) -->
+        <div class="completion-banner" id="completionMessage">
+            <h2>🎉 You're Ready to Tackle PS-03!</h2>
+            <p>You've reviewed all the assignment information. Now it's time to solve these problems!</p>
+            <h3 style="margin-top: 1.5rem;">✅ Next Steps:</h3>
+            <ul style="text-align: left; display: inline-block; margin-top: 1rem;">
+                <li>Print or copy the problems from the "Problems" tab.</li>
+                <li>Work through each problem carefully, showing all steps.</li>
+                <li>Verify your truth tables and justifications.</li>
+                <li>Save your solutions as a single PDF.</li>
+                <li>Submit to Canvas before the deadline!</li>
+            </ul>
+            <p style="margin-top: 1.5rem;"><strong>Good luck! 🧠</strong></p>
+        </div>
+
+    </div> <!-- End of container -->
+
+    <!-- Footer -->
+    <footer>
+        <p><strong>CSC 240 - Discrete Structures</strong> | PS-03: Cardinality and Logic</p>
+        <p>Mendocino College Computer Science Department</p>
+        <p style="margin-top: 1rem; font-size: 0.9rem;">© 2026 Mendocino College | All Rights Reserved</p>
+        <p style="margin-top: 0.5rem; font-size: 0.9rem;">Questions? Contact your instructor through Canvas or during office hours.</p>
+    </footer>
+
+    <!-- Complete Embedded JavaScript -->
+    <script>
+        // ===================================
+        //  PS-03: CARDINALITY AND LOGIC
+        //  Complete Embedded JavaScript - FIXED VERSION
+        //  All Interactive Functionality
+        // ===================================
+
+        // Tab Navigation System
+        function showTab(event, tabName) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            const selectedContent = document.getElementById(tabName);
+            if (selectedContent) {
+                selectedContent.classList.add('active');
+            }
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+            
+            // Track tab views for completion message
+            trackTabView(tabName);
+            
+            // Scroll to top of content
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Track which tabs have been viewed
+        let viewedTabs = new Set();
+        const totalTabs = 4; // Overview, Problems, Grading, Submission
+
+        function trackTabView(tabName) {
+            viewedTabs.add(tabName);
+            
+            // Show completion message if all tabs viewed
+            if (viewedTabs.size === totalTabs) {
+                const completionMsg = document.getElementById('completionMessage');
+                if (completionMsg) {
+                    completionMsg.style.display = 'block';
+                }
+            }
+        }
+
+        // Collapsible Hint Boxes functionality (specific to this problem set)
+        function toggleHint(event, button) {
+            event.preventDefault(); // Prevent any default button behavior
+            const content = button.nextElementSibling; // This should be the .hint-box
+            
+            button.classList.toggle('active'); // Toggle active on the button itself (for arrow change)
+            content.classList.toggle('active'); // Toggle active on the hint-box for CSS transitions
+            
+            if (content.classList.contains('active')) {
+                // When opening, set maxHeight to scrollHeight to allow transition
+                content.style.maxHeight = content.scrollHeight + "px";
+                // Padding is handled by .hint-box.active CSS class
+            } else {
+                // When closing, reset maxHeight to null after transition finishes, or immediately to 0
+                content.style.maxHeight = null; // This will animate to 0 due to CSS
+                // Padding is handled by .hint-box CSS class
+            }
+        }
+
+        // ===================================
+        //  GRADE CALCULATOR
+        // ===================================
+        function calculateGrade() {
+            const correctness = parseFloat(document.getElementById('correctnessPoints').value) || 0;
+            const structure = parseFloat(document.getElementById('structurePoints').value) || 0;
+            const clarity = parseFloat(document.getElementById('clarityPoints').value) || 0;
+            const completeness = parseFloat(document.getElementById('completenessPoints').value) || 0;
+            
+            // Validate inputs
+            if (correctness > 6.0 || structure > 2.0 || clarity > 1.5 || completeness > 0.5 ||
+                correctness < 0 || structure < 0 || clarity < 0 || completeness < 0) {
+                alert('Please enter valid point values within the allowed ranges (0 to max for each category).');
+                return;
+            }
+            
+            const total = correctness + structure + clarity + completeness;
+            const baseTotal = 10;
+            const percentage = (total / baseTotal) * 100;
+            
+            // Determine letter grade
+            let letter = '';
+            if (percentage >= 90) letter = 'A';
+            else if (percentage >= 80) letter = 'B';
+            else if (percentage >= 70) letter = 'C';
+            else if (percentage >= 60) letter = 'D';
+            else letter = 'F';
+            
+            // Display results
+            const resultDiv = document.getElementById('gradeResult');
+            resultDiv.style.display = 'block';
+            
+            document.getElementById('gradeDisplay').textContent = `${total.toFixed(2)} / 10`;
+            document.getElementById('gradePercentage').textContent = `${percentage.toFixed(1)}%`;
+            
+            const letterDisplay = document.getElementById('gradeLetter');
+            letterDisplay.textContent = `Letter Grade: ${letter}`;
+            
+            // Color code the letter grade
+            if (letter === 'A') letterDisplay.style.color = '#27ae60';
+            else if (letter === 'B') letterDisplay.style.color = '#3498db';
+            else if (letter === 'C') letterDisplay.style.color = '#f39c12';
+            else if (letter === 'D') letterDisplay.style.color = '#e67e22';
+            else letterDisplay.style.color = '#e74c3c';
+            
+            // Scroll to results
+            resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // ===================================
+        //  INITIALIZATION
+        // ===================================
+        // Initialize on page load
+        window.addEventListener('load', function() {
+            // Track that overview tab was viewed
+            trackTabView('overview');
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Function to mark a section as complete (if needed for progress tracking, not directly used in this PS, but good to have)
+        function markSectionComplete(sectionId) {
+            console.log(`Section ${sectionId} marked as complete.`);
+            // Add any logic here for overall assignment progress if applicable
+        }
+    </script>
+</body>
+</html>
