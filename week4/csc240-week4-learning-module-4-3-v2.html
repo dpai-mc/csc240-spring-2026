@@ -1,0 +1,2185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="CSC 240 Module 4.3 - Introduction to Predicate Logic Interactive Learning Module">
+    <title>Module 4.3: Introduction to Predicate Logic | CSC 240</title>
+    
+    <!-- KaTeX CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <!-- KaTeX JS -->
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    
+    <style>
+        /* CSS Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-blue: #003366;
+            --secondary-blue: #0066cc;
+            --accent-gold: #FFB81C;
+            --success-green: #28a745;
+            --warning-orange: #ff8c00;
+            --danger-red: #dc3545;
+            --light-bg: #f8f9fa;
+            --white: #ffffff;
+            --text-dark: #212529;
+            --text-muted: #6c757d;
+            --border-color: #dee2e6;
+            --shadow: 0 2px 8px rgba(0,0,0,0.1);
+            --shadow-hover: 0 4px 12px rgba(0,0,0,0.15);
+            --code-bg: #f5f5f5;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: var(--light-bg);
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Skip Link */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: var(--primary-blue);
+            color: var(--white);
+            padding: 8px;
+            text-decoration: none;
+            z-index: 100;
+        }
+
+        .skip-link:focus {
+            top: 0;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+            color: var(--white);
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .header-title h1 {
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+
+        .header-title p {
+            font-size: 1rem;
+            opacity: 0.95;
+        }
+
+        .module-badge {
+            background-color: var(--accent-gold);
+            color: var(--primary-blue);
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+        }
+
+        /* Navigation */
+        .nav-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+            background: var(--white);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+        }
+
+        .nav-tab {
+            flex: 1;
+            min-width: 120px;
+            padding: 12px 15px;
+            background: var(--light-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            color: var(--text-dark);
+            font-size: 0.9rem;
+        }
+
+        .nav-tab:hover {
+            background: var(--secondary-blue);
+            color: var(--white);
+            border-color: var(--secondary-blue);
+            transform: translateY(-2px);
+        }
+
+        .nav-tab.active {
+            background: var(--primary-blue);
+            color: var(--white);
+            border-color: var(--primary-blue);
+        }
+
+        .nav-tab:focus {
+            outline: 3px solid var(--accent-gold);
+            outline-offset: 2px;
+        }
+
+        /* Content Sections */
+        .content-section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Cards */
+        .card {
+            background: var(--white);
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow);
+            border-left: 5px solid var(--secondary-blue);
+        }
+
+        .card h2 {
+            color: var(--primary-blue);
+            margin-bottom: 15px;
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card h3 {
+            color: var(--secondary-blue);
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+
+        .card h4 {
+            color: var(--text-dark);
+            margin-top: 15px;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+
+        .card-icon {
+            font-size: 1.8rem;
+        }
+
+        /* Info Boxes */
+        .info-box {
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 5px solid;
+        }
+
+        .info-box.blue {
+            background-color: #e7f3ff;
+            border-color: var(--secondary-blue);
+        }
+
+        .info-box.gold {
+            background-color: #fff8e1;
+            border-color: var(--accent-gold);
+        }
+
+        .info-box.green {
+            background-color: #e8f5e9;
+            border-color: var(--success-green);
+        }
+
+        .info-box.orange {
+            background-color: #fff3e0;
+            border-color: var(--warning-orange);
+        }
+
+        .info-box.purple {
+            background-color: #f3e5f5;
+            border-color: #9c27b0;
+        }
+
+        .info-box.red {
+            background-color: #ffebee;
+            border-color: var(--danger-red);
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: var(--white);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--primary-blue);
+            color: var(--white);
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background-color: var(--light-bg);
+        }
+
+        /* Lists */
+        ul, ol {
+            margin-left: 25px;
+            margin-top: 10px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        /* Expression Display */
+        .expression-display {
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            background: var(--code-bg);
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border: 1px solid var(--border-color);
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            white-space: pre;
+        }
+
+        .code-comment {
+            color: #6a9955;
+        }
+
+        /* Interactive Practice Area */
+        .practice-area {
+            background: var(--light-bg);
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 2px solid var(--border-color);
+        }
+
+        .practice-question {
+            background: var(--white);
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            border-left: 4px solid var(--secondary-blue);
+        }
+
+        .practice-question h4 {
+            color: var(--primary-blue);
+            margin-bottom: 10px;
+        }
+
+        .answer-input {
+            width: 100%;
+            padding: 12px;
+            font-size: 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .answer-input:focus {
+            outline: none;
+            border-color: var(--secondary-blue);
+        }
+
+        textarea.answer-input {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+            margin: 5px;
+            font-size: 1rem;
+        }
+
+        .btn:focus {
+            outline: 3px solid var(--accent-gold);
+            outline-offset: 2px;
+        }
+
+        .btn-primary {
+            background: var(--primary-blue);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: var(--secondary-blue);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .btn-success {
+            background: var(--success-green);
+            color: var(--white);
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-secondary {
+            background: var(--light-bg);
+            color: var(--primary-blue);
+            border: 2px solid var(--primary-blue);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary-blue);
+            color: var(--white);
+        }
+
+        .feedback {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .feedback.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .feedback.correct {
+            background: #d4edda;
+            border: 2px solid var(--success-green);
+            color: #155724;
+        }
+
+        .feedback.incorrect {
+            background: #f8d7da;
+            border: 2px solid var(--danger-red);
+            color: #721c24;
+        }
+
+        .feedback.hint {
+            background: #fff3cd;
+            border: 2px solid var(--warning-orange);
+            color: #856404;
+        }
+
+        /* Progress Tracker */
+        .progress-container {
+            background: var(--white);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 30px;
+            background: var(--light-bg);
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success-green), var(--secondary-blue));
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-weight: bold;
+        }
+
+        /* Accordion */
+        .accordion {
+            margin: 20px 0;
+        }
+
+        .accordion-item {
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+
+        .accordion-header {
+            padding: 15px 20px;
+            background: var(--light-bg);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+
+        .accordion-header:hover {
+            background: #e3f2fd;
+        }
+
+        .accordion-header:focus {
+            outline: 3px solid var(--accent-gold);
+            outline-offset: -3px;
+        }
+
+        .accordion-icon {
+            transition: transform 0.3s ease;
+            font-size: 1.2rem;
+            color: var(--secondary-blue);
+        }
+
+        .accordion-item.active .accordion-icon {
+            transform: rotate(180deg);
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            padding: 0 20px;
+        }
+
+        .accordion-item.active .accordion-content {
+            max-height: 3000px;
+            padding: 20px;
+        }
+
+        /* Comparison Boxes */
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .comparison-box {
+            background: var(--white);
+            border: 2px solid var(--secondary-blue);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .comparison-box h4 {
+            color: var(--primary-blue);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        /* Visual Diagram */
+        .diagram-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--white);
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+            box-shadow: var(--shadow);
+        }
+
+        .diagram-box h4 {
+            color: var(--white);
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .diagram-content {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+        }
+
+        /* Example Boxes */
+        .example-box {
+            background: #f0f8ff;
+            border: 2px solid var(--secondary-blue);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .example-box h4 {
+            color: var(--secondary-blue);
+            margin-bottom: 10px;
+        }
+
+        /* Quiz Styles */
+        .quiz-container {
+            background: var(--white);
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            margin: 20px 0;
+        }
+
+        .quiz-question {
+            margin: 20px 0;
+        }
+
+        .quiz-options {
+            list-style: none;
+            margin: 15px 0;
+        }
+
+        .quiz-option {
+            padding: 12px;
+            margin: 8px 0;
+            background: var(--light-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-option:hover {
+            background: #e3f2fd;
+            border-color: var(--secondary-blue);
+        }
+
+        .quiz-option.selected {
+            background: var(--secondary-blue);
+            color: var(--white);
+            border-color: var(--secondary-blue);
+        }
+
+        .quiz-option.correct {
+            background: var(--success-green);
+            color: var(--white);
+            border-color: var(--success-green);
+        }
+
+        .quiz-option.incorrect {
+            background: var(--danger-red);
+            color: var(--white);
+            border-color: var(--danger-red);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .header-title h1 {
+                font-size: 1.5rem;
+            }
+
+            .nav-tabs {
+                flex-direction: column;
+            }
+
+            .nav-tab {
+                min-width: 100%;
+            }
+
+            .card {
+                padding: 15px;
+            }
+
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            .nav-tabs, .btn, .practice-area {
+                display: none;
+            }
+
+            .content-section {
+                display: block !important;
+            }
+        }
+
+        /* Accessibility */
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            margin: -1px;
+            padding: 0;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0;
+        }
+
+        *:focus-visible {
+            outline: 3px solid var(--accent-gold);
+            outline-offset: 2px;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <header role="banner">
+        <div class="header-content">
+            <div class="header-title">
+                <h1>Module 4.3: Introduction to Predicate Logic</h1>
+                <p>CSC 240 - Discrete Structures | Week 4</p>
+            </div>
+            <div class="module-badge" role="status">Module 4.3</div>
+        </div>
+    </header>
+
+    <nav class="nav-tabs" role="navigation" aria-label="Module content navigation">
+        <button class="nav-tab active" onclick="showSection('overview')" role="tab" aria-selected="true" id="tab-overview">
+            📋 Overview
+        </button>
+        <button class="nav-tab" onclick="showSection('why')" role="tab" aria-selected="false" id="tab-why">
+            🤔 Why Predicates?
+        </button>
+        <button class="nav-tab" onclick="showSection('concepts')" role="tab" aria-selected="false" id="tab-concepts">
+            📚 Core Concepts
+        </button>
+        <button class="nav-tab" onclick="showSection('examples')" role="tab" aria-selected="false" id="tab-examples">
+            💡 Examples
+        </button>
+        <button class="nav-tab" onclick="showSection('programming')" role="tab" aria-selected="false" id="tab-programming">
+            💻 Programming
+        </button>
+        <button class="nav-tab" onclick="showSection('practice')" role="tab" aria-selected="false" id="tab-practice">
+            ✏️ Practice
+        </button>
+        <button class="nav-tab" onclick="showSection('quiz')" role="tab" aria-selected="false" id="tab-quiz">
+            🎯 Quiz
+        </button>
+    </nav>
+
+    <main id="main-content" role="main">
+        <!-- OVERVIEW SECTION -->
+        <section id="overview-section" class="content-section active" role="tabpanel" aria-labelledby="tab-overview">
+            <div class="card">
+                <h2><span class="card-icon" aria-hidden="true">📖</span> Module Overview</h2>
+                <p><strong>Estimated Time:</strong> 2 hours</p>
+                
+                <div class="info-box blue">
+                    <h3>🎯 Learning Objectives</h3>
+                    <ul>
+                        <li>Transition from propositional logic to predicate logic</li>
+                        <li>Define predicates, domains, and variables</li>
+                        <li>Understand the power of predicate logic over propositional logic</li>
+                        <li>Express real-world statements using predicates</li>
+                        <li><strong>Maps to CSLO 1:</strong> Apply symbolic logic and proof methods to model and analyze program/algorithm correctness</li>
+                    </ul>
+                </div>
+
+                <h3>📚 What You'll Learn</h3>
+                <p>Welcome to predicate logic! Until now, we've worked with <strong>propositional logic</strong>, where entire statements are either true or false. But propositional logic has limitations—it can't express statements about <em>objects</em> and their <em>properties</em>.</p>
+
+                <p><strong>Predicate logic</strong> (also called <strong>first-order logic</strong>) extends propositional logic by allowing us to:</p>
+                <ul>
+                    <li>Talk about <strong>objects</strong> (numbers, people, courses, etc.)</li>
+                    <li>Describe <strong>properties</strong> of objects (is even, is enrolled, is greater than)</li>
+                    <li>Express <strong>relationships</strong> between objects (x loves y, x is greater than y)</li>
+                    <li>Make statements about <strong>all</strong> or <strong>some</strong> objects (covered in Module 4.4)</li>
+                </ul>
+
+                <div class="info-box gold">
+                    <h3>🔗 Connection to Previous Modules</h3>
+                    <p><strong>Module 4.1-4.2:</strong> You learned to work with propositions and logical operators</p>
+                    <p><strong>Module 4.3 (now):</strong> You'll extend these concepts to work with predicates and variables</p>
+                    <p><strong>Module 4.4-4.5 (next):</strong> You'll add quantifiers to express "for all" and "there exists"</p>
+                </div>
+
+                <h3>🎯 Why This Matters</h3>
+                <p><strong>Real-World Applications:</strong></p>
+                <ul>
+                    <li><strong>Programming:</strong> Preconditions, postconditions, loop invariants</li>
+                    <li><strong>Databases:</strong> SQL queries are built on predicate logic</li>
+                    <li><strong>Artificial Intelligence:</strong> Knowledge representation and reasoning</li>
+                    <li><strong>Software Verification:</strong> Proving program correctness</li>
+                    <li><strong>Mathematics:</strong> Expressing and proving theorems</li>
+                </ul>
+
+                <h3>📋 Topics Covered</h3>
+                <ol>
+                    <li>Limitations of propositional logic</li>
+                    <li>Predicates as functions that return truth values</li>
+                    <li>Domain of discourse (universe of objects)</li>
+                    <li>Free vs. bound variables</li>
+                    <li>Predicates with multiple arguments</li>
+                    <li>Translating between English and predicate notation</li>
+                    <li>Applications in programming and databases</li>
+                </ol>
+            </div>
+
+            <div class="progress-container">
+                <h2><span class="card-icon" aria-hidden="true">📊</span> Your Progress</h2>
+                <p>Track your completion of this module (saved for this session only):</p>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="module-progress" style="width: 0%;" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                        0%
+                    </div>
+                </div>
+                <p id="progress-text">Complete all sections to finish this module!</p>
+            </div>
+        </section>
+
+        <!-- WHY PREDICATES SECTION -->
+        <section id="why-section" class="content-section" role="tabpanel" aria-labelledby="tab-why">
+            <div class="card">
+                <h2><span class="card-icon" aria-hidden="true">🤔</span> Why Do We Need Predicate Logic?</h2>
+
+                <h3>The Limitations of Propositional Logic</h3>
+                <p>Propositional logic treats entire statements as atomic units. Let's see where this breaks down:</p>
+
+                <div class="example-box">
+                    <h4>Example: Trying to Express "All birds can fly"</h4>
+                    <p><strong>In propositional logic:</strong></p>
+                    <div class="expression-display">Let P = "All birds can fly"</div>
+
+                    <p><strong>Problems:</strong></p>
+                    <ul>
+                        <li>We can't talk about <em>individual</em> birds</li>
+                        <li>We can't express the <em>relationship</em> between being a bird and being able to fly</li>
+                        <li>We can't handle exceptions (penguins can't fly!)</li>
+                        <li>We can't reason about <em>specific</em> birds vs. <em>all</em> birds</li>
+                    </ul>
+                </div>
+
+                <div class="info-box red">
+                    <h3>⚠️ What Propositional Logic Cannot Express</h3>
+                    <ol>
+                        <li><strong>Properties of objects:</strong> "x is even," "y is prime"</li>
+                        <li><strong>Relationships between objects:</strong> "x is greater than y," "a is the parent of b"</li>
+                        <li><strong>Universal statements:</strong> "All integers are rational"</li>
+                        <li><strong>Existential statements:</strong> "There exists a prime number greater than 100"</li>
+                        <li><strong>Patterns and structure:</strong> "Every number has a successor"</li>
+                    </ol>
+                </div>
+
+                <h3>The Power of Predicate Logic</h3>
+                <p>Predicate logic solves these problems by introducing:</p>
+
+                <div class="comparison-grid">
+                    <div class="comparison-box">
+                        <h4>Propositional Logic</h4>
+                        <ul>
+                            <li>Fixed propositions (P, Q, R)</li>
+                            <li>Each has a single truth value</li>
+                            <li>Can't talk about objects</li>
+                            <li>Limited expressiveness</li>
+                        </ul>
+                        <div class="expression-display">P: "Alice is a student"
+Q: "Bob is a student"
+R: "Carol is a student"</div>
+                        <p><em>Need separate proposition for each person!</em></p>
+                    </div>
+
+                    <div class="comparison-box">
+                        <h4>Predicate Logic</h4>
+                        <ul>
+                            <li>Predicates with variables</li>
+                            <li>Truth value depends on object</li>
+                            <li>Can talk about any object</li>
+                            <li>Much more powerful</li>
+                        </ul>
+                        <div class="expression-display">Student(x): "x is a student"
+
+Student(Alice) → true
+Student(Bob) → true
+Student(Carol) → true</div>
+                        <p><em>One predicate handles all people!</em></p>
+                    </div>
+                </div>
+
+                <h3>Real-World Scenario: Student Database</h3>
+                <div class="info-box blue">
+                    <p><strong>Propositional Logic Approach (inefficient):</strong></p>
+                    <div class="expression-display">P₁: "Student 1 is enrolled in CSC240"
+P₂: "Student 2 is enrolled in CSC240"
+P₃: "Student 3 is enrolled in CSC240"
+...
+P₁₀₀: "Student 100 is enrolled in CSC240"</div>
+
+                    <p>Need 100 different propositions! Can't easily add new students or courses.</p>
+
+                    <p><strong>Predicate Logic Approach (elegant):</strong></p>
+                    <div class="expression-display">Enrolled(x, c): "Student x is enrolled in course c"
+
+Enrolled(Alice, CSC240) → true
+Enrolled(Bob, MTH80) → true
+Enrolled(Alice, MTH80) → true</div>
+
+                    <p>One predicate handles all students and all courses! Easy to add more.</p>
+                </div>
+
+                <h3>Key Insight</h3>
+                <div class="diagram-box">
+                    <h4>The Fundamental Difference</h4>
+                    <div class="diagram-content">Propositional Logic:
+"This specific thing is true"
+(Alice is a student)
+
+Predicate Logic:
+"This property holds for this object"
+Student(Alice) = true
+
+The predicate Student(x) can be applied to ANY object x!</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CONCEPTS SECTION -->
+        <section id="concepts-section" class="content-section" role="tabpanel" aria-labelledby="tab-concepts">
+            <div class="card">
+                <h2><span class="card-icon" aria-hidden="true">📚</span> Core Concepts</h2>
+
+                <h3>What is a Predicate?</h3>
+                <div class="info-box blue">
+                    <p><strong>Definition:</strong> A <strong>predicate</strong> is a function that takes one or more arguments and returns a truth value (true or false).</p>
+                    <p><strong>Notation:</strong> $$ P(x) $$, $$ Q(x, y) $$, $$ R(x, y, z) $$</p>
+                    <p><strong>Think of it as:</strong> A property or relationship that can be true or false depending on the values you plug in</p>
+                </div>
+
+                <h3>Anatomy of a Predicate</h3>
+                <div class="diagram-box">
+                    <h4>Breaking Down $$ \text{Student}(x) $$</h4>
+                    <div class="diagram-content">┌─────────────────────────────────────┐
+│  Student(x)                         │
+│  ───────  ─                         │
+│     ↑     ↑                         │
+│  Predicate Variable                 │
+│   Name                              │
+│                                     │
+│  Reads as: "x is a student"         │
+│                                     │
+│  When x = Alice: Student(Alice)     │
+│  Returns: true or false             │
+└─────────────────────────────────────┘</div>
+                </div>
+
+                <h3>Components of Predicate Logic</h3>
+                <div class="accordion">
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>1. Variables</strong> - Placeholders for objects</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <p><strong>Variables</strong> represent objects from the domain. Common conventions:</p>
+                            <ul>
+                                <li><strong>Lowercase letters:</strong> x, y, z, a, b, c (for objects)</li>
+                                <li><strong>Can represent:</strong> numbers, people, courses, strings, any object</li>
+                            </ul>
+                            
+                            <p><strong>Examples:</strong></p>
+                            <div class="expression-display">x = 5          (x is a number)
+y = "Alice"    (y is a person)
+c = CSC240     (c is a course)</div>
+
+                            <div class="info-box gold">
+                                <h4>Free vs. Bound Variables</h4>
+                                <p><strong>Free variable:</strong> Not associated with a quantifier (we'll cover this in Module 4.4)</p>
+                                <div class="expression-display">P(x)           ← x is free (value not specified)</div>
+
+                                <p><strong>Bound variable:</strong> Associated with a quantifier ∀ or ∃</p>
+                                <div class="expression-display">∀x P(x)        ← x is bound (ranges over all values)</div>
+
+                                <p><em>For now, we'll work with free variables. Quantifiers come in Module 4.4!</em></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>2. Predicates</strong> - Properties and relationships</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <p><strong>Predicates</strong> express properties or relationships. Convention:</p>
+                            <ul>
+                                <li><strong>Capitalized names:</strong> Student, Prime, GreaterThan</li>
+                                <li><strong>Number of arguments:</strong> Can have 1, 2, 3, or more variables</li>
+                            </ul>
+
+                            <h4>Unary Predicates (1 argument)</h4>
+                            <p>Express a property of a single object:</p>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Predicate</th>
+                                        <th>Meaning</th>
+                                        <th>Example</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>$$ \text{Even}(x) $$</td>
+                                        <td>x is an even number</td>
+                                        <td>Even(4) → true, Even(5) → false</td>
+                                    </tr>
+                                    <tr>
+                                        <td>$$ \text{Prime}(x) $$</td>
+                                        <td>x is a prime number</td>
+                                        <td>Prime(7) → true, Prime(8) → false</td>
+                                    </tr>
+                                    <tr>
+                                        <td>$$ \text{Student}(x) $$</td>
+                                        <td>x is a student</td>
+                                        <td>Student(Alice) → true</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <h4>Binary Predicates (2 arguments)</h4>
+                            <p>Express a relationship between two objects:</p>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Predicate</th>
+                                        <th>Meaning</th>
+                                        <th>Example</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>$$ \text{GreaterThan}(x, y) $$</td>
+                                        <td>x is greater than y</td>
+                                        <td>GreaterThan(5, 3) → true</td>
+                                    </tr>
+                                    <tr>
+                                        <td>$$ \text{Enrolled}(x, c) $$</td>
+                                        <td>Student x is enrolled in course c</td>
+                                        <td>Enrolled(Alice, CSC240) → true</td>
+                                    </tr>
+                                    <tr>
+                                        <td>$$ \text{ParentOf}(x, y) $$</td>
+                                        <td>x is a parent of y</td>
+                                        <td>ParentOf(John, Mary) → true</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <h4>N-ary Predicates (3+ arguments)</h4>
+                            <p>Express relationships among multiple objects:</p>
+                            <div class="expression-display">Between(x, y, z): "y is between x and z"
+Between(1, 5, 10) → true
+
+Teaches(professor, course, semester): 
+  "Professor teaches course in semester"
+Teaches(Smith, CSC240, Spring2026) → true</div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>3. Domain of Discourse</strong> - The universe of objects</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <p><strong>Domain of discourse</strong> (or <strong>universe</strong>) is the set of all possible values that variables can take.</p>
+
+                            <div class="info-box blue">
+                                <h4>Why Domains Matter</h4>
+                                <p>The same predicate can have different truth values depending on the domain!</p>
+                            </div>
+
+                            <h4>Common Domains</h4>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Symbol</th>
+                                        <th>Domain</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>ℕ</td>
+                                        <td>Natural numbers</td>
+                                        <td>{0, 1, 2, 3, ...}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>ℤ</td>
+                                        <td>Integers</td>
+                                        <td>{..., -2, -1, 0, 1, 2, ...}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>ℚ</td>
+                                        <td>Rational numbers</td>
+                                        <td>All fractions p/q</td>
+                                    </tr>
+                                    <tr>
+                                        <td>ℝ</td>
+                                        <td>Real numbers</td>
+                                        <td>All numbers on number line</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Custom</td>
+                                        <td>Any set</td>
+                                        <td>{Students}, {Courses}, {People}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <h4>Example: Domain Changes Meaning</h4>
+                            <div class="expression-display">Predicate: Even(x) means "x is even"
+
+Domain = ℕ (natural numbers):
+  Even(4) → true
+  Even(3) → false
+
+Domain = {Students}:
+  Even(Alice) → undefined! (Alice is not a number)
+  
+Domain matters for determining what makes sense!</div>
+
+                            <div class="info-box orange">
+                                <h4>⚠️ Always Specify the Domain</h4>
+                                <p>When working with predicates, always be clear about what domain you're using. The statement "all x satisfy P(x)" means very different things if x ranges over integers vs. real numbers!</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>4. Propositional Functions</strong> - Predicates become propositions</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <p>A <strong>propositional function</strong> is a predicate with free variables. When you substitute specific values for the variables, it becomes a proposition (with a definite truth value).</p>
+
+                            <h4>The Process</h4>
+                            <div class="diagram-box">
+                                <h4>From Predicate to Proposition</h4>
+                                <div class="diagram-content">Step 1: Start with predicate
+  P(x): "x is even"
+  ↓ (x is a variable - no truth value yet)
+
+Step 2: Substitute a value
+  P(4): "4 is even"
+  ↓ (now it's a proposition)
+
+Step 3: Evaluate
+  P(4) = true
+  ✓ (definite truth value)</div>
+                            </div>
+
+                            <h4>Examples</h4>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Propositional Function</th>
+                                        <th>Substitution</th>
+                                        <th>Resulting Proposition</th>
+                                        <th>Truth Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>$$ x > 5 $$</td>
+                                        <td>x = 7</td>
+                                        <td>7 > 5</td>
+                                        <td>True</td>
+                                    </tr>
+                                    <tr>
+                                        <td>$$ x > 5 $$</td>
+                                        <td>x = 3</td>
+                                        <td>3 > 5</td>
+                                        <td>False</td>
+                                    </tr>
+                                    <tr>
+                                        <td>$$ \text{Student}(x) $$</td>
+                                        <td>x = Alice</td>
+                                        <td>Student(Alice)</td>
+                                        <td>True (if Alice is a student)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>$$ x^2 = y $$</td>
+                                        <td>x = 3, y = 9</td>
+                                        <td>3² = 9</td>
+                                        <td>True</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Combining Predicates with Logical Operators</h3>
+                <p>Just like propositions, predicates can be combined using logical operators:</p>
+
+                <div class="info-box green">
+                    <h4>Logical Operators with Predicates</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Operator</th>
+                                <th>Example</th>
+                                <th>Meaning</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>AND ($$ \land $$)</td>
+                                <td>$$ \text{Student}(x) \land \text{CSMajor}(x) $$</td>
+                                <td>x is a student AND x is a CS major</td>
+                            </tr>
+                            <tr>
+                                <td>OR ($$ \lor $$)</td>
+                                <td>$$ \text{Even}(x) \lor \text{Prime}(x) $$</td>
+                                <td>x is even OR x is prime</td>
+                            </tr>
+                            <tr>
+                                <td>NOT ($$ \neg $$)</td>
+                                <td>$$ \neg \text{Even}(x) $$</td>
+                                <td>x is NOT even (i.e., x is odd)</td>
+                            </tr>
+                            <tr>
+                                <td>IMPLIES ($$ \to $$)</td>
+                                <td>$$ \text{Student}(x) \to \text{HasID}(x) $$</td>
+                                <td>If x is a student, then x has an ID</td>
+                            </tr>
+                            <tr>
+                                <td>IFF ($$ \leftrightarrow $$)</td>
+                                <td>$$ \text{Even}(x) \leftrightarrow \text{Divisible}(x, 2) $$</td>
+                                <td>x is even if and only if x is divisible by 2</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Key Takeaways</h3>
+                <div class="info-box purple">
+                    <ul>
+                        <li><strong>Predicates</strong> are functions that return true/false</li>
+                        <li><strong>Variables</strong> represent objects from the domain</li>
+                        <li><strong>Domain</strong> determines what objects we're talking about</li>
+                        <li><strong>Propositional functions</strong> become propositions when variables are assigned values</li>
+                        <li><strong>Logical operators</strong> work the same way with predicates as with propositions</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- EXAMPLES SECTION -->
+        <section id="examples-section" class="content-section" role="tabpanel" aria-labelledby="tab-examples">
+            <div class="card">
+                <h2><span class="card-icon" aria-hidden="true">💡</span> Worked Examples</h2>
+
+                <h3>Example 1: Mathematical Predicates</h3>
+                <div class="example-box">
+                    <h4>Scenario: Working with numbers</h4>
+                    <p><strong>Domain:</strong> ℤ (integers)</p>
+                    
+                    <p><strong>Define predicates:</strong></p>
+                    <div class="expression-display">Even(x): "x is even"
+Prime(x): "x is prime"
+GreaterThan(x, y): "x > y"
+Divides(x, y): "x divides y evenly"</div>
+
+                    <p><strong>Evaluate specific cases:</strong></p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Expression</th>
+                                <th>Substitution</th>
+                                <th>Result</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Even(x)</td>
+                                <td>x = 6</td>
+                                <td>Even(6) = true</td>
+                            </tr>
+                            <tr>
+                                <td>Even(x)</td>
+                                <td>x = 7</td>
+                                <td>Even(7) = false</td>
+                            </tr>
+                            <tr>
+                                <td>Prime(x)</td>
+                                <td>x = 11</td>
+                                <td>Prime(11) = true</td>
+                            </tr>
+                            <tr>
+                                <td>GreaterThan(x, y)</td>
+                                <td>x = 10, y = 5</td>
+                                <td>GreaterThan(10, 5) = true</td>
+                            </tr>
+                            <tr>
+                                <td>Divides(x, y)</td>
+                                <td>x = 3, y = 12</td>
+                                <td>Divides(3, 12) = true</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <p><strong>Combined predicates:</strong></p>
+                    <div class="expression-display">Even(x) ∧ Prime(x)
+
+When x = 2: Even(2) ∧ Prime(2) = true ∧ true = true
+When x = 4: Even(4) ∧ Prime(4) = true ∧ false = false
+When x = 7: Even(7) ∧ Prime(7) = false ∧ true = false
+
+Interpretation: "x is both even and prime"
+Only x = 2 satisfies this!</div>
+                </div>
+
+                <h3>Example 2: Student Database</h3>
+                <div class="example-box">
+                    <h4>Scenario: College enrollment system</h4>
+                    <p><strong>Domain:</strong> {All people and courses}</p>
+                    
+                    <p><strong>Define predicates:</strong></p>
+                    <div class="expression-display">Student(x): "x is a student"
+Course(c): "c is a course"
+Enrolled(x, c): "Student x is enrolled in course c"
+Prerequisite(c1, c2): "Course c1 is a prerequisite for course c2"
+Grade(x, c, g): "Student x received grade g in course c"</div>
+
+                    <p><strong>Express real statements:</strong></p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>English Statement</th>
+                                <th>Predicate Logic</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Alice is a student</td>
+                                <td>Student(Alice)</td>
+                            </tr>
+                            <tr>
+                                <td>CSC240 is a course</td>
+                                <td>Course(CSC240)</td>
+                            </tr>
+                            <tr>
+                                <td>Bob is enrolled in MTH80</td>
+                                <td>Enrolled(Bob, MTH80)</td>
+                            </tr>
+                            <tr>
+                                <td>CSC221 is a prerequisite for CSC240</td>
+                                <td>Prerequisite(CSC221, CSC240)</td>
+                            </tr>
+                            <tr>
+                                <td>Alice got an A in CSC221</td>
+                                <td>Grade(Alice, CSC221, A)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <p><strong>Complex statements with logical operators:</strong></p>
+                    <div class="expression-display">1. "Alice is a student AND enrolled in CSC240"
+   Student(Alice) ∧ Enrolled(Alice, CSC240)
+
+2. "If x is enrolled in CSC240, then x completed CSC221"
+   Enrolled(x, CSC240) → Grade(x, CSC221, g) where g ≥ C
+
+3. "Bob is enrolled in either MTH80 or CSC221"
+   Enrolled(Bob, MTH80) ∨ Enrolled(Bob, CSC221)</div>
+                </div>
+
+                <h3>Example 3: Family Relationships</h3>
+                <div class="example-box">
+                    <h4>Scenario: Expressing family trees</h4>
+                    <p><strong>Domain:</strong> {All people}</p>
+                    
+                    <p><strong>Define predicates:</strong></p>
+                    <div class="expression-display">Parent(x, y): "x is a parent of y"
+Sibling(x, y): "x is a sibling of y"
+Male(x): "x is male"
+Female(x): "x is female"</div>
+
+                    <p><strong>Define complex relationships using combinations:</strong></p>
+                    <div class="expression-display">Father(x, y) ≡ Parent(x, y) ∧ Male(x)
+  "x is the father of y"
+
+Mother(x, y) ≡ Parent(x, y) ∧ Female(x)
+  "x is the mother of y"
+
+Brother(x, y) ≡ Sibling(x, y) ∧ Male(x)
+  "x is a brother of y"
+
+Sister(x, y) ≡ Sibling(x, y) ∧ Female(x)
+  "x is a sister of y"</div>
+
+                    <p><strong>Even more complex:</strong></p>
+                    <div class="expression-display">Grandparent(x, z) ≡ ∃y (Parent(x, y) ∧ Parent(y, z))
+  "x is a grandparent of z if there exists someone y 
+   such that x is parent of y and y is parent of z"
+  
+Note: This uses ∃ (exists), which we'll cover in Module 4.4!</div>
+                </div>
+
+                <h3>Example 4: Translating English to Predicate Logic</h3>
+                <div class="accordion">
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Translation 1:</strong> "Every even number is divisible by 2"</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <h4>Step-by-Step Translation</h4>
+                            <p><strong>Step 1: Identify the domain</strong></p>
+                            <div class="expression-display">Domain: ℤ (integers)</div>
+
+                            <p><strong>Step 2: Define predicates</strong></p>
+                            <div class="expression-display">Even(x): "x is even"
+DivisibleBy(x, y): "x is divisible by y"</div>
+
+                            <p><strong>Step 3: Identify the structure</strong></p>
+                            <p>"Every even number" → This is a universal statement (we'll use ∀ in Module 4.4)</p>
+                            <p>"is divisible by 2" → This is the conclusion</p>
+
+                            <p><strong>Step 4: Write the statement</strong></p>
+                            <div class="expression-display">For now (without quantifiers):
+  Even(x) → DivisibleBy(x, 2)
+  "If x is even, then x is divisible by 2"
+
+Later with quantifiers (Module 4.4):
+  ∀x (Even(x) → DivisibleBy(x, 2))
+  "For all x, if x is even, then x is divisible by 2"</div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Translation 2:</strong> "Some students are computer science majors"</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <h4>Step-by-Step Translation</h4>
+                            <p><strong>Step 1: Domain</strong></p>
+                            <div class="expression-display">Domain: {All people}</div>
+
+                            <p><strong>Step 2: Predicates</strong></p>
+                            <div class="expression-display">Student(x): "x is a student"
+CSMajor(x): "x is a computer science major"</div>
+
+                            <p><strong>Step 3: Structure</strong></p>
+                            <p>"Some students" → Existential statement (∃ in Module 4.4)</p>
+                            <p>"are CS majors" → Both properties must be true</p>
+
+                            <p><strong>Step 4: Translation</strong></p>
+                            <div class="expression-display">For now:
+  Student(x) ∧ CSMajor(x)
+  "x is a student AND x is a CS major"
+
+Later with quantifiers:
+  ∃x (Student(x) ∧ CSMajor(x))
+  "There exists an x such that x is a student 
+   and x is a CS major"</div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Translation 3:</strong> "No prime number is even, except 2"</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <h4>Step-by-Step Translation</h4>
+                            <p><strong>Step 1: Domain</strong></p>
+                            <div class="expression-display">Domain: ℤ (integers)</div>
+
+                            <p><strong>Step 2: Predicates</strong></p>
+                            <div class="expression-display">Prime(x): "x is prime"
+Even(x): "x is even"</div>
+
+                            <p><strong>Step 3: Handle the exception</strong></p>
+                            <p>"except 2" means we need to exclude x = 2 from the statement</p>
+
+                            <p><strong>Step 4: Translation</strong></p>
+                            <div class="expression-display">For now:
+  (Prime(x) ∧ Even(x)) → (x = 2)
+  "If x is prime and even, then x equals 2"
+
+Equivalent form:
+  (Prime(x) ∧ x ≠ 2) → ¬Even(x)
+  "If x is prime and x is not 2, then x is not even"</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PROGRAMMING SECTION -->
+        <section id="programming-section" class="content-section" role="tabpanel" aria-labelledby="tab-programming">
+            <div class="card">
+                <h2><span class="card-icon" aria-hidden="true">💻</span> Predicate Logic in Programming</h2>
+
+                <h3>Preconditions and Postconditions</h3>
+                <p>Predicates are essential for formal specification of functions:</p>
+
+                <div class="code-block">/**
+ * Precondition: ∀i (0 ≤ i < arr.length → arr[i] ≥ 0)
+ *   "All array elements are non-negative"
+ * 
+ * Postcondition: ∃i (0 ≤ i < arr.length ∧ result = arr[i] ∧ 
+ *                     ∀j (0 ≤ j < arr.length → arr[i] ≥ arr[j]))
+ *   "Result is an element in the array and it's the maximum"
+ */
+public int findMax(int[] arr) {
+    <span class="code-comment">// Precondition check (in practice)</span>
+    assert arr.length > 0 : "Array must not be empty";
+    
+    int max = arr[0];
+    for (int i = 1; i < arr.length; i++) {
+        if (arr[i] > max) {
+            max = arr[i];
+        }
+    }
+    
+    return max;
+}</div>
+
+                <h3>Loop Invariants</h3>
+                <p>Predicates express properties that remain true throughout loop execution:</p>
+
+                <div class="code-block">/**
+ * Loop Invariant: ∀j (0 ≤ j < i → arr[j] ≤ arr[i])
+ *   "All elements before index i are ≤ element at i"
+ */
+public void selectionSort(int[] arr) {
+    for (int i = 0; i < arr.length - 1; i++) {
+        <span class="code-comment">// Invariant holds here: arr[0..i-1] is sorted</span>
+        
+        int minIndex = i;
+        for (int j = i + 1; j < arr.length; j++) {
+            if (arr[j] < arr[minIndex]) {
+                minIndex = j;
+            }
+        }
+        
+        <span class="code-comment">// Swap</span>
+        int temp = arr[i];
+        arr[i] = arr[minIndex];
+        arr[minIndex] = temp;
+        
+        <span class="code-comment">// Invariant still holds: arr[0..i] is now sorted</span>
+    }
+}</div>
+
+                <h3>Conditional Logic as Predicates</h3>
+                <div class="info-box blue">
+                    <h4>Every if-statement is a predicate!</h4>
+                    <div class="code-block"><span class="code-comment">// Define predicates</span>
+IsPositive(x) ≡ (x > 0)
+IsEven(x) ≡ (x % 2 == 0)
+InRange(x, min, max) ≡ (x ≥ min ∧ x ≤ max)
+
+<span class="code-comment">// Use in code</span>
+if (x > 0) {                    <span class="code-comment">// IsPositive(x)</span>
+    System.out.println("Positive");
+}
+
+if (x % 2 == 0) {               <span class="code-comment">// IsEven(x)</span>
+    System.out.println("Even");
+}
+
+if (x >= min && x <= max) {     <span class="code-comment">// InRange(x, min, max)</span>
+    System.out.println("In range");
+}</div>
+                </div>
+
+                <h3>Database Queries</h3>
+                <p>SQL is built on predicate logic:</p>
+
+                <div class="comparison-grid">
+                    <div class="comparison-box">
+                        <h4>Predicate Logic</h4>
+                        <div class="expression-display">{x | Student(x) ∧ 
+     Enrolled(x, CSC240) ∧
+     Grade(x, CSC240, g) ∧
+     g ≥ 'B'}
+
+"Set of all students x such that:
+ - x is a student
+ - x is enrolled in CSC240
+ - x's grade in CSC240 is B or higher"</div>
+                    </div>
+
+                    <div class="comparison-box">
+                        <h4>SQL Query</h4>
+                        <div class="code-block">SELECT student_id
+FROM students s
+JOIN enrollments e 
+  ON s.id = e.student_id
+WHERE e.course_id = 'CSC240'
+  AND e.grade >= 'B';</div>
+                        <p><em>Same logic, different notation!</em></p>
+                    </div>
+                </div>
+
+                <h3>More SQL Examples</h3>
+                <div class="accordion">
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Example 1:</strong> Find students enrolled in multiple courses</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <p><strong>Predicate Logic:</strong></p>
+                            <div class="expression-display">{x | Student(x) ∧ ∃c1 ∃c2 (Enrolled(x, c1) ∧ Enrolled(x, c2) ∧ c1 ≠ c2)}
+
+"Students x such that there exist courses c1 and c2 where
+ x is enrolled in both and they're different courses"</div>
+
+                            <p><strong>SQL:</strong></p>
+                            <div class="code-block">SELECT DISTINCT s.student_id
+FROM students s
+JOIN enrollments e1 ON s.id = e1.student_id
+JOIN enrollments e2 ON s.id = e2.student_id
+WHERE e1.course_id != e2.course_id;</div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Example 2:</strong> Find courses with prerequisites</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <p><strong>Predicate Logic:</strong></p>
+                            <div class="expression-display">{c | Course(c) ∧ ∃p (Course(p) ∧ Prerequisite(p, c))}
+
+"Courses c such that there exists a course p 
+ that is a prerequisite for c"</div>
+
+                            <p><strong>SQL:</strong></p>
+                            <div class="code-block">SELECT DISTINCT c.course_id
+FROM courses c
+JOIN prerequisites p 
+  ON c.course_id = p.course_id;</div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Assertions and Testing</h3>
+                <p>Unit tests are predicates about program behavior:</p>
+
+                <div class="code-block"><span class="code-comment">// Predicate: Sorted(arr) ≡ ∀i (0 ≤ i < arr.length-1 → arr[i] ≤ arr[i+1])</span>
+@Test
+public void testSort() {
+    int[] arr = {5, 2, 8, 1, 9};
+    sort(arr);
+    
+    <span class="code-comment">// Check predicate: Sorted(arr)</span>
+    for (int i = 0; i < arr.length - 1; i++) {
+        assertTrue(arr[i] <= arr[i+1], 
+            "Array should be sorted: arr[" + i + "] <= arr[" + (i+1) + "]");
+    }
+}
+
+<span class="code-comment">// Predicate: Empty(list) ≡ (list.size() == 0)</span>
+@Test
+public void testEmptyList() {
+    List<Integer> list = new ArrayList<>();
+    assertTrue(list.isEmpty(), "New list should be empty");
+    
+    list.add(5);
+    assertFalse(list.isEmpty(), "List with element should not be empty");
+}</div>
+
+                <h3>Key Programming Connections</h3>
+                <div class="info-box green">
+                    <h4>✅ Predicate Logic in Code</h4>
+                    <ul>
+                        <li><strong>Boolean expressions</strong> are predicates</li>
+                        <li><strong>If-statements</strong> evaluate predicates</li>
+                        <li><strong>Loop conditions</strong> are predicates</li>
+                        <li><strong>Assertions</strong> check predicates</li>
+                        <li><strong>Preconditions/Postconditions</strong> specify predicates</li>
+                        <li><strong>SQL WHERE clauses</strong> are predicates</li>
+                        <li><strong>Unit tests</strong> verify predicates</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- PRACTICE SECTION -->
+        <section id="practice-section" class="content-section" role="tabpanel" aria-labelledby="tab-practice">
+            <div class="card">
+                <h2><span class="card-icon" aria-hidden="true">✏️</span> Interactive Practice</h2>
+                <p>Test your understanding with these practice problems!</p>
+            </div>
+
+            <div class="practice-area">
+                <h3>Practice Problem 1: Define Predicates</h3>
+                <div class="practice-question">
+                    <h4>Problem:</h4>
+                    <p>Define a predicate for "x is divisible by y"</p>
+                    <p><strong>Domain:</strong> ℤ (integers)</p>
+
+                    <label for="practice1-answer"><strong>Your answer (e.g., DivisibleBy(x, y)):</strong></label>
+                    <input type="text" id="practice1-answer" class="answer-input" placeholder="Enter predicate definition...">
+                    <button class="btn btn-primary" onclick="checkAnswer(1, 'Divides')">Check Answer</button>
+                    <button class="btn btn-secondary" onclick="showHint(1)">Show Hint</button>
+
+                    <div id="practice1-feedback" class="feedback"></div>
+                    <div id="practice1-hint" class="feedback hint" style="display: none;">
+                        <strong>Hint:</strong> Use a binary predicate (two arguments). Common names: Divides(x, y) or DivisibleBy(y, x)
+                    </div>
+                </div>
+
+                <div class="practice-question">
+                    <h4>Problem 2:</h4>
+                    <p>Translate to predicate logic: "Alice is enrolled in CSC240"</p>
+
+                    <label for="practice2-answer"><strong>Your answer:</strong></label>
+                    <input type="text" id="practice2-answer" class="answer-input" placeholder="E.g., Enrolled(Alice, CSC240)">
+                    <button class="btn btn-primary" onclick="checkAnswer(2, 'Enrolled(Alice, CSC240)')">Check Answer</button>
+                    <button class="btn btn-secondary" onclick="showHint(2)">Show Hint</button>
+
+                    <div id="practice2-feedback" class="feedback"></div>
+                    <div id="practice2-hint" class="feedback hint" style="display: none;">
+                        <strong>Hint:</strong> Use a binary predicate with student and course as arguments
+                    </div>
+                </div>
+
+                <div class="practice-question">
+                    <h4>Problem 3:</h4>
+                    <p>Express "x is even and greater than 10" using predicates</p>
+
+                    <label for="practice3-answer"><strong>Your answer:</strong></label>
+                    <textarea id="practice3-answer" class="answer-input" placeholder="Use Even(x) and GreaterThan(x, 10)..."></textarea>
+                    <button class="btn btn-primary" onclick="checkAnswer(3, 'Even(x) ∧ GreaterThan(x, 10)')">Check Answer</button>
+                    <button class="btn btn-secondary" onclick="showHint(3)">Show Hint</button>
+
+                    <div id="practice3-feedback" class="feedback"></div>
+                    <div id="practice3-hint" class="feedback hint" style="display: none;">
+                        <strong>Hint:</strong> Combine two predicates with AND (∧). Use Even(x) and either GreaterThan(x, 10) or (x > 10)
+                    </div>
+                </div>
+
+                <div class="practice-question">
+                    <h4>Problem 4:</h4>
+                    <p>What is the truth value of Prime(15)?</p>
+
+                    <label for="practice4-answer"><strong>Your answer (true or false):</strong></label>
+                    <input type="text" id="practice4-answer" class="answer-input" placeholder="true or false">
+                    <button class="btn btn-primary" onclick="checkAnswer(4, 'false')">Check Answer</button>
+                    <button class="btn btn-secondary" onclick="showHint(4)">Show Hint</button>
+
+                    <div id="practice4-feedback" class="feedback"></div>
+                    <div id="practice4-hint" class="feedback hint" style="display: none;">
+                        <strong>Hint:</strong> Is 15 a prime number? Remember, prime numbers are only divisible by 1 and themselves. 15 = 3 × 5
+                    </div>
+                </div>
+
+                <div class="practice-question">
+                    <h4>Problem 5:</h4>
+                    <p>Translate to English: Student(x) → HasID(x)</p>
+
+                    <label for="practice5-answer"><strong>Your answer:</strong></label>
+                    <textarea id="practice5-answer" class="answer-input" placeholder="Write in plain English..."></textarea>
+                    <button class="btn btn-primary" onclick="checkAnswer(5, 'student')">Check Answer</button>
+                    <button class="btn btn-secondary" onclick="showHint(5)">Show Hint</button>
+
+                    <div id="practice5-feedback" class="feedback"></div>
+                    <div id="practice5-hint" class="feedback hint" style="display: none;">
+                        <strong>Hint:</strong> The → means "implies" or "if...then". Think about what it means when Student(x) is true.
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2><span class="card-icon" aria-hidden="true">🎓</span> Challenge Problems</h2>
+                
+                <div class="accordion">
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Challenge 1:</strong> Express "x is between y and z"</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <h4>Problem:</h4>
+                            <p>Define a predicate Between(x, y, z) that means "x is between y and z (inclusive)"</p>
+
+                            <h4>Solution:</h4>
+                            <div class="expression-display">Between(x, y, z) ≡ (y ≤ x) ∧ (x ≤ z)
+
+Or using a ternary predicate directly:
+Between(x, y, z): "y ≤ x ≤ z"
+
+Examples:
+  Between(5, 1, 10) = true   (5 is between 1 and 10)
+  Between(15, 1, 10) = false (15 is not between 1 and 10)
+  Between(1, 1, 10) = true   (inclusive endpoints)</div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Challenge 2:</strong> Model a prerequisite system</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <h4>Problem:</h4>
+                            <p>Express "Student x can enroll in course c if x has completed all prerequisites for c"</p>
+
+                            <h4>Predicates needed:</h4>
+                            <div class="expression-display">Student(x): "x is a student"
+Course(c): "c is a course"
+Prerequisite(p, c): "Course p is a prerequisite for course c"
+Completed(x, c): "Student x has completed course c"
+CanEnroll(x, c): "Student x can enroll in course c"</div>
+
+                            <h4>Solution:</h4>
+                            <div class="expression-display">CanEnroll(x, c) ≡ Student(x) ∧ Course(c) ∧ 
+                  (∀p (Prerequisite(p, c) → Completed(x, p)))
+
+Reading: "Student x can enroll in course c if:
+  - x is a student, AND
+  - c is a course, AND
+  - for all courses p, if p is a prerequisite for c,
+    then x has completed p"
+
+Note: This uses ∀ (universal quantifier) which we'll 
+formally cover in Module 4.4!</div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Challenge 3:</strong> Translate a complex SQL query</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <h4>SQL Query:</h4>
+                            <div class="code-block">SELECT s.name
+FROM students s
+JOIN enrollments e ON s.id = e.student_id
+WHERE e.course_id = 'CSC240'
+  AND e.grade >= 'B'
+  AND s.major = 'CS';</div>
+
+                            <h4>Translate to Predicate Logic:</h4>
+                            <div class="expression-display">Predicates:
+  Student(x): "x is a student"
+  Enrolled(x, c): "x is enrolled in course c"
+  Grade(x, c, g): "x received grade g in course c"
+  Major(x, m): "x's major is m"
+
+Translation:
+{x | Student(x) ∧ 
+     Enrolled(x, CSC240) ∧
+     Grade(x, CSC240, g) ∧ g ≥ 'B' ∧
+     Major(x, CS)}
+
+Reading: "The set of all students x such that:
+  - x is a student
+  - x is enrolled in CSC240
+  - x received a grade g in CSC240 where g ≥ 'B'
+  - x's major is CS"</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- QUIZ SECTION -->
+        <section id="quiz-section" class="content-section" role="tabpanel" aria-labelledby="tab-quiz">
+            <div class="card">
+                <h2><span class="card-icon" aria-hidden="true">🎯</span> Self-Assessment Quiz</h2>
+                <p>Test your understanding of predicate logic! Select the best answer for each question.</p>
+            </div>
+
+            <div class="quiz-container">
+                <div class="quiz-question" id="q1">
+                    <h3>Question 1:</h3>
+                    <p>What is a predicate?</p>
+                    <ul class="quiz-options">
+                        <li class="quiz-option" onclick="selectQuizOption(1, 'A', false)">A) A statement that is always true</li>
+                        <li class="quiz-option" onclick="selectQuizOption(1, 'B', true)">B) A function that returns a truth value</li>
+                        <li class="quiz-option" onclick="selectQuizOption(1, 'C', false)">C) A variable that represents an object</li>
+                        <li class="quiz-option" onclick="selectQuizOption(1, 'D', false)">D) A logical operator like AND or OR</li>
+                    </ul>
+                    <div id="q1-feedback" class="feedback"></div>
+                </div>
+
+                <div class="quiz-question" id="q2">
+                    <h3>Question 2:</h3>
+                    <p>Which of the following is a unary predicate?</p>
+                    <ul class="quiz-options">
+                        <li class="quiz-option" onclick="selectQuizOption(2, 'A', true)">A) Even(x)</li>
+                        <li class="quiz-option" onclick="selectQuizOption(2, 'B', false)">B) GreaterThan(x, y)</li>
+                        <li class="quiz-option" onclick="selectQuizOption(2, 'C', false)">C) Between(x, y, z)</li>
+                        <li class="quiz-option" onclick="selectQuizOption(2, 'D', false)">D) Enrolled(s, c)</li>
+                    </ul>
+                    <div id="q2-feedback" class="feedback"></div>
+                </div>
+
+                <div class="quiz-question" id="q3">
+                    <h3>Question 3:</h3>
+                    <p>What is the domain of discourse?</p>
+                    <ul class="quiz-options">
+                        <li class="quiz-option" onclick="selectQuizOption(3, 'A', false)">A) The set of all predicates</li>
+                        <li class="quiz-option" onclick="selectQuizOption(3, 'B', true)">B) The set of all possible values for variables</li>
+                        <li class="quiz-option" onclick="selectQuizOption(3, 'C', false)">C) The set of all true statements</li>
+                        <li class="quiz-option" onclick="selectQuizOption(3, 'D', false)">D) The set of all logical operators</li>
+                    </ul>
+                    <div id="q3-feedback" class="feedback"></div>
+                </div>
+
+                <div class="quiz-question" id="q4">
+                    <h3>Question 4:</h3>
+                    <p>Given Prime(x) means "x is prime", what is Prime(9)?</p>
+                    <ul class="quiz-options">
+                        <li class="quiz-option" onclick="selectQuizOption(4, 'A', false)">A) True</li>
+                        <li class="quiz-option" onclick="selectQuizOption(4, 'B', true)">B) False</li>
+                        <li class="quiz-option" onclick="selectQuizOption(4, 'C', false)">C) Undefined</li>
+                        <li class="quiz-option" onclick="selectQuizOption(4, 'D', false)">D) Cannot be determined</li>
+                    </ul>
+                    <div id="q4-feedback" class="feedback"></div>
+                </div>
+
+                <div class="quiz-question" id="q5">
+                    <h3>Question 5:</h3>
+                    <p>How do you express "x is a student AND x is enrolled in CSC240"?</p>
+                    <ul class="quiz-options">
+                        <li class="quiz-option" onclick="selectQuizOption(5, 'A', false)">A) Student(x) → Enrolled(x, CSC240)</li>
+                        <li class="quiz-option" onclick="selectQuizOption(5, 'B', true)">B) Student(x) ∧ Enrolled(x, CSC240)</li>
+                        <li class="quiz-option" onclick="selectQuizOption(5, 'C', false)">C) Student(x) ∨ Enrolled(x, CSC240)</li>
+                        <li class="quiz-option" onclick="selectQuizOption(5, 'D', false)">D) Student(x) ↔ Enrolled(x, CSC240)</li>
+                    </ul>
+                    <div id="q5-feedback" class="feedback"></div>
+                </div>
+
+                <div class="quiz-question" id="q6">
+                    <h3>Question 6:</h3>
+                    <p>What is the main advantage of predicate logic over propositional logic?</p>
+                    <ul class="quiz-options">
+                        <li class="quiz-option" onclick="selectQuizOption(6, 'A', false)">A) It's simpler to understand</li>
+                        <li class="quiz-option" onclick="selectQuizOption(6, 'B', false)">B) It uses fewer symbols</li>
+                        <li class="quiz-option" onclick="selectQuizOption(6, 'C', true)">C) It can express properties of objects and relationships</li>
+                        <li class="quiz-option" onclick="selectQuizOption(6, 'D', false)">D) It doesn't need truth tables</li>
+                    </ul>
+                    <div id="q6-feedback" class="feedback"></div>
+                </div>
+
+                <button class="btn btn-success" onclick="submitQuiz()" id="submit-quiz-btn">Submit Quiz</button>
+                <div id="quiz-results" class="feedback" style="display: none;"></div>
+            </div>
+        </section>
+    </main>
+
+    <footer style="text-align: center; padding: 30px; margin-top: 40px; background: var(--light-bg); border-radius: 10px;">
+        <p><strong>Module 4.3: Introduction to Predicate Logic</strong></p>
+        <p>CSC 240 - Discrete Structures | Mendocino College</p>
+        <p>© 2026 Mendocino College | All Rights Reserved</p>
+    </footer>
+
+    <script>
+        // Global state
+        let quizAnswers = {};
+        let practiceCompleted = {1: false, 2: false, 3: false, 4: false, 5: false};
+
+        // Tab Navigation
+        function showSection(sectionId) {
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+
+            const tabs = document.querySelectorAll('.nav-tab');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+                tab.setAttribute('aria-selected', 'false');
+            });
+
+            const activeSection = document.getElementById(sectionId + '-section');
+            if (activeSection) {
+                activeSection.classList.add('active');
+            }
+
+            const activeTab = document.getElementById('tab-' + sectionId);
+            if (activeTab) {
+                activeTab.classList.add('active');
+                activeTab.setAttribute('aria-selected', 'true');
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            sessionStorage.setItem('activeTab', sectionId);
+            updateProgress();
+        }
+
+        // Accordion Toggle
+        function toggleAccordion(header) {
+            const item = header.parentElement;
+            const wasActive = item.classList.contains('active');
+            
+            const allItems = document.querySelectorAll('.accordion-item');
+            allItems.forEach(i => {
+                i.classList.remove('active');
+                i.querySelector('.accordion-header').setAttribute('aria-expanded', 'false');
+            });
+
+            if (!wasActive) {
+                item.classList.add('active');
+                header.setAttribute('aria-expanded', 'true');
+            }
+        }
+
+        // Practice Problems
+        function checkAnswer(problemNum, correctAnswer) {
+            const input = document.getElementById(`practice${problemNum}-answer`);
+            const feedback = document.getElementById(`practice${problemNum}-feedback`);
+            const userAnswer = input.value.trim().toLowerCase();
+            const normalizedCorrect = correctAnswer.toLowerCase();
+
+            feedback.classList.remove('correct', 'incorrect');
+            feedback.classList.add('show');
+
+            // Flexible matching for different answer formats
+            let isCorrect = false;
+            
+            if (problemNum === 1) {
+                isCorrect = userAnswer.includes('divides') || userAnswer.includes('divisible');
+            } else if (problemNum === 2) {
+                isCorrect = userAnswer.includes('enrolled') && userAnswer.includes('alice') && userAnswer.includes('csc240');
+            } else if (problemNum === 3) {
+                isCorrect = (userAnswer.includes('even') && userAnswer.includes('greater')) ||
+                           (userAnswer.includes('even') && userAnswer.includes('10'));
+            } else if (problemNum === 4) {
+                isCorrect = userAnswer === 'false';
+            } else if (problemNum === 5) {
+                isCorrect = userAnswer.includes('student') && (userAnswer.includes('id') || userAnswer.includes('implies'));
+            }
+
+            if (isCorrect) {
+                feedback.classList.add('correct');
+                feedback.innerHTML = `<strong>✓ Correct!</strong> Well done!`;
+                practiceCompleted[problemNum] = true;
+                updateProgress();
+            } else {
+                feedback.classList.add('incorrect');
+                feedback.innerHTML = `<strong>✗ Not quite.</strong> Try again or click "Show Hint" for help.`;
+            }
+        }
+
+        function showHint(problemNum) {
+            const hint = document.getElementById(`practice${problemNum}-hint`);
+            hint.style.display = 'block';
+        }
+
+        // Quiz Functions
+        function selectQuizOption(questionNum, option, isCorrect) {
+            const question = document.getElementById(`q${questionNum}`);
+            const options = question.querySelectorAll('.quiz-option');
+            const feedback = document.getElementById(`q${questionNum}-feedback`);
+
+            options.forEach(opt => {
+                opt.classList.remove('selected');
+            });
+
+            event.target.classList.add('selected');
+            quizAnswers[questionNum] = {option, isCorrect};
+
+            feedback.style.display = 'none';
+            feedback.classList.remove('show', 'correct', 'incorrect');
+        }
+
+        function submitQuiz() {
+            let correct = 0;
+            const total = 6;
+
+            for (let i = 1; i <= total; i++) {
+                const question = document.getElementById(`q${i}`);
+                const options = question.querySelectorAll('.quiz-option');
+                const feedback = document.getElementById(`q${i}-feedback`);
+                const answer = quizAnswers[i];
+
+                if (answer) {
+                    feedback.classList.add('show');
+                    if (answer.isCorrect) {
+                        feedback.classList.add('correct');
+                        feedback.innerHTML = '<strong>✓ Correct!</strong>';
+                        correct++;
+                        
+                        options.forEach(opt => {
+                            if (opt.classList.contains('selected')) {
+                                opt.classList.add('correct');
+                            }
+                        });
+                    } else {
+                        feedback.classList.add('incorrect');
+                        feedback.innerHTML = '<strong>✗ Incorrect.</strong> Review the concepts and try again.';
+                        
+                        options.forEach(opt => {
+                            if (opt.classList.contains('selected')) {
+                                opt.classList.add('incorrect');
+                            }
+                        });
+                    }
+                }
+            }
+
+            const results = document.getElementById('quiz-results');
+            results.style.display = 'block';
+            results.classList.add('show');
+            
+            const percentage = Math.round((correct / total) * 100);
+            
+            if (percentage >= 80) {
+                results.classList.add('correct');
+                results.innerHTML = `<strong>🎉 Excellent!</strong> You scored ${correct}/${total} (${percentage}%). You've mastered predicate logic basics!`;
+            } else if (percentage >= 60) {
+                results.classList.add('hint');
+                results.innerHTML = `<strong>Good effort!</strong> You scored ${correct}/${total} (${percentage}%). Review the concepts and try again.`;
+            } else {
+                results.classList.add('incorrect');
+                results.innerHTML = `<strong>Keep practicing!</strong> You scored ${correct}/${total} (${percentage}%). Review the material and retake the quiz.`;
+            }
+
+            document.getElementById('submit-quiz-btn').style.display = 'none';
+            updateProgress();
+        }
+
+        // Progress Tracking
+        function updateProgress() {
+            const sectionsVisited = new Set(JSON.parse(sessionStorage.getItem('sectionsVisited') || '[]'));
+            const currentTab = sessionStorage.getItem('activeTab');
+            if (currentTab) {
+                sectionsVisited.add(currentTab);
+                sessionStorage.setItem('sectionsVisited', JSON.stringify([...sectionsVisited]));
+            }
+
+            const totalSections = 7;
+            const practiceScore = Object.values(practiceCompleted).filter(Boolean).length;
+            const quizScore = Object.keys(quizAnswers).length;
+
+            let progress = (sectionsVisited.size / totalSections) * 40;
+            progress += (practiceScore / 5) * 30;
+            progress += (quizScore / 6) * 30;
+
+            progress = Math.min(Math.round(progress), 100);
+
+            const progressBar = document.getElementById('module-progress');
+            const progressText = document.getElementById('progress-text');
+            
+            progressBar.style.width = progress + '%';
+            progressBar.textContent = progress + '%';
+            progressBar.setAttribute('aria-valuenow', progress);
+
+            if (progress === 100) {
+                progressText.textContent = '🎉 Module Complete! Great job!';
+            } else {
+                progressText.textContent = `${progress}% complete - Keep going!`;
+            }
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.target.classList.contains('accordion-header')) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    toggleAccordion(e.target);
+                }
+            }
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTab = sessionStorage.getItem('activeTab');
+            if (savedTab) {
+                showSection(savedTab);
+            }
+            updateProgress();
+            
+            // Render KaTeX
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: '\$$', right: '\$$', display: true},
+                    {left: '\$$', right: '\$$', display: false}
+                ],
+                throwOnError: false
+            });
+        });
+    </script>
+</body>
+</html>
