@@ -1,0 +1,2251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="CSC 240 Module 4.2 - Normal Forms (CNF and DNF) Interactive Learning Module">
+    <title>Module 4.2: Normal Forms (CNF and DNF) | CSC 240</title>
+    <style>
+        /* CSS Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-blue: #003366;
+            --secondary-blue: #0066cc;
+            --accent-gold: #FFB81C;
+            --success-green: #28a745;
+            --warning-orange: #ff8c00;
+            --danger-red: #dc3545;
+            --light-bg: #f8f9fa;
+            --white: #ffffff;
+            --text-dark: #212529;
+            --text-muted: #6c757d;
+            --border-color: #dee2e6;
+            --shadow: 0 2px 8px rgba(0,0,0,0.1);
+            --shadow-hover: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: var(--light-bg);
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Skip Link */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: var(--primary-blue);
+            color: var(--white);
+            padding: 8px;
+            text-decoration: none;
+            z-index: 100;
+        }
+
+        .skip-link:focus {
+            top: 0;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+            color: var(--white);
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .header-title h1 {
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+
+        .header-title p {
+            font-size: 1rem;
+            opacity: 0.95;
+        }
+
+        .module-badge {
+            background-color: var(--accent-gold);
+            color: var(--primary-blue);
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+        }
+
+        /* Navigation */
+        .nav-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+            background: var(--white);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+        }
+
+        .nav-tab {
+            flex: 1;
+            min-width: 120px;
+            padding: 12px 15px;
+            background: var(--light-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            color: var(--text-dark);
+            font-size: 0.9rem;
+        }
+
+        .nav-tab:hover {
+            background: var(--secondary-blue);
+            color: var(--white);
+            border-color: var(--secondary-blue);
+            transform: translateY(-2px);
+        }
+
+        .nav-tab.active {
+            background: var(--primary-blue);
+            color: var(--white);
+            border-color: var(--primary-blue);
+        }
+
+        .nav-tab:focus {
+            outline: 3px solid var(--accent-gold);
+            outline-offset: 2px;
+        }
+
+        /* Content Sections */
+        .content-section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Cards */
+        .card {
+            background: var(--white);
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow);
+            border-left: 5px solid var(--secondary-blue);
+        }
+
+        .card h2 {
+            color: var(--primary-blue);
+            margin-bottom: 15px;
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card h3 {
+            color: var(--secondary-blue);
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+
+        .card-icon {
+            font-size: 1.8rem;
+        }
+
+        /* Info Boxes */
+        .info-box {
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 5px solid;
+        }
+
+        .info-box.blue {
+            background-color: #e7f3ff;
+            border-color: var(--secondary-blue);
+        }
+
+        .info-box.gold {
+            background-color: #fff8e1;
+            border-color: var(--accent-gold);
+        }
+
+        .info-box.green {
+            background-color: #e8f5e9;
+            border-color: var(--success-green);
+        }
+
+        .info-box.orange {
+            background-color: #fff3e0;
+            border-color: var(--warning-orange);
+        }
+
+        .info-box.purple {
+            background-color: #f3e5f5;
+            border-color: #9c27b0;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: var(--white);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--primary-blue);
+            color: var(--white);
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background-color: var(--light-bg);
+        }
+
+        /* Lists */
+        ul, ol {
+            margin-left: 25px;
+            margin-top: 10px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        /* Expression Display */
+        .expression-display {
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border: 1px solid var(--border-color);
+        }
+
+        .step-box {
+            background: var(--white);
+            border: 2px solid var(--secondary-blue);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .step-number {
+            display: inline-block;
+            background: var(--secondary-blue);
+            color: var(--white);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        /* Interactive Practice Area */
+        .practice-area {
+            background: var(--light-bg);
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 2px solid var(--border-color);
+        }
+
+        .practice-question {
+            background: var(--white);
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            border-left: 4px solid var(--secondary-blue);
+        }
+
+        .practice-question h4 {
+            color: var(--primary-blue);
+            margin-bottom: 10px;
+        }
+
+        .answer-input {
+            width: 100%;
+            padding: 12px;
+            font-size: 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .answer-input:focus {
+            outline: none;
+            border-color: var(--secondary-blue);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+            margin: 5px;
+            font-size: 1rem;
+        }
+
+        .btn:focus {
+            outline: 3px solid var(--accent-gold);
+            outline-offset: 2px;
+        }
+
+        .btn-primary {
+            background: var(--primary-blue);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: var(--secondary-blue);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .btn-success {
+            background: var(--success-green);
+            color: var(--white);
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-secondary {
+            background: var(--light-bg);
+            color: var(--primary-blue);
+            border: 2px solid var(--primary-blue);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary-blue);
+            color: var(--white);
+        }
+
+        .feedback {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .feedback.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .feedback.correct {
+            background: #d4edda;
+            border: 2px solid var(--success-green);
+            color: #155724;
+        }
+
+        .feedback.incorrect {
+            background: #f8d7da;
+            border: 2px solid var(--danger-red);
+            color: #721c24;
+        }
+
+        .feedback.hint {
+            background: #fff3cd;
+            border: 2px solid var(--warning-orange);
+            color: #856404;
+        }
+
+        /* Progress Tracker */
+        .progress-container {
+            background: var(--white);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 30px;
+            background: var(--light-bg);
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success-green), var(--secondary-blue));
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-weight: bold;
+        }
+
+        /* Accordion */
+        .accordion {
+            margin: 20px 0;
+        }
+
+        .accordion-item {
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+
+        .accordion-header {
+            padding: 15px 20px;
+            background: var(--light-bg);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+
+        .accordion-header:hover {
+            background: #e3f2fd;
+        }
+
+        .accordion-header:focus {
+            outline: 3px solid var(--accent-gold);
+            outline-offset: -3px;
+        }
+
+        .accordion-icon {
+            transition: transform 0.3s ease;
+            font-size: 1.2rem;
+            color: var(--secondary-blue);
+        }
+
+        .accordion-item.active .accordion-icon {
+            transform: rotate(180deg);
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            padding: 0 20px;
+        }
+
+        .accordion-item.active .accordion-content {
+            max-height: 3000px;
+            padding: 20px;
+        }
+
+        /* Visual Diagram Boxes */
+        .diagram-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--white);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        .diagram-box h4 {
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .diagram-content {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+        }
+
+        /* Interactive Converter */
+        .converter-box {
+            background: var(--white);
+            border: 2px solid var(--secondary-blue);
+            border-radius: 10px;
+            padding: 25px;
+            margin: 20px 0;
+            box-shadow: var(--shadow);
+        }
+
+        .converter-input-group {
+            margin: 15px 0;
+        }
+
+        .converter-input-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--primary-blue);
+        }
+
+        .converter-output {
+            background: #f5f5f5;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            min-height: 60px;
+        }
+
+        /* Quiz Styles */
+        .quiz-container {
+            background: var(--white);
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            margin: 20px 0;
+        }
+
+        .quiz-question {
+            margin: 20px 0;
+        }
+
+        .quiz-options {
+            list-style: none;
+            margin: 15px 0;
+        }
+
+        .quiz-option {
+            padding: 12px;
+            margin: 8px 0;
+            background: var(--light-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-option:hover {
+            background: #e3f2fd;
+            border-color: var(--secondary-blue);
+        }
+
+        .quiz-option.selected {
+            background: var(--secondary-blue);
+            color: var(--white);
+            border-color: var(--secondary-blue);
+        }
+
+        .quiz-option.correct {
+            background: var(--success-green);
+            color: var(--white);
+            border-color: var(--success-green);
+        }
+
+        .quiz-option.incorrect {
+            background: var(--danger-red);
+            color: var(--white);
+            border-color: var(--danger-red);
+        }
+
+        /* Comparison Table */
+        .comparison-table {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .comparison-card {
+            background: var(--white);
+            border: 2px solid var(--secondary-blue);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .comparison-card h4 {
+            color: var(--primary-blue);
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 1.3rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .header-title h1 {
+                font-size: 1.5rem;
+            }
+
+            .nav-tabs {
+                flex-direction: column;
+            }
+
+            .nav-tab {
+                min-width: 100%;
+            }
+
+            .card {
+                padding: 15px;
+            }
+
+            .comparison-table {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            .nav-tabs, .btn, .practice-area {
+                display: none;
+            }
+
+            .content-section {
+                display: block !important;
+            }
+        }
+
+        /* Accessibility */
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            margin: -1px;
+            padding: 0;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0;
+        }
+
+        *:focus-visible {
+            outline: 3px solid var(--accent-gold);
+            outline-offset: 2px;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <header role="banner">
+        <div class="header-content">
+            <div class="header-title">
+                <h1>Module 4.2: Normal Forms (CNF and DNF)</h1>
+                <p>CSC 240 - Discrete Structures | Week 4</p>
+            </div>
+            <div class="module-badge" role="status">Module 4.2</div>
+        </div>
+    </header>
+
+    <nav class="nav-tabs" role="navigation" aria-label="Module content navigation">
+        <button class="nav-tab active" onclick="showSection('overview')" role="tab" aria-selected="true" id="tab-overview">
+            📋 Overview
+        </button>
+        <button class="nav-tab" onclick="showSection('concepts')" role="tab" aria-selected="false" id="tab-concepts">
+            📚 Concepts
+        </button>
+        <button class="nav-tab" onclick="showSection('cnf')" role="tab" aria-selected="false" id="tab-cnf">
+            🔷 CNF
+        </button>
+        <button class="nav-tab" onclick="showSection('dnf')" role="tab" aria-selected="false" id="tab-dnf">
+            🔶 DNF
+        </button>
+        <button class="nav-tab" onclick="showSection('converter')" role="tab" aria-selected="false" id="tab-converter">
+            🔄 Converter
+        </button>
+        <button class="nav-tab" onclick="showSection('practice')" role="tab" aria-selected="false" id="tab-practice">
+            ✏️ Practice
+        </button>
+        <button class="nav-tab" onclick="showSection('quiz')" role="tab" aria-selected="false" id="tab-quiz">
+            🎯 Quiz
+        </button>
+    </nav>
+
+    <main id="main-content" role="main">
+        <!-- OVERVIEW SECTION -->
+        <section id="overview-section" class="content-section active" role="tabpanel" aria-labelledby="tab-overview">
+            <div class="card">
+                <h2><span class="card-icon" aria-hidden="true">📖</span> Module Overview</h2>
+                <p><strong>Estimated Time:</strong> 2 hours</p>
+                
+                <div class="info-box blue">
+                    <h3>🎯 Learning Objectives</h3>
+                    <ul>
+                        <li>Define Conjunctive Normal Form (CNF) and Disjunctive Normal Form (DNF)</li>
+                        <li>Convert arbitrary logical expressions to CNF</li>
+                        <li>Convert arbitrary logical expressions to DNF</li>
+                        <li>Understand the relationship between normal forms and truth tables</li>
+                        <li><strong>Maps to CSLO 1:</strong> Apply symbolic logic and proof methods to model and analyze program/algorithm correctness</li>
+                    </ul>
+                </div>
+
+                <h3>📚 What You'll Learn</h3>
+                <p>Normal forms are standardized ways of writing logical expressions. Just as you can write numbers in different forms (decimal, fraction, scientific notation), you can write logical expressions in different standard forms. This module focuses on two important normal forms:</p>
+                <ul>
+                    <li><strong>Conjunctive Normal Form (CNF):</strong> "Product of Sums" or "AND of ORs"</li>
+                    <li><strong>Disjunctive Normal Form (DNF):</strong> "Sum of Products" or "OR of ANDs"</li>
+                </ul>
+
+                <div class="info-box gold">
+                    <h3>🔗 Why Normal Forms Matter</h3>
+                    <p><strong>Real-World Applications:</strong></p>
+                    <ul>
+                        <li><strong>SAT Solvers:</strong> CNF is the standard input format for Boolean satisfiability solvers used in circuit design, software verification, and AI</li>
+                        <li><strong>Digital Circuit Design:</strong> Both forms represent circuits with AND/OR gates</li>
+                        <li><strong>Database Query Optimization:</strong> SQL queries are often converted to normal forms for optimization</li>
+                        <li><strong>Automated Theorem Proving:</strong> Many proof systems work with clausal forms (CNF)</li>
+                        <li><strong>Machine Learning:</strong> Decision trees and rule-based systems use DNF-like representations</li>
+                    </ul>
+                </div>
+
+                <h3>🔄 Connection to Previous Module</h3>
+                <p>In Module 4.1, you learned logical equivalences that allow you to transform expressions. Normal forms are specific target forms that we transform expressions into using those equivalence laws. Think of it as:</p>
+                <ul>
+                    <li><strong>Module 4.1:</strong> The tools (equivalence laws)</li>
+                    <li><strong>Module 4.2:</strong> The goal (standard forms to achieve)</li>
+                </ul>
+
+                <h3>📋 Topics Covered</h3>
+                <ol>
+                    <li>Definition of literals, clauses, and terms</li>
+                    <li>Conjunctive Normal Form (CNF): Product of sums</li>
+                    <li>Disjunctive Normal Form (DNF): Sum of products</li>
+                    <li>Systematic conversion algorithms</li>
+                    <li>Converting from truth tables to normal forms</li>
+                    <li>Minterms and maxterms</li>
+                    <li>Comparing CNF vs. DNF complexity</li>
+                </ol>
+            </div>
+
+            <div class="progress-container">
+                <h2><span class="card-icon" aria-hidden="true">📊</span> Your Progress</h2>
+                <p>Track your completion of this module (saved for this session only):</p>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="module-progress" style="width: 0%;" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                        0%
+                    </div>
+                </div>
+                <p id="progress-text">Complete all sections to finish this module!</p>
+            </div>
+        </section>
+
+        <!-- CONCEPTS SECTION -->
+        <section id="concepts-section" class="content-section" role="tabpanel" aria-labelledby="tab-concepts">
+            <div class="card">
+                <h2><span class="card-icon" aria-hidden="true">📚</span> Core Concepts</h2>
+
+                <h3>Building Blocks: Literals, Clauses, and Terms</h3>
+                
+                <div class="info-box blue">
+                    <h4>📖 Literal</h4>
+                    <p>A <strong>literal</strong> is either a propositional variable or its negation.</p>
+                    <p><strong>Examples of literals:</strong></p>
+                    <ul>
+                        <li>$$ P $$ (a variable)</li>
+                        <li>$$ \neg P $$ (negation of a variable)</li>
+                        <li>$$ Q, \neg Q, R, \neg R $$ (more examples)</li>
+                    </ul>
+                    <p><strong>NOT literals:</strong></p>
+                    <ul>
+                        <li>$$ P \land Q $$ (this is a conjunction, not a literal)</li>
+                        <li>$$ \neg \neg P $$ (double negation, not simplified)</li>
+                        <li>$$ P \lor Q $$ (this is a disjunction, not a literal)</li>
+                    </ul>
+                </div>
+
+                <div class="info-box green">
+                    <h4>📖 Clause (for CNF)</h4>
+                    <p>A <strong>clause</strong> is a disjunction (OR) of literals.</p>
+                    <p><strong>Examples:</strong></p>
+                    <ul>
+                        <li>$$ P \lor Q $$ (clause with 2 literals)</li>
+                        <li>$$ P \lor \neg Q \lor R $$ (clause with 3 literals)</li>
+                        <li>$$ \neg P \lor \neg Q \lor \neg R \lor S $$ (clause with 4 literals)</li>
+                        <li>$$ P $$ (a single literal is also a clause)</li>
+                    </ul>
+                </div>
+
+                <div class="info-box purple">
+                    <h4>📖 Term (for DNF)</h4>
+                    <p>A <strong>term</strong> is a conjunction (AND) of literals.</p>
+                    <p><strong>Examples:</strong></p>
+                    <ul>
+                        <li>$$ P \land Q $$ (term with 2 literals)</li>
+                        <li>$$ P \land \neg Q \land R $$ (term with 3 literals)</li>
+                        <li>$$ \neg P \land \neg Q \land \neg R \land S $$ (term with 4 literals)</li>
+                        <li>$$ P $$ (a single literal is also a term)</li>
+                    </ul>
+                </div>
+
+                <h3>Why Do We Need Normal Forms?</h3>
+                <p>Normal forms provide several advantages:</p>
+                <ul>
+                    <li><strong>Standardization:</strong> Different expressions with the same meaning can be compared easily</li>
+                    <li><strong>Simplification:</strong> Makes it easier to identify equivalent expressions</li>
+                    <li><strong>Algorithmic Processing:</strong> Many algorithms require input in a specific normal form</li>
+                    <li><strong>Proof Systems:</strong> Automated theorem provers often work with CNF</li>
+                    <li><strong>Circuit Design:</strong> Direct mapping to hardware gates</li>
+                </ul>
+
+                <div class="info-box gold">
+                    <h3>💻 Programming Connection</h3>
+                    <p>Normal forms appear throughout computer science:</p>
+                    <div class="expression-display">
+// DNF Example: OR of ANDs
+if ((x > 0 && y > 0) || (x < 0 && y < 0)) {
+    // Same sign
+}
+
+// CNF Example: AND of ORs
+if ((x > 0 || y > 0) && (x < 0 || y < 0)) {
+    // Different condition
+}
+
+// Database Query (DNF-like)
+SELECT * FROM students 
+WHERE (major = 'CS' AND gpa > 3.5) 
+   OR (major = 'Math' AND gpa > 3.8);
+                    </div>
+                </div>
+
+                <h3>The Two Normal Forms at a Glance</h3>
+                <div class="comparison-table">
+                    <div class="comparison-card">
+                        <h4>🔷 Conjunctive Normal Form (CNF)</h4>
+                        <p><strong>Structure:</strong> AND of ORs</p>
+                        <p><strong>Pattern:</strong></p>
+                        <div class="expression-display">
+(literal ∨ literal ∨ ...) ∧ 
+(literal ∨ literal ∨ ...) ∧ 
+...
+                        </div>
+                        <p><strong>Think:</strong> "Product of Sums"</p>
+                        <p><strong>Example:</strong></p>
+                        <div class="expression-display">
+(P ∨ Q) ∧ (¬P ∨ R) ∧ (Q ∨ ¬R)
+                        </div>
+                        <p><strong>Used in:</strong> SAT solvers, automated reasoning</p>
+                    </div>
+
+                    <div class="comparison-card">
+                        <h4>🔶 Disjunctive Normal Form (DNF)</h4>
+                        <p><strong>Structure:</strong> OR of ANDs</p>
+                        <p><strong>Pattern:</strong></p>
+                        <div class="expression-display">
+(literal ∧ literal ∧ ...) ∨ 
+(literal ∧ literal ∧ ...) ∨ 
+...
+                        </div>
+                        <p><strong>Think:</strong> "Sum of Products"</p>
+                        <p><strong>Example:</strong></p>
+                        <div class="expression-display">
+(P ∧ Q) ∨ (¬P ∧ R) ∨ (Q ∧ ¬R)
+                        </div>
+                        <p><strong>Used in:</strong> Circuit design, database queries</p>
+                    </div>
+                </div>
+
+                <h3>Quick Identification Practice</h3>
+                <div class="accordion">
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Example 1:</strong> Is $$ (P \lor Q) \land (R \lor S) $$ in CNF or DNF?</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <p><strong>Answer: CNF (Conjunctive Normal Form)</strong></p>
+                            <p><strong>Why?</strong></p>
+                            <ul>
+                                <li>The main operator is AND ($$ \land $$)</li>
+                                <li>Each part connected by AND is a clause (disjunction of literals)</li>
+                                <li>$$ (P \lor Q) $$ is a clause</li>
+                                <li>$$ (R \lor S) $$ is a clause</li>
+                                <li>Structure: AND of ORs ✓</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Example 2:</strong> Is $$ (P \land Q) \lor (R \land S) $$ in CNF or DNF?</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <p><strong>Answer: DNF (Disjunctive Normal Form)</strong></p>
+                            <p><strong>Why?</strong></p>
+                            <ul>
+                                <li>The main operator is OR ($$ \lor $$)</li>
+                                <li>Each part connected by OR is a term (conjunction of literals)</li>
+                                <li>$$ (P \land Q) $$ is a term</li>
+                                <li>$$ (R \land S) $$ is a term</li>
+                                <li>Structure: OR of ANDs ✓</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Example 3:</strong> Is $$ P \land Q \land R $$ in CNF, DNF, or both?</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <p><strong>Answer: BOTH CNF and DNF</strong></p>
+                            <p><strong>Why?</strong></p>
+                            <ul>
+                                <li>As CNF: It's a conjunction of clauses where each clause has one literal</li>
+                                <li>As DNF: It's a disjunction of one term (that term has three literals)</li>
+                                <li>When an expression has only one "level" of operators, it can be both</li>
+                                <li>Simple expressions like $$ P $$, $$ P \land Q $$, or $$ P \lor Q $$ are both CNF and DNF</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Example 4:</strong> Is $$ P \lor (Q \land R) $$ in CNF or DNF?</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <p><strong>Answer: NEITHER</strong></p>
+                            <p><strong>Why?</strong></p>
+                            <ul>
+                                <li>For DNF: The main operator is OR, which is good...</li>
+                                <li>BUT: One part is $$ P $$ (a literal, OK) and the other is $$ (Q \land R) $$ (a term, OK)</li>
+                                <li>Wait, that should be DNF! Let me reconsider...</li>
+                                <li><strong>Actually, this IS DNF!</strong> It's $$ P \lor (Q \land R) $$, which is a disjunction of terms</li>
+                                <li>Term 1: $$ P $$ (single literal term)</li>
+                                <li>Term 2: $$ (Q \land R) $$ (conjunction of literals)</li>
+                                <li><strong>Correction: This IS in DNF</strong></li>
+                            </ul>
+                            <p><strong>Not CNF because:</strong> To be CNF, we'd need AND of ORs, but here we have OR at the top level with AND nested inside</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CNF SECTION -->
+        <section id="cnf-section" class="content-section" role="tabpanel" aria-labelledby="tab-cnf">
+            <div class="card">
+                <h2><span class="card-icon" aria-hidden="true">🔷</span> Conjunctive Normal Form (CNF)</h2>
+
+                <div class="diagram-box">
+                    <h4>CNF Structure</h4>
+                    <div class="diagram-content">
+(clause₁) ∧ (clause₂) ∧ (clause₃) ∧ ...
+
+Where each clause is:
+(literal ∨ literal ∨ literal ∨ ...)
+                    </div>
+                </div>
+
+                <h3>What is CNF?</h3>
+                <div class="info-box blue">
+                    <p><strong>Definition:</strong> A proposition is in <strong>Conjunctive Normal Form (CNF)</strong> if it is a conjunction (AND) of one or more clauses, where each clause is a disjunction (OR) of literals.</p>
+                    <p><strong>Also called:</strong> "Product of Sums" (from Boolean algebra)</p>
+                    <p><strong>Pattern:</strong> $$ (L_{11} \lor L_{12} \lor \ldots) \land (L_{21} \lor L_{22} \lor \ldots) \land \ldots $$</p>
+                </div>
+
+                <h3>CNF Examples</h3>
+                <div class="accordion">
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Example 1:</strong> Simple CNF</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <div class="expression-display">
+(P ∨ Q) ∧ (¬P ∨ R)
+                            </div>
+                            <p><strong>Analysis:</strong></p>
+                            <ul>
+                                <li>Main operator: AND ($$ \land $$) ✓</li>
+                                <li>Clause 1: $$ P \lor Q $$ (disjunction of literals) ✓</li>
+                                <li>Clause 2: $$ \neg P \lor R $$ (disjunction of literals) ✓</li>
+                                <li><strong>This is in CNF</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Example 2:</strong> Three-Clause CNF</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <div class="expression-display">
+(P ∨ Q ∨ R) ∧ (¬P ∨ ¬Q) ∧ (Q ∨ ¬R)
+                            </div>
+                            <p><strong>Analysis:</strong></p>
+                            <ul>
+                                <li>Main operator: AND connecting three clauses ✓</li>
+                                <li>Clause 1: $$ P \lor Q \lor R $$ (3 literals) ✓</li>
+                                <li>Clause 2: $$ \neg P \lor \neg Q $$ (2 literals) ✓</li>
+                                <li>Clause 3: $$ Q \lor \neg R $$ (2 literals) ✓</li>
+                                <li><strong>This is in CNF</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Example 3:</strong> NOT in CNF</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <div class="expression-display">
+(P ∧ Q) ∨ R
+                            </div>
+                            <p><strong>Why NOT CNF?</strong></p>
+                            <ul>
+                                <li>Main operator: OR ($$ \lor $$) ✗</li>
+                                <li>For CNF, we need AND at the top level</li>
+                                <li>This has AND nested inside an OR</li>
+                                <li><strong>This is actually in DNF, not CNF</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Converting to CNF: Step-by-Step Algorithm</h3>
+                <div class="info-box gold">
+                    <h4>🔧 CNF Conversion Algorithm</h4>
+                    <ol>
+                        <li><strong>Eliminate implications and biconditionals:</strong>
+                            <ul>
+                                <li>$$ P \to Q \equiv \neg P \lor Q $$</li>
+                                <li>$$ P \leftrightarrow Q \equiv (P \to Q) \land (Q \to P) $$</li>
+                            </ul>
+                        </li>
+                        <li><strong>Move negations inward (De Morgan's Laws):</strong>
+                            <ul>
+                                <li>$$ \neg(P \land Q) \equiv \neg P \lor \neg Q $$</li>
+                                <li>$$ \neg(P \lor Q) \equiv \neg P \land \neg Q $$</li>
+                                <li>$$ \neg \neg P \equiv P $$</li>
+                            </ul>
+                        </li>
+                        <li><strong>Distribute OR over AND:</strong>
+                            <ul>
+                                <li>$$ P \lor (Q \land R) \equiv (P \lor Q) \land (P \lor R) $$</li>
+                                <li>$$ (P \land Q) \lor R \equiv (P \lor R) \land (Q \lor R) $$</li>
+                            </ul>
+                        </li>
+                        <li><strong>Simplify using equivalence laws</strong> (optional but recommended)</li>
+                    </ol>
+                </div>
+
+                <h3>Worked Example: Converting to CNF</h3>
+                <div class="step-box">
+                    <p><span class="step-number">0</span><strong>Original Expression:</strong></p>
+                    <div class="expression-display">
+(P → Q) ∧ (Q → R)
+                    </div>
+                </div>
+
+                <div class="step-box">
+                    <p><span class="step-number">1</span><strong>Eliminate implications:</strong></p>
+                    <p>Apply $$ P \to Q \equiv \neg P \lor Q $$</p>
+                    <div class="expression-display">
+(¬P ∨ Q) ∧ (¬Q ∨ R)
+                    </div>
+                    <p><strong>Result:</strong> Already in CNF! ✓</p>
+                </div>
+
+                <div class="info-box green">
+                    <p><strong>Final CNF:</strong> $$ (\neg P \lor Q) \land (\neg Q \lor R) $$</p>
+                    <p>This is CNF because:</p>
+                    <ul>
+                        <li>Main operator is AND</li>
+                        <li>Each clause is a disjunction of literals</li>
+                        <li>No further simplification needed</li>
+                    </ul>
+                </div>
+
+                <h3>Complex Example: Converting to CNF</h3>
+                <div class="step-box">
+                    <p><span class="step-number">0</span><strong>Original Expression:</strong></p>
+                    <div class="expression-display">
+¬((P ∧ Q) → R)
+                    </div>
+                </div>
+
+                <div class="step-box">
+                    <p><span class="step-number">1</span><strong>Eliminate implication:</strong></p>
+                    <div class="expression-display">
+¬(¬(P ∧ Q) ∨ R)
+                    </div>
+                </div>
+
+                <div class="step-box">
+                    <p><span class="step-number">2</span><strong>Apply De Morgan's Law to outer negation:</strong></p>
+                    <p>$$ \neg(A \lor B) \equiv \neg A \land \neg B $$</p>
+                    <div class="expression-display">
+¬¬(P ∧ Q) ∧ ¬R
+                    </div>
+                </div>
+
+                <div class="step-box">
+                    <p><span class="step-number">3</span><strong>Apply double negation:</strong></p>
+                    <div class="expression-display">
+(P ∧ Q) ∧ ¬R
+                    </div>
+                </div>
+
+                <div class="step-box">
+                    <p><span class="step-number">4</span><strong>Simplify (associativity of AND):</strong></p>
+                    <div class="expression-display">
+P ∧ Q ∧ ¬R
+                    </div>
+                </div>
+
+                <div class="info-box green">
+                    <p><strong>Final CNF:</strong> $$ P \land Q \land \neg R $$</p>
+                    <p>This is CNF because:</p>
+                    <ul>
+                        <li>It's a conjunction of clauses</li>
+                        <li>Each "clause" is a single literal (which counts as a clause)</li>
+                        <li>Could write as: $$ (P) \land (Q) \land (\neg R) $$ to make it clearer</li>
+                    </ul>
+                </div>
+
+                <h3>Converting from Truth Tables to CNF</h3>
+                <div class="info-box blue">
+                    <h4>Method: Use Maxterms</h4>
+                    <p>A <strong>maxterm</strong> is a clause that is false for exactly one row of the truth table.</p>
+                    <p><strong>Algorithm:</strong></p>
+                    <ol>
+                        <li>Find all rows where the expression is <strong>FALSE</strong></li>
+                        <li>For each FALSE row, create a maxterm:
+                            <ul>
+                                <li>If variable is TRUE in that row, use its negation</li>
+                                <li>If variable is FALSE in that row, use the variable itself</li>
+                                <li>OR all the literals together</li>
+                            </ul>
+                        </li>
+                        <li>AND all the maxterms together</li>
+                    </ol>
+                </div>
+
+                <h3>Example: Truth Table to CNF</h3>
+                <p>Suppose we want CNF for an expression that is FALSE only when:</p>
+                <ul>
+                    <li>Row 1: $$ P = T, Q = T $$ (expression is FALSE)</li>
+                    <li>Row 2: $$ P = F, Q = F $$ (expression is FALSE)</li>
+                </ul>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>P</th>
+                            <th>Q</th>
+                            <th>Expression</th>
+                            <th>Maxterm (if FALSE)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>T</td>
+                            <td>T</td>
+                            <td>F</td>
+                            <td>$$ \neg P \lor \neg Q $$</td>
+                        </tr>
+                        <tr>
+                            <td>T</td>
+                            <td>F</td>
+                            <td>T</td>
+                            <td>—</td>
+                        </tr>
+                        <tr>
+                            <td>F</td>
+                            <td>T</td>
+                            <td>T</td>
+                            <td>—</td>
+                        </tr>
+                        <tr>
+                            <td>F</td>
+                            <td>F</td>
+                            <td>F</td>
+                            <td>$$ P \lor Q $$</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p><strong>CNF:</strong> $$ (\neg P \lor \neg Q) \land (P \lor Q) $$</p>
+
+                <div class="info-box gold">
+                    <h4>💡 Why This Works</h4>
+                    <p>Each maxterm is FALSE for exactly one row. By ANDing them together, the entire expression is TRUE only when ALL maxterms are TRUE, which happens for all rows except the FALSE rows we identified.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- DNF SECTION -->
+        <section id="dnf-section" class="content-section" role="tabpanel" aria-labelledby="tab-dnf">
+            <div class="card">
+                <h2><span class="card-icon" aria-hidden="true">🔶</span> Disjunctive Normal Form (DNF)</h2>
+
+                <div class="diagram-box">
+                    <h4>DNF Structure</h4>
+                    <div class="diagram-content">
+(term₁) ∨ (term₂) ∨ (term₃) ∨ ...
+
+Where each term is:
+(literal ∧ literal ∧ literal ∧ ...)
+                    </div>
+                </div>
+
+                <h3>What is DNF?</h3>
+                <div class="info-box blue">
+                    <p><strong>Definition:</strong> A proposition is in <strong>Disjunctive Normal Form (DNF)</strong> if it is a disjunction (OR) of one or more terms, where each term is a conjunction (AND) of literals.</p>
+                    <p><strong>Also called:</strong> "Sum of Products" (from Boolean algebra)</p>
+                    <p><strong>Pattern:</strong> $$ (L_{11} \land L_{12} \land \ldots) \lor (L_{21} \land L_{22} \land \ldots) \lor \ldots $$</p>
+                </div>
+
+                <h3>DNF Examples</h3>
+                <div class="accordion">
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Example 1:</strong> Simple DNF</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <div class="expression-display">
+(P ∧ Q) ∨ (¬P ∧ R)
+                            </div>
+                            <p><strong>Analysis:</strong></p>
+                            <ul>
+                                <li>Main operator: OR ($$ \lor $$) ✓</li>
+                                <li>Term 1: $$ P \land Q $$ (conjunction of literals) ✓</li>
+                                <li>Term 2: $$ \neg P \land R $$ (conjunction of literals) ✓</li>
+                                <li><strong>This is in DNF</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Example 2:</strong> Three-Term DNF</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <div class="expression-display">
+(P ∧ Q ∧ R) ∨ (¬P ∧ ¬Q) ∨ (Q ∧ ¬R)
+                            </div>
+                            <p><strong>Analysis:</strong></p>
+                            <ul>
+                                <li>Main operator: OR connecting three terms ✓</li>
+                                <li>Term 1: $$ P \land Q \land R $$ (3 literals) ✓</li>
+                                <li>Term 2: $$ \neg P \land \neg Q $$ (2 literals) ✓</li>
+                                <li>Term 3: $$ Q \land \neg R $$ (2 literals) ✓</li>
+                                <li><strong>This is in DNF</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Example 3:</strong> NOT in DNF</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <div class="expression-display">
+(P ∨ Q) ∧ R
+                            </div>
+                            <p><strong>Why NOT DNF?</strong></p>
+                            <ul>
+                                <li>Main operator: AND ($$ \land $$) ✗</li>
+                                <li>For DNF, we need OR at the top level</li>
+                                <li>This has OR nested inside an AND</li>
+                                <li><strong>This is actually in CNF, not DNF</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Converting to DNF: Step-by-Step Algorithm</h3>
+                <div class="info-box gold">
+                    <h4>🔧 DNF Conversion Algorithm</h4>
+                    <ol>
+                        <li><strong>Eliminate implications and biconditionals:</strong>
+                            <ul>
+                                <li>$$ P \to Q \equiv \neg P \lor Q $$</li>
+                                <li>$$ P \leftrightarrow Q \equiv (P \to Q) \land (Q \to P) $$</li>
+                            </ul>
+                        </li>
+                        <li><strong>Move negations inward (De Morgan's Laws):</strong>
+                            <ul>
+                                <li>$$ \neg(P \land Q) \equiv \neg P \lor \neg Q $$</li>
+                                <li>$$ \neg(P \lor Q) \equiv \neg P \land \neg Q $$</li>
+                                <li>$$ \neg \neg P \equiv P $$</li>
+                            </ul>
+                        </li>
+                        <li><strong>Distribute AND over OR:</strong>
+                            <ul>
+                                <li>$$ P \land (Q \lor R) \equiv (P \land Q) \lor (P \land R) $$</li>
+                                <li>$$ (P \lor Q) \land R \equiv (P \land R) \lor (Q \land R) $$</li>
+                            </ul>
+                        </li>
+                        <li><strong>Simplify using equivalence laws</strong> (optional but recommended)</li>
+                    </ol>
+                </div>
+
+                <h3>Worked Example: Converting to DNF</h3>
+                <div class="step-box">
+                    <p><span class="step-number">0</span><strong>Original Expression:</strong></p>
+                    <div class="expression-display">
+(P ∨ Q) ∧ R
+                    </div>
+                </div>
+
+                <div class="step-box">
+                    <p><span class="step-number">1</span><strong>Distribute AND over OR:</strong></p>
+                    <p>Apply $$ (P \lor Q) \land R \equiv (P \land R) \lor (Q \land R) $$</p>
+                    <div class="expression-display">
+(P ∧ R) ∨ (Q ∧ R)
+                    </div>
+                    <p><strong>Result:</strong> Now in DNF! ✓</p>
+                </div>
+
+                <div class="info-box green">
+                    <p><strong>Final DNF:</strong> $$ (P \land R) \lor (Q \land R) $$</p>
+                    <p>This is DNF because:</p>
+                    <ul>
+                        <li>Main operator is OR</li>
+                        <li>Each term is a conjunction of literals</li>
+                        <li>Structure: OR of ANDs ✓</li>
+                    </ul>
+                </div>
+
+                <h3>Complex Example: Converting to DNF</h3>
+                <div class="step-box">
+                    <p><span class="step-number">0</span><strong>Original Expression:</strong></p>
+                    <div class="expression-display">
+(P → Q) ∧ (Q → R)
+                    </div>
+                </div>
+
+                <div class="step-box">
+                    <p><span class="step-number">1</span><strong>Eliminate implications:</strong></p>
+                    <div class="expression-display">
+(¬P ∨ Q) ∧ (¬Q ∨ R)
+                    </div>
+                </div>
+
+                <div class="step-box">
+                    <p><span class="step-number">2</span><strong>Distribute AND over OR:</strong></p>
+                    <p>Use $$ (A \lor B) \land (C \lor D) \equiv (A \land C) \lor (A \land D) \lor (B \land C) \lor (B \land D) $$</p>
+                    <div class="expression-display">
+(¬P ∧ ¬Q) ∨ (¬P ∧ R) ∨ (Q ∧ ¬Q) ∨ (Q ∧ R)
+                    </div>
+                </div>
+
+                <div class="step-box">
+                    <p><span class="step-number">3</span><strong>Simplify (eliminate contradiction):</strong></p>
+                    <p>$$ Q \land \neg Q \equiv \bot $$ (contradiction, always false)</p>
+                    <div class="expression-display">
+(¬P ∧ ¬Q) ∨ (¬P ∧ R) ∨ (Q ∧ R)
+                    </div>
+                </div>
+
+                <div class="info-box green">
+                    <p><strong>Final DNF:</strong> $$ (\neg P \land \neg Q) \lor (\neg P \land R) \lor (Q \land R) $$</p>
+                    <p>This is DNF because:</p>
+                    <ul>
+                        <li>Main operator is OR</li>
+                        <li>Each term is a conjunction of literals</li>
+                        <li>All contradictions removed</li>
+                    </ul>
+                </div>
+
+                <h3>Converting from Truth Tables to DNF</h3>
+                <div class="info-box blue">
+                    <h4>Method: Use Minterms</h4>
+                    <p>A <strong>minterm</strong> is a term that is true for exactly one row of the truth table.</p>
+                    <p><strong>Algorithm:</strong></p>
+                    <ol>
+                        <li>Find all rows where the expression is <strong>TRUE</strong></li>
+                        <li>For each TRUE row, create a minterm:
+                            <ul>
+                                <li>If variable is TRUE in that row, use the variable itself</li>
+                                <li>If variable is FALSE in that row, use its negation</li>
+                                <li>AND all the literals together</li>
+                            </ul>
+                        </li>
+                        <li>OR all the minterms together</li>
+                    </ol>
+                </div>
+
+                <h3>Example: Truth Table to DNF</h3>
+                <p>Suppose we want DNF for an expression that is TRUE only when:</p>
+                <ul>
+                    <li>Row 1: $$ P = T, Q = F $$ (expression is TRUE)</li>
+                    <li>Row 2: $$ P = F, Q = T $$ (expression is TRUE)</li>
+                </ul>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>P</th>
+                            <th>Q</th>
+                            <th>Expression</th>
+                            <th>Minterm (if TRUE)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>T</td>
+                            <td>T</td>
+                            <td>F</td>
+                            <td>—</td>
+                        </tr>
+                        <tr>
+                            <td>T</td>
+                            <td>F</td>
+                            <td>T</td>
+                            <td>$$ P \land \neg Q $$</td>
+                        </tr>
+                        <tr>
+                            <td>F</td>
+                            <td>T</td>
+                            <td>T</td>
+                            <td>$$ \neg P \land Q $$</td>
+                        </tr>
+                        <tr>
+                            <td>F</td>
+                            <td>F</td>
+                            <td>F</td>
+                            <td>—</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p><strong>DNF:</strong> $$ (P \land \neg Q) \lor (\neg P \land Q) $$</p>
+
+                <div class="info-box gold">
+                    <h4>💡 Why This Works</h4>
+                    <p>Each minterm is TRUE for exactly one row. By ORing them together, the entire expression is TRUE when ANY minterm is TRUE, which happens for exactly the TRUE rows we identified.</p>
+                    <p><strong>Note:</strong> This DNF represents the <strong>XOR</strong> (exclusive OR) function!</p>
+                </div>
+
+                <h3>DNF vs CNF: When to Use Which?</h3>
+                <div class="comparison-table">
+                    <div class="comparison-card">
+                        <h4>Use DNF When:</h4>
+                        <ul>
+                            <li>Expression has few TRUE rows in truth table</li>
+                            <li>Building from minterms</li>
+                            <li>Implementing in hardware with OR gates at output</li>
+                            <li>Database query optimization (OR of conditions)</li>
+                            <li>More intuitive for "any of these conditions"</li>
+                        </ul>
+                    </div>
+
+                    <div class="comparison-card">
+                        <h4>Use CNF When:</h4>
+                        <ul>
+                            <li>Expression has few FALSE rows in truth table</li>
+                            <li>Building from maxterms</li>
+                            <li>Input to SAT solvers (standard format)</li>
+                            <li>Automated theorem proving</li>
+                            <li>More intuitive for "all of these must be satisfied"</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CONVERTER SECTION -->
+        <section id="converter-section" class="content-section" role="tabpanel" aria-labelledby="tab-converter">
+            <div class="card">
+                <h2><span class="card-icon" aria-hidden="true">🔄</span> Interactive CNF/DNF Converter</h2>
+                <p>Practice converting expressions to normal forms with this interactive tool!</p>
+
+                <div class="converter-box">
+                    <h3>Expression Converter</h3>
+                    <div class="converter-input-group">
+                        <label for="input-expression">Enter your expression (use ∧, ∨, ¬, →, ↔):</label>
+                        <input type="text" id="input-expression" class="answer-input" placeholder="Example: (P → Q) ∧ R">
+                    </div>
+
+                    <button class="btn btn-primary" onclick="convertToCNF()">Convert to CNF</button>
+                    <button class="btn btn-success" onclick="convertToDNF()">Convert to DNF</button>
+                    <button class="btn btn-secondary" onclick="clearConverter()">Clear</button>
+
+                    <div id="conversion-steps" class="converter-output">
+                        <em>Enter an expression and click a conversion button to see the step-by-step process.</em>
+                    </div>
+                </div>
+
+                <div class="info-box orange">
+                    <h3>⚠️ Note About This Converter</h3>
+                    <p>This is a <strong>demonstration tool</strong> that shows the conversion process for common expressions. For PE-04, you'll need to implement the full conversion algorithm in your chosen programming language (Java or C++).</p>
+                    <p><strong>Supported operators:</strong></p>
+                    <ul>
+                        <li>∧ or AND for conjunction</li>
+                        <li>∨ or OR for disjunction</li>
+                        <li>¬ or NOT for negation</li>
+                        <li>→ or -> for implication</li>
+                        <li>↔ or <-> for biconditional</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2><span class="card-icon" aria-hidden="true">📊</span> Comparison: CNF vs DNF</h2>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Aspect</th>
+                            <th>CNF (Conjunctive Normal Form)</th>
+                            <th>DNF (Disjunctive Normal Form)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Structure</strong></td>
+                            <td>AND of ORs</td>
+                            <td>OR of ANDs</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Main Operator</strong></td>
+                            <td>∧ (conjunction)</td>
+                            <td>∨ (disjunction)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Components</strong></td>
+                            <td>Clauses (disjunctions)</td>
+                            <td>Terms (conjunctions)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>From Truth Table</strong></td>
+                            <td>Use FALSE rows (maxterms)</td>
+                            <td>Use TRUE rows (minterms)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Distribution Law</strong></td>
+                            <td>Distribute OR over AND</td>
+                            <td>Distribute AND over OR</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Common Use</strong></td>
+                            <td>SAT solvers, theorem provers</td>
+                            <td>Circuit design, databases</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Interpretation</strong></td>
+                            <td>"All clauses must be satisfied"</td>
+                            <td>"At least one term must be satisfied"</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Example</strong></td>
+                            <td>(P ∨ Q) ∧ (¬P ∨ R)</td>
+                            <td>(P ∧ Q) ∨ (¬P ∧ R)</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="info-box blue">
+                    <h3>🔍 Key Insight</h3>
+                    <p>CNF and DNF are <strong>duals</strong> of each other:</p>
+                    <ul>
+                        <li>Swapping ∧ with ∨ in CNF gives you DNF structure</li>
+                        <li>The conversion process is similar, just with different distribution laws</li>
+                        <li>Both can represent any Boolean function</li>
+                        <li>The "best" form depends on your application</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- PRACTICE SECTION -->
+        <section id="practice-section" class="content-section" role="tabpanel" aria-labelledby="tab-practice">
+            <div class="card">
+                <h2><span class="card-icon" aria-hidden="true">✏️</span> Interactive Practice</h2>
+                <p>Test your understanding with these practice problems!</p>
+            </div>
+
+            <div class="practice-area">
+                <h3>Practice Problem 1: Identify the Form</h3>
+                <div class="practice-question">
+                    <h4>Problem:</h4>
+                    <p>Is the following expression in CNF, DNF, both, or neither?</p>
+                    <div class="expression-display">
+(P ∧ Q) ∨ (¬P ∧ R) ∨ (Q ∧ ¬R)
+                    </div>
+                    <label for="practice1-answer"><strong>Your answer (CNF, DNF, Both, or Neither):</strong></label>
+                    <input type="text" id="practice1-answer" class="answer-input" placeholder="Enter your answer...">
+                    <button class="btn btn-primary" onclick="checkAnswer(1, 'DNF')">Check Answer</button>
+                    <button class="btn btn-secondary" onclick="showHint(1)">Show Hint</button>
+                    <div id="practice1-feedback" class="feedback"></div>
+                    <div id="practice1-hint" class="feedback hint" style="display: none;">
+                        <strong>Hint:</strong> Look at the main operator. Is it AND or OR? Then check what each component looks like.
+                    </div>
+                </div>
+
+                <div class="practice-question">
+                    <h4>Problem 2:</h4>
+                    <p>Convert to CNF: $$ P \lor (Q \land R) $$</p>
+                    <div class="expression-display">
+P ∨ (Q ∧ R)
+                    </div>
+                    <label for="practice2-answer"><strong>Your answer (use text notation):</strong></label>
+                    <input type="text" id="practice2-answer" class="answer-input" placeholder="Example: (P ∨ Q) ∧ (P ∨ R)">
+                    <button class="btn btn-primary" onclick="checkAnswer(2, '(P ∨ Q) ∧ (P ∨ R)')">Check Answer</button>
+                    <button class="btn btn-secondary" onclick="showHint(2)">Show Hint</button>
+                    <div id="practice2-feedback" class="feedback"></div>
+                    <div id="practice2-hint" class="feedback hint" style="display: none;">
+                        <strong>Hint:</strong> Use the distributive law: $$ P \lor (Q \land R) \equiv (P \lor Q) \land (P \lor R) $$
+                    </div>
+                </div>
+
+                <div class="practice-question">
+                    <h4>Problem 3:</h4>
+                    <p>Convert to DNF: $$ (P \lor Q) \land R $$</p>
+                    <div class="expression-display">
+(P ∨ Q) ∧ R
+                    </div>
+                    <label for="practice3-answer"><strong>Your answer:</strong></label>
+                    <input type="text" id="practice3-answer" class="answer-input" placeholder="Example: (P ∧ R) ∨ (Q ∧ R)">
+                    <button class="btn btn-primary" onclick="checkAnswer(3, '(P ∧ R) ∨ (Q ∧ R)')">Check Answer</button>
+                    <button class="btn btn-secondary" onclick="showHint(3)">Show Hint</button>
+                    <div id="practice3-feedback" class="feedback"></div>
+                    <div id="practice3-hint" class="feedback hint" style="display: none;">
+                        <strong>Hint:</strong> Distribute AND over OR: $$ (P \lor Q) \land R \equiv (P \land R) \lor (Q \land R) $$
+                    </div>
+                </div>
+
+                <div class="practice-question">
+                    <h4>Problem 4:</h4>
+                    <p>Convert to CNF: $$ \neg(P \to Q) $$</p>
+                    <div class="expression-display">
+¬(P → Q)
+                    </div>
+                    <label for="practice4-answer"><strong>Your answer:</strong></label>
+                    <input type="text" id="practice4-answer" class="answer-input" placeholder="Enter your answer...">
+                    <button class="btn btn-primary" onclick="checkAnswer(4, 'P ∧ ¬Q')">Check Answer</button>
+                    <button class="btn btn-secondary" onclick="showHint(4)">Show Hint</button>
+                    <div id="practice4-feedback" class="feedback"></div>
+                    <div id="practice4-hint" class="feedback hint" style="display: none;">
+                        <strong>Hint:</strong> First eliminate implication: $$ P \to Q \equiv \neg P \lor Q $$, then negate using De Morgan's Law
+                    </div>
+                </div>
+
+                <div class="practice-question">
+                    <h4>Problem 5:</h4>
+                    <p>Is $$ P \land Q \land R $$ in CNF, DNF, or both?</p>
+                    <div class="expression-display">
+P ∧ Q ∧ R
+                    </div>
+                    <label for="practice5-answer"><strong>Your answer:</strong></label>
+                    <input type="text" id="practice5-answer" class="answer-input" placeholder="CNF, DNF, or Both">
+                    <button class="btn btn-primary" onclick="checkAnswer(5, 'Both')">Check Answer</button>
+                    <button class="btn btn-secondary" onclick="showHint(5)">Show Hint</button>
+                    <div id="practice5-feedback" class="feedback"></div>
+                    <div id="practice5-hint" class="feedback hint" style="display: none;">
+                        <strong>Hint:</strong> Can you view this as AND of clauses? Can you view it as OR of terms?
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2><span class="card-icon" aria-hidden="true">🎓</span> Challenge Problems</h2>
+                
+                <div class="accordion">
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Challenge 1:</strong> Convert $$ (P \to Q) \land (Q \to R) $$ to both CNF and DNF</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <h4>Original Expression:</h4>
+                            <div class="expression-display">
+(P → Q) ∧ (Q → R)
+                            </div>
+
+                            <h4>CNF Conversion:</h4>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Step</th>
+                                        <th>Expression</th>
+                                        <th>Justification</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>$$ (P \to Q) \land (Q \to R) $$</td>
+                                        <td>Original</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>$$ (\neg P \lor Q) \land (\neg Q \lor R) $$</td>
+                                        <td>Eliminate implications</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td><strong>CNF: $$ (\neg P \lor Q) \land (\neg Q \lor R) $$</strong></td>
+                                        <td>Already in CNF!</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <h4>DNF Conversion:</h4>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Step</th>
+                                        <th>Expression</th>
+                                        <th>Justification</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>$$ (\neg P \lor Q) \land (\neg Q \lor R) $$</td>
+                                        <td>From CNF form</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>$$ (\neg P \land \neg Q) \lor (\neg P \land R) \lor (Q \land \neg Q) \lor (Q \land R) $$</td>
+                                        <td>Distribute AND over OR</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td>$$ (\neg P \land \neg Q) \lor (\neg P \land R) \lor (Q \land R) $$</td>
+                                        <td>Eliminate $$ Q \land \neg Q \equiv \bot $$</td>
+                                    </tr>
+                                    <tr>
+                                        <td>4</td>
+                                        <td><strong>DNF: $$ (\neg P \land \neg Q) \lor (\neg P \land R) \lor (Q \land R) $$</strong></td>
+                                        <td>Final DNF</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="info-box green">
+                                <p><strong>Observation:</strong> The CNF form is much simpler (2 clauses) than the DNF form (3 terms). This is common when the original expression has AND at the top level.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Challenge 2:</strong> From Truth Table to Both Forms</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <h4>Truth Table:</h4>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>P</th>
+                                        <th>Q</th>
+                                        <th>R</th>
+                                        <th>F(P,Q,R)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>T</td>
+                                        <td>T</td>
+                                        <td>T</td>
+                                        <td>T</td>
+                                    </tr>
+                                    <tr>
+                                        <td>T</td>
+                                        <td>T</td>
+                                        <td>F</td>
+                                        <td>F</td>
+                                    </tr>
+                                    <tr>
+                                        <td>T</td>
+                                        <td>F</td>
+                                        <td>T</td>
+                                        <td>T</td>
+                                    </tr>
+                                    <tr>
+                                        <td>T</td>
+                                        <td>F</td>
+                                        <td>F</td>
+                                        <td>F</td>
+                                    </tr>
+                                    <tr>
+                                        <td>F</td>
+                                        <td>T</td>
+                                        <td>T</td>
+                                        <td>F</td>
+                                    </tr>
+                                    <tr>
+                                        <td>F</td>
+                                        <td>T</td>
+                                        <td>F</td>
+                                        <td>F</td>
+                                    </tr>
+                                    <tr>
+                                        <td>F</td>
+                                        <td>F</td>
+                                        <td>T</td>
+                                        <td>T</td>
+                                    </tr>
+                                    <tr>
+                                        <td>F</td>
+                                        <td>F</td>
+                                        <td>F</td>
+                                        <td>F</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <h4>DNF (from TRUE rows - minterms):</h4>
+                            <p>TRUE rows: 1, 3, 7</p>
+                            <ul>
+                                <li>Row 1 (TTT): $$ P \land Q \land R $$</li>
+                                <li>Row 3 (TFT): $$ P \land \neg Q \land R $$</li>
+                                <li>Row 7 (FFT): $$ \neg P \land \neg Q \land R $$</li>
+                            </ul>
+                            <div class="expression-display">
+DNF: (P ∧ Q ∧ R) ∨ (P ∧ ¬Q ∧ R) ∨ (¬P ∧ ¬Q ∧ R)
+                            </div>
+
+                            <h4>CNF (from FALSE rows - maxterms):</h4>
+                            <p>FALSE rows: 2, 4, 5, 6, 8</p>
+                            <ul>
+                                <li>Row 2 (TTF): $$ \neg P \lor \neg Q \lor R $$</li>
+                                <li>Row 4 (TFF): $$ \neg P \lor Q \lor R $$</li>
+                                <li>Row 5 (FTT): $$ P \lor \neg Q \lor \neg R $$</li>
+                                <li>Row 6 (FTF): $$ P \lor \neg Q \lor R $$</li>
+                                <li>Row 8 (FFF): $$ P \lor Q \lor R $$</li>
+                            </ul>
+                            <div class="expression-display">
+CNF: (¬P ∨ ¬Q ∨ R) ∧ (¬P ∨ Q ∨ R) ∧ 
+     (P ∨ ¬Q ∨ ¬R) ∧ (P ∨ ¬Q ∨ R) ∧ 
+     (P ∨ Q ∨ R)
+                            </div>
+
+                            <div class="info-box gold">
+                                <p><strong>Observation:</strong> DNF has 3 terms (3 TRUE rows), CNF has 5 clauses (5 FALSE rows). When there are fewer TRUE rows, DNF is more compact!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- QUIZ SECTION -->
+        <section id="quiz-section" class="content-section" role="tabpanel" aria-labelledby="tab-quiz">
+            <div class="card">
+                <h2><span class="card-icon" aria-hidden="true">🎯</span> Self-Assessment Quiz</h2>
+                <p>Test your understanding of CNF and DNF! Select the best answer for each question.</p>
+            </div>
+
+            <div class="quiz-container">
+                <div class="quiz-question" id="q1">
+                    <h3>Question 1:</h3>
+                    <p>Which of the following is in Conjunctive Normal Form (CNF)?</p>
+                    <ul class="quiz-options">
+                        <li class="quiz-option" onclick="selectQuizOption(1, 'A', false)">A) $$ (P \land Q) \lor R $$</li>
+                        <li class="quiz-option" onclick="selectQuizOption(1, 'B', true)">B) $$ (P \lor Q) \land (R \lor S) $$</li>
+                        <li class="quiz-option" onclick="selectQuizOption(1, 'C', false)">C) $$ P \lor (Q \land R) $$</li>
+                        <li class="quiz-option" onclick="selectQuizOption(1, 'D', false)">D) $$ (P \land Q) \lor (R \land S) $$</li>
+                    </ul>
+                    <div id="q1-feedback" class="feedback"></div>
+                </div>
+
+                <div class="quiz-question" id="q2">
+                    <h3>Question 2:</h3>
+                    <p>What is the CNF of $$ P \lor (Q \land R) $$?</p>
+                    <ul class="quiz-options">
+                        <li class="quiz-option" onclick="selectQuizOption(2, 'A', false)">A) $$ (P \land Q) \lor (P \land R) $$</li>
+                        <li class="quiz-option" onclick="selectQuizOption(2, 'B', true)">B) $$ (P \lor Q) \land (P \lor R) $$</li>
+                        <li class="quiz-option" onclick="selectQuizOption(2, 'C', false)">C) $$ P \lor Q \lor R $$</li>
+                        <li class="quiz-option" onclick="selectQuizOption(2, 'D', false)">D) $$ P \land (Q \lor R) $$</li>
+                    </ul>
+                    <div id="q2-feedback" class="feedback"></div>
+                </div>
+
+                <div class="quiz-question" id="q3">
+                    <h3>Question 3:</h3>
+                    <p>Which structure describes DNF?</p>
+                    <ul class="quiz-options">
+                        <li class="quiz-option" onclick="selectQuizOption(3, 'A', false)">A) AND of ORs</li>
+                        <li class="quiz-option" onclick="selectQuizOption(3, 'B', true)">B) OR of ANDs</li>
+                        <li class="quiz-option" onclick="selectQuizOption(3, 'C', false)">C) OR of ORs</li>
+                        <li class="quiz-option" onclick="selectQuizOption(3, 'D', false)">D) AND of ANDs</li>
+                    </ul>
+                    <div id="q3-feedback" class="feedback"></div>
+                </div>
+
+                <div class="quiz-question" id="q4">
+                    <h3>Question 4:</h3>
+                    <p>To convert a truth table to DNF, you use:</p>
+                    <ul class="quiz-options">
+                        <li class="quiz-option" onclick="selectQuizOption(4, 'A', false)">A) Maxterms from FALSE rows</li>
+                        <li class="quiz-option" onclick="selectQuizOption(4, 'B', true)">B) Minterms from TRUE rows</li>
+                        <li class="quiz-option" onclick="selectQuizOption(4, 'C', false)">C) All rows equally</li>
+                        <li class="quiz-option" onclick="selectQuizOption(4, 'D', false)">D) Only rows with all TRUE values</li>
+                    </ul>
+                    <div id="q4-feedback" class="feedback"></div>
+                </div>
+
+                <div class="quiz-question" id="q5">
+                    <h3>Question 5:</h3>
+                    <p>Which expression is in BOTH CNF and DNF?</p>
+                    <ul class="quiz-options">
+                        <li class="quiz-option" onclick="selectQuizOption(5, 'A', false)">A) $$ (P \lor Q) \land R $$</li>
+                        <li class="quiz-option" onclick="selectQuizOption(5, 'B', false)">B) $$ P \lor (Q \land R) $$</li>
+                        <li class="quiz-option" onclick="selectQuizOption(5, 'C', true)">C) $$ P \land Q $$</li>
+                        <li class="quiz-option" onclick="selectQuizOption(5, 'D', false)">D) $$ (P \land Q) \lor (R \land S) $$</li>
+                    </ul>
+                    <div id="q5-feedback" class="feedback"></div>
+                </div>
+
+                <div class="quiz-question" id="q6">
+                    <h3>Question 6:</h3>
+                    <p>What is the DNF of $$ (P \lor Q) \land R $$?</p>
+                    <ul class="quiz-options">
+                        <li class="quiz-option" onclick="selectQuizOption(6, 'A', true)">A) $$ (P \land R) \lor (Q \land R) $$</li>
+                        <li class="quiz-option" onclick="selectQuizOption(6, 'B', false)">B) $$ (P \lor R) \land (Q \lor R) $$</li>
+                        <li class="quiz-option" onclick="selectQuizOption(6, 'C', false)">C) $$ P \lor Q \lor R $$</li>
+                        <li class="quiz-option" onclick="selectQuizOption(6, 'D', false)">D) $$ (P \land Q) \lor R $$</li>
+                    </ul>
+                    <div id="q6-feedback" class="feedback"></div>
+                </div>
+
+                <button class="btn btn-success" onclick="submitQuiz()" id="submit-quiz-btn">Submit Quiz</button>
+                <div id="quiz-results" class="feedback" style="display: none;"></div>
+            </div>
+        </section>
+    </main>
+
+    <footer style="text-align: center; padding: 30px; margin-top: 40px; background: var(--light-bg); border-radius: 10px;">
+        <p><strong>Module 4.2: Normal Forms (CNF and DNF)</strong></p>
+        <p>CSC 240 - Discrete Structures | Mendocino College</p>
+        <p>© 2026 Mendocino College | All Rights Reserved</p>
+    </footer>
+
+    <script>
+        // Global state
+        let quizAnswers = {};
+        let practiceCompleted = {1: false, 2: false, 3: false, 4: false, 5: false};
+
+        // Tab Navigation
+        function showSection(sectionId) {
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+
+            const tabs = document.querySelectorAll('.nav-tab');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+                tab.setAttribute('aria-selected', 'false');
+            });
+
+            const activeSection = document.getElementById(sectionId + '-section');
+            if (activeSection) {
+                activeSection.classList.add('active');
+            }
+
+            const activeTab = document.getElementById('tab-' + sectionId);
+            if (activeTab) {
+                activeTab.classList.add('active');
+                activeTab.setAttribute('aria-selected', 'true');
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            sessionStorage.setItem('activeTab', sectionId);
+            updateProgress();
+        }
+
+        // Accordion Toggle
+        function toggleAccordion(header) {
+            const item = header.parentElement;
+            const wasActive = item.classList.contains('active');
+            
+            const allItems = document.querySelectorAll('.accordion-item');
+            allItems.forEach(i => {
+                i.classList.remove('active');
+                i.querySelector('.accordion-header').setAttribute('aria-expanded', 'false');
+            });
+
+            if (!wasActive) {
+                item.classList.add('active');
+                header.setAttribute('aria-expanded', 'true');
+            }
+        }
+
+        // Practice Problems
+        function checkAnswer(problemNum, correctAnswer) {
+            const input = document.getElementById(`practice${problemNum}-answer`);
+            const feedback = document.getElementById(`practice${problemNum}-feedback`);
+            const userAnswer = input.value.trim();
+
+            const normalizedUser = userAnswer.replace(/\s+/g, '').toUpperCase();
+            const normalizedCorrect = correctAnswer.replace(/\s+/g, '').toUpperCase();
+
+            feedback.classList.remove('correct', 'incorrect');
+            feedback.classList.add('show');
+
+            if (normalizedUser === normalizedCorrect) {
+                feedback.classList.add('correct');
+                feedback.innerHTML = `<strong>✓ Correct!</strong> ${correctAnswer} is the right answer.`;
+                practiceCompleted[problemNum] = true;
+                updateProgress();
+            } else {
+                feedback.classList.add('incorrect');
+                feedback.innerHTML = `<strong>✗ Not quite.</strong> Try again or click "Show Hint" for help.`;
+            }
+        }
+
+        function showHint(problemNum) {
+            const hint = document.getElementById(`practice${problemNum}-hint`);
+            hint.style.display = 'block';
+        }
+
+        // Converter Functions
+        function convertToCNF() {
+            const input = document.getElementById('input-expression').value.trim();
+            const output = document.getElementById('conversion-steps');
+            
+            if (!input) {
+                output.innerHTML = '<em style="color: var(--danger-red);">Please enter an expression first.</em>';
+                return;
+            }
+
+            // Simple demonstration - in PE-04, students implement full algorithm
+            output.innerHTML = `
+                <h4>Converting to CNF: ${input}</h4>
+                <p><strong>Note:</strong> This is a demonstration. Your PE-04 will implement the full algorithm.</p>
+                <ol>
+                    <li>Eliminate implications and biconditionals</li>
+                    <li>Move negations inward (De Morgan's Laws)</li>
+                    <li>Distribute OR over AND</li>
+                    <li>Simplify</li>
+                </ol>
+                <p><em>For this expression, implement the conversion algorithm in your PE-04 assignment!</em></p>
+            `;
+        }
+
+        function convertToDNF() {
+            const input = document.getElementById('input-expression').value.trim();
+            const output = document.getElementById('conversion-steps');
+            
+            if (!input) {
+                output.innerHTML = '<em style="color: var(--danger-red);">Please enter an expression first.</em>';
+                return;
+            }
+
+            output.innerHTML = `
+                <h4>Converting to DNF: ${input}</h4>
+                <p><strong>Note:</strong> This is a demonstration. Your PE-04 will implement the full algorithm.</p>
+                <ol>
+                    <li>Eliminate implications and biconditionals</li>
+                    <li>Move negations inward (De Morgan's Laws)</li>
+                    <li>Distribute AND over OR</li>
+                    <li>Simplify</li>
+                </ol>
+                <p><em>For this expression, implement the conversion algorithm in your PE-04 assignment!</em></p>
+            `;
+        }
+
+        function clearConverter() {
+            document.getElementById('input-expression').value = '';
+            document.getElementById('conversion-steps').innerHTML = '<em>Enter an expression and click a conversion button to see the step-by-step process.</em>';
+        }
+
+        // Quiz Functions
+        function selectQuizOption(questionNum, option, isCorrect) {
+            const question = document.getElementById(`q${questionNum}`);
+            const options = question.querySelectorAll('.quiz-option');
+            const feedback = document.getElementById(`q${questionNum}-feedback`);
+
+            options.forEach(opt => {
+                opt.classList.remove('selected');
+            });
+
+            event.target.classList.add('selected');
+            quizAnswers[questionNum] = {option, isCorrect};
+
+            feedback.style.display = 'none';
+            feedback.classList.remove('show', 'correct', 'incorrect');
+        }
+
+        function submitQuiz() {
+            let correct = 0;
+            const total = 6;
+
+            for (let i = 1; i <= total; i++) {
+                const question = document.getElementById(`q${i}`);
+                const options = question.querySelectorAll('.quiz-option');
+                const feedback = document.getElementById(`q${i}-feedback`);
+                const answer = quizAnswers[i];
+
+                if (answer) {
+                    feedback.classList.add('show');
+                    if (answer.isCorrect) {
+                        feedback.classList.add('correct');
+                        feedback.innerHTML = '<strong>✓ Correct!</strong>';
+                        correct++;
+                        
+                        options.forEach(opt => {
+                            if (opt.classList.contains('selected')) {
+                                opt.classList.add('correct');
+                            }
+                        });
+                    } else {
+                        feedback.classList.add('incorrect');
+                        feedback.innerHTML = '<strong>✗ Incorrect.</strong> Review the concepts and try again.';
+                        
+                        options.forEach(opt => {
+                            if (opt.classList.contains('selected')) {
+                                opt.classList.add('incorrect');
+                            }
+                        });
+                    }
+                }
+            }
+
+            const results = document.getElementById('quiz-results');
+            results.style.display = 'block';
+            results.classList.add('show');
+            
+            const percentage = Math.round((correct / total) * 100);
+            
+            if (percentage >= 80) {
+                results.classList.add('correct');
+                results.innerHTML = `<strong>🎉 Excellent!</strong> You scored ${correct}/${total} (${percentage}%). You've mastered normal forms!`;
+            } else if (percentage >= 60) {
+                results.classList.add('hint');
+                results.innerHTML = `<strong>Good effort!</strong> You scored ${correct}/${total} (${percentage}%). Review the concepts and try again.`;
+            } else {
+                results.classList.add('incorrect');
+                results.innerHTML = `<strong>Keep practicing!</strong> You scored ${correct}/${total} (${percentage}%). Review the material and retake the quiz.`;
+            }
+
+            document.getElementById('submit-quiz-btn').style.display = 'none';
+            updateProgress();
+        }
+
+        // Progress Tracking
+        function updateProgress() {
+            const sectionsVisited = new Set(JSON.parse(sessionStorage.getItem('sectionsVisited') || '[]'));
+            const currentTab = sessionStorage.getItem('activeTab');
+            if (currentTab) {
+                sectionsVisited.add(currentTab);
+                sessionStorage.setItem('sectionsVisited', JSON.stringify([...sectionsVisited]));
+            }
+
+            const totalSections = 7;
+            const practiceScore = Object.values(practiceCompleted).filter(Boolean).length;
+            const quizScore = Object.keys(quizAnswers).length;
+
+            let progress = (sectionsVisited.size / totalSections) * 40;
+            progress += (practiceScore / 5) * 30;
+            progress += (quizScore / 6) * 30;
+
+            progress = Math.min(Math.round(progress), 100);
+
+            const progressBar = document.getElementById('module-progress');
+            const progressText = document.getElementById('progress-text');
+            
+            progressBar.style.width = progress + '%';
+            progressBar.textContent = progress + '%';
+            progressBar.setAttribute('aria-valuenow', progress);
+
+            if (progress === 100) {
+                progressText.textContent = '🎉 Module Complete! Great job!';
+            } else {
+                progressText.textContent = `${progress}% complete - Keep going!`;
+            }
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.target.classList.contains('accordion-header')) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    toggleAccordion(e.target);
+                }
+            }
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTab = sessionStorage.getItem('activeTab');
+            if (savedTab) {
+                showSection(savedTab);
+            }
+            updateProgress();
+        });
+    </script>
+</body>
+</html>

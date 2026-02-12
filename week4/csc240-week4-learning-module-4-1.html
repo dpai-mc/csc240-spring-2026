@@ -1,0 +1,1873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="CSC 240 Module 4.1 - Logical Equivalences and Simplification Interactive Learning Module">
+    <title>Module 4.1: Logical Equivalences | CSC 240</title>
+    <style>
+        /* CSS Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-blue: #003366;
+            --secondary-blue: #0066cc;
+            --accent-gold: #FFB81C;
+            --success-green: #28a745;
+            --warning-orange: #ff8c00;
+            --danger-red: #dc3545;
+            --light-bg: #f8f9fa;
+            --white: #ffffff;
+            --text-dark: #212529;
+            --text-muted: #6c757d;
+            --border-color: #dee2e6;
+            --shadow: 0 2px 8px rgba(0,0,0,0.1);
+            --shadow-hover: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: var(--light-bg);
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Skip Link */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: var(--primary-blue);
+            color: var(--white);
+            padding: 8px;
+            text-decoration: none;
+            z-index: 100;
+        }
+
+        .skip-link:focus {
+            top: 0;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+            color: var(--white);
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .header-title h1 {
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+
+        .header-title p {
+            font-size: 1rem;
+            opacity: 0.95;
+        }
+
+        .module-badge {
+            background-color: var(--accent-gold);
+            color: var(--primary-blue);
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+        }
+
+        /* Navigation */
+        .nav-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+            background: var(--white);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+        }
+
+        .nav-tab {
+            flex: 1;
+            min-width: 120px;
+            padding: 12px 15px;
+            background: var(--light-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            color: var(--text-dark);
+            font-size: 0.9rem;
+        }
+
+        .nav-tab:hover {
+            background: var(--secondary-blue);
+            color: var(--white);
+            border-color: var(--secondary-blue);
+            transform: translateY(-2px);
+        }
+
+        .nav-tab.active {
+            background: var(--primary-blue);
+            color: var(--white);
+            border-color: var(--primary-blue);
+        }
+
+        .nav-tab:focus {
+            outline: 3px solid var(--accent-gold);
+            outline-offset: 2px;
+        }
+
+        /* Content Sections */
+        .content-section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Cards */
+        .card {
+            background: var(--white);
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow);
+            border-left: 5px solid var(--secondary-blue);
+        }
+
+        .card h2 {
+            color: var(--primary-blue);
+            margin-bottom: 15px;
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card h3 {
+            color: var(--secondary-blue);
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+
+        .card-icon {
+            font-size: 1.8rem;
+        }
+
+        /* Info Boxes */
+        .info-box {
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 5px solid;
+        }
+
+        .info-box.blue {
+            background-color: #e7f3ff;
+            border-color: var(--secondary-blue);
+        }
+
+        .info-box.gold {
+            background-color: #fff8e1;
+            border-color: var(--accent-gold);
+        }
+
+        .info-box.green {
+            background-color: #e8f5e9;
+            border-color: var(--success-green);
+        }
+
+        .info-box.orange {
+            background-color: #fff3e0;
+            border-color: var(--warning-orange);
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: var(--white);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--primary-blue);
+            color: var(--white);
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background-color: var(--light-bg);
+        }
+
+        /* Lists */
+        ul, ol {
+            margin-left: 25px;
+            margin-top: 10px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        /* Interactive Practice Area */
+        .practice-area {
+            background: var(--light-bg);
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 2px solid var(--border-color);
+        }
+
+        .practice-question {
+            background: var(--white);
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            border-left: 4px solid var(--secondary-blue);
+        }
+
+        .practice-question h4 {
+            color: var(--primary-blue);
+            margin-bottom: 10px;
+        }
+
+        .expression-display {
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border: 1px solid var(--border-color);
+        }
+
+        .answer-input {
+            width: 100%;
+            padding: 12px;
+            font-size: 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .answer-input:focus {
+            outline: none;
+            border-color: var(--secondary-blue);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+            margin: 5px;
+            font-size: 1rem;
+        }
+
+        .btn:focus {
+            outline: 3px solid var(--accent-gold);
+            outline-offset: 2px;
+        }
+
+        .btn-primary {
+            background: var(--primary-blue);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: var(--secondary-blue);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .btn-success {
+            background: var(--success-green);
+            color: var(--white);
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-secondary {
+            background: var(--light-bg);
+            color: var(--primary-blue);
+            border: 2px solid var(--primary-blue);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary-blue);
+            color: var(--white);
+        }
+
+        .feedback {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .feedback.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .feedback.correct {
+            background: #d4edda;
+            border: 2px solid var(--success-green);
+            color: #155724;
+        }
+
+        .feedback.incorrect {
+            background: #f8d7da;
+            border: 2px solid var(--danger-red);
+            color: #721c24;
+        }
+
+        .feedback.hint {
+            background: #fff3cd;
+            border: 2px solid var(--warning-orange);
+            color: #856404;
+        }
+
+        /* Progress Tracker */
+        .progress-container {
+            background: var(--white);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 30px;
+            background: var(--light-bg);
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success-green), var(--secondary-blue));
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-weight: bold;
+        }
+
+        /* Accordion */
+        .accordion {
+            margin: 20px 0;
+        }
+
+        .accordion-item {
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+
+        .accordion-header {
+            padding: 15px 20px;
+            background: var(--light-bg);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+
+        .accordion-header:hover {
+            background: #e3f2fd;
+        }
+
+        .accordion-header:focus {
+            outline: 3px solid var(--accent-gold);
+            outline-offset: -3px;
+        }
+
+        .accordion-icon {
+            transition: transform 0.3s ease;
+            font-size: 1.2rem;
+            color: var(--secondary-blue);
+        }
+
+        .accordion-item.active .accordion-icon {
+            transform: rotate(180deg);
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            padding: 0 20px;
+        }
+
+        .accordion-item.active .accordion-content {
+            max-height: 2000px;
+            padding: 20px;
+        }
+
+        /* Law Reference Cards */
+        .law-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--white);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            box-shadow: var(--shadow);
+        }
+
+        .law-card h4 {
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .law-formula {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            margin: 10px 0;
+        }
+
+        /* Interactive Quiz */
+        .quiz-container {
+            background: var(--white);
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            margin: 20px 0;
+        }
+
+        .quiz-question {
+            margin: 20px 0;
+        }
+
+        .quiz-options {
+            list-style: none;
+            margin: 15px 0;
+        }
+
+        .quiz-option {
+            padding: 12px;
+            margin: 8px 0;
+            background: var(--light-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-option:hover {
+            background: #e3f2fd;
+            border-color: var(--secondary-blue);
+        }
+
+        .quiz-option.selected {
+            background: var(--secondary-blue);
+            color: var(--white);
+            border-color: var(--secondary-blue);
+        }
+
+        .quiz-option.correct {
+            background: var(--success-green);
+            color: var(--white);
+            border-color: var(--success-green);
+        }
+
+        .quiz-option.incorrect {
+            background: var(--danger-red);
+            color: var(--white);
+            border-color: var(--danger-red);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .header-title h1 {
+                font-size: 1.5rem;
+            }
+
+            .nav-tabs {
+                flex-direction: column;
+            }
+
+            .nav-tab {
+                min-width: 100%;
+            }
+
+            .card {
+                padding: 15px;
+            }
+
+            table {
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            .nav-tabs, .btn, .practice-area {
+                display: none;
+            }
+
+            .content-section {
+                display: block !important;
+            }
+        }
+
+        /* Accessibility */
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            margin: -1px;
+            padding: 0;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0;
+        }
+
+        *:focus-visible {
+            outline: 3px solid var(--accent-gold);
+            outline-offset: 2px;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <header role="banner">
+        <div class="header-content">
+            <div class="header-title">
+                <h1>Module 4.1: Logical Equivalences and Simplification</h1>
+                <p>CSC 240 - Discrete Structures | Week 4</p>
+            </div>
+            <div class="module-badge" role="status">Module 4.1</div>
+        </div>
+    </header>
+
+    <nav class="nav-tabs" role="navigation" aria-label="Module content navigation">
+        <button class="nav-tab active" onclick="showSection('overview')" role="tab" aria-selected="true" id="tab-overview">
+            📋 Overview
+        </button>
+        <button class="nav-tab" onclick="showSection('concepts')" role="tab" aria-selected="false" id="tab-concepts">
+            📚 Concepts
+        </button>
+        <button class="nav-tab" onclick="showSection('laws')" role="tab" aria-selected="false" id="tab-laws">
+            ⚖️ Laws
+        </button>
+        <button class="nav-tab" onclick="showSection('examples')" role="tab" aria-selected="false" id="tab-examples">
+            💡 Examples
+        </button>
+        <button class="nav-tab" onclick="showSection('practice')" role="tab" aria-selected="false" id="tab-practice">
+            ✏️ Practice
+        </button>
+        <button class="nav-tab" onclick="showSection('quiz')" role="tab" aria-selected="false" id="tab-quiz">
+            🎯 Quiz
+        </button>
+    </nav>
+
+    <main id="main-content" role="main">
+        <!-- OVERVIEW SECTION -->
+        <section id="overview-section" class="content-section active" role="tabpanel" aria-labelledby="tab-overview">
+            <div class="card">
+                <h2><span class="card-icon" aria-hidden="true">📖</span> Module Overview</h2>
+                <p><strong>Estimated Time:</strong> 1.5 hours</p>
+                
+                <div class="info-box blue">
+                    <h3>🎯 Learning Objectives</h3>
+                    <ul>
+                        <li>Identify and apply fundamental logical equivalences (De Morgan's Laws, Distributive Laws, etc.)</li>
+                        <li>Simplify complex logical expressions using equivalence rules</li>
+                        <li>Recognize tautologies, contradictions, and contingencies</li>
+                        <li><strong>Maps to CSLO 1:</strong> Apply symbolic logic and proof methods to model and analyze program/algorithm correctness</li>
+                    </ul>
+                </div>
+
+                <h3>📚 What You'll Learn</h3>
+                <p>In this module, you'll master the art of simplifying logical expressions using equivalence laws. Just as you simplify algebraic expressions in mathematics, you can simplify Boolean expressions in logic. This skill is essential for:</p>
+                <ul>
+                    <li><strong>Code Optimization:</strong> Simplifying complex conditional statements</li>
+                    <li><strong>Circuit Design:</strong> Reducing the number of logic gates needed</li>
+                    <li><strong>Formal Verification:</strong> Proving that two expressions are equivalent</li>
+                    <li><strong>Algorithm Analysis:</strong> Understanding when different conditions produce the same results</li>
+                </ul>
+
+                <div class="info-box gold">
+                    <h3>🔗 Connection to Week 3</h3>
+                    <p>Last week, you learned about truth tables and basic logical operators. This week, we build on that foundation by learning how to <strong>transform</strong> logical expressions without changing their meaning. Think of it as learning the "algebra" of logic!</p>
+                </div>
+
+                <h3>📋 Topics Covered</h3>
+                <ol>
+                    <li>Review of logical equivalences from Week 3</li>
+                    <li>De Morgan's Laws for complex expressions</li>
+                    <li>Distributive, Associative, and Commutative laws</li>
+                    <li>Absorption and Identity laws</li>
+                    <li>Double negation and Contrapositive equivalence</li>
+                    <li>Simplification strategies and techniques</li>
+                </ol>
+            </div>
+
+            <div class="progress-container">
+                <h2><span class="card-icon" aria-hidden="true">📊</span> Your Progress</h2>
+                <p>Track your completion of this module (saved for this session only):</p>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="module-progress" style="width: 0%;" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                        0%
+                    </div>
+                </div>
+                <p id="progress-text">Complete all sections to finish this module!</p>
+            </div>
+        </section>
+
+        <!-- CONCEPTS SECTION -->
+        <section id="concepts-section" class="content-section" role="tabpanel" aria-labelledby="tab-concepts">
+            <div class="card">
+                <h2><span class="card-icon" aria-hidden="true">📚</span> Core Concepts</h2>
+
+                <h3>What is Logical Equivalence?</h3>
+                <div class="info-box blue">
+                    <p><strong>Definition:</strong> Two logical expressions are <strong>logically equivalent</strong> if they have the same truth value for all possible combinations of their variables.</p>
+                    <p><strong>Notation:</strong> We write $$ P \equiv Q $$ to mean "P is logically equivalent to Q"</p>
+                </div>
+
+                <p><strong>Example:</strong> The expressions $$ P \to Q $$ and $$ \neg P \lor Q $$ are logically equivalent.</p>
+
+                <div class="expression-display">
+P → Q  ≡  ¬P ∨ Q
+                </div>
+
+                <p>You can verify this using a truth table (from Week 3), or you can use equivalence laws to transform one into the other!</p>
+
+                <h3>Why Logical Equivalences Matter</h3>
+                <p>Logical equivalences allow us to:</p>
+                <ul>
+                    <li><strong>Simplify expressions:</strong> Make complex logic easier to understand</li>
+                    <li><strong>Optimize code:</strong> Reduce the number of operations needed</li>
+                    <li><strong>Prove correctness:</strong> Show that two different implementations do the same thing</li>
+                    <li><strong>Transform problems:</strong> Convert a problem into an easier equivalent form</li>
+                </ul>
+
+                <div class="info-box green">
+                    <h3>💻 Programming Connection</h3>
+                    <p>Consider these two code snippets:</p>
+                    <div class="expression-display">
+// Version 1: Complex
+if (!(x > 5 && y < 10)) {
+    doSomething();
+}
+
+// Version 2: Simplified using De Morgan's Law
+if (x <= 5 || y >= 10) {
+    doSomething();
+}
+                    </div>
+                    <p>These are logically equivalent! Version 2 is easier to read and understand.</p>
+                </div>
+
+                <h3>Types of Logical Statements</h3>
+                <div class="accordion">
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Tautology:</strong> Always True</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <p><strong>Definition:</strong> A tautology is a statement that is true for all possible truth values of its variables.</p>
+                            <p><strong>Examples:</strong></p>
+                            <ul>
+                                <li>$$ P \lor \neg P $$ — "Either P is true or P is false" (always true)</li>
+                                <li>$$ (P \to Q) \lor (Q \to P) $$ — Always true</li>
+                                <li>$$ P \lor \top $$ — Always true (where $$ \top $$ represents "true")</li>
+                            </ul>
+                            <div class="info-box blue">
+                                <p><strong>Why it matters:</strong> Tautologies represent logical truths that are always valid, regardless of the specific situation.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Contradiction:</strong> Always False</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <p><strong>Definition:</strong> A contradiction is a statement that is false for all possible truth values of its variables.</p>
+                            <p><strong>Examples:</strong></p>
+                            <ul>
+                                <li>$$ P \land \neg P $$ — "P is both true and false" (impossible)</li>
+                                <li>$$ (P \lor Q) \land \neg P \land \neg Q $$ — Always false</li>
+                                <li>$$ P \land \bot $$ — Always false (where $$ \bot $$ represents "false")</li>
+                            </ul>
+                            <div class="info-box blue">
+                                <p><strong>Why it matters:</strong> Contradictions represent impossible situations. Identifying them helps us find logical errors.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Contingency:</strong> Sometimes True, Sometimes False</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <p><strong>Definition:</strong> A contingency is a statement that is true for some truth value assignments and false for others.</p>
+                            <p><strong>Examples:</strong></p>
+                            <ul>
+                                <li>$$ P \land Q $$ — True when both P and Q are true, false otherwise</li>
+                                <li>$$ P \to Q $$ — False only when P is true and Q is false</li>
+                                <li>Most real-world logical statements are contingencies</li>
+                            </ul>
+                            <div class="info-box blue">
+                                <p><strong>Why it matters:</strong> Contingencies represent normal logical conditions that depend on the specific values of variables.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- LAWS SECTION -->
+        <section id="laws-section" class="content-section" role="tabpanel" aria-labelledby="tab-laws">
+            <div class="card">
+                <h2><span class="card-icon" aria-hidden="true">⚖️</span> Logical Equivalence Laws</h2>
+                <p>These laws are your toolkit for simplifying logical expressions. Memorize them and practice applying them!</p>
+
+                <div class="law-card">
+                    <h4>Identity Laws</h4>
+                    <div class="law-formula">
+P ∧ ⊤ ≡ P
+P ∨ ⊥ ≡ P
+                    </div>
+                    <p><strong>Explanation:</strong> ANDing with "true" or ORing with "false" doesn't change the expression.</p>
+                    <p><strong>Programming analogy:</strong> <code>if (condition && true)</code> is the same as <code>if (condition)</code></p>
+                </div>
+
+                <div class="law-card">
+                    <h4>Domination Laws</h4>
+                    <div class="law-formula">
+P ∨ ⊤ ≡ ⊤
+P ∧ ⊥ ≡ ⊥
+                    </div>
+                    <p><strong>Explanation:</strong> ORing with "true" always gives true; ANDing with "false" always gives false.</p>
+                    <p><strong>Programming analogy:</strong> <code>if (condition || true)</code> is always true</p>
+                </div>
+
+                <div class="law-card">
+                    <h4>Idempotent Laws</h4>
+                    <div class="law-formula">
+P ∨ P ≡ P
+P ∧ P ≡ P
+                    </div>
+                    <p><strong>Explanation:</strong> ORing or ANDing something with itself doesn't change it.</p>
+                    <p><strong>Example:</strong> "It's raining OR it's raining" is the same as "It's raining"</p>
+                </div>
+
+                <div class="law-card">
+                    <h4>Double Negation Law</h4>
+                    <div class="law-formula">
+¬(¬P) ≡ P
+                    </div>
+                    <p><strong>Explanation:</strong> Two negations cancel each other out.</p>
+                    <p><strong>Programming analogy:</strong> <code>!(!condition)</code> is the same as <code>condition</code></p>
+                </div>
+
+                <div class="law-card">
+                    <h4>Commutative Laws</h4>
+                    <div class="law-formula">
+P ∨ Q ≡ Q ∨ P
+P ∧ Q ≡ Q ∧ P
+                    </div>
+                    <p><strong>Explanation:</strong> The order of OR and AND operations doesn't matter.</p>
+                    <p><strong>Example:</strong> "It's sunny AND warm" = "It's warm AND sunny"</p>
+                </div>
+
+                <div class="law-card">
+                    <h4>Associative Laws</h4>
+                    <div class="law-formula">
+(P ∨ Q) ∨ R ≡ P ∨ (Q ∨ R)
+(P ∧ Q) ∧ R ≡ P ∧ (Q ∧ R)
+                    </div>
+                    <p><strong>Explanation:</strong> Grouping doesn't matter for OR and AND operations.</p>
+                    <p><strong>Note:</strong> This means we can write $$ P \lor Q \lor R $$ without parentheses!</p>
+                </div>
+
+                <div class="law-card">
+                    <h4>Distributive Laws</h4>
+                    <div class="law-formula">
+P ∧ (Q ∨ R) ≡ (P ∧ Q) ∨ (P ∧ R)
+P ∨ (Q ∧ R) ≡ (P ∨ Q) ∧ (P ∨ R)
+                    </div>
+                    <p><strong>Explanation:</strong> Similar to distributing multiplication over addition in algebra.</p>
+                    <p><strong>Key difference:</strong> The second law (OR distributes over AND) doesn't work in regular algebra!</p>
+                </div>
+
+                <div class="law-card">
+                    <h4>De Morgan's Laws</h4>
+                    <div class="law-formula">
+¬(P ∧ Q) ≡ ¬P ∨ ¬Q
+¬(P ∨ Q) ≡ ¬P ∧ ¬Q
+                    </div>
+                    <p><strong>Explanation:</strong> To negate an AND/OR, negate each part and flip the operator.</p>
+                    <p><strong>Memory trick:</strong> "Break the line, change the sign"</p>
+                    <p><strong>Programming example:</strong></p>
+                    <div class="expression-display">
+// Original: !(x > 5 && y < 10)
+// De Morgan: (x <= 5 || y >= 10)
+                    </div>
+                </div>
+
+                <div class="law-card">
+                    <h4>Absorption Laws</h4>
+                    <div class="law-formula">
+P ∨ (P ∧ Q) ≡ P
+P ∧ (P ∨ Q) ≡ P
+                    </div>
+                    <p><strong>Explanation:</strong> If P is true, the rest doesn't matter.</p>
+                    <p><strong>Example:</strong> "It's raining OR (it's raining AND cold)" = "It's raining"</p>
+                </div>
+
+                <div class="law-card">
+                    <h4>Negation Laws</h4>
+                    <div class="law-formula">
+P ∨ ¬P ≡ ⊤
+P ∧ ¬P ≡ ⊥
+                    </div>
+                    <p><strong>Explanation:</strong> Something is either true or false (law of excluded middle).</p>
+                    <p><strong>Note:</strong> $$ P \lor \neg P $$ is a tautology; $$ P \land \neg P $$ is a contradiction.</p>
+                </div>
+
+                <div class="law-card">
+                    <h4>Conditional Equivalences</h4>
+                    <div class="law-formula">
+P → Q ≡ ¬P ∨ Q
+P → Q ≡ ¬Q → ¬P  (contrapositive)
+P ↔ Q ≡ (P → Q) ∧ (Q → P)
+                    </div>
+                    <p><strong>Explanation:</strong> Implications can be rewritten using OR, and biconditionals are two-way implications.</p>
+                </div>
+
+                <div class="info-box gold">
+                    <h3>💡 How to Use These Laws</h3>
+                    <ol>
+                        <li><strong>Identify the pattern:</strong> Look for expressions that match the left side of a law</li>
+                        <li><strong>Apply the transformation:</strong> Replace with the right side of the law</li>
+                        <li><strong>Simplify step-by-step:</strong> Apply one law at a time</li>
+                        <li><strong>Document each step:</strong> Write which law you used</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2><span class="card-icon" aria-hidden="true">📝</span> Quick Reference Table</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Law Name</th>
+                            <th>Formula</th>
+                            <th>Use Case</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Identity</td>
+                            <td>$$ P \land \top \equiv P $$</td>
+                            <td>Remove unnecessary "true" conditions</td>
+                        </tr>
+                        <tr>
+                            <td>Domination</td>
+                            <td>$$ P \lor \top \equiv \top $$</td>
+                            <td>Identify always-true conditions</td>
+                        </tr>
+                        <tr>
+                            <td>Idempotent</td>
+                            <td>$$ P \lor P \equiv P $$</td>
+                            <td>Remove duplicate conditions</td>
+                        </tr>
+                        <tr>
+                            <td>Double Negation</td>
+                            <td>$$ \neg(\neg P) \equiv P $$</td>
+                            <td>Simplify nested negations</td>
+                        </tr>
+                        <tr>
+                            <td>De Morgan's</td>
+                            <td>$$ \neg(P \land Q) \equiv \neg P \lor \neg Q $$</td>
+                            <td>Distribute negations</td>
+                        </tr>
+                        <tr>
+                            <td>Distributive</td>
+                            <td>$$ P \land (Q \lor R) \equiv (P \land Q) \lor (P \land R) $$</td>
+                            <td>Expand or factor expressions</td>
+                        </tr>
+                        <tr>
+                            <td>Absorption</td>
+                            <td>$$ P \lor (P \land Q) \equiv P $$</td>
+                            <td>Simplify redundant terms</td>
+                        </tr>
+                        <tr>
+                            <td>Conditional</td>
+                            <td>$$ P \to Q \equiv \neg P \lor Q $$</td>
+                            <td>Eliminate implications</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- EXAMPLES SECTION -->
+        <section id="examples-section" class="content-section" role="tabpanel" aria-labelledby="tab-examples">
+            <div class="card">
+                <h2><span class="card-icon" aria-hidden="true">💡</span> Worked Examples</h2>
+                <p>Let's see these laws in action! Each example shows step-by-step simplification.</p>
+
+                <div class="accordion">
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Example 1:</strong> Simplify $$ \neg(P \land Q) \lor P $$</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <h4>Original Expression:</h4>
+                            <div class="expression-display">
+¬(P ∧ Q) ∨ P
+                            </div>
+
+                            <h4>Step-by-Step Simplification:</h4>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Step</th>
+                                        <th>Expression</th>
+                                        <th>Law Used</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>$$ \neg(P \land Q) \lor P $$</td>
+                                        <td>Original</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>$$ (\neg P \lor \neg Q) \lor P $$</td>
+                                        <td>De Morgan's Law</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td>$$ \neg P \lor \neg Q \lor P $$</td>
+                                        <td>Associative Law</td>
+                                    </tr>
+                                    <tr>
+                                        <td>4</td>
+                                        <td>$$ \neg P \lor P \lor \neg Q $$</td>
+                                        <td>Commutative Law</td>
+                                    </tr>
+                                    <tr>
+                                        <td>5</td>
+                                        <td>$$ \top \lor \neg Q $$</td>
+                                        <td>Negation Law: $$ \neg P \lor P \equiv \top $$</td>
+                                    </tr>
+                                    <tr>
+                                        <td>6</td>
+                                        <td>$$ \top $$</td>
+                                        <td>Domination Law</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="info-box green">
+                                <p><strong>Result:</strong> The expression is a <strong>tautology</strong> (always true)!</p>
+                                <p><strong>Interpretation:</strong> Either P is false (making the first part true), or P is true (making the second part true). So the whole expression is always true.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Example 2:</strong> Simplify $$ (P \lor Q) \land (P \lor \neg Q) $$</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <h4>Original Expression:</h4>
+                            <div class="expression-display">
+(P ∨ Q) ∧ (P ∨ ¬Q)
+                            </div>
+
+                            <h4>Step-by-Step Simplification:</h4>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Step</th>
+                                        <th>Expression</th>
+                                        <th>Law Used</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>$$ (P \lor Q) \land (P \lor \neg Q) $$</td>
+                                        <td>Original</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>$$ P \lor (Q \land \neg Q) $$</td>
+                                        <td>Distributive Law (backwards)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td>$$ P \lor \bot $$</td>
+                                        <td>Negation Law: $$ Q \land \neg Q \equiv \bot $$</td>
+                                    </tr>
+                                    <tr>
+                                        <td>4</td>
+                                        <td>$$ P $$</td>
+                                        <td>Identity Law</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="info-box green">
+                                <p><strong>Result:</strong> The expression simplifies to just $$ P $$!</p>
+                                <p><strong>Interpretation:</strong> If P is true, both parts are true. If P is false, one part has Q true and the other has Q false, making the AND false. So the result is just P.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Example 3:</strong> Simplify $$ \neg(P \to Q) $$</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <h4>Original Expression:</h4>
+                            <div class="expression-display">
+¬(P → Q)
+                            </div>
+
+                            <h4>Step-by-Step Simplification:</h4>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Step</th>
+                                        <th>Expression</th>
+                                        <th>Law Used</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>$$ \neg(P \to Q) $$</td>
+                                        <td>Original</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>$$ \neg(\neg P \lor Q) $$</td>
+                                        <td>Conditional Equivalence: $$ P \to Q \equiv \neg P \lor Q $$</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td>$$ \neg(\neg P) \land \neg Q $$</td>
+                                        <td>De Morgan's Law</td>
+                                    </tr>
+                                    <tr>
+                                        <td>4</td>
+                                        <td>$$ P \land \neg Q $$</td>
+                                        <td>Double Negation</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="info-box green">
+                                <p><strong>Result:</strong> $$ \neg(P \to Q) \equiv P \land \neg Q $$</p>
+                                <p><strong>Interpretation:</strong> The negation of "if P then Q" is "P is true AND Q is false". This makes sense: an implication is only false when the hypothesis is true but the conclusion is false!</p>
+                            </div>
+
+                            <div class="info-box blue">
+                                <h4>💻 Programming Application</h4>
+                                <p>This is useful for understanding when code conditions fail:</p>
+                                <div class="expression-display">
+// If this assertion fails:
+assert(x > 0 → y > 0);
+
+// It means:
+// (x > 0) is true AND (y > 0) is false
+// i.e., x is positive but y is not
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Example 4:</strong> Simplify $$ (P \land Q) \lor (P \land \neg Q) $$</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <h4>Original Expression:</h4>
+                            <div class="expression-display">
+(P ∧ Q) ∨ (P ∧ ¬Q)
+                            </div>
+
+                            <h4>Step-by-Step Simplification:</h4>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Step</th>
+                                        <th>Expression</th>
+                                        <th>Law Used</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>$$ (P \land Q) \lor (P \land \neg Q) $$</td>
+                                        <td>Original</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>$$ P \land (Q \lor \neg Q) $$</td>
+                                        <td>Distributive Law (factoring out P)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td>$$ P \land \top $$</td>
+                                        <td>Negation Law: $$ Q \lor \neg Q \equiv \top $$</td>
+                                    </tr>
+                                    <tr>
+                                        <td>4</td>
+                                        <td>$$ P $$</td>
+                                        <td>Identity Law</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="info-box green">
+                                <p><strong>Result:</strong> The expression simplifies to just $$ P $$!</p>
+                                <p><strong>Interpretation:</strong> Whether Q is true or false doesn't matter if P is true. This is like saying "Either (it's raining AND sunny) OR (it's raining AND not sunny)" = "It's raining".</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Example 5:</strong> Simplify $$ \neg((P \lor Q) \land (\neg P \lor \neg Q)) $$</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <h4>Original Expression:</h4>
+                            <div class="expression-display">
+¬((P ∨ Q) ∧ (¬P ∨ ¬Q))
+                            </div>
+
+                            <h4>Step-by-Step Simplification:</h4>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Step</th>
+                                        <th>Expression</th>
+                                        <th>Law Used</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>$$ \neg((P \lor Q) \land (\neg P \lor \neg Q)) $$</td>
+                                        <td>Original</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>$$ \neg(P \lor Q) \lor \neg(\neg P \lor \neg Q) $$</td>
+                                        <td>De Morgan's Law</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td>$$ (\neg P \land \neg Q) \lor \neg(\neg P \lor \neg Q) $$</td>
+                                        <td>De Morgan's Law on first part</td>
+                                    </tr>
+                                    <tr>
+                                        <td>4</td>
+                                        <td>$$ (\neg P \land \neg Q) \lor (\neg(\neg P) \land \neg(\neg Q)) $$</td>
+                                        <td>De Morgan's Law on second part</td>
+                                    </tr>
+                                    <tr>
+                                        <td>5</td>
+                                        <td>$$ (\neg P \land \neg Q) \lor (P \land Q) $$</td>
+                                        <td>Double Negation (twice)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="info-box green">
+                                <p><strong>Result:</strong> $$ (\neg P \land \neg Q) \lor (P \land Q) $$</p>
+                                <p><strong>Interpretation:</strong> This expression is true when either both P and Q are false, OR both are true. This is actually the biconditional $$ P \leftrightarrow Q $$!</p>
+                                <p><strong>Bonus:</strong> We could simplify further to $$ P \leftrightarrow Q $$</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2><span class="card-icon" aria-hidden="true">💻</span> Programming Examples</h2>
+
+                <h3>Example 1: Simplifying Conditional Logic</h3>
+                <div class="info-box blue">
+                    <h4>Problem:</h4>
+                    <p>Simplify this complex conditional:</p>
+                    <div class="expression-display">
+if (!(x > 10 && y < 5) && (x > 10 || y >= 5)) {
+    // do something
+}
+                    </div>
+
+                    <h4>Solution:</h4>
+                    <p>Let $$ P $$ = "x > 10" and $$ Q $$ = "y < 5"</p>
+                    <p>The condition is: $$ \neg(P \land Q) \land (P \lor \neg Q) $$</p>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Step</th>
+                                <th>Expression</th>
+                                <th>Law Used</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>$$ \neg(P \land Q) \land (P \lor \neg Q) $$</td>
+                                <td>Original</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>$$ (\neg P \lor \neg Q) \land (P \lor \neg Q) $$</td>
+                                <td>De Morgan's Law</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>$$ (\neg P \land P) \lor (\neg P \land \neg Q) \lor (\neg Q \land P) \lor (\neg Q \land \neg Q) $$</td>
+                                <td>Distributive Law</td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td>$$ \bot \lor (\neg P \land \neg Q) \lor (P \land \neg Q) \lor \neg Q $$</td>
+                                <td>Negation Law, Idempotent</td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td>$$ (\neg P \land \neg Q) \lor (P \land \neg Q) \lor \neg Q $$</td>
+                                <td>Identity Law</td>
+                            </tr>
+                            <tr>
+                                <td>6</td>
+                                <td>$$ \neg Q $$</td>
+                                <td>Absorption Law (applied twice)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4>Simplified Code:</h4>
+                    <div class="expression-display">
+if (y >= 5) {
+    // do something
+}
+                    </div>
+                    <p><strong>Result:</strong> The complex condition simplifies to just checking if y >= 5!</p>
+                </div>
+
+                <h3>Example 2: Optimizing Boolean Flags</h3>
+                <div class="info-box blue">
+                    <h4>Problem:</h4>
+                    <div class="expression-display">
+boolean result = (isValid && isActive) || (isValid && !isActive);
+                    </div>
+
+                    <h4>Solution:</h4>
+                    <p>Let $$ P $$ = "isValid" and $$ Q $$ = "isActive"</p>
+                    <p>Expression: $$ (P \land Q) \lor (P \land \neg Q) $$</p>
+                    <p>From Example 4 above, we know this simplifies to just $$ P $$!</p>
+
+                    <h4>Simplified Code:</h4>
+                    <div class="expression-display">
+boolean result = isValid;
+                    </div>
+                    <p><strong>Result:</strong> Whether isActive is true or false doesn't matter!</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- PRACTICE SECTION -->
+        <section id="practice-section" class="content-section" role="tabpanel" aria-labelledby="tab-practice">
+            <div class="card">
+                <h2><span class="card-icon" aria-hidden="true">✏️</span> Interactive Practice</h2>
+                <p>Test your understanding with these interactive exercises. Work through each problem step-by-step!</p>
+            </div>
+
+            <div class="practice-area">
+                <h3>Practice Problem 1: Apply De Morgan's Law</h3>
+                <div class="practice-question">
+                    <h4>Problem:</h4>
+                    <p>Simplify: $$ \neg(P \lor Q) $$</p>
+                    <div class="expression-display">
+¬(P ∨ Q)
+                    </div>
+                    <label for="practice1-answer"><strong>Your answer (use text notation: ¬P ∧ ¬Q):</strong></label>
+                    <input type="text" id="practice1-answer" class="answer-input" placeholder="Enter your answer..." aria-describedby="practice1-hint">
+                    <button class="btn btn-primary" onclick="checkAnswer(1, '¬P ∧ ¬Q')">Check Answer</button>
+                    <button class="btn btn-secondary" onclick="showHint(1)">Show Hint</button>
+                    <div id="practice1-feedback" class="feedback"></div>
+                    <div id="practice1-hint" class="feedback hint" style="display: none;">
+                        <strong>Hint:</strong> Use De Morgan's Law: $$ \neg(P \lor Q) \equiv \neg P \land \neg Q $$
+                    </div>
+                </div>
+
+                <div class="practice-question">
+                    <h4>Problem 2:</h4>
+                    <p>Simplify: $$ P \land (P \lor Q) $$</p>
+                    <div class="expression-display">
+P ∧ (P ∨ Q)
+                    </div>
+                    <label for="practice2-answer"><strong>Your answer:</strong></label>
+                    <input type="text" id="practice2-answer" class="answer-input" placeholder="Enter your answer...">
+                    <button class="btn btn-primary" onclick="checkAnswer(2, 'P')">Check Answer</button>
+                    <button class="btn btn-secondary" onclick="showHint(2)">Show Hint</button>
+                    <div id="practice2-feedback" class="feedback"></div>
+                    <div id="practice2-hint" class="feedback hint" style="display: none;">
+                        <strong>Hint:</strong> Use the Absorption Law: $$ P \land (P \lor Q) \equiv P $$
+                    </div>
+                </div>
+
+                <div class="practice-question">
+                    <h4>Problem 3:</h4>
+                    <p>Simplify: $$ (P \to Q) \land (Q \to P) $$</p>
+                    <div class="expression-display">
+(P → Q) ∧ (Q → P)
+                    </div>
+                    <label for="practice3-answer"><strong>Your answer:</strong></label>
+                    <input type="text" id="practice3-answer" class="answer-input" placeholder="Enter your answer...">
+                    <button class="btn btn-primary" onclick="checkAnswer(3, 'P ↔ Q')">Check Answer</button>
+                    <button class="btn btn-secondary" onclick="showHint(3)">Show Hint</button>
+                    <div id="practice3-feedback" class="feedback"></div>
+                    <div id="practice3-hint" class="feedback hint" style="display: none;">
+                        <strong>Hint:</strong> This is the definition of biconditional: $$ P \leftrightarrow Q \equiv (P \to Q) \land (Q \to P) $$
+                    </div>
+                </div>
+
+                <div class="practice-question">
+                    <h4>Problem 4:</h4>
+                    <p>Simplify: $$ \neg(P \to Q) $$</p>
+                    <div class="expression-display">
+¬(P → Q)
+                    </div>
+                    <label for="practice4-answer"><strong>Your answer:</strong></label>
+                    <input type="text" id="practice4-answer" class="answer-input" placeholder="Enter your answer...">
+                    <button class="btn btn-primary" onclick="checkAnswer(4, 'P ∧ ¬Q')">Check Answer</button>
+                    <button class="btn btn-secondary" onclick="showHint(4)">Show Hint</button>
+                    <div id="practice4-feedback" class="feedback"></div>
+                    <div id="practice4-hint" class="feedback hint" style="display: none;">
+                        <strong>Hint:</strong> First convert the implication: $$ P \to Q \equiv \neg P \lor Q $$, then apply De Morgan's Law
+                    </div>
+                </div>
+
+                <div class="practice-question">
+                    <h4>Problem 5:</h4>
+                    <p>Simplify: $$ P \lor (P \land Q) $$</p>
+                    <div class="expression-display">
+P ∨ (P ∧ Q)
+                    </div>
+                    <label for="practice5-answer"><strong>Your answer:</strong></label>
+                    <input type="text" id="practice5-answer" class="answer-input" placeholder="Enter your answer...">
+                    <button class="btn btn-primary" onclick="checkAnswer(5, 'P')">Check Answer</button>
+                    <button class="btn btn-secondary" onclick="showHint(5)">Show Hint</button>
+                    <div id="practice5-feedback" class="feedback"></div>
+                    <div id="practice5-hint" class="feedback hint" style="display: none;">
+                        <strong>Hint:</strong> Use the Absorption Law: $$ P \lor (P \land Q) \equiv P $$
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2><span class="card-icon" aria-hidden="true">🎓</span> Challenge Problems</h2>
+                <p>Ready for more? Try these harder problems!</p>
+
+                <div class="accordion">
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Challenge 1:</strong> Prove $$ (P \to Q) \land (P \to \neg Q) \equiv \neg P $$</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <h4>Work through the proof:</h4>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Step</th>
+                                        <th>Expression</th>
+                                        <th>Law Used</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>$$ (P \to Q) \land (P \to \neg Q) $$</td>
+                                        <td>Original</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>$$ (\neg P \lor Q) \land (\neg P \lor \neg Q) $$</td>
+                                        <td>Conditional Equivalence (twice)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td>$$ \neg P \lor (Q \land \neg Q) $$</td>
+                                        <td>Distributive Law</td>
+                                    </tr>
+                                    <tr>
+                                        <td>4</td>
+                                        <td>$$ \neg P \lor \bot $$</td>
+                                        <td>Negation Law</td>
+                                    </tr>
+                                    <tr>
+                                        <td>5</td>
+                                        <td>$$ \neg P $$</td>
+                                        <td>Identity Law</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="info-box green">
+                                <p><strong>Interpretation:</strong> If P implies both Q and not-Q, then P must be false!</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Challenge 2:</strong> Simplify $$ ((P \lor Q) \land \neg P) \lor (P \land \neg Q) $$</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <h4>Work through the simplification:</h4>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Step</th>
+                                        <th>Expression</th>
+                                        <th>Law Used</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>$$ ((P \lor Q) \land \neg P) \lor (P \land \neg Q) $$</td>
+                                        <td>Original</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>$$ ((P \land \neg P) \lor (Q \land \neg P)) \lor (P \land \neg Q) $$</td>
+                                        <td>Distributive Law</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td>$$ (\bot \lor (Q \land \neg P)) \lor (P \land \neg Q) $$</td>
+                                        <td>Negation Law</td>
+                                    </tr>
+                                    <tr>
+                                        <td>4</td>
+                                        <td>$$ (Q \land \neg P) \lor (P \land \neg Q) $$</td>
+                                        <td>Identity Law</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="info-box green">
+                                <p><strong>Result:</strong> $$ (Q \land \neg P) \lor (P \land \neg Q) $$</p>
+                                <p><strong>Note:</strong> This is the <strong>exclusive OR</strong> (XOR)! It's true when exactly one of P or Q is true.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- QUIZ SECTION -->
+        <section id="quiz-section" class="content-section" role="tabpanel" aria-labelledby="tab-quiz">
+            <div class="card">
+                <h2><span class="card-icon" aria-hidden="true">🎯</span> Self-Assessment Quiz</h2>
+                <p>Test your understanding of logical equivalences! Select the best answer for each question.</p>
+            </div>
+
+            <div class="quiz-container">
+                <div class="quiz-question" id="q1">
+                    <h3>Question 1:</h3>
+                    <p>Which law states that $$ P \lor (P \land Q) \equiv P $$?</p>
+                    <ul class="quiz-options">
+                        <li class="quiz-option" onclick="selectQuizOption(1, 'A', false)">A) Distributive Law</li>
+                        <li class="quiz-option" onclick="selectQuizOption(1, 'B', true)">B) Absorption Law</li>
+                        <li class="quiz-option" onclick="selectQuizOption(1, 'C', false)">C) Identity Law</li>
+                        <li class="quiz-option" onclick="selectQuizOption(1, 'D', false)">D) Idempotent Law</li>
+                    </ul>
+                    <div id="q1-feedback" class="feedback"></div>
+                </div>
+
+                <div class="quiz-question" id="q2">
+                    <h3>Question 2:</h3>
+                    <p>What is the simplified form of $$ \neg(\neg P) $$?</p>
+                    <ul class="quiz-options">
+                        <li class="quiz-option" onclick="selectQuizOption(2, 'A', false)">A) $$ \neg P $$</li>
+                        <li class="quiz-option" onclick="selectQuizOption(2, 'B', true)">B) $$ P $$</li>
+                        <li class="quiz-option" onclick="selectQuizOption(2, 'C', false)">C) $$ \top $$</li>
+                        <li class="quiz-option" onclick="selectQuizOption(2, 'D', false)">D) $$ \bot $$</li>
+                    </ul>
+                    <div id="q2-feedback" class="feedback"></div>
+                </div>
+
+                <div class="quiz-question" id="q3">
+                    <h3>Question 3:</h3>
+                    <p>According to De Morgan's Law, $$ \neg(P \land Q) $$ is equivalent to:</p>
+                    <ul class="quiz-options">
+                        <li class="quiz-option" onclick="selectQuizOption(3, 'A', false)">A) $$ \neg P \land \neg Q $$</li>
+                        <li class="quiz-option" onclick="selectQuizOption(3, 'B', true)">B) $$ \neg P \lor \neg Q $$</li>
+                        <li class="quiz-option" onclick="selectQuizOption(3, 'C', false)">C) $$ P \lor Q $$</li>
+                        <li class="quiz-option" onclick="selectQuizOption(3, 'D', false)">D) $$ P \land Q $$</li>
+                    </ul>
+                    <div id="q3-feedback" class="feedback"></div>
+                </div>
+
+                <div class="quiz-question" id="q4">
+                    <h3>Question 4:</h3>
+                    <p>Which of the following is a tautology?</p>
+                    <ul class="quiz-options">
+                        <li class="quiz-option" onclick="selectQuizOption(4, 'A', false)">A) $$ P \land \neg P $$</li>
+                        <li class="quiz-option" onclick="selectQuizOption(4, 'B', false)">B) $$ P \land Q $$</li>
+                        <li class="quiz-option" onclick="selectQuizOption(4, 'C', true)">C) $$ P \lor \neg P $$</li>
+                        <li class="quiz-option" onclick="selectQuizOption(4, 'D', false)">D) $$ P \to Q $$</li>
+                    </ul>
+                    <div id="q4-feedback" class="feedback"></div>
+                </div>
+
+                <div class="quiz-question" id="q5">
+                    <h3>Question 5:</h3>
+                    <p>The expression $$ P \to Q $$ is equivalent to:</p>
+                    <ul class="quiz-options">
+                        <li class="quiz-option" onclick="selectQuizOption(5, 'A', false)">A) $$ P \lor Q $$</li>
+                        <li class="quiz-option" onclick="selectQuizOption(5, 'B', true)">B) $$ \neg P \lor Q $$</li>
+                        <li class="quiz-option" onclick="selectQuizOption(5, 'C', false)">C) $$ P \land Q $$</li>
+                        <li class="quiz-option" onclick="selectQuizOption(5, 'D', false)">D) $$ \neg P \land Q $$</li>
+                    </ul>
+                    <div id="q5-feedback" class="feedback"></div>
+                </div>
+
+                <div class="quiz-question" id="q6">
+                    <h3>Question 6:</h3>
+                    <p>What is the simplified form of $$ (P \land Q) \lor (P \land \neg Q) $$?</p>
+                    <ul class="quiz-options">
+                        <li class="quiz-option" onclick="selectQuizOption(6, 'A', true)">A) $$ P $$</li>
+                        <li class="quiz-option" onclick="selectQuizOption(6, 'B', false)">B) $$ Q $$</li>
+                        <li class="quiz-option" onclick="selectQuizOption(6, 'C', false)">C) $$ P \lor Q $$</li>
+                        <li class="quiz-option" onclick="selectQuizOption(6, 'D', false)">D) $$ P \land Q $$</li>
+                    </ul>
+                    <div id="q6-feedback" class="feedback"></div>
+                </div>
+
+                <button class="btn btn-success" onclick="submitQuiz()" id="submit-quiz-btn">Submit Quiz</button>
+                <div id="quiz-results" class="feedback" style="display: none;"></div>
+            </div>
+        </section>
+    </main>
+
+    <footer style="text-align: center; padding: 30px; margin-top: 40px; background: var(--light-bg); border-radius: 10px;">
+        <p><strong>Module 4.1: Logical Equivalences and Simplification</strong></p>
+        <p>CSC 240 - Discrete Structures | Mendocino College</p>
+        <p>© 2026 Mendocino College | All Rights Reserved</p>
+    </footer>
+
+    <script>
+        // Global state
+        let quizAnswers = {};
+        let practiceCompleted = {1: false, 2: false, 3: false, 4: false, 5: false};
+
+        // Tab Navigation
+        function showSection(sectionId) {
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+
+            const tabs = document.querySelectorAll('.nav-tab');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+                tab.setAttribute('aria-selected', 'false');
+            });
+
+            const activeSection = document.getElementById(sectionId + '-section');
+            if (activeSection) {
+                activeSection.classList.add('active');
+            }
+
+            const activeTab = document.getElementById('tab-' + sectionId);
+            if (activeTab) {
+                activeTab.classList.add('active');
+                activeTab.setAttribute('aria-selected', 'true');
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            sessionStorage.setItem('activeTab', sectionId);
+            updateProgress();
+        }
+
+        // Accordion Toggle
+        function toggleAccordion(header) {
+            const item = header.parentElement;
+            const wasActive = item.classList.contains('active');
+            
+            const allItems = document.querySelectorAll('.accordion-item');
+            allItems.forEach(i => {
+                i.classList.remove('active');
+                i.querySelector('.accordion-header').setAttribute('aria-expanded', 'false');
+            });
+
+            if (!wasActive) {
+                item.classList.add('active');
+                header.setAttribute('aria-expanded', 'true');
+            }
+        }
+
+        // Practice Problems
+        function checkAnswer(problemNum, correctAnswer) {
+            const input = document.getElementById(`practice${problemNum}-answer`);
+            const feedback = document.getElementById(`practice${problemNum}-feedback`);
+            const userAnswer = input.value.trim();
+
+            // Normalize answers for comparison
+            const normalizedUser = userAnswer.replace(/\s+/g, '').toUpperCase();
+            const normalizedCorrect = correctAnswer.replace(/\s+/g, '').toUpperCase();
+
+            feedback.classList.remove('correct', 'incorrect');
+            feedback.classList.add('show');
+
+            if (normalizedUser === normalizedCorrect || 
+                normalizedUser === normalizedCorrect.replace(/[∧∨¬→↔]/g, match => {
+                    const map = {'∧': 'AND', '∨': 'OR', '¬': 'NOT', '→': '->', '↔': '<->'};
+                    return map[match] || match;
+                })) {
+                feedback.classList.add('correct');
+                feedback.innerHTML = `<strong>✓ Correct!</strong> ${correctAnswer} is the right answer.`;
+                practiceCompleted[problemNum] = true;
+                updateProgress();
+            } else {
+                feedback.classList.add('incorrect');
+                feedback.innerHTML = `<strong>✗ Not quite.</strong> Try again or click "Show Hint" for help.`;
+            }
+        }
+
+        function showHint(problemNum) {
+            const hint = document.getElementById(`practice${problemNum}-hint`);
+            hint.style.display = 'block';
+        }
+
+        // Quiz Functions
+        function selectQuizOption(questionNum, option, isCorrect) {
+            const question = document.getElementById(`q${questionNum}`);
+            const options = question.querySelectorAll('.quiz-option');
+            const feedback = document.getElementById(`q${questionNum}-feedback`);
+
+            // Remove previous selections
+            options.forEach(opt => {
+                opt.classList.remove('selected');
+            });
+
+            // Mark selected option
+            event.target.classList.add('selected');
+            quizAnswers[questionNum] = {option, isCorrect};
+
+            // Clear previous feedback
+            feedback.style.display = 'none';
+            feedback.classList.remove('show', 'correct', 'incorrect');
+        }
+
+        function submitQuiz() {
+            let correct = 0;
+            const total = 6;
+
+            for (let i = 1; i <= total; i++) {
+                const question = document.getElementById(`q${i}`);
+                const options = question.querySelectorAll('.quiz-option');
+                const feedback = document.getElementById(`q${i}-feedback`);
+                const answer = quizAnswers[i];
+
+                if (answer) {
+                    feedback.classList.add('show');
+                    if (answer.isCorrect) {
+                        feedback.classList.add('correct');
+                        feedback.innerHTML = '<strong>✓ Correct!</strong>';
+                        correct++;
+                        
+                        // Mark correct option
+                        options.forEach(opt => {
+                            if (opt.classList.contains('selected')) {
+                                opt.classList.add('correct');
+                            }
+                        });
+                    } else {
+                        feedback.classList.add('incorrect');
+                        feedback.innerHTML = '<strong>✗ Incorrect.</strong> Review the concepts and try again.';
+                        
+                        // Mark incorrect option
+                        options.forEach(opt => {
+                            if (opt.classList.contains('selected')) {
+                                opt.classList.add('incorrect');
+                            }
+                        });
+                    }
+                }
+            }
+
+            const results = document.getElementById('quiz-results');
+            results.style.display = 'block';
+            results.classList.add('show');
+            
+            const percentage = Math.round((correct / total) * 100);
+            
+            if (percentage >= 80) {
+                results.classList.add('correct');
+                results.innerHTML = `<strong>🎉 Excellent!</strong> You scored ${correct}/${total} (${percentage}%). You've mastered logical equivalences!`;
+            } else if (percentage >= 60) {
+                results.classList.add('hint');
+                results.innerHTML = `<strong>Good effort!</strong> You scored ${correct}/${total} (${percentage}%). Review the concepts and try again.`;
+            } else {
+                results.classList.add('incorrect');
+                results.innerHTML = `<strong>Keep practicing!</strong> You scored ${correct}/${total} (${percentage}%). Review the material and retake the quiz.`;
+            }
+
+            document.getElementById('submit-quiz-btn').style.display = 'none';
+            updateProgress();
+        }
+
+        // Progress Tracking
+        function updateProgress() {
+            const sectionsVisited = new Set(JSON.parse(sessionStorage.getItem('sectionsVisited') || '[]'));
+            const currentTab = sessionStorage.getItem('activeTab');
+            if (currentTab) {
+                sectionsVisited.add(currentTab);
+                sessionStorage.setItem('sectionsVisited', JSON.stringify([...sectionsVisited]));
+            }
+
+            const totalSections = 6;
+            const practiceScore = Object.values(practiceCompleted).filter(Boolean).length;
+            const quizScore = Object.keys(quizAnswers).length;
+
+            let progress = (sectionsVisited.size / totalSections) * 40; // 40% for visiting sections
+            progress += (practiceScore / 5) * 30; // 30% for practice problems
+            progress += (quizScore / 6) * 30; // 30% for quiz
+
+            progress = Math.min(Math.round(progress), 100);
+
+            const progressBar = document.getElementById('module-progress');
+            const progressText = document.getElementById('progress-text');
+            
+            progressBar.style.width = progress + '%';
+            progressBar.textContent = progress + '%';
+            progressBar.setAttribute('aria-valuenow', progress);
+
+            if (progress === 100) {
+                progressText.textContent = '🎉 Module Complete! Great job!';
+            } else {
+                progressText.textContent = `${progress}% complete - Keep going!`;
+            }
+        }
+
+        // Keyboard navigation for accordion
+        document.addEventListener('keydown', function(e) {
+            if (e.target.classList.contains('accordion-header')) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    toggleAccordion(e.target);
+                }
+            }
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTab = sessionStorage.getItem('activeTab');
+            if (savedTab) {
+                showSection(savedTab);
+            }
+            updateProgress();
+        });
+    </script>
+</body>
+</html>

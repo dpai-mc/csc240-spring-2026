@@ -1,0 +1,1719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PE-04: Logic Expression Simplifier - CSC 240 Week 4 Programming Assignment">
+    <title>PE-04: Logic Expression Simplifier | CSC 240</title>
+    <style>
+        /* CSS Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-blue: #003366;
+            --secondary-blue: #0066cc;
+            --accent-gold: #FFB81C;
+            --success-green: #28a745;
+            --warning-orange: #ff8c00;
+            --danger-red: #dc3545;
+            --light-bg: #f8f9fa;
+            --white: #ffffff;
+            --text-dark: #212529;
+            --text-muted: #6c757d;
+            --border-color: #dee2e6;
+            --shadow: 0 2px 8px rgba(0,0,0,0.1);
+            --shadow-hover: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: var(--light-bg);
+            padding: 20px;
+            margin: 0 auto;
+            max-width: 800px;
+        }
+
+        /* Skip Link */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: var(--primary-blue);
+            color: var(--white);
+            padding: 8px;
+            text-decoration: none;
+            z-index: 100;
+        }
+
+        .skip-link:focus {
+            top: 0;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+            color: var(--white);
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+        }
+
+        .assignment-badge {
+            display: inline-block;
+            background-color: var(--accent-gold);
+            color: var(--primary-blue);
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1rem;
+            opacity: 0.95;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--white);
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow);
+            border-left: 5px solid var(--secondary-blue);
+        }
+
+        .card h2 {
+            color: var(--primary-blue);
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card h3 {
+            color: var(--secondary-blue);
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .card h4 {
+            color: var(--text-dark);
+            margin-top: 15px;
+            margin-bottom: 8px;
+            font-size: 1.05rem;
+            font-weight: 600;
+        }
+
+        .card-icon {
+            font-size: 1.6rem;
+        }
+
+        /* Info Boxes */
+        .info-box {
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 5px solid;
+        }
+
+        .info-box.blue {
+            background-color: #e7f3ff;
+            border-color: var(--secondary-blue);
+        }
+
+        .info-box.gold {
+            background-color: #fff8e1;
+            border-color: var(--accent-gold);
+        }
+
+        .info-box.green {
+            background-color: #e8f5e9;
+            border-color: var(--success-green);
+        }
+
+        .info-box.orange {
+            background-color: #fff3e0;
+            border-color: var(--warning-orange);
+        }
+
+        .info-box.red {
+            background-color: #ffebee;
+            border-color: var(--danger-red);
+        }
+
+        /* Due Date Banner */
+        .due-date-banner {
+            background: linear-gradient(135deg, var(--danger-red) 0%, var(--warning-orange) 100%);
+            color: var(--white);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow);
+        }
+
+        .due-date-banner h2 {
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+        }
+
+        .due-date-banner p {
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: var(--white);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--primary-blue);
+            color: var(--white);
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background-color: var(--light-bg);
+        }
+
+        /* Lists */
+        ul, ol {
+            margin-left: 25px;
+            margin-top: 10px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .checklist li {
+            padding-left: 30px;
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .checklist li:before {
+            content: "☐";
+            position: absolute;
+            left: 0;
+            color: var(--secondary-blue);
+            font-weight: bold;
+            font-size: 1.3rem;
+        }
+
+        .checklist li.completed:before {
+            content: "✓";
+            color: var(--success-green);
+        }
+
+        /* Code Display */
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .code-comment {
+            color: #6a9955;
+        }
+
+        .expression-display {
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+            margin: 5px;
+            font-size: 1rem;
+        }
+
+        .btn:focus {
+            outline: 3px solid var(--accent-gold);
+            outline-offset: 2px;
+        }
+
+        .btn-primary {
+            background: var(--primary-blue);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: var(--secondary-blue);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .btn-success {
+            background: var(--success-green);
+            color: var(--white);
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        /* Accordion */
+        .accordion {
+            margin: 20px 0;
+        }
+
+        .accordion-item {
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+
+        .accordion-header {
+            padding: 15px 20px;
+            background: var(--light-bg);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+
+        .accordion-header:hover {
+            background: #e3f2fd;
+        }
+
+        .accordion-header:focus {
+            outline: 3px solid var(--accent-gold);
+            outline-offset: -3px;
+        }
+
+        .accordion-icon {
+            transition: transform 0.3s ease;
+            font-size: 1.2rem;
+            color: var(--secondary-blue);
+        }
+
+        .accordion-item.active .accordion-icon {
+            transform: rotate(180deg);
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            padding: 0 20px;
+        }
+
+        .accordion-item.active .accordion-content {
+            max-height: 3000px;
+            padding: 20px;
+        }
+
+        /* Progress Checklist */
+        .progress-checklist {
+            background: var(--white);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            margin: 20px 0;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 12px;
+            margin: 8px 0;
+            background: var(--light-bg);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .checklist-item:hover {
+            background: #e3f2fd;
+        }
+
+        .checklist-checkbox {
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+            accent-color: var(--success-green);
+            margin-top: 2px;
+        }
+
+        .checklist-label {
+            flex: 1;
+            cursor: pointer;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            header {
+                padding: 20px;
+            }
+
+            header h1 {
+                font-size: 1.4rem;
+            }
+
+            .card {
+                padding: 15px;
+            }
+
+            table {
+                font-size: 0.85rem;
+            }
+
+            th, td {
+                padding: 8px;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+            }
+
+            .btn, .checklist-checkbox {
+                display: none;
+            }
+
+            .card {
+                page-break-inside: avoid;
+            }
+        }
+
+        /* Accessibility */
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            margin: -1px;
+            padding: 0;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0;
+        }
+
+        *:focus-visible {
+            outline: 3px solid var(--accent-gold);
+            outline-offset: 2px;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <header role="banner">
+        <div class="assignment-badge">Programming Exercise 04</div>
+        <h1>PE-04: Logic Expression Simplifier</h1>
+        <p>CSC 240 - Discrete Structures | Week 4</p>
+    </header>
+
+    <div class="due-date-banner" role="alert">
+        <h2>⏰ Due Date</h2>
+        <p>Sunday, February 17, 2026 at 11:59 PM PT</p>
+    </div>
+
+    <main id="main-content" role="main">
+        <div class="card">
+            <h2><span class="card-icon" aria-hidden="true">📋</span> Assignment Overview</h2>
+            
+            <div class="info-box blue">
+                <h3>Assignment Details</h3>
+                <table>
+                    <tbody>
+                        <tr>
+                            <td><strong>Points:</strong></td>
+                            <td>20 points (2% of final grade)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Due Date:</strong></td>
+                            <td>Sunday, February 17, 2026 at 11:59 PM PT</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Estimated Time:</strong></td>
+                            <td>3-4 hours</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Language:</strong></td>
+                            <td>Java or C++ (your choice)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>IDE:</strong></td>
+                            <td>Visual Studio Code (required)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Builds On:</strong></td>
+                            <td>PE-03 (Truth Table Generator)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>What You'll Build</h3>
+            <p>Implement a program that converts logical expressions to <strong>Conjunctive Normal Form (CNF)</strong> or <strong>Disjunctive Normal Form (DNF)</strong> and simplifies expressions using logical equivalences. This assignment reinforces your understanding of normal forms and equivalence laws from Modules 4.1 and 4.2.</p>
+
+            <div class="info-box gold">
+                <h3>🎯 Learning Objectives</h3>
+                <p>This assignment helps you achieve:</p>
+                <ul>
+                    <li>Convert propositions to CNF and DNF</li>
+                    <li>Apply De Morgan's laws and other logical equivalences</li>
+                    <li>Implement algorithmic transformations of logical expressions</li>
+                    <li><strong>Maps to CSLO 1:</strong> Apply symbolic logic and proof methods to model and analyze program/algorithm correctness</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2><span class="card-icon" aria-hidden="true">📝</span> Requirements</h2>
+
+            <h3>Core Features (Required)</h3>
+            <ul class="checklist">
+                <li><strong>Input Parsing:</strong> Accept logical expressions with variables and operators</li>
+                <li><strong>Supported Operators:</strong>
+                    <ul>
+                        <li>AND: ∧ or && or AND</li>
+                        <li>OR: ∨ or || or OR</li>
+                        <li>NOT: ¬ or ! or NOT</li>
+                        <li>Implication: → or -> or IMPLIES</li>
+                        <li>Biconditional: ↔ or <-> or IFF</li>
+                    </ul>
+                </li>
+                <li><strong>CNF Conversion:</strong> Convert any valid expression to Conjunctive Normal Form</li>
+                <li><strong>DNF Conversion:</strong> Convert any valid expression to Disjunctive Normal Form</li>
+                <li><strong>Simplification:</strong> Apply equivalence laws to simplify the result</li>
+                <li><strong>Output:</strong> Display the converted expression in readable format</li>
+            </ul>
+
+            <h3>Conversion Algorithm Requirements</h3>
+            <div class="info-box blue">
+                <h4>Your program must implement these steps:</h4>
+                <ol>
+                    <li><strong>Eliminate implications and biconditionals:</strong>
+                        <ul>
+                            <li>$$ P \to Q \equiv \neg P \lor Q $$</li>
+                            <li>$$ P \leftrightarrow Q \equiv (P \to Q) \land (Q \to P) $$</li>
+                        </ul>
+                    </li>
+                    <li><strong>Move negations inward using De Morgan's Laws:</strong>
+                        <ul>
+                            <li>$$ \neg(P \land Q) \equiv \neg P \lor \neg Q $$</li>
+                            <li>$$ \neg(P \lor Q) \equiv \neg P \land \neg Q $$</li>
+                            <li>$$ \neg \neg P \equiv P $$</li>
+                        </ul>
+                    </li>
+                    <li><strong>Apply distribution laws:</strong>
+                        <ul>
+                            <li><strong>For CNF:</strong> Distribute OR over AND</li>
+                            <li><strong>For DNF:</strong> Distribute AND over OR</li>
+                        </ul>
+                    </li>
+                    <li><strong>Simplify using equivalence laws:</strong>
+                        <ul>
+                            <li>Identity, Domination, Idempotent laws</li>
+                            <li>Remove tautologies and contradictions</li>
+                        </ul>
+                    </li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2><span class="card-icon" aria-hidden="true">💡</span> Example Input/Output</h2>
+
+            <div class="accordion">
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                        <span><strong>Example 1:</strong> Simple Implication</span>
+                        <span class="accordion-icon" aria-hidden="true">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <h4>Input:</h4>
+                        <div class="expression-display">
+P → Q
+                        </div>
+
+                        <h4>Expected Output:</h4>
+                        <div class="code-block">
+<span class="code-comment">Original Expression: P → Q</span>
+
+<span class="code-comment">--- Converting to CNF ---</span>
+Step 1: Eliminate implication
+  (¬P ∨ Q)
+
+Step 2: Already in CNF (single clause)
+
+<strong>CNF Result: (¬P ∨ Q)</strong>
+
+<span class="code-comment">--- Converting to DNF ---</span>
+Step 1: Eliminate implication
+  (¬P ∨ Q)
+
+Step 2: Already in DNF (can be viewed as disjunction of literals)
+
+<strong>DNF Result: (¬P ∨ Q)</strong>
+
+Note: This expression is both CNF and DNF
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                        <span><strong>Example 2:</strong> Expression Requiring Distribution</span>
+                        <span class="accordion-icon" aria-hidden="true">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <h4>Input:</h4>
+                        <div class="expression-display">
+(P → Q) ∧ (Q → R)
+                        </div>
+
+                        <h4>Expected Output:</h4>
+                        <div class="code-block">
+<span class="code-comment">Original Expression: (P → Q) ∧ (Q → R)</span>
+
+<span class="code-comment">--- Converting to CNF ---</span>
+Step 1: Eliminate implications
+  (¬P ∨ Q) ∧ (¬Q ∨ R)
+
+Step 2: Already in CNF!
+  - Main operator: ∧ (conjunction)
+  - Each part is a clause (disjunction of literals)
+
+<strong>CNF Result: (¬P ∨ Q) ∧ (¬Q ∨ R)</strong>
+
+<span class="code-comment">--- Converting to DNF ---</span>
+Step 1: Eliminate implications
+  (¬P ∨ Q) ∧ (¬Q ∨ R)
+
+Step 2: Distribute AND over OR
+  (¬P ∧ ¬Q) ∨ (¬P ∧ R) ∨ (Q ∧ ¬Q) ∨ (Q ∧ R)
+
+Step 3: Simplify (Q ∧ ¬Q = FALSE, remove it)
+  (¬P ∧ ¬Q) ∨ (¬P ∧ R) ∨ (Q ∧ R)
+
+<strong>DNF Result: (¬P ∧ ¬Q) ∨ (¬P ∧ R) ∨ (Q ∧ R)</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                        <span><strong>Example 3:</strong> Complex Expression</span>
+                        <span class="accordion-icon" aria-hidden="true">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <h4>Input:</h4>
+                        <div class="expression-display">
+¬((P ∧ Q) → R)
+                        </div>
+
+                        <h4>Expected Output:</h4>
+                        <div class="code-block">
+<span class="code-comment">Original Expression: ¬((P ∧ Q) → R)</span>
+
+<span class="code-comment">--- Converting to CNF ---</span>
+Step 1: Eliminate implication
+  ¬(¬(P ∧ Q) ∨ R)
+
+Step 2: Apply De Morgan's Law
+  ¬¬(P ∧ Q) ∧ ¬R
+
+Step 3: Double negation
+  (P ∧ Q) ∧ ¬R
+
+Step 4: Flatten (associativity of AND)
+  P ∧ Q ∧ ¬R
+
+<strong>CNF Result: P ∧ Q ∧ ¬R</strong>
+(Each literal is a single-literal clause)
+
+<span class="code-comment">--- Converting to DNF ---</span>
+Same result: P ∧ Q ∧ ¬R
+
+<strong>DNF Result: (P ∧ Q ∧ ¬R)</strong>
+(Single term with three literals)
+
+Note: This expression is both CNF and DNF
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                        <span><strong>Example 4:</strong> Distribution Required</span>
+                        <span class="accordion-icon" aria-hidden="true">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <h4>Input:</h4>
+                        <div class="expression-display">
+P ∨ (Q ∧ R)
+                        </div>
+
+                        <h4>Expected Output:</h4>
+                        <div class="code-block">
+<span class="code-comment">Original Expression: P ∨ (Q ∧ R)</span>
+
+<span class="code-comment">--- Converting to CNF ---</span>
+Step 1: No implications to eliminate
+
+Step 2: Distribute OR over AND
+  (P ∨ Q) ∧ (P ∨ R)
+
+<strong>CNF Result: (P ∨ Q) ∧ (P ∨ R)</strong>
+
+<span class="code-comment">--- Converting to DNF ---</span>
+Already in DNF!
+  - Main operator: ∨ (disjunction)
+  - P is a term (single literal)
+  - (Q ∧ R) is a term (conjunction of literals)
+
+<strong>DNF Result: P ∨ (Q ∧ R)</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2><span class="card-icon" aria-hidden="true">🔧</span> Implementation Guidelines</h2>
+
+            <h3>Suggested Approach</h3>
+            <ol>
+                <li><strong>Expression Representation:</strong>
+                    <ul>
+                        <li>Use a tree structure to represent expressions</li>
+                        <li>Each node contains an operator or variable</li>
+                        <li>Leaf nodes are variables or literals</li>
+                    </ul>
+                </li>
+                <li><strong>Parsing:</strong>
+                    <ul>
+                        <li>Convert input string to expression tree</li>
+                        <li>Handle operator precedence: ¬ > ∧ > ∨ > → > ↔</li>
+                        <li>Support parentheses for grouping</li>
+                    </ul>
+                </li>
+                <li><strong>Transformation Functions:</strong>
+                    <ul>
+                        <li><code>eliminateImplications()</code></li>
+                        <li><code>moveNegationsInward()</code></li>
+                        <li><code>distributeToCNF()</code></li>
+                        <li><code>distributeToDNF()</code></li>
+                        <li><code>simplify()</code></li>
+                    </ul>
+                </li>
+                <li><strong>Output Formatting:</strong>
+                    <ul>
+                        <li>Display step-by-step transformations</li>
+                        <li>Use clear notation for operators</li>
+                        <li>Properly parenthesize output</li>
+                    </ul>
+                </li>
+            </ol>
+
+            <h3>Sample Code Structure (Java)</h3>
+            <div class="code-block">
+<span class="code-comment">// Expression tree node</span>
+class ExprNode {
+    String value;        <span class="code-comment">// operator or variable</span>
+    ExprNode left;
+    ExprNode right;
+    
+    <span class="code-comment">// Constructor, getters, setters</span>
+}
+
+<span class="code-comment">// Main converter class</span>
+class LogicConverter {
+    
+    <span class="code-comment">// Parse input string to expression tree</span>
+    public ExprNode parse(String expression) {
+        <span class="code-comment">// Implementation here</span>
+    }
+    
+    <span class="code-comment">// Convert to CNF</span>
+    public ExprNode convertToCNF(ExprNode root) {
+        root = eliminateImplications(root);
+        root = moveNegationsInward(root);
+        root = distributeToCNF(root);
+        root = simplify(root);
+        return root;
+    }
+    
+    <span class="code-comment">// Convert to DNF</span>
+    public ExprNode convertToDNF(ExprNode root) {
+        root = eliminateImplications(root);
+        root = moveNegationsInward(root);
+        root = distributeToDNF(root);
+        root = simplify(root);
+        return root;
+    }
+    
+    <span class="code-comment">// Helper methods</span>
+    private ExprNode eliminateImplications(ExprNode node) { }
+    private ExprNode moveNegationsInward(ExprNode node) { }
+    private ExprNode distributeToCNF(ExprNode node) { }
+    private ExprNode distributeToDNF(ExprNode node) { }
+    private ExprNode simplify(ExprNode node) { }
+    
+    <span class="code-comment">// Display result</span>
+    public String toString(ExprNode node) { }
+}
+                </div>
+
+            <h3>Sample Code Structure (C++)</h3>
+            <div class="code-block">
+<span class="code-comment">// Expression tree node</span>
+struct ExprNode {
+    string value;        <span class="code-comment">// operator or variable</span>
+    ExprNode* left;
+    ExprNode* right;
+    
+    ExprNode(string val) : value(val), left(nullptr), right(nullptr) {}
+};
+
+<span class="code-comment">// Main converter class</span>
+class LogicConverter {
+private:
+    ExprNode* eliminateImplications(ExprNode* node);
+    ExprNode* moveNegationsInward(ExprNode* node);
+    ExprNode* distributeToCNF(ExprNode* node);
+    ExprNode* distributeToDNF(ExprNode* node);
+    ExprNode* simplify(ExprNode* node);
+    
+public:
+    <span class="code-comment">// Parse input string</span>
+    ExprNode* parse(const string& expression);
+    
+    <span class="code-comment">// Convert to CNF</span>
+    ExprNode* convertToCNF(ExprNode* root) {
+        root = eliminateImplications(root);
+        root = moveNegationsInward(root);
+        root = distributeToCNF(root);
+        root = simplify(root);
+        return root;
+    }
+    
+    <span class="code-comment">// Convert to DNF</span>
+    ExprNode* convertToDNF(ExprNode* root) {
+        root = eliminateImplications(root);
+        root = moveNegationsInward(root);
+        root = distributeToDNF(root);
+        root = simplify(root);
+        return root;
+    }
+    
+    <span class="code-comment">// Display result</span>
+    string toString(ExprNode* node);
+};
+                </div>
+        </div>
+
+        <div class="card">
+            <h2><span class="card-icon" aria-hidden="true">⭐</span> Extra Credit Opportunities</h2>
+            
+            <div class="info-box green">
+                <h3>Optional Enhancements (+3 points maximum)</h3>
+                <ul>
+                    <li><strong>Step-by-Step Display (+1 point):</strong> Show each transformation step with explanation</li>
+                    <li><strong>Parentheses and Precedence (+1 point):</strong> Properly handle complex nested expressions with correct operator precedence</li>
+                    <li><strong>Advanced Simplification (+1 point):</strong> Implement absorption laws, advanced pattern matching, and optimal simplification</li>
+                </ul>
+            </div>
+
+            <h3>Example: Step-by-Step Display</h3>
+            <div class="code-block">
+<span class="code-comment">Input: (P → Q) ∧ R</span>
+
+<strong>Step-by-Step CNF Conversion:</strong>
+
+Step 1: Eliminate implication (P → Q ≡ ¬P ∨ Q)
+  Result: (¬P ∨ Q) ∧ R
+
+Step 2: Check if in CNF
+  - Main operator: ∧ (conjunction) ✓
+  - Left part: (¬P ∨ Q) is a clause ✓
+  - Right part: R is a single-literal clause ✓
+  - Already in CNF!
+
+<strong>Final CNF: (¬P ∨ Q) ∧ R</strong>
+
+Explanation: This is CNF because it's a conjunction (AND) 
+of two clauses. The first clause has two literals (¬P, Q), 
+and the second clause has one literal (R).
+                </div>
+        </div>
+
+        <div class="card">
+            <h2><span class="card-icon" aria-hidden="true">📊</span> Grading Rubric</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Criteria</th>
+                        <th>Points</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>CNF Conversion</strong></td>
+                        <td>4</td>
+                        <td>Correctly converts expressions to CNF using proper algorithm</td>
+                    </tr>
+                    <tr>
+                        <td><strong>DNF Conversion</strong></td>
+                        <td>4</td>
+                        <td>Correctly converts expressions to DNF using proper algorithm</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Simplification</strong></td>
+                        <td>4</td>
+                        <td>Applies equivalence laws to simplify results</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Code Quality</strong></td>
+                        <td>4</td>
+                        <td>Well-structured, readable, efficient, follows best practices</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Documentation</strong></td>
+                        <td>4</td>
+                        <td>README file, code comments, test cases with expected output</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><strong>Total</strong></td>
+                        <td><strong>20 points</strong></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Extra Credit</strong></td>
+                        <td>+3</td>
+                        <td>Optional enhancements (step-by-step, precedence, advanced simplification)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Detailed Grading Criteria</h3>
+
+            <div class="accordion">
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                        <span><strong>CNF Conversion (4 points)</strong></span>
+                        <span class="accordion-icon" aria-hidden="true">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <ul>
+                            <li><strong>4 points:</strong> Perfect conversion for all test cases, handles all operators correctly</li>
+                            <li><strong>3 points:</strong> Correct for most cases, minor issues with complex expressions</li>
+                            <li><strong>2 points:</strong> Basic conversion works, significant issues with distribution or simplification</li>
+                            <li><strong>1 point:</strong> Attempted but incomplete or mostly incorrect</li>
+                            <li><strong>0 points:</strong> Not implemented</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                        <span><strong>DNF Conversion (4 points)</strong></span>
+                        <span class="accordion-icon" aria-hidden="true">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <ul>
+                            <li><strong>4 points:</strong> Perfect conversion for all test cases, handles all operators correctly</li>
+                            <li><strong>3 points:</strong> Correct for most cases, minor issues with complex expressions</li>
+                            <li><strong>2 points:</strong> Basic conversion works, significant issues with distribution or simplification</li>
+                            <li><strong>1 point:</strong> Attempted but incomplete or mostly incorrect</li>
+                            <li><strong>0 points:</strong> Not implemented</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                        <span><strong>Simplification (4 points)</strong></span>
+                        <span class="accordion-icon" aria-hidden="true">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <ul>
+                            <li><strong>4 points:</strong> Removes contradictions, applies idempotent and identity laws effectively</li>
+                            <li><strong>3 points:</strong> Basic simplification works, misses some optimization opportunities</li>
+                            <li><strong>2 points:</strong> Minimal simplification, correct but not optimal</li>
+                            <li><strong>1 point:</strong> Attempted but mostly ineffective</li>
+                            <li><strong>0 points:</strong> No simplification implemented</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                        <span><strong>Code Quality (4 points)</strong></span>
+                        <span class="accordion-icon" aria-hidden="true">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <ul>
+                            <li><strong>4 points:</strong> Excellent structure, clear naming, efficient algorithms, no code duplication</li>
+                            <li><strong>3 points:</strong> Good structure, mostly clear, minor inefficiencies</li>
+                            <li><strong>2 points:</strong> Functional but poorly organized, hard to follow</li>
+                            <li><strong>1 point:</strong> Very poor organization, significant code quality issues</li>
+                            <li><strong>0 points:</strong> Code doesn't compile or run</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                        <span><strong>Documentation (4 points)</strong></span>
+                        <span class="accordion-icon" aria-hidden="true">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <ul>
+                            <li><strong>4 points:</strong> Complete README, comprehensive comments, 5+ test cases with expected output</li>
+                            <li><strong>3 points:</strong> Good README and comments, adequate test cases</li>
+                            <li><strong>2 points:</strong> Basic documentation, minimal test cases</li>
+                            <li><strong>1 point:</strong> Very minimal documentation</li>
+                            <li><strong>0 points:</strong> No documentation provided</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2><span class="card-icon" aria-hidden="true">✅</span> Submission Requirements</h2>
+
+            <h3>What to Submit</h3>
+            <p>Create a ZIP file named: <code><strong>yourLastName_FirstName_PE04_Week4.zip</strong></code></p>
+
+            <p><strong>Your ZIP file must contain:</strong></p>
+
+            <div class="accordion">
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                        <span><strong>1. Source Code Files</strong></span>
+                        <span class="accordion-icon" aria-hidden="true">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p><strong>For Java:</strong></p>
+                        <ul>
+                            <li>All <code>.java</code> files</li>
+                            <li>Organized in appropriate package structure (if using packages)</li>
+                            <li>Main class clearly identified</li>
+                        </ul>
+
+                        <p><strong>For C++:</strong></p>
+                        <ul>
+                            <li>All <code>.cpp</code> and <code>.h</code> files</li>
+                            <li>Makefile (optional but recommended)</li>
+                            <li>Clear indication of main file</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                        <span><strong>2. README.txt File</strong></span>
+                        <span class="accordion-icon" aria-hidden="true">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p>Your README must include:</p>
+                        <div class="code-block">
+PE-04: LOGIC EXPRESSION SIMPLIFIER
+===================================
+
+STUDENT INFORMATION
+-------------------
+Name: [Your Full Name]
+Course: CSC 240 - Discrete Structures
+Assignment: PE-04
+Date: [Submission Date]
+
+COMPILATION INSTRUCTIONS
+------------------------
+[For Java:]
+javac LogicConverter.java
+javac Main.java
+
+[For C++:]
+g++ -std=c++11 -o logic_converter main.cpp LogicConverter.cpp
+
+RUNNING INSTRUCTIONS
+--------------------
+[For Java:]
+java Main
+
+[For C++:]
+./logic_converter
+
+PROGRAM USAGE
+-------------
+1. Enter a logical expression when prompted
+2. Choose conversion type (CNF or DNF)
+3. View step-by-step conversion
+4. Enter 'quit' to exit
+
+SUPPORTED OPERATORS
+-------------------
+- AND: ∧, &&, AND
+- OR: ∨, ||, OR  
+- NOT: ¬, !, NOT
+- IMPLIES: →, ->, IMPLIES
+- IFF: ↔, <->, IFF
+
+FEATURES IMPLEMENTED
+--------------------
+✓ CNF conversion with full algorithm
+✓ DNF conversion with full algorithm
+✓ Simplification using equivalence laws
+✓ [List any extra credit features]
+
+TEST CASES
+----------
+See TestCases.txt for 5+ test cases with expected output
+
+KNOWN LIMITATIONS
+-----------------
+[List any limitations or assumptions]
+
+SYSTEM REQUIREMENTS
+-------------------
+Operating System: [Windows 10 / macOS / Linux]
+Compiler: [javac 17.0.2 / g++ 11.2.0]
+IDE: Visual Studio Code 1.85
+
+REFERENCES
+----------
+- CSC 240 Week 4 Learning Modules
+- Saylor.org CS202 - Unit 3: Mathematical Logic
+- [Any other resources used]
+
+ACADEMIC INTEGRITY STATEMENT
+-----------------------------
+I certify that this is my original work. I have not 
+copied code from any other source except as noted in 
+the references above.
+
+Signature: [Your Name]
+Date: [Date]
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                        <span><strong>3. Test Cases (TestCases.txt)</strong></span>
+                        <span class="accordion-icon" aria-hidden="true">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p>Provide at least <strong>5 test cases</strong> with expected output:</p>
+                        <div class="code-block">
+TEST CASES FOR PE-04
+====================
+
+TEST CASE 1: Simple Implication
+-------------------------------
+Input: P → Q
+Expected CNF: (¬P ∨ Q)
+Expected DNF: (¬P ∨ Q)
+Notes: Should be same for both
+
+TEST CASE 2: Nested Expression
+-------------------------------
+Input: (P → Q) ∧ (Q → R)
+Expected CNF: (¬P ∨ Q) ∧ (¬Q ∨ R)
+Expected DNF: (¬P ∧ ¬Q) ∨ (¬P ∧ R) ∨ (Q ∧ R)
+Notes: DNF requires distribution
+
+TEST CASE 3: Negated Implication
+-------------------------------
+Input: ¬(P → Q)
+Expected CNF: P ∧ ¬Q
+Expected DNF: (P ∧ ¬Q)
+Notes: Both forms are same (single term/clause)
+
+TEST CASE 4: Distribution Required
+-------------------------------
+Input: P ∨ (Q ∧ R)
+Expected CNF: (P ∨ Q) ∧ (P ∨ R)
+Expected DNF: P ∨ (Q ∧ R)
+Notes: Already DNF, needs distribution for CNF
+
+TEST CASE 5: Complex Expression
+-------------------------------
+Input: (P ∧ Q) ∨ (¬P ∧ R)
+Expected CNF: (P ∨ ¬P) ∧ (P ∨ R) ∧ (Q ∨ ¬P) ∧ (Q ∨ R)
+               Simplifies to: (P ∨ R) ∧ (Q ∨ ¬P) ∧ (Q ∨ R)
+Expected DNF: (P ∧ Q) ∨ (¬P ∧ R)
+Notes: Already DNF, CNF requires distribution
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2><span class="card-icon" aria-hidden="true">📤</span> How to Submit</h2>
+
+            <h3>Step-by-Step Submission Process</h3>
+            <ol>
+                <li><strong>Prepare Your Files:</strong>
+                    <ul>
+                        <li>All source code files (.java or .cpp/.h)</li>
+                        <li>README.txt with complete information</li>
+                        <li>TestCases.txt with at least 5 test cases</li>
+                    </ul>
+                </li>
+                <li><strong>Create ZIP File:</strong>
+                    <ul>
+                        <li><strong>Windows:</strong> Select all files → Right-click → Send to → Compressed folder</li>
+                        <li><strong>Mac:</strong> Select all files → Right-click → Compress</li>
+                        <li><strong>Linux:</strong> <code>zip -r yourLastName_FirstName_PE04_Week4.zip *</code></li>
+                    </ul>
+                </li>
+                <li><strong>Verify ZIP Contents:</strong>
+                    <ul>
+                        <li>Open the ZIP and verify all files are included</li>
+                        <li>Check that README.txt is readable</li>
+                        <li>Ensure no unnecessary files (IDE configs, .class files, executables)</li>
+                    </ul>
+                </li>
+                <li><strong>Submit to Canvas:</strong>
+                    <ul>
+                        <li>Go to Canvas → CSC 240 → Assignments</li>
+                        <li>Click "PE-04: Logic Expression Simplifier"</li>
+                        <li>Upload your ZIP file</li>
+                        <li>Add submission comment (optional)</li>
+                        <li>Click "Submit Assignment"</li>
+                    </ul>
+                </li>
+                <li><strong>Verify Submission:</strong>
+                    <ul>
+                        <li>Check for confirmation message</li>
+                        <li>Verify file uploaded correctly</li>
+                        <li>Download your submission to double-check</li>
+                    </ul>
+                </li>
+            </ol>
+
+            <div class="info-box orange">
+                <h3>⚠️ Important Submission Notes</h3>
+                <ul>
+                    <li><strong>Naming:</strong> Use exact format: <code>yourLastName_FirstName_PE04_Week4.zip</code></li>
+                    <li><strong>File Size:</strong> Should be under 5MB (source code only, no executables)</li>
+                    <li><strong>Late Policy:</strong> Check syllabus for late submission penalties</li>
+                    <li><strong>Resubmission:</strong> You can resubmit before deadline; latest submission counts</li>
+                    <li><strong>Technical Issues:</strong> Contact instructor immediately if you have submission problems</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2><span class="card-icon" aria-hidden="true">💡</span> Tips for Success</h2>
+
+            <div class="info-box green">
+                <h3>✅ Best Practices</h3>
+                <ul>
+                    <li><strong>Start Early:</strong> Don't wait until the weekend. This assignment takes 3-4 hours minimum.</li>
+                    <li><strong>Test Incrementally:</strong> Test each function as you write it, don't wait until the end</li>
+                    <li><strong>Use Modules 4.1-4.2:</strong> Review the learning modules for algorithm details</li>
+                    <li><strong>Debug with Simple Cases:</strong> Start with simple expressions before tackling complex ones</li>
+                    <li><strong>Verify with Truth Tables:</strong> Use your PE-03 to verify equivalences</li>
+                    <li><strong>Comment Your Code:</strong> Explain each transformation step in comments</li>
+                    <li><strong>Handle Edge Cases:</strong> Single variables, nested parentheses, double negations</li>
+                </ul>
+            </div>
+
+            <h3>Common Pitfalls to Avoid</h3>
+            <div class="info-box red">
+                <ul>
+                    <li>❌ Not handling operator precedence correctly</li>
+                    <li>❌ Forgetting to eliminate implications before distribution</li>
+                    <li>❌ Incorrect application of De Morgan's Laws</li>
+                    <li>❌ Not simplifying contradictions (P ∧ ¬P = FALSE)</li>
+                    <li>❌ Incorrect parenthesization in output</li>
+                    <li>❌ Not testing with complex nested expressions</li>
+                    <li>❌ Submitting code that doesn't compile</li>
+                    <li>❌ Missing README or test cases</li>
+                </ul>
+            </div>
+
+            <h3>Testing Strategy</h3>
+            <div class="info-box blue">
+                <h4>Test Your Program With:</h4>
+                <ol>
+                    <li><strong>Simple expressions:</strong> Single variables, basic operators</li>
+                    <li><strong>Implications:</strong> P → Q, test conversion to ¬P ∨ Q</li>
+                    <li><strong>Biconditionals:</strong> P ↔ Q, test expansion</li>
+                    <li><strong>Nested expressions:</strong> Multiple levels of parentheses</li>
+                    <li><strong>Distribution cases:</strong> Expressions requiring CNF/DNF distribution</li>
+                    <li><strong>Simplification:</strong> Expressions with contradictions or tautologies</li>
+                    <li><strong>Edge cases:</strong> Single literals, double negations</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2><span class="card-icon" aria-hidden="true">🔗</span> Resources and Help</h2>
+
+            <h3>Course Resources</h3>
+            <ul>
+                <li><strong>Module 4.1:</strong> Logical Equivalences (review equivalence laws)</li>
+                <li><strong>Module 4.2:</strong> Normal Forms (CNF/DNF algorithms)</li>
+                <li><strong>Week 4 Lecture Videos:</strong> Available on Canvas</li>
+                <li><strong>PE-03:</strong> Your truth table generator (for verification)</li>
+            </ul>
+
+            <h3>Online Tools (For Verification Only)</h3>
+            <ul>
+                <li><a href="https://www.dcode.fr/boolean-expressions-calculator" target="_blank" rel="noopener">Boolean Expressions Calculator</a></li>
+                <li><a href="https://www.wolframalpha.com/" target="_blank" rel="noopener">Wolfram Alpha</a> (can verify logical equivalences)</li>
+                <li><a href="https://web.stanford.edu/class/cs103/tools/truth-table-tool/" target="_blank" rel="noopener">Stanford Truth Table Tool</a></li>
+            </ul>
+
+            <h3>Getting Help</h3>
+            <ul>
+                <li><strong>Office Hours:</strong> Best place for code debugging help</li>
+                <li><strong>Canvas Discussion:</strong> Post conceptual questions (not full code)</li>
+                <li><strong>Tutoring Center:</strong> Available for algorithm help</li>
+                <li><strong>Study Groups:</strong> Discuss approaches (but write your own code!)</li>
+            </ul>
+
+            <div class="info-box orange">
+                <h3>⚠️ Academic Integrity</h3>
+                <p><strong>You MAY:</strong></p>
+                <ul>
+                    <li>✓ Discuss algorithms and approaches with classmates</li>
+                    <li>✓ Use course materials and textbooks</li>
+                    <li>✓ Ask instructor/TA for help</li>
+                    <li>✓ Look up syntax and standard library documentation</li>
+                </ul>
+                <p><strong>You MAY NOT:</strong></p>
+                <ul>
+                    <li>✗ Share or copy code with other students</li>
+                    <li>✗ Use code from online sources (Stack Overflow, GitHub, etc.)</li>
+                    <li>✗ Use AI code generators (ChatGPT, Copilot, etc.)</li>
+                    <li>✗ Submit someone else's work as your own</li>
+                </ul>
+                <p><strong>Violations will result in zero points and possible disciplinary action.</strong></p>
+            </div>
+        </div>
+
+        <div class="progress-checklist">
+            <h2><span class="card-icon" aria-hidden="true">📋</span> Assignment Progress Checklist</h2>
+            <p>Track your progress (saved for this session only):</p>
+
+            <div class="checklist-item" onclick="toggleChecklistItem(this)">
+                <input type="checkbox" class="checklist-checkbox" id="check1" aria-label="Read assignment requirements">
+                <label for="check1" class="checklist-label">Read and understand all assignment requirements</label>
+            </div>
+
+            <div class="checklist-item" onclick="toggleChecklistItem(this)">
+                <input type="checkbox" class="checklist-checkbox" id="check2" aria-label="Review Modules 4.1 and 4.2">
+                <label for="check2" class="checklist-label">Review Module 4.1 (Logical Equivalences) and Module 4.2 (Normal Forms)</label>
+            </div>
+
+            <div class="checklist-item" onclick="toggleChecklistItem(this)">
+                <input type="checkbox" class="checklist-checkbox" id="check3" aria-label="Design program structure">
+                <label for="check3" class="checklist-label">Design program structure and plan classes/functions</label>
+            </div>
+
+            <div class="checklist-item" onclick="toggleChecklistItem(this)">
+                <input type="checkbox" class="checklist-checkbox" id="check4" aria-label="Implement expression parser">
+                <label for="check4" class="checklist-label">Implement expression parser and tree representation</label>
+            </div>
+
+            <div class="checklist-item" onclick="toggleChecklistItem(this)">
+                <input type="checkbox" class="checklist-checkbox" id="check5" aria-label="Implement implication elimination">
+                <label for="check5" class="checklist-label">Implement implication and biconditional elimination</label>
+            </div>
+
+            <div class="checklist-item" onclick="toggleChecklistItem(this)">
+                <input type="checkbox" class="checklist-checkbox" id="check6" aria-label="Implement De Morgan's Laws">
+                <label for="check6" class="checklist-label">Implement De Morgan's Laws for moving negations inward</label>
+            </div>
+
+            <div class="checklist-item" onclick="toggleChecklistItem(this)">
+                <input type="checkbox" class="checklist-checkbox" id="check7" aria-label="Implement CNF conversion">
+                <label for="check7" class="checklist-label">Implement CNF conversion (distribute OR over AND)</label>
+            </div>
+
+            <div class="checklist-item" onclick="toggleChecklistItem(this)">
+                <input type="checkbox" class="checklist-checkbox" id="check8" aria-label="Implement DNF conversion">
+                <label for="check8" class="checklist-label">Implement DNF conversion (distribute AND over OR)</label>
+            </div>
+
+            <div class="checklist-item" onclick="toggleChecklistItem(this)">
+                <input type="checkbox" class="checklist-checkbox" id="check9" aria-label="Implement simplification">
+                <label for="check9" class="checklist-label">Implement simplification rules (identity, domination, idempotent)</label>
+            </div>
+
+            <div class="checklist-item" onclick="toggleChecklistItem(this)">
+                <input type="checkbox" class="checklist-checkbox" id="check10" aria-label="Test with provided examples">
+                <label for="check10" class="checklist-label">Test with all provided examples from this assignment</label>
+            </div>
+
+            <div class="checklist-item" onclick="toggleChecklistItem(this)">
+                <input type="checkbox" class="checklist-checkbox" id="check11" aria-label="Create 5 test cases">
+                <label for="check11" class="checklist-label">Create at least 5 comprehensive test cases with expected output</label>
+            </div>
+
+            <div class="checklist-item" onclick="toggleChecklistItem(this)">
+                <input type="checkbox" class="checklist-checkbox" id="check12" aria-label="Write README">
+                <label for="check12" class="checklist-label">Write complete README.txt with all required sections</label>
+            </div>
+
+            <div class="checklist-item" onclick="toggleChecklistItem(this)">
+                <input type="checkbox" class="checklist-checkbox" id="check13" aria-label="Add code comments">
+                <label for="check13" class="checklist-label">Add comprehensive comments to all code</label>
+            </div>
+
+            <div class="checklist-item" onclick="toggleChecklistItem(this)">
+                <input type="checkbox" class="checklist-checkbox" id="check14" aria-label="Create ZIP file">
+                <label for="check14" class="checklist-label">Create properly named ZIP file (yourLastName_FirstName_PE04_Week4.zip)</label>
+            </div>
+
+            <div class="checklist-item" onclick="toggleChecklistItem(this)">
+                <input type="checkbox" class="checklist-checkbox" id="check15" aria-label="Submit to Canvas">
+                <label for="check15" class="checklist-label">Submit to Canvas and verify successful upload</label>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2><span class="card-icon" aria-hidden="true">❓</span> Frequently Asked Questions</h2>
+
+            <div class="accordion">
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                        <span><strong>Q: Can I build on my PE-03 code?</strong></span>
+                        <span class="accordion-icon" aria-hidden="true">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p><strong>A:</strong> Yes! PE-04 extends PE-03. You can reuse your expression parsing and tree structure from PE-03. However, PE-04 focuses on <em>transformation</em> rather than truth tables, so you'll need to add new conversion functions.</p>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                        <span><strong>Q: Do I need to show step-by-step transformations?</strong></span>
+                        <span class="accordion-icon" aria-hidden="true">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p><strong>A:</strong> Step-by-step display is <strong>optional</strong> for extra credit (+1 point). The minimum requirement is to output the final CNF and DNF forms. However, showing steps makes debugging much easier and helps demonstrate your understanding!</p>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                        <span><strong>Q: What if my output format is different from the examples?</strong></span>
+                        <span class="accordion-icon" aria-hidden="true">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p><strong>A:</strong> The exact format (spacing, parentheses style) can vary as long as:</p>
+                        <ul>
+                            <li>The logical expression is correct</li>
+                            <li>It's in proper CNF or DNF form</li>
+                            <li>Parentheses clearly show structure</li>
+                            <li>Output is readable</li>
+                        </ul>
+                        <p>Focus on correctness over exact formatting!</p>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                        <span><strong>Q: How do I handle operator precedence?</strong></span>
+                        <span class="accordion-icon" aria-hidden="true">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p><strong>A:</strong> Standard precedence (highest to lowest):</p>
+                        <ol>
+                            <li>¬ (NOT) - highest precedence</li>
+                            <li>∧ (AND)</li>
+                            <li>∨ (OR)</li>
+                            <li>→ (IMPLIES)</li>
+                            <li>↔ (IFF) - lowest precedence</li>
+                        </ol>
+                        <p>Use parentheses to override precedence. Implementing proper precedence is worth +1 extra credit point!</p>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                        <span><strong>Q: Can I use external libraries?</strong></span>
+                        <span class="accordion-icon" aria-hidden="true">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p><strong>A:</strong> You may use standard libraries (Java Collections, C++ STL), but you must implement the conversion algorithms yourself. Do not use third-party logic libraries or parsers.</p>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                        <span><strong>Q: What if I can't get it working perfectly?</strong></span>
+                        <span class="accordion-icon" aria-hidden="true">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p><strong>A:</strong> Submit what you have! Partial credit is available:</p>
+                        <ul>
+                            <li>Working parser: some credit</li>
+                            <li>Implication elimination: some credit</li>
+                            <li>Partial CNF/DNF: some credit</li>
+                            <li>Good documentation: helps show understanding</li>
+                        </ul>
+                        <p>Document what works and what doesn't in your README. Show your effort!</p>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                        <span><strong>Q: How will this be graded?</strong></span>
+                        <span class="accordion-icon" aria-hidden="true">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p><strong>A:</strong> The instructor will:</p>
+                        <ol>
+                            <li>Compile your code following your README instructions</li>
+                            <li>Run your program with the provided test cases</li>
+                            <li>Test with additional expressions</li>
+                            <li>Check code quality and organization</li>
+                            <li>Review documentation completeness</li>
+                        </ol>
+                        <p><strong>Make sure your code compiles and runs!</strong> Code that doesn't compile receives significant deductions.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2><span class="card-icon" aria-hidden="true">🎯</span> Quick Start Guide</h2>
+
+            <h3>Getting Started in 30 Minutes</h3>
+            <ol>
+                <li><strong>Review Materials (10 min):</strong>
+                    <ul>
+                        <li>Skim Module 4.2 for CNF/DNF algorithms</li>
+                        <li>Look at the example inputs/outputs above</li>
+                    </ul>
+                </li>
+                <li><strong>Plan Your Approach (10 min):</strong>
+                    <ul>
+                        <li>Decide on data structure (tree recommended)</li>
+                        <li>List the functions you'll need</li>
+                        <li>Sketch out the conversion algorithm</li>
+                    </ul>
+                </li>
+                <li><strong>Start Coding (10 min):</strong>
+                    <ul>
+                        <li>Create basic project structure</li>
+                        <li>Implement simple expression parsing</li>
+                        <li>Test with single variable (P)</li>
+                    </ul>
+                </li>
+            </ol>
+
+            <div class="info-box green">
+                <h3>💡 Development Timeline</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Day</th>
+                            <th>Tasks</th>
+                            <th>Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Day 1</td>
+                            <td>Plan structure, implement parser, test simple cases</td>
+                            <td>1-1.5 hours</td>
+                        </tr>
+                        <tr>
+                            <td>Day 2</td>
+                            <td>Implement elimination and De Morgan's functions</td>
+                            <td>1 hour</td>
+                        </tr>
+                        <tr>
+                            <td>Day 3</td>
+                            <td>Implement CNF and DNF distribution</td>
+                            <td>1-1.5 hours</td>
+                        </tr>
+                        <tr>
+                            <td>Day 4</td>
+                            <td>Add simplification, test thoroughly, write documentation</td>
+                            <td>1 hour</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2><span class="card-icon" aria-hidden="true">🚀</span> Ready to Submit?</h2>
+            
+            <div class="info-box blue">
+                <h3>Final Checklist Before Submission</h3>
+                <ul class="checklist">
+                    <li>✓ Code compiles without errors</li>
+                    <li>✓ All required features implemented</li>
+                    <li>✓ Tested with at least 5 different expressions</li>
+                    <li>✓ README.txt is complete and accurate</li>
+                    <li>✓ TestCases.txt includes expected output</li>
+                    <li>✓ Code is well-commented</li>
+                    <li>✓ ZIP file properly named</li>
+                    <li>✓ All files included in ZIP</li>
+                    <li>✓ Academic integrity statement included</li>
+                </ul>
+            </div>
+
+            <div style="text-align: center; margin: 30px 0;">
+                <a href="https://canvas.mendocino.edu" class="btn btn-success" target="_blank" rel="noopener">
+                    📤 Submit to Canvas
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <footer style="text-align: center; padding: 30px; margin-top: 40px; background: var(--light-bg); border-radius: 10px;">
+        <p><strong>PE-04: Logic Expression Simplifier</strong></p>
+        <p>CSC 240 - Discrete Structures | Mendocino College</p>
+        <p>© 2026 Mendocino College | All Rights Reserved</p>
+        <p style="margin-top: 10px; font-size: 0.9rem;">
+            Questions? Contact your instructor through Canvas or during office hours.
+        </p>
+    </footer>
+
+    <script>
+        // Accordion Toggle
+        function toggleAccordion(header) {
+            const item = header.parentElement;
+            const wasActive = item.classList.contains('active');
+            
+            const allItems = document.querySelectorAll('.accordion-item');
+            allItems.forEach(i => {
+                i.classList.remove('active');
+                i.querySelector('.accordion-header').setAttribute('aria-expanded', 'false');
+            });
+
+            if (!wasActive) {
+                item.classList.add('active');
+                header.setAttribute('aria-expanded', 'true');
+            }
+        }
+
+        // Checklist Toggle
+        function toggleChecklistItem(item) {
+            const checkbox = item.querySelector('.checklist-checkbox');
+            checkbox.checked = !checkbox.checked;
+            saveProgress();
+        }
+
+        // Save progress to session storage
+        function saveProgress() {
+            const checkboxes = document.querySelectorAll('.checklist-checkbox');
+            const progress = {};
+            checkboxes.forEach((checkbox, index) => {
+                progress[`item-${index}`] = checkbox.checked;
+            });
+            sessionStorage.setItem('pe04Progress', JSON.stringify(progress));
+        }
+
+        // Load progress from session storage
+        function loadProgress() {
+            const savedProgress = sessionStorage.getItem('pe04Progress');
+            if (savedProgress) {
+                const progress = JSON.parse(savedProgress);
+                const checkboxes = document.querySelectorAll('.checklist-checkbox');
+                checkboxes.forEach((checkbox, index) => {
+                    if (progress[`item-${index}`]) {
+                        checkbox.checked = true;
+                    }
+                });
+            }
+        }
+
+        // Keyboard navigation for accordion
+        document.addEventListener('keydown', function(e) {
+            if (e.target.classList.contains('accordion-header')) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    toggleAccordion(e.target);
+                }
+            }
+        });
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProgress();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Predicate Logic Translation Exercises - CSC 240 Week 4 Assignment">
+    <title>Predicate Logic Translation Exercises | CSC 240</title>
+    <style>
+        /* CSS Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-blue: #003366;
+            --secondary-blue: #0066cc;
+            --accent-gold: #FFB81C;
+            --success-green: #28a745;
+            --warning-orange: #ff8c00;
+            --danger-red: #dc3545;
+            --light-bg: #f8f9fa;
+            --white: #ffffff;
+            --text-dark: #212529;
+            --text-muted: #6c757d;
+            --border-color: #dee2e6;
+            --shadow: 0 2px 8px rgba(0,0,0,0.1);
+            --shadow-hover: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: var(--light-bg);
+            padding: 20px;
+            margin: 0 auto;
+            max-width: 800px;
+        }
+
+        /* Skip Link */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: var(--primary-blue);
+            color: var(--white);
+            padding: 8px;
+            text-decoration: none;
+            z-index: 100;
+        }
+
+        .skip-link:focus {
+            top: 0;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+            color: var(--white);
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+        }
+
+        .assignment-badge {
+            display: inline-block;
+            background-color: var(--accent-gold);
+            color: var(--primary-blue);
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1rem;
+            opacity: 0.95;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--white);
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow);
+            border-left: 5px solid var(--secondary-blue);
+        }
+
+        .card h2 {
+            color: var(--primary-blue);
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card h3 {
+            color: var(--secondary-blue);
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .card h4 {
+            color: var(--text-dark);
+            margin-top: 15px;
+            margin-bottom: 8px;
+            font-size: 1.05rem;
+            font-weight: 600;
+        }
+
+        .card-icon {
+            font-size: 1.6rem;
+        }
+
+        /* Info Boxes */
+        .info-box {
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 5px solid;
+        }
+
+        .info-box.blue {
+            background-color: #e7f3ff;
+            border-color: var(--secondary-blue);
+        }
+
+        .info-box.gold {
+            background-color: #fff8e1;
+            border-color: var(--accent-gold);
+        }
+
+        .info-box.green {
+            background-color: #e8f5e9;
+            border-color: var(--success-green);
+        }
+
+        .info-box.orange {
+            background-color: #fff3e0;
+            border-color: var(--warning-orange);
+        }
+
+        .info-box.red {
+            background-color: #ffebee;
+            border-color: var(--danger-red);
+        }
+
+        .info-box.purple {
+            background-color: #f3e5f5;
+            border-color: #9c27b0;
+        }
+
+        /* Due Date Banner */
+        .due-date-banner {
+            background: linear-gradient(135deg, var(--danger-red) 0%, var(--warning-orange) 100%);
+            color: var(--white);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow);
+        }
+
+        .due-date-banner h2 {
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+        }
+
+        .due-date-banner p {
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: var(--white);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--primary-blue);
+            color: var(--white);
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background-color: var(--light-bg);
+        }
+
+        /* Lists */
+        ul, ol {
+            margin-left: 25px;
+            margin-top: 10px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .checklist li {
+            padding-left: 30px;
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .checklist li:before {
+            content: "☐";
+            position: absolute;
+            left: 0;
+            color: var(--secondary-blue);
+            font-weight: bold;
+            font-size: 1.3rem;
+        }
+
+        /* Expression Display */
+        .expression-display {
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Problem Boxes */
+        .problem-box {
+            background: var(--white);
+            border: 2px solid var(--secondary-blue);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: var(--shadow);
+        }
+
+        .problem-number {
+            display: inline-block;
+            background: var(--secondary-blue);
+            color: var(--white);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .problem-points {
+            display: inline-block;
+            background: var(--success-green);
+            color: var(--white);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            float: right;
+        }
+
+        /* Answer Workspace */
+        .answer-workspace {
+            background: #fffef7;
+            border: 2px dashed var(--accent-gold);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            min-height: 120px;
+        }
+
+        .answer-workspace h4 {
+            color: var(--accent-gold);
+            margin-bottom: 10px;
+        }
+
+        .answer-lines {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            padding: 15px;
+            min-height: 100px;
+            font-family: 'Courier New', monospace;
+            line-height: 2;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+            margin: 5px;
+            font-size: 1rem;
+        }
+
+        .btn:focus {
+            outline: 3px solid var(--accent-gold);
+            outline-offset: 2px;
+        }
+
+        .btn-primary {
+            background: var(--primary-blue);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: var(--secondary-blue);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .btn-success {
+            background: var(--success-green);
+            color: var(--white);
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-secondary {
+            background: var(--light-bg);
+            color: var(--primary-blue);
+            border: 2px solid var(--primary-blue);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary-blue);
+            color: var(--white);
+        }
+
+        /* Accordion */
+        .accordion {
+            margin: 20px 0;
+        }
+
+        .accordion-item {
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+
+        .accordion-header {
+            padding: 15px 20px;
+            background: var(--light-bg);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+
+        .accordion-header:hover {
+            background: #e3f2fd;
+        }
+
+        .accordion-header:focus {
+            outline: 3px solid var(--accent-gold);
+            outline-offset: -3px;
+        }
+
+        .accordion-icon {
+            transition: transform 0.3s ease;
+            font-size: 1.2rem;
+            color: var(--secondary-blue);
+        }
+
+        .accordion-item.active .accordion-icon {
+            transform: rotate(180deg);
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            padding: 0 20px;
+        }
+
+        .accordion-item.active .accordion-content {
+            max-height: 3000px;
+            padding: 20px;
+        }
+
+        /* Progress Checklist */
+        .progress-checklist {
+            background: var(--white);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            margin: 20px 0;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 12px;
+            margin: 8px 0;
+            background: var(--light-bg);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .checklist-item:hover {
+            background: #e3f2fd;
+        }
+
+        .checklist-checkbox {
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+            accent-color: var(--success-green);
+            margin-top: 2px;
+        }
+
+        .checklist-label {
+            flex: 1;
+            cursor: pointer;
+        }
+
+        /* Hint Boxes */
+        .hint-box {
+            background: #fff3cd;
+            border: 2px solid var(--warning-orange);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .hint-box h4 {
+            color: var(--warning-orange);
+            margin-bottom: 10px;
+        }
+
+        /* Example Boxes */
+        .example-box {
+            background: #e8f5e9;
+            border: 2px solid var(--success-green);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .example-box h4 {
+            color: var(--success-green);
+            margin-bottom: 10px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            header {
+                padding: 20px;
+            }
+
+            header h1 {
+                font-size: 1.4rem;
+            }
+
+            .card {
+                padding: 15px;
+            }
+
+            table {
+                font-size: 0.85rem;
+            }
+
+            th, td {
+                padding: 8px;
+            }
+
+            .problem-points {
+                float: none;
+                display: block;
+                margin-top: 10px;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+            }
+
+            .btn, .checklist-checkbox, .accordion-icon {
+                display: none;
+            }
+
+            .accordion-content {
+                max-height: none !important;
+                padding: 20px !important;
+            }
+
+            .card {
+                page-break-inside: avoid;
+            }
+
+            .answer-workspace {
+                border: 1px solid var(--border-color);
+                min-height: 150px;
+            }
+        }
+
+        /* Accessibility */
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            margin: -1px;
+            padding: 0;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0;
+        }
+
+        *:focus-visible {
+            outline: 3px solid var(--accent-gold);
+            outline-offset: 2px;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <header role="banner">
+        <div class="assignment-badge">Written Assignment</div>
+        <h1>Predicate Logic Translation Exercises</h1>
+        <p>CSC 240 - Discrete Structures | Week 4</p>
+    </header>
+
+    <div class="due-date-banner" role="alert">
+        <h2>⏰ Due Date</h2>
+        <p>Sunday, February 17, 2026 at 11:59 PM PT</p>
+    </div>
+
+    <main id="main-content" role="main">
+        <div class="card">
+            <h2><span class="card-icon" aria-hidden="true">📋</span> Assignment Overview</h2>
+            
+            <div class="info-box blue">
+                <h3>Assignment Details</h3>
+                <table>
+                    <tbody>
+                        <tr>
+                            <td><strong>Points:</strong></td>
+                            <td>10 points (1% of final grade)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Due Date:</strong></td>
+                            <td>Sunday, February 17, 2026 at 11:59 PM PT</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Estimated Time:</strong></td>
+                            <td>1-2 hours</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Format:</strong></td>
+                            <td>PDF submission via Canvas</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Related Modules:</strong></td>
+                            <td>Module 4.3 (Predicate Logic), Module 4.4 (Quantifiers)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>What You'll Do</h3>
+            <p>Practice translating statements between English and predicate logic notation using quantifiers. This worksheet reinforces your understanding of universal and existential quantifiers, helping you master the language of formal logic needed for mathematical proofs and program specifications.</p>
+
+            <div class="info-box gold">
+                <h3>🎯 Learning Objectives</h3>
+                <p>This assignment helps you achieve:</p>
+                <ul>
+                    <li>Express statements using predicate logic with quantifiers</li>
+                    <li>Correctly use universal (∀) and existential (∃) quantifiers</li>
+                    <li>Choose appropriate connectives (→ vs. ∧) with quantifiers</li>
+                    <li>Translate between English and symbolic notation</li>
+                    <li><strong>Maps to CSLO 1:</strong> Apply symbolic logic and proof methods to model and analyze program/algorithm correctness</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2><span class="card-icon" aria-hidden="true">📝</span> Instructions</h2>
+
+            <h3>How to Complete This Assignment</h3>
+            <ol>
+                <li><strong>Download the worksheet:</strong> Available on Canvas (or work directly from this page)</li>
+                <li><strong>Work through each problem:</strong> Show all your work and reasoning</li>
+                <li><strong>Define all predicates:</strong> Clearly state what each predicate means</li>
+                <li><strong>Specify domains:</strong> Always indicate the domain of discourse</li>
+                <li><strong>Show your work:</strong> Partial credit is available for correct reasoning</li>
+                <li><strong>Convert to PDF:</strong> Scan handwritten work or save typed document as PDF</li>
+                <li><strong>Submit via Canvas:</strong> Upload your PDF to the assignment page</li>
+            </ol>
+
+            <div class="info-box orange">
+                <h3>⚠️ Important Guidelines</h3>
+                <ul>
+                    <li><strong>Show your reasoning:</strong> Don't just write the answer—explain your thinking</li>
+                    <li><strong>Define predicates clearly:</strong> State what each predicate means in English</li>
+                    <li><strong>Use proper notation:</strong> ∀, ∃, ∧, ∨, ¬, →, ↔</li>
+                    <li><strong>Check your work:</strong> Verify your translations make sense in English</li>
+                    <li><strong>Partial credit available:</strong> Even incorrect answers with good reasoning earn points</li>
+                </ul>
+            </div>
+
+            <h3>Submission Format Options</h3>
+            <div class="accordion">
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                        <span><strong>Option 1:</strong> Handwritten (Scan to PDF)</span>
+                        <span class="accordion-icon" aria-hidden="true">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <ol>
+                            <li>Print this assignment or write problems on paper</li>
+                            <li>Work through each problem by hand</li>
+                            <li>Use a scanner or phone app (CamScanner, Adobe Scan, etc.)</li>
+                            <li>Ensure scan is clear and readable</li>
+                            <li>Save as PDF</li>
+                            <li>Name file: <code>yourLastName_FirstName_PredicateLogic_Week4.pdf</code></li>
+                        </ol>
+                        <p><strong>Tip:</strong> Make sure your handwriting is legible! Use dark pen and good lighting for scans.</p>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                        <span><strong>Option 2:</strong> Typed (Word/Google Docs to PDF)</span>
+                        <span class="accordion-icon" aria-hidden="true">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <ol>
+                            <li>Create document in Word, Google Docs, or LaTeX</li>
+                            <li>Type each problem and your answer</li>
+                            <li>Use Insert → Symbol for special characters (∀, ∃, etc.)</li>
+                            <li>Save/Export as PDF</li>
+                            <li>Name file: <code>yourLastName_FirstName_PredicateLogic_Week4.pdf</code></li>
+                        </ol>
+                        <p><strong>Tip:</strong> Google Docs has good symbol support. Go to Insert → Special Characters.</p>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                        <span><strong>Option 3:</strong> LaTeX (For Advanced Users)</span>
+                        <span class="accordion-icon" aria-hidden="true">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p>If you know LaTeX, you can create a professional-looking document:</p>
+                        <div class="expression-display">
+\documentclass{article}
+\usepackage{amsmath, amssymb}
+
+\begin{document}
+\section*{Problem 1}
+Translate: "All students are hardworking"
+
+\textbf{Solution:}
+$$\forall x (Student(x) \to Hardworking(x))$$
+
+\end{document}
+                        </div>
+                        <p>Compile to PDF and submit.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2><span class="card-icon" aria-hidden="true">📚</span> Problem Set</h2>
+            <p><strong>Total Points: 10</strong></p>
+
+            <div class="problem-box">
+                <span class="problem-number">Problem 1</span>
+                <span class="problem-points">3 points</span>
+                <div style="clear: both;"></div>
+                
+                <h3>English to Predicate Logic Translation</h3>
+                <p>Translate each English statement into predicate logic notation. Define all predicates and specify the domain.</p>
+
+                <h4>Part a) "All students are hardworking" (0.75 points)</h4>
+                <div class="hint-box">
+                    <h4>💡 Hint</h4>
+                    <p>Remember: "All P's are Q's" uses ∀ with → (implication)</p>
+                </div>
+                <div class="answer-workspace">
+                    <h4>✏️ Your Answer:</h4>
+                    <div class="answer-lines">
+                        <p><strong>Domain:</strong> _______________________________________________</p>
+                        <p><strong>Predicates:</strong> _______________________________________________</p>
+                        <p><strong>Translation:</strong> _______________________________________________</p>
+                    </div>
+                </div>
+
+                <h4>Part b) "Some programmers are students" (0.75 points)</h4>
+                <div class="hint-box">
+                    <h4>💡 Hint</h4>
+                    <p>Remember: "Some P's are Q's" uses ∃ with ∧ (conjunction)</p>
+                </div>
+                <div class="answer-workspace">
+                    <h4>✏️ Your Answer:</h4>
+                    <div class="answer-lines">
+                        <p><strong>Domain:</strong> _______________________________________________</p>
+                        <p><strong>Predicates:</strong> _______________________________________________</p>
+                        <p><strong>Translation:</strong> _______________________________________________</p>
+                    </div>
+                </div>
+
+                <h4>Part c) "No student takes CSC 240 without knowing programming" (0.75 points)</h4>
+                <div class="hint-box">
+                    <h4>💡 Hint</h4>
+                    <p>"No P without Q" means "All P's have Q" → Use ∀ with →</p>
+                </div>
+                <div class="answer-workspace">
+                    <h4>✏️ Your Answer:</h4>
+                    <div class="answer-lines">
+                        <p><strong>Domain:</strong> _______________________________________________</p>
+                        <p><strong>Predicates:</strong> _______________________________________________</p>
+                        <p><strong>Translation:</strong> _______________________________________________</p>
+                    </div>
+                </div>
+
+                <h4>Part d) "Not all students who know programming take CSC 240" (0.75 points)</h4>
+                <div class="hint-box">
+                    <h4>💡 Hint</h4>
+                    <p>"Not all" is a negation of universal statement. Can also express as existential.</p>
+                </div>
+                <div class="answer-workspace">
+                    <h4>✏️ Your Answer:</h4>
+                    <div class="answer-lines">
+                        <p><strong>Domain:</strong> _______________________________________________</p>
+                        <p><strong>Predicates:</strong> _______________________________________________</p>
+                        <p><strong>Translation:</strong> _______________________________________________</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="problem-box">
+                <span class="problem-number">Problem 2</span>
+                <span class="problem-points">2 points</span>
+                <div style="clear: both;"></div>
+                
+                <h3>Determining Truth Values</h3>
+                <p>Let domain be <strong>ℤ</strong> (integers). Determine if each statement is TRUE or FALSE and explain your reasoning.</p>
+
+                <h4>Part a) $$ \forall x \, (x^2 \geq 0) $$ (0.5 points)</h4>
+                <div class="hint-box">
+                    <h4>💡 Hint</h4>
+                    <p>Think about what happens when you square any integer: positive, negative, or zero.</p>
+                </div>
+                <div class="answer-workspace">
+                    <h4>✏️ Your Answer:</h4>
+                    <div class="answer-lines">
+                        <p><strong>Truth Value:</strong> TRUE / FALSE (circle one)</p>
+                        <p><strong>Explanation:</strong> _______________________________________________</p>
+                        <p>_______________________________________________</p>
+                        <p>_______________________________________________</p>
+                    </div>
+                </div>
+
+                <h4>Part b) $$ \exists x \, (x^2 = -1) $$ (0.5 points)</h4>
+                <div class="hint-box">
+                    <h4>💡 Hint</h4>
+                    <p>Can you find an integer whose square is negative?</p>
+                </div>
+                <div class="answer-workspace">
+                    <h4>✏️ Your Answer:</h4>
+                    <div class="answer-lines">
+                        <p><strong>Truth Value:</strong> TRUE / FALSE (circle one)</p>
+                        <p><strong>Explanation:</strong> _______________________________________________</p>
+                        <p>_______________________________________________</p>
+                        <p>_______________________________________________</p>
+                    </div>
+                </div>
+
+                <h4>Part c) $$ \forall x \, \exists y \, (x + y = 0) $$ (0.5 points)</h4>
+                <div class="hint-box">
+                    <h4>💡 Hint</h4>
+                    <p>For each integer x, can you find a y such that x + y = 0? What would y be?</p>
+                </div>
+                <div class="answer-workspace">
+                    <h4>✏️ Your Answer:</h4>
+                    <div class="answer-lines">
+                        <p><strong>Truth Value:</strong> TRUE / FALSE (circle one)</p>
+                        <p><strong>Explanation:</strong> _______________________________________________</p>
+                        <p>_______________________________________________</p>
+                        <p>_______________________________________________</p>
+                    </div>
+                </div>
+
+                <h4>Part d) $$ \exists y \, \forall x \, (x \cdot y = x) $$ (0.5 points)</h4>
+                <div class="hint-box">
+                    <h4>💡 Hint</h4>
+                    <p>Is there ONE number y that when multiplied by ANY number gives that number back?</p>
+                </div>
+                <div class="answer-workspace">
+                    <h4>✏️ Your Answer:</h4>
+                    <div class="answer-lines">
+                        <p><strong>Truth Value:</strong> TRUE / FALSE (circle one)</p>
+                        <p><strong>Explanation:</strong> _______________________________________________</p>
+                        <p>_______________________________________________</p>
+                        <p>_______________________________________________</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="problem-box">
+                <span class="problem-number">Problem 3</span>
+                <span class="problem-points">3 points</span>
+                <div style="clear: both;"></div>
+                
+                <h3>Negating Quantified Statements</h3>
+                <p>Negate each statement and simplify. <strong>Show all steps</strong> using De Morgan's Laws for quantifiers.</p>
+
+                <h4>Part a) $$ \forall x \, (P(x) \to Q(x)) $$ (0.75 points)</h4>
+                <div class="hint-box">
+                    <h4>💡 Hint</h4>
+                    <p>Step 1: Swap ∀ to ∃. Step 2: Negate the implication using ¬(P→Q) ≡ P∧¬Q</p>
+                </div>
+                <div class="answer-workspace">
+                    <h4>✏️ Your Answer:</h4>
+                    <div class="answer-lines">
+                        <p><strong>Step 1:</strong> _______________________________________________</p>
+                        <p><strong>Step 2:</strong> _______________________________________________</p>
+                        <p><strong>Step 3:</strong> _______________________________________________</p>
+                        <p><strong>Final Answer:</strong> _______________________________________________</p>
+                    </div>
+                </div>
+
+                <h4>Part b) $$ \exists x \, (S(x) \land M(x)) $$ (0.75 points)</h4>
+                <div class="hint-box">
+                    <h4>💡 Hint</h4>
+                    <p>Step 1: Swap ∃ to ∀. Step 2: Apply De Morgan's Law to the conjunction</p>
+                </div>
+                <div class="answer-workspace">
+                    <h4>✏️ Your Answer:</h4>
+                    <div class="answer-lines">
+                        <p><strong>Step 1:</strong> _______________________________________________</p>
+                        <p><strong>Step 2:</strong> _______________________________________________</p>
+                        <p><strong>Step 3:</strong> _______________________________________________</p>
+                        <p><strong>Final Answer:</strong> _______________________________________________</p>
+                    </div>
+                </div>
+
+                <h4>Part c) $$ \forall x \, \exists y \, (x < y) $$ (0.75 points)</h4>
+                <div class="hint-box">
+                    <h4>💡 Hint</h4>
+                    <p>Work from outside to inside: negate ∀, then negate ∃, then negate the predicate</p>
+                </div>
+                <div class="answer-workspace">
+                    <h4>✏️ Your Answer:</h4>
+                    <div class="answer-lines">
+                        <p><strong>Step 1:</strong> _______________________________________________</p>
+                        <p><strong>Step 2:</strong> _______________________________________________</p>
+                        <p><strong>Step 3:</strong> _______________________________________________</p>
+                        <p><strong>Final Answer:</strong> _______________________________________________</p>
+                    </div>
+                </div>
+
+                <h4>Part d) $$ \neg \exists x \, (P(x) \land \neg Q(x)) $$ (0.75 points)</h4>
+                <div class="hint-box">
+                    <h4>💡 Hint</h4>
+                    <p>First apply De Morgan's to the outer negation, then simplify the double negation</p>
+                </div>
+                <div class="answer-workspace">
+                    <h4>✏️ Your Answer:</h4>
+                    <div class="answer-lines">
+                        <p><strong>Step 1:</strong> _______________________________________________</p>
+                        <p><strong>Step 2:</strong> _______________________________________________</p>
+                        <p><strong>Step 3:</strong> _______________________________________________</p>
+                        <p><strong>Final Answer:</strong> _______________________________________________</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="problem-box">
+                <span class="problem-number">Problem 4</span>
+                <span class="problem-points">2 points</span>
+                <div style="clear: both;"></div>
+                
+                <h3>Normal Forms</h3>
+                <p>Convert the following expressions to the specified normal form. Show your work step-by-step.</p>
+
+                <h4>Part a) Convert to DNF: $$ (p \to q) \land r $$ (1 point)</h4>
+                <div class="hint-box">
+                    <h4>💡 Hint</h4>
+                    <p>Step 1: Eliminate implication. Step 2: Distribute AND over OR to get OR of ANDs</p>
+                </div>
+                <div class="answer-workspace">
+                    <h4>✏️ Your Answer:</h4>
+                    <div class="answer-lines">
+                        <p><strong>Step 1 (Eliminate →):</strong> _______________________________________________</p>
+                        <p><strong>Step 2 (Distribution):</strong> _______________________________________________</p>
+                        <p><strong>Step 3 (Simplify):</strong> _______________________________________________</p>
+                        <p><strong>Final DNF:</strong> _______________________________________________</p>
+                    </div>
+                </div>
+
+                <h4>Part b) Convert to CNF: $$ (p \land q) \lor (r \land s) $$ (1 point)</h4>
+                <div class="hint-box">
+                    <h4>💡 Hint</h4>
+                    <p>Distribute OR over AND to get AND of ORs. Use: (A∧B)∨(C∧D) ≡ (A∨C)∧(A∨D)∧(B∨C)∧(B∨D)</p>
+                </div>
+                <div class="answer-workspace">
+                    <h4>✏️ Your Answer:</h4>
+                    <div class="answer-lines">
+                        <p><strong>Step 1 (Distribution):</strong> _______________________________________________</p>
+                        <p><strong>Step 2 (Expand):</strong> _______________________________________________</p>
+                        <p><strong>Step 3 (Simplify if possible):</strong> _______________________________________________</p>
+                        <p><strong>Final CNF:</strong> _______________________________________________</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2><span class="card-icon" aria-hidden="true">📖</span> Reference Guide</h2>
+            
+            <h3>Quick Reference: Quantifiers</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>English Pattern</th>
+                        <th>Symbolic Form</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>All P's are Q's</td>
+                        <td>∀x (P(x) → Q(x))</td>
+                        <td>Use implication with ∀</td>
+                    </tr>
+                    <tr>
+                        <td>Some P's are Q's</td>
+                        <td>∃x (P(x) ∧ Q(x))</td>
+                        <td>Use conjunction with ∃</td>
+                    </tr>
+                    <tr>
+                        <td>No P's are Q's</td>
+                        <td>∀x (P(x) → ¬Q(x))</td>
+                        <td>All P's are not Q's</td>
+                    </tr>
+                    <tr>
+                        <td>Not all P's are Q's</td>
+                        <td>∃x (P(x) ∧ ¬Q(x))</td>
+                        <td>Some P is not Q</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Negation Rules</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Original</th>
+                        <th>Negation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>∀x P(x)</td>
+                        <td>∃x ¬P(x)</td>
+                    </tr>
+                    <tr>
+                        <td>∃x P(x)</td>
+                        <td>∀x ¬P(x)</td>
+                    </tr>
+                    <tr>
+                        <td>P → Q</td>
+                        <td>P ∧ ¬Q</td>
+                    </tr>
+                    <tr>
+                        <td>P ∧ Q</td>
+                        <td>¬P ∨ ¬Q</td>
+                    </tr>
+                    <tr>
+                        <td>P ∨ Q</td>
+                        <td>¬P ∧ ¬Q</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Normal Forms Quick Reference</h3>
+            <div class="info-box blue">
+                <p><strong>CNF (Conjunctive Normal Form):</strong> AND of ORs</p>
+                <div class="expression-display">
+(literal ∨ literal ∨ ...) ∧ (literal ∨ literal ∨ ...) ∧ ...
+
+Example: (P ∨ Q) ∧ (¬P ∨ R)
+                </div>
+
+                <p><strong>DNF (Disjunctive Normal Form):</strong> OR of ANDs</p>
+                <div class="expression-display">
+(literal ∧ literal ∧ ...) ∨ (literal ∧ literal ∧ ...) ∨ ...
+
+Example: (P ∧ Q) ∨ (¬P ∧ R)
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2><span class="card-icon" aria-hidden="true">✅</span> Worked Examples</h2>
+            <p>Study these examples before starting your problems:</p>
+
+            <div class="accordion">
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                        <span><strong>Example 1:</strong> "All birds can fly"</span>
+                        <span class="accordion-icon" aria-hidden="true">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <h4>Translation Process:</h4>
+                        <p><strong>Step 1: Identify the domain</strong></p>
+                        <div class="expression-display">
+Domain: All living things (or all animals)
+                        </div>
+
+                        <p><strong>Step 2: Define predicates</strong></p>
+                        <div class="expression-display">
+Bird(x): "x is a bird"
+CanFly(x): "x can fly"
+                        </div>
+
+                        <p><strong>Step 3: Identify structure</strong></p>
+                        <ul>
+                            <li>"All" → Universal quantifier (∀)</li>
+                            <li>"birds...fly" → Implication (if bird, then can fly)</li>
+                        </ul>
+
+                        <p><strong>Step 4: Write symbolic form</strong></p>
+                        <div class="expression-display">
+∀x (Bird(x) → CanFly(x))
+                        </div>
+
+                        <p><strong>Reading:</strong> "For all x, if x is a bird, then x can fly"</p>
+
+                        <div class="example-box">
+                            <h4>✓ Why This is Correct</h4>
+                            <ul>
+                                <li>Uses ∀ for "all"</li>
+                                <li>Uses → to connect bird to flying ability</li>
+                                <li>Only applies to birds (implication false for non-birds, which is fine)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                        <span><strong>Example 2:</strong> Negate "All students passed"</span>
+                        <span class="accordion-icon" aria-hidden="true">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <h4>Original Statement:</h4>
+                        <div class="expression-display">
+∀x (Student(x) → Passed(x))
+                        </div>
+
+                        <h4>Negation Process:</h4>
+                        <p><strong>Step 1: Add negation</strong></p>
+                        <div class="expression-display">
+¬(∀x (Student(x) → Passed(x)))
+                        </div>
+
+                        <p><strong>Step 2: Apply De Morgan's for quantifiers (∀ becomes ∃)</strong></p>
+                        <div class="expression-display">
+∃x ¬(Student(x) → Passed(x))
+                        </div>
+
+                        <p><strong>Step 3: Negate the implication (¬(P→Q) ≡ P∧¬Q)</strong></p>
+                        <div class="expression-display">
+∃x (Student(x) ∧ ¬Passed(x))
+                        </div>
+
+                        <p><strong>Step 4: Simplify (already simplified)</strong></p>
+                        <div class="expression-display">
+Final: ∃x (Student(x) ∧ ¬Passed(x))
+                        </div>
+
+                        <p><strong>English:</strong> "There exists a student who did not pass" or "At least one student failed"</p>
+
+                        <div class="example-box">
+                            <h4>✓ Why This Makes Sense</h4>
+                            <p>The negation of "everyone passed" is logically "someone didn't pass"—which is exactly what we got!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                        <span><strong>Example 3:</strong> Convert to DNF: $$ (P \to Q) \land R $$</span>
+                        <span class="accordion-icon" aria-hidden="true">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <h4>Conversion Process:</h4>
+                        
+                        <p><strong>Step 1: Eliminate implication</strong></p>
+                        <div class="expression-display">
+(P → Q) ∧ R
+= (¬P ∨ Q) ∧ R
+                        </div>
+
+                        <p><strong>Step 2: Distribute AND over OR</strong></p>
+                        <p>Apply: $$ (A \lor B) \land C \equiv (A \land C) \lor (B \land C) $$</p>
+                        <div class="expression-display">
+(¬P ∨ Q) ∧ R
+= (¬P ∧ R) ∨ (Q ∧ R)
+                        </div>
+
+                        <p><strong>Step 3: Verify it's in DNF</strong></p>
+                        <ul>
+                            <li>Main operator: ∨ (OR) ✓</li>
+                            <li>Term 1: (¬P ∧ R) is a conjunction of literals ✓</li>
+                            <li>Term 2: (Q ∧ R) is a conjunction of literals ✓</li>
+                        </ul>
+
+                        <div class="expression-display">
+<strong>Final DNF: (¬P ∧ R) ∨ (Q ∧ R)</strong>
+                        </div>
+
+                        <div class="example-box">
+                            <h4>✓ Verification</h4>
+                            <p>This is DNF because it's a disjunction (OR) of terms, where each term is a conjunction (AND) of literals.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2><span class="card-icon" aria-hidden="true">📊</span> Grading Rubric</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Problem</th>
+                        <th>Points</th>
+                        <th>Grading Criteria</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Problem 1: Translation</strong></td>
+                        <td>3</td>
+                        <td>
+                            • Correct domain and predicates (0.25 per part)<br>
+                            • Correct symbolic form (0.5 per part)<br>
+                            • Proper quantifier and connective choice
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Problem 2: Truth Values</strong></td>
+                        <td>2</td>
+                        <td>
+                            • Correct truth value (0.25 per part)<br>
+                            • Clear explanation/reasoning (0.25 per part)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Problem 3: Negation</strong></td>
+                        <td>3</td>
+                        <td>
+                            • Shows work/steps (0.25 per part)<br>
+                            • Correct application of rules (0.25 per part)<br>
+                            • Correct final answer (0.25 per part)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Problem 4: Normal Forms</strong></td>
+                        <td>2</td>
+                        <td>
+                            • Shows conversion steps (0.25 per part)<br>
+                            • Correct final form (0.5 per part)<br>
+                            • Proper notation (0.25 per part)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><strong>Total</strong></td>
+                        <td><strong>10 points</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Partial Credit Policy</h3>
+            <div class="info-box green">
+                <p><strong>You can earn partial credit for:</strong></p>
+                <ul>
+                    <li>Correct predicate definitions even if translation is wrong</li>
+                    <li>Correct reasoning even if final answer has minor errors</li>
+                    <li>Showing work on negation problems (process matters!)</li>
+                    <li>Partially correct normal form conversions</li>
+                </ul>
+                <p><strong>Key point:</strong> Always show your work and reasoning!</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2><span class="card-icon" aria-hidden="true">💡</span> Tips for Success</h2>
+
+            <div class="info-box blue">
+                <h3>✅ Best Practices</h3>
+                <ul>
+                    <li><strong>Review Modules First:</strong> Go through Module 4.3 (Predicate Logic) and Module 4.4 (Quantifiers) before starting</li>
+                    <li><strong>Define Everything:</strong> Always define your predicates and domain clearly</li>
+                    <li><strong>Show Your Work:</strong> Step-by-step work earns partial credit even if final answer is wrong</li>
+                    <li><strong>Check with English:</strong> After translating, read your symbolic form back in English to verify it makes sense</li>
+                    <li><strong>Use the Pattern:</strong> "All P's are Q's" → ∀x (P(x) → Q(x)), "Some P's are Q's" → ∃x (P(x) ∧ Q(x))</li>
+                    <li><strong>Negate Carefully:</strong> Work one quantifier at a time, from outside to inside</li>
+                </ul>
+            </div>
+
+            <h3>Common Mistakes to Avoid</h3>
+            <div class="info-box red">
+                <ul>
+                    <li>❌ Using ∧ instead of → with ∀ ("All P's are Q's")</li>
+                    <li>❌ Using → instead of ∧ with ∃ ("Some P's are Q's")</li>
+                    <li>❌ Forgetting to define predicates and domain</li>
+                    <li>❌ Not showing work on negation problems</li>
+                    <li>❌ Swapping quantifiers without negating predicate</li>
+                    <li>❌ Confusing ∀x ∃y with ∃y ∀x (order matters!)</li>
+                    <li>❌ Not simplifying after negation</li>
+                </ul>
+            </div>
+
+            <h3>Self-Check Questions</h3>
+            <div class="info-box gold">
+                <p>Before submitting, ask yourself:</p>
+                <ul>
+                    <li>✓ Did I define all predicates clearly?</li>
+                    <li>✓ Did I specify the domain for each problem?</li>
+                    <li>✓ Did I use the correct quantifier (∀ or ∃)?</li>
+                    <li>✓ Did I use the correct connective (→ or ∧)?</li>
+                    <li>✓ Did I show all steps for negation problems?</li>
+                    <li>✓ Did I verify my CNF/DNF is in the correct form?</li>
+                    <li>✓ Does my translation make sense when read back in English?</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2><span class="card-icon" aria-hidden="true">📤</span> How to Submit</h2>
+
+            <h3>Submission Steps</h3>
+            <ol>
+                <li><strong>Complete all problems:</strong> Work through each problem showing your reasoning</li>
+                <li><strong>Review your work:</strong> Check answers against the rubric and tips</li>
+                <li><strong>Convert to PDF:</strong>
+                    <ul>
+                        <li><strong>Handwritten:</strong> Scan using phone app or scanner</li>
+                        <li><strong>Typed:</strong> Save as PDF from Word/Google Docs</li>
+                        <li>Ensure file is readable and all pages are included</li>
+                    </ul>
+                </li>
+                <li><strong>Name your file:</strong> <code>yourLastName_FirstName_PredicateLogic_Week4.pdf</code></li>
+                <li><strong>Submit to Canvas:</strong>
+                    <ul>
+                        <li>Go to Canvas → CSC 240 → Assignments</li>
+                        <li>Click "Predicate Logic Translation Exercises"</li>
+                        <li>Upload your PDF</li>
+                        <li>Verify successful submission</li>
+                    </ul>
+                </li>
+            </ol>
+
+            <div class="info-box orange">
+                <h3>⚠️ Submission Checklist</h3>
+                <ul class="checklist">
+                    <li>All 4 problems completed</li>
+                    <li>Work shown for all parts</li>
+                    <li>Predicates and domains defined</li>
+                    <li>File saved as PDF</li>
+                    <li>File properly named</li>
+                    <li>File is readable (not blurry or cut off)</li>
+                    <li>Submitted before deadline</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2><span class="card-icon" aria-hidden="true">🔗</span> Resources</h2>
+
+            <h3>Course Materials</h3>
+            <ul>
+                <li><strong>Module 4.3:</strong> Introduction to Predicate Logic</li>
+                <li><strong>Module 4.4:</strong> Quantifiers - Universal and Existential</li>
+                <li><strong>Module 4.5:</strong> Nested Quantifiers and Negation</li>
+                <li><strong>Week 4 Lecture Videos:</strong> Available on Canvas</li>
+            </ul>
+
+            <h3>Practice Tools</h3>
+            <ul>
+                <li><a href="https://www.whitman.edu/mathematics/higher_math_online/section01.03.html" target="_blank" rel="noopener">Whitman College: Quantifier Tutorial</a></li>
+                <li><a href="https://www.cs.cornell.edu/courses/cs2800/wiki/index.php/Predicate_Logic" target="_blank" rel="noopener">Cornell CS2800: Predicate Logic Resources</a></li>
+            </ul>
+
+            <h3>Getting Help</h3>
+            <ul>
+                <li><strong>Office Hours:</strong> Best for one-on-one help with translations</li>
+                <li><strong>Discussion Forum:</strong> Post general questions about approach</li>
+                <li><strong>Study Groups:</strong> Work through examples together (but submit your own work!)</li>
+            </ul>
+
+            <div class="info-box orange">
+                <h3>⚠️ Academic Integrity</h3>
+                <p><strong>You MAY:</strong></p>
+                <ul>
+                    <li>✓ Discuss general approaches with classmates</li>
+                    <li>✓ Use course materials and learning modules</li>
+                    <li>✓ Ask instructor for clarification</li>
+                    <li>✓ Use reference materials and textbooks</li>
+                </ul>
+                <p><strong>You MAY NOT:</strong></p>
+                <ul>
+                    <li>✗ Copy answers from other students</li>
+                    <li>✗ Use online solution manuals or answer keys</li>
+                    <li>✗ Submit AI-generated solutions</li>
+                    <li>✗ Share your completed work with others</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="progress-checklist">
+            <h2><span class="card-icon" aria-hidden="true">📋</span> Assignment Progress Checklist</h2>
+            <p>Track your progress (saved for this session only):</p>
+
+            <div class="checklist-item" onclick="toggleChecklistItem(this)">
+                <input type="checkbox" class="checklist-checkbox" id="check1" aria-label="Review Module 4.3">
+                <label for="check1" class="checklist-label">Review Module 4.3: Introduction to Predicate Logic</label>
+            </div>
+
+            <div class="checklist-item" onclick="toggleChecklistItem(this)">
+                <input type="checkbox" class="checklist-checkbox" id="check2" aria-label="Review Module 4.4">
+                <label for="check2" class="checklist-label">Review Module 4.4: Quantifiers - Universal and Existential</label>
+            </div>
+
+            <div class="checklist-item" onclick="toggleChecklistItem(this)">
+                <input type="checkbox" class="checklist-checkbox" id="check3" aria-label="Review Module 4.5">
+                <label for="check3" class="checklist-label">Review Module 4.5: Nested Quantifiers and Negation</label>
+            </div>
+
+            <div class="checklist-item" onclick="toggleChecklistItem(this)">
+                <input type="checkbox" class="checklist-checkbox" id="check4" aria-label="Study worked examples">
+                <label for="check4" class="checklist-label">Study all worked examples in this assignment</label>
+            </div>
+
+            <div class="checklist-item" onclick="toggleChecklistItem(this)">
+                <input type="checkbox" class="checklist-checkbox" id="check5" aria-label="Complete Problem 1">
+                <label for="check5" class="checklist-label">Complete Problem 1: English to Predicate Logic (all 4 parts)</label>
+            </div>
+
+            <div class="checklist-item" onclick="toggleChecklistItem(this)">
+                <input type="checkbox" class="checklist-checkbox" id="check6" aria-label="Complete Problem 2">
+                <label for="check6" class="checklist-label">Complete Problem 2: Determining Truth Values (all 4 parts)</label>
+            </div>
+
+            <div class="checklist-item" onclick="toggleChecklistItem(this)">
+                <input type="checkbox" class="checklist-checkbox" id="check7" aria-label="Complete Problem 3">
+                <label for="check7" class="checklist-label">Complete Problem 3: Negating Quantified Statements (all 4 parts)</label>
+            </div>
+
+            <div class="checklist-item" onclick="toggleChecklistItem(this)">
+                <input type="checkbox" class="checklist-checkbox" id="check8" aria-label="Complete Problem 4">
+                <label for="check8" class="checklist-label">Complete Problem 4: Normal Forms (both parts)</label>
+            </div>
+
+            <div class="checklist-item" onclick="toggleChecklistItem(this)">
+                <input type="checkbox" class="checklist-checkbox" id="check9" aria-label="Verify all predicates defined">
+                <label for="check9" class="checklist-label">Verify all predicates and domains are clearly defined</label>
+            </div>
+
+            <div class="checklist-item" onclick="toggleChecklistItem(this)">
+                <input type="checkbox" class="checklist-checkbox" id="check10" aria-label="Show work for negations">
+                <label for="check10" class="checklist-label">Verify all negation problems show step-by-step work</label>
+            </div>
+
+            <div class="checklist-item" onclick="toggleChecklistItem(this)">
+                <input type="checkbox" class="checklist-checkbox" id="check11" aria-label="Check answers">
+                <label for="check11" class="checklist-label">Review all answers for correctness and clarity</label>
+            </div>
+
+            <div class="checklist-item" onclick="toggleChecklistItem(this)">
+                <input type="checkbox" class="checklist-checkbox" id="check12" aria-label="Convert to PDF">
+                <label for="check12" class="checklist-label">Convert completed work to PDF (scan or save as PDF)</label>
+            </div>
+
+            <div class="checklist-item" onclick="toggleChecklistItem(this)">
+                <input type="checkbox" class="checklist-checkbox" id="check13" aria-label="Name file correctly">
+                <label for="check13" class="checklist-label">Name file: yourLastName_FirstName_PredicateLogic_Week4.pdf</label>
+            </div>
+
+            <div class="checklist-item" onclick="toggleChecklistItem(this)">
+                <input type="checkbox" class="checklist-checkbox" id="check14" aria-label="Submit to Canvas">
+                <label for="check14" class="checklist-label">Submit to Canvas and verify successful upload</label>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2><span class="card-icon" aria-hidden="true">❓</span> Frequently Asked Questions</h2>
+
+            <div class="accordion">
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                        <span><strong>Q: Can I use text notation instead of symbols?</strong></span>
+                        <span class="accordion-icon" aria-hidden="true">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p><strong>A:</strong> Yes! If you can't type special symbols, you can use:</p>
+                        <ul>
+                            <li>∀ → "forall" or "for all"</li>
+                            <li>∃ → "exists" or "there exists"</li>
+                            <li>∧ → "AND" or "^"</li>
+                            <li>∨ → "OR" or "v"</li>
+                            <li>¬ → "NOT" or "~"</li>
+                            <li>→ → "->" or "implies"</li>
+                            <li>↔ → "<->" or "iff"</li>
+                        </ul>
+                        <p>Just be consistent throughout your submission!</p>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                        <span><strong>Q: How much explanation is needed?</strong></span>
+                        <span class="accordion-icon" aria-hidden="true">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p><strong>A:</strong> For translation problems (Problem 1), you need:</p>
+                        <ul>
+                            <li>Domain specification</li>
+                            <li>Predicate definitions</li>
+                            <li>Final symbolic form</li>
+                        </ul>
+                        <p>For negation problems (Problem 3), you MUST show:</p>
+                        <ul>
+                            <li>Each step of the negation process</li>
+                            <li>Which rule you applied at each step</li>
+                            <li>Simplified final answer</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                        <span><strong>Q: What if I get stuck on a problem?</strong></span>
+                        <span class="accordion-icon" aria-hidden="true">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p><strong>A:</strong> Here's what to do:</p>
+                        <ol>
+                            <li>Review the relevant learning module (hints tell you which one)</li>
+                            <li>Look at the worked examples in this assignment</li>
+                            <li>Try to work through as much as you can</li>
+                            <li>Show your attempt and reasoning (partial credit available!)</li>
+                            <li>Ask in office hours or discussion forum</li>
+                            <li>Come back to it after working on other problems</li>
+                        </ol>
+                        <p><strong>Remember:</strong> Showing your work and reasoning earns points even if the final answer isn't perfect!</p>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                        <span><strong>Q: Can I work with classmates?</strong></span>
+                        <span class="accordion-icon" aria-hidden="true">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p><strong>A:</strong> You may discuss approaches and concepts with classmates, but:</p>
+                        <ul>
+                            <li>✓ Each person must write their own solutions</li>
+                            <li>✓ Don't copy answers from others</li>
+                            <li>✓ Show your own reasoning and work</li>
+                            <li>✓ If you discuss a problem, make sure you understand it yourself</li>
+                        </ul>
+                        <p><strong>Study groups are encouraged, but submissions must be individual work.</strong></p>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                        <span><strong>Q: What if my scan quality is poor?</strong></span>
+                        <span class="accordion-icon" aria-hidden="true">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p><strong>A:</strong> Make sure your submission is readable:</p>
+                        <ul>
+                            <li>Use good lighting when scanning</li>
+                            <li>Write with dark pen (not pencil)</li>
+                            <li>Use scanning apps with auto-enhance (CamScanner, Adobe Scan)</li>
+                            <li>Check the PDF before submitting</li>
+                            <li>If unreadable, resubmit with better quality</li>
+                        </ul>
+                        <p><strong>Unreadable submissions may receive reduced credit.</strong></p>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                        <span><strong>Q: Is there partial credit?</strong></span>
+                        <span class="accordion-icon" aria-hidden="true">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p><strong>A:</strong> Yes! Partial credit is available for:</p>
+                        <ul>
+                            <li>Correct predicate definitions (even if translation wrong)</li>
+                            <li>Correct approach with minor errors</li>
+                            <li>Showing work on negation problems</li>
+                            <li>Partially correct normal form conversions</li>
+                        </ul>
+                        <p><strong>This is why showing your work is so important!</strong></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2><span class="card-icon" aria-hidden="true">🎯</span> Connection to Other Assignments</h2>
+
+            <div class="info-box purple">
+                <h3>How This Assignment Fits</h3>
+                <p>This assignment is part of your Week 4 learning:</p>
+                <ul>
+                    <li><strong>PE-04:</strong> You're implementing logic conversion algorithms</li>
+                    <li><strong>This Assignment:</strong> You're practicing predicate logic by hand</li>
+                    <li><strong>Quantifier Practice:</strong> More focused practice on quantifier negation</li>
+                    <li><strong>Discussion:</strong> You'll apply these concepts to programming contexts</li>
+                </ul>
+                <p><strong>Together, these assignments ensure you master predicate logic from multiple angles!</strong></p>
+            </div>
+
+            <div class="info-box green">
+                <h3>🔜 Looking Ahead</h3>
+                <p><strong>Week 5: Proof Techniques</strong></p>
+                <p>The predicate logic skills you're practicing here are <strong>essential</strong> for writing mathematical proofs next week. You'll use quantifiers to:</p>
+                <ul>
+                    <li>State theorems precisely</li>
+                    <li>Express what needs to be proven</li>
+                    <li>Work with universal and existential statements in proofs</li>
+                    <li>Negate statements for proof by contradiction</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2><span class="card-icon" aria-hidden="true">🚀</span> Ready to Submit?</h2>
+            
+            <div class="info-box blue">
+                <h3>Final Checklist Before Submission</h3>
+                <ul class="checklist">
+                    <li>✓ All 4 problems completed</li>
+                    <li>✓ All sub-parts answered (14 total parts)</li>
+                    <li>✓ Predicates and domains defined for Problem 1</li>
+                    <li>✓ Explanations provided for Problem 2</li>
+                    <li>✓ Step-by-step work shown for Problem 3</li>
+                    <li>✓ Conversion steps shown for Problem 4</li>
+                    <li>✓ Work is neat and readable</li>
+                    <li>✓ PDF file properly named</li>
+                    <li>✓ File size reasonable (under 10MB)</li>
+                </ul>
+            </div>
+
+            <div style="text-align: center; margin: 30px 0;">
+                <a href="https://canvas.mendocino.edu" class="btn btn-success" target="_blank" rel="noopener">
+                    📤 Submit to Canvas
+                </a>
+                <button class="btn btn-primary" onclick="window.print()">
+                    🖨️ Print This Assignment
+                </button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2><span class="card-icon" aria-hidden="true">📖</span> Additional Practice (Optional)</h2>
+            
+            <p>Want more practice? Try these additional problems (not for submission):</p>
+
+            <div class="accordion">
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                        <span><strong>Extra Problem 1:</strong> "Every course has at least one student"</span>
+                        <span class="accordion-icon" aria-hidden="true">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p><strong>Try translating this yourself, then check the answer:</strong></p>
+                        <div class="example-box">
+                            <h4>Solution</h4>
+                            <p><strong>Domain:</strong> All courses</p>
+                            <p><strong>Predicates:</strong></p>
+                            <ul>
+                                <li>Course(c): "c is a course"</li>
+                                <li>Student(s): "s is a student"</li>
+                                <li>Enrolled(s, c): "student s is enrolled in course c"</li>
+                            </ul>
+                            <div class="expression-display">
+∀c (Course(c) → ∃s Enrolled(s, c))
+
+Reading: "For all c, if c is a course, then there exists 
+         a student s such that s is enrolled in c"
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                        <span><strong>Extra Problem 2:</strong> Negate "Every number has a square root"</span>
+                        <span class="accordion-icon" aria-hidden="true">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p><strong>Original:</strong> ∀x ∃y (y² = x)</p>
+                        <p><strong>Try negating this, then check:</strong></p>
+                        <div class="example-box">
+                            <h4>Solution</h4>
+                            <p><strong>Step 1:</strong> ¬(∀x ∃y (y² = x))</p>
+                            <p><strong>Step 2:</strong> ∃x ¬(∃y (y² = x))</p>
+                            <p><strong>Step 3:</strong> ∃x ∀y ¬(y² = x)</p>
+                            <p><strong>Step 4:</strong> ∃x ∀y (y² ≠ x)</p>
+                            <p><strong>English:</strong> "There exists a number that is not the square of any number"</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                        <span><strong>Extra Problem 3:</strong> Convert to CNF: $$ P \lor (Q \land R) $$</span>
+                        <span class="accordion-icon" aria-hidden="true">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p><strong>Try this conversion, then check:</strong></p>
+                        <div class="example-box">
+                            <h4>Solution</h4>
+                            <p><strong>Step 1:</strong> No implications to eliminate</p>
+                            <p><strong>Step 2:</strong> Distribute OR over AND</p>
+                            <div class="expression-display">
+P ∨ (Q ∧ R)
+= (P ∨ Q) ∧ (P ∨ R)
+                            </div>
+                            <p><strong>Step 3:</strong> Verify CNF structure</p>
+                            <ul>
+                                <li>Main operator: ∧ ✓</li>
+                                <li>Each clause is disjunction of literals ✓</li>
+                            </ul>
+                            <p><strong>Final CNF:</strong> (P ∨ Q) ∧ (P ∨ R)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2><span class="card-icon" aria-hidden="true">🎓</span> Ready to Excel!</h2>
+            
+            <div class="info-box green">
+                <h3>You've Got This! 💪</h3>
+                <p>You've reviewed all the materials and examples. Now it's time to demonstrate your understanding!</p>
+                <p><strong>Remember:</strong></p>
+                <ul>
+                    <li>Take your time and work carefully</li>
+                    <li>Show all your work for maximum credit</li>
+                    <li>Use the learning modules as reference</li>
+                    <li>Ask for help if you need it</li>
+                    <li>Submit before the deadline!</li>
+                </ul>
+            </div>
+
+            <div style="text-align: center; margin: 30px 0;">
+                <a href="https://canvas.mendocino.edu" class="btn btn-success" target="_blank" rel="noopener">
+                    📤 Go to Canvas Submission Page
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <footer style="text-align: center; padding: 30px; margin-top: 40px; background: var(--light-bg); border-radius: 10px;">
+        <p><strong>Predicate Logic Translation Exercises</strong></p>
+        <p>CSC 240 - Discrete Structures | Mendocino College</p>
+        <p>© 2026 Mendocino College | All Rights Reserved</p>
+        <p style="margin-top: 10px; font-size: 0.9rem;">
+            Questions? Contact your instructor through Canvas or during office hours.
+        </p>
+    </footer>
+
+    <script>
+        // Accordion Toggle
+        function toggleAccordion(header) {
+            const item = header.parentElement;
+            const wasActive = item.classList.contains('active');
+            
+            const allItems = document.querySelectorAll('.accordion-item');
+            allItems.forEach(i => {
+                i.classList.remove('active');
+                i.querySelector('.accordion-header').setAttribute('aria-expanded', 'false');
+            });
+
+            if (!wasActive) {
+                item.classList.add('active');
+                header.setAttribute('aria-expanded', 'true');
+            }
+        }
+
+        // Checklist Toggle
+        function toggleChecklistItem(item) {
+            const checkbox = item.querySelector('.checklist-checkbox');
+            checkbox.checked = !checkbox.checked;
+            saveProgress();
+        }
+
+        // Save progress to session storage
+        function saveProgress() {
+            const checkboxes = document.querySelectorAll('.checklist-checkbox');
+            const progress = {};
+            checkboxes.forEach((checkbox, index) => {
+                progress[`item-${index}`] = checkbox.checked;
+            });
+            sessionStorage.setItem('predicateLogicProgress', JSON.stringify(progress));
+        }
+
+        // Load progress from session storage
+        function loadProgress() {
+            const savedProgress = sessionStorage.getItem('predicateLogicProgress');
+            if (savedProgress) {
+                const progress = JSON.parse(savedProgress);
+                const checkboxes = document.querySelectorAll('.checklist-checkbox');
+                checkboxes.forEach((checkbox, index) => {
+                    if (progress[`item-${index}`]) {
+                        checkbox.checked = true;
+                    }
+                });
+            }
+        }
+
+        // Keyboard navigation for accordion
+        document.addEventListener('keydown', function(e) {
+            if (e.target.classList.contains('accordion-header')) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    toggleAccordion(e.target);
+                }
+            }
+        });
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProgress();
+        });
+    </script>
+</body>
+</html>

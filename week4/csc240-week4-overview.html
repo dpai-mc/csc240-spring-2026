@@ -1,0 +1,1819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="CSC 240 Week 4 Overview - Advanced Logic and Predicates at Mendocino College">
+    <title>CSC 240 Week 4: Advanced Logic and Predicates | Mendocino College</title>
+    <style>
+        /* CSS Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-blue: #003366;
+            --secondary-blue: #0066cc;
+            --accent-gold: #FFB81C;
+            --success-green: #28a745;
+            --warning-orange: #ff8c00;
+            --danger-red: #dc3545;
+            --light-bg: #f8f9fa;
+            --white: #ffffff;
+            --text-dark: #212529;
+            --text-muted: #6c757d;
+            --border-color: #dee2e6;
+            --shadow: 0 2px 8px rgba(0,0,0,0.1);
+            --shadow-hover: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: var(--light-bg);
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Skip to Main Content Link for Screen Readers */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: var(--primary-blue);
+            color: var(--white);
+            padding: 8px;
+            text-decoration: none;
+            z-index: 100;
+        }
+
+        .skip-link:focus {
+            top: 0;
+        }
+
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+            color: var(--white);
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .header-title h1 {
+            font-size: 2.2rem;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .header-title p {
+            font-size: 1.1rem;
+            opacity: 0.95;
+        }
+
+        .week-badge {
+            background-color: var(--accent-gold);
+            color: var(--primary-blue);
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+            background: var(--white);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+        }
+
+        .nav-tab {
+            flex: 1;
+            min-width: 150px;
+            padding: 12px 20px;
+            background: var(--light-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            color: var(--text-dark);
+        }
+
+        .nav-tab:hover {
+            background: var(--secondary-blue);
+            color: var(--white);
+            border-color: var(--secondary-blue);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .nav-tab.active {
+            background: var(--primary-blue);
+            color: var(--white);
+            border-color: var(--primary-blue);
+        }
+
+        .nav-tab:focus {
+            outline: 3px solid var(--accent-gold);
+            outline-offset: 2px;
+        }
+
+        /* Content Sections */
+        .content-section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Card Styles */
+        .card {
+            background: var(--white);
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow);
+            border-left: 5px solid var(--secondary-blue);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateX(5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .card h2 {
+            color: var(--primary-blue);
+            margin-bottom: 15px;
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card h3 {
+            color: var(--secondary-blue);
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+
+        .card-icon {
+            font-size: 1.8rem;
+        }
+
+        /* Info Boxes */
+        .info-box {
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 5px solid;
+        }
+
+        .info-box.blue {
+            background-color: #e7f3ff;
+            border-color: var(--secondary-blue);
+        }
+
+        .info-box.gold {
+            background-color: #fff8e1;
+            border-color: var(--accent-gold);
+        }
+
+        .info-box.green {
+            background-color: #e8f5e9;
+            border-color: var(--success-green);
+        }
+
+        .info-box.orange {
+            background-color: #fff3e0;
+            border-color: var(--warning-orange);
+        }
+
+        /* Lists */
+        ul, ol {
+            margin-left: 25px;
+            margin-top: 10px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        .checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .checklist li {
+            padding-left: 30px;
+            position: relative;
+        }
+
+        .checklist li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--success-green);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: var(--white);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--primary-blue);
+            color: var(--white);
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background-color: var(--light-bg);
+        }
+
+        /* Progress Tracker */
+        .progress-container {
+            background: var(--white);
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
+        }
+
+        .progress-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            margin: 10px 0;
+            background: var(--light-bg);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .progress-item:hover {
+            background: #e3f2fd;
+            transform: translateX(5px);
+        }
+
+        .progress-checkbox {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            accent-color: var(--success-green);
+        }
+
+        .progress-label {
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .progress-status {
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: #fff3e0;
+            color: var(--warning-orange);
+        }
+
+        .status-complete {
+            background: #e8f5e9;
+            color: var(--success-green);
+        }
+
+        /* Interactive Accordion */
+        .accordion {
+            margin: 20px 0;
+        }
+
+        .accordion-item {
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+
+        .accordion-header {
+            padding: 15px 20px;
+            background: var(--light-bg);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+
+        .accordion-header:hover {
+            background: #e3f2fd;
+        }
+
+        .accordion-header:focus {
+            outline: 3px solid var(--accent-gold);
+            outline-offset: -3px;
+        }
+
+        .accordion-icon {
+            transition: transform 0.3s ease;
+            font-size: 1.2rem;
+            color: var(--secondary-blue);
+        }
+
+        .accordion-item.active .accordion-icon {
+            transform: rotate(180deg);
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            padding: 0 20px;
+        }
+
+        .accordion-item.active .accordion-content {
+            max-height: 2000px;
+            padding: 20px;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+
+        .btn:focus {
+            outline: 3px solid var(--accent-gold);
+            outline-offset: 2px;
+        }
+
+        .btn-primary {
+            background: var(--primary-blue);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: var(--secondary-blue);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .btn-secondary {
+            background: var(--light-bg);
+            color: var(--primary-blue);
+            border: 2px solid var(--primary-blue);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary-blue);
+            color: var(--white);
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .timeline-item {
+            padding: 20px;
+            margin: 20px 0;
+            background: var(--white);
+            border-radius: 8px;
+            border-left: 5px solid var(--secondary-blue);
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+
+        .timeline-date {
+            color: var(--secondary-blue);
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        /* Code Display */
+        .code-block {
+            background: #f5f5f5;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .header-title h1 {
+                font-size: 1.6rem;
+            }
+
+            .nav-tabs {
+                flex-direction: column;
+            }
+
+            .nav-tab {
+                min-width: 100%;
+            }
+
+            .card {
+                padding: 15px;
+            }
+
+            table {
+                font-size: 0.9rem;
+            }
+
+            th, td {
+                padding: 10px;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+            }
+
+            .nav-tabs, .progress-checkbox, .btn {
+                display: none;
+            }
+
+            .content-section {
+                display: block !important;
+            }
+
+            .card {
+                page-break-inside: avoid;
+            }
+        }
+
+        /* Accessibility Enhancements */
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            margin: -1px;
+            padding: 0;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0;
+        }
+
+        /* Focus visible for keyboard navigation */
+        *:focus-visible {
+            outline: 3px solid var(--accent-gold);
+            outline-offset: 2px;
+        }
+
+        /* High contrast support */
+        @media (prefers-contrast: high) {
+            .card {
+                border: 2px solid var(--text-dark);
+            }
+        }
+
+        /* Reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <header role="banner">
+        <div class="header-content">
+            <div class="header-title">
+                <h1>CSC 240: Discrete Structures</h1>
+                <p>Week 4: Advanced Logic and Predicates</p>
+            </div>
+            <div class="week-badge" role="status" aria-label="Current week">Week 4 of 17</div>
+        </div>
+    </header>
+
+    <nav class="nav-tabs" role="navigation" aria-label="Week 4 content navigation">
+        <button class="nav-tab active" onclick="showSection('overview')" role="tab" aria-selected="true" aria-controls="overview-section" id="tab-overview">
+            📋 Overview
+        </button>
+        <button class="nav-tab" onclick="showSection('objectives')" role="tab" aria-selected="false" aria-controls="objectives-section" id="tab-objectives">
+            🎯 Objectives
+        </button>
+        <button class="nav-tab" onclick="showSection('topics')" role="tab" aria-selected="false" aria-controls="topics-section" id="tab-topics">
+            📚 Topics
+        </button>
+        <button class="nav-tab" onclick="showSection('assignments')" role="tab" aria-selected="false" aria-controls="assignments-section" id="tab-assignments">
+            ✏️ Assignments
+        </button>
+        <button class="nav-tab" onclick="showSection('resources')" role="tab" aria-selected="false" aria-controls="resources-section" id="tab-resources">
+            🔗 Resources
+        </button>
+        <button class="nav-tab" onclick="showSection('schedule')" role="tab" aria-selected="false" aria-controls="schedule-section" id="tab-schedule">
+            📅 Schedule
+        </button>
+    </nav>
+
+    <main id="main-content" role="main">
+        <!-- OVERVIEW SECTION -->
+        <section id="overview-section" class="content-section active" role="tabpanel" aria-labelledby="tab-overview">
+            <div class="card">
+                <h2><span class="card-icon" aria-hidden="true">📖</span> Week 4 Overview</h2>
+                <p>Welcome to Week 4! This week, we build upon the propositional logic foundation from Week 3 by exploring <strong>logical equivalences</strong>, <strong>normal forms</strong>, and <strong>predicate logic</strong>. You'll learn powerful techniques for simplifying logical expressions and expressing more complex statements using quantifiers.</p>
+                
+                <div class="info-box blue">
+                    <h3>🎓 What You'll Learn This Week</h3>
+                    <p>This week focuses on advanced logical reasoning techniques essential for algorithm analysis and program verification. You'll master:</p>
+                    <ul class="checklist">
+                        <li>Converting propositions to Conjunctive Normal Form (CNF) and Disjunctive Normal Form (DNF)</li>
+                        <li>Simplifying logical expressions using equivalence laws</li>
+                        <li>Expressing statements with universal (∀) and existential (∃) quantifiers</li>
+                        <li>Correctly negating quantified statements using De Morgan's laws</li>
+                        <li>Working with nested quantifiers in predicate logic</li>
+                    </ul>
+                </div>
+
+                <h3>📊 Week at a Glance</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Duration</strong></td>
+                            <td>Week 4 (Feb 11 - Feb 17, 2026)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>In-Class Hours</strong></td>
+                            <td>3 hours lecture</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Out-of-Class Hours</strong></td>
+                            <td>6 hours (reading, assignments, practice)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Total Time Commitment</strong></td>
+                            <td>9 hours</td>
+                        </tr>
+                        <tr>
+                            <td><strong>CSLO Alignment</strong></td>
+                            <td><strong>CSLO 1:</strong> Apply symbolic logic and proof methods to model and analyze program/algorithm correctness</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Prerequisites</strong></td>
+                            <td>Week 3 (Propositional Logic, Truth Tables)</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="info-box gold">
+                    <h3>⚡ Why This Matters</h3>
+                    <p><strong>Real-World Applications:</strong></p>
+                    <ul>
+                        <li><strong>Software Verification:</strong> Predicate logic is the foundation of formal methods for proving program correctness</li>
+                        <li><strong>Database Queries:</strong> SQL queries are built on predicate logic with quantifiers</li>
+                        <li><strong>Algorithm Analysis:</strong> Normal forms simplify complex conditional logic in algorithms</li>
+                        <li><strong>AI & Logic Programming:</strong> Prolog and expert systems use predicate logic extensively</li>
+                        <li><strong>Circuit Design:</strong> CNF and DNF are used in digital logic optimization</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2><span class="card-icon" aria-hidden="true">🔄</span> Connection to Previous Weeks</h2>
+                <p>This week builds directly on Week 3's propositional logic:</p>
+                <ul>
+                    <li><strong>Week 3:</strong> Truth tables, basic logical operators (AND, OR, NOT, →, ↔)</li>
+                    <li><strong>Week 4:</strong> Logical equivalences, normal forms, quantifiers, predicate logic</li>
+                    <li><strong>Ahead:</strong> Week 5 will use these logical tools for mathematical proofs</li>
+                </ul>
+            </div>
+
+            <div class="progress-container">
+                <h2><span class="card-icon" aria-hidden="true">✅</span> Week 4 Progress Tracker</h2>
+                <p>Track your completion of this week's activities (progress saved for this session only):</p>
+                
+                <div class="progress-item" onclick="toggleProgress(this)">
+                    <input type="checkbox" class="progress-checkbox" id="progress-1" aria-label="Complete Week 4 reading">
+                    <label for="progress-1" class="progress-label">Read Saylor.org Unit 3: Mathematical Logic (Sections 3.3-3.5)</label>
+                    <span class="progress-status status-pending">Pending</span>
+                </div>
+
+                <div class="progress-item" onclick="toggleProgress(this)">
+                    <input type="checkbox" class="progress-checkbox" id="progress-2" aria-label="Watch lecture videos">
+                    <label for="progress-2" class="progress-label">Watch Week 4 Lecture Videos (Logical Equivalences & Predicates)</label>
+                    <span class="progress-status status-pending">Pending</span>
+                </div>
+
+                <div class="progress-item" onclick="toggleProgress(this)">
+                    <input type="checkbox" class="progress-checkbox" id="progress-3" aria-label="Complete PE-04">
+                    <label for="progress-3" class="progress-label">Complete PE-04: Logic Expression Simplifier (Due Sunday 11:59 PM)</label>
+                    <span class="progress-status status-pending">Pending</span>
+                </div>
+
+                <div class="progress-item" onclick="toggleProgress(this)">
+                    <input type="checkbox" class="progress-checkbox" id="progress-4" aria-label="Complete predicate logic exercises">
+                    <label for="progress-4" class="progress-label">Complete Predicate Logic Translation Exercises</label>
+                    <span class="progress-status status-pending">Pending</span>
+                </div>
+
+                <div class="progress-item" onclick="toggleProgress(this)">
+                    <input type="checkbox" class="progress-checkbox" id="progress-5" aria-label="Complete quantifier practice">
+                    <label for="progress-5" class="progress-label">Complete Quantifier Practice Problems</label>
+                    <span class="progress-status status-pending">Pending</span>
+                </div>
+
+                <div class="progress-item" onclick="toggleProgress(this)">
+                    <input type="checkbox" class="progress-checkbox" id="progress-6" aria-label="Participate in discussion">
+                    <label for="progress-6" class="progress-label">Participate in Discussion: Predicates in Programming</label>
+                    <span class="progress-status status-pending">Pending</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- OBJECTIVES SECTION -->
+        <section id="objectives-section" class="content-section" role="tabpanel" aria-labelledby="tab-objectives">
+            <div class="card">
+                <h2><span class="card-icon" aria-hidden="true">🎯</span> Learning Objectives</h2>
+                <p>By the end of this week, you will be able to:</p>
+
+                <div class="accordion">
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Objective 1:</strong> Convert propositions to Conjunctive Normal Form (CNF) and Disjunctive Normal Form (DNF)</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <p><strong>What you'll master:</strong></p>
+                            <ul>
+                                <li>Understand the structure of CNF (conjunction of disjunctions) and DNF (disjunction of conjunctions)</li>
+                                <li>Apply systematic conversion algorithms to transform any logical expression</li>
+                                <li>Recognize when CNF or DNF is most appropriate for a given problem</li>
+                            </ul>
+                            <p><strong>Why it matters:</strong> Normal forms are essential in circuit design, SAT solvers, and algorithm optimization.</p>
+                            <p><strong>Assessment:</strong> PE-04 Programming Exercise, Quiz 2</p>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Objective 2:</strong> Express statements using predicate logic with quantifiers</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <p><strong>What you'll master:</strong></p>
+                            <ul>
+                                <li>Translate English statements into predicate logic notation</li>
+                                <li>Use universal quantifier (∀) for "for all" statements</li>
+                                <li>Use existential quantifier (∃) for "there exists" statements</li>
+                                <li>Work with predicates, variables, and domains</li>
+                            </ul>
+                            <p><strong>Example:</strong> "All students in CSC 240 are computer science majors"<br>
+                            ∀x (Student(x, CSC240) → CSMajor(x))</p>
+                            <p><strong>Assessment:</strong> Predicate Logic Translation Exercises, Discussion</p>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Objective 3:</strong> Negate quantified statements correctly</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <p><strong>What you'll master:</strong></p>
+                            <ul>
+                                <li>Apply De Morgan's laws for quantifiers: ¬∀x P(x) ≡ ∃x ¬P(x)</li>
+                                <li>Apply De Morgan's laws for quantifiers: ¬∃x P(x) ≡ ∀x ¬P(x)</li>
+                                <li>Correctly negate complex nested quantifiers</li>
+                                <li>Avoid common errors in quantifier negation</li>
+                            </ul>
+                            <p><strong>Example:</strong> Negate "All birds can fly"<br>
+                            Original: ∀x (Bird(x) → CanFly(x))<br>
+                            Negation: ∃x (Bird(x) ∧ ¬CanFly(x)) — "There exists a bird that cannot fly"</p>
+                            <p><strong>Assessment:</strong> Quantifier Practice Problems, Quiz 2</p>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Objective 4:</strong> Apply De Morgan's laws to logic expressions</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <p><strong>What you'll master:</strong></p>
+                            <ul>
+                                <li>Apply De Morgan's laws for propositional logic: ¬(P ∧ Q) ≡ ¬P ∨ ¬Q</li>
+                                <li>Apply De Morgan's laws for propositional logic: ¬(P ∨ Q) ≡ ¬P ∧ ¬Q</li>
+                                <li>Simplify complex logical expressions using equivalence laws</li>
+                                <li>Recognize opportunities to apply De Morgan's laws in code optimization</li>
+                            </ul>
+                            <p><strong>Programming connection:</strong> Simplifying conditional statements in if-else logic</p>
+                            <p><strong>Assessment:</strong> PE-04 Programming Exercise, Practice Problems</p>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Objective 5:</strong> Work with nested quantifiers in predicate logic</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <p><strong>What you'll master:</strong></p>
+                            <ul>
+                                <li>Interpret statements with multiple quantifiers</li>
+                                <li>Understand the order of quantifiers matters: ∀x∃y ≠ ∃y∀x</li>
+                                <li>Translate complex English statements with nested quantifiers</li>
+                                <li>Apply nested quantifiers to database queries and algorithm specifications</li>
+                            </ul>
+                            <p><strong>Example:</strong> "Every student has at least one course"<br>
+                            ∀s ∃c Enrolled(s, c)</p>
+                            <p><strong>Assessment:</strong> Predicate Logic Exercises, Discussion</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-box green">
+                    <h3>🎓 CSLO Alignment</h3>
+                    <p>All Week 4 objectives directly support:</p>
+                    <p><strong>CSLO 1:</strong> Apply symbolic logic and proof methods to model and analyze program/algorithm correctness.</p>
+                    <p>These logical reasoning skills are foundational for the proof techniques we'll study in Weeks 5-6.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- TOPICS SECTION -->
+        <section id="topics-section" class="content-section" role="tabpanel" aria-labelledby="tab-topics">
+            <div class="card">
+                <h2><span class="card-icon" aria-hidden="true">📚</span> Week 4 Topics in Detail</h2>
+
+                <h3>Topic 1: Logical Equivalences</h3>
+                <p><strong>Key Concepts:</strong></p>
+                <ul>
+                    <li><strong>Logical Equivalence:</strong> Two propositions are logically equivalent if they have the same truth value in all cases</li>
+                    <li><strong>Equivalence Laws:</strong> Identity, Domination, Idempotent, Double Negation, Commutative, Associative, Distributive</li>
+                    <li><strong>De Morgan's Laws:</strong> Rules for negating conjunctions and disjunctions</li>
+                    <li><strong>Absorption Laws:</strong> Simplification techniques for complex expressions</li>
+                    <li><strong>Conditional Equivalences:</strong> P → Q ≡ ¬P ∨ Q</li>
+                </ul>
+
+                <div class="info-box blue">
+                    <h4>🔑 Essential Equivalence Laws</h4>
+                    <div class="code-block">
+Identity Laws:
+  P ∧ T ≡ P
+  P ∨ F ≡ P
+
+Domination Laws:
+  P ∨ T ≡ T
+  P ∧ F ≡ F
+
+Idempotent Laws:
+  P ∨ P ≡ P
+  P ∧ P ≡ P
+
+Double Negation:
+  ¬(¬P) ≡ P
+
+De Morgan's Laws:
+  ¬(P ∧ Q) ≡ ¬P ∨ ¬Q
+  ¬(P ∨ Q) ≡ ¬P ∧ ¬Q
+
+Distributive Laws:
+  P ∧ (Q ∨ R) ≡ (P ∧ Q) ∨ (P ∧ R)
+  P ∨ (Q ∧ R) ≡ (P ∨ Q) ∧ (P ∨ R)
+
+Absorption Laws:
+  P ∨ (P ∧ Q) ≡ P
+  P ∧ (P ∨ Q) ≡ P
+
+Conditional:
+  P → Q ≡ ¬P ∨ Q
+  P → Q ≡ ¬Q → ¬P (contrapositive)
+                    </div>
+                </div>
+
+                <h3>Topic 2: Normal Forms (CNF and DNF)</h3>
+                <p><strong>Key Concepts:</strong></p>
+                <ul>
+                    <li><strong>Literal:</strong> A variable or its negation (P or ¬P)</li>
+                    <li><strong>Conjunctive Normal Form (CNF):</strong> Conjunction of disjunctions (AND of ORs)</li>
+                    <li><strong>Disjunctive Normal Form (DNF):</strong> Disjunction of conjunctions (OR of ANDs)</li>
+                    <li><strong>Conversion Process:</strong> Systematic method to convert any proposition to CNF or DNF</li>
+                    <li><strong>Applications:</strong> SAT solvers, circuit design, Boolean algebra</li>
+                </ul>
+
+                <div class="info-box gold">
+                    <h4>📝 CNF vs DNF Examples</h4>
+                    <p><strong>Conjunctive Normal Form (CNF):</strong></p>
+                    <div class="code-block">
+(P ∨ Q) ∧ (¬P ∨ R) ∧ (Q ∨ ¬R)
+↑ Each clause is a disjunction (OR)
+↑ Clauses are connected by conjunction (AND)
+                    </div>
+
+                    <p><strong>Disjunctive Normal Form (DNF):</strong></p>
+                    <div class="code-block">
+(P ∧ Q) ∨ (¬P ∧ R) ∨ (Q ∧ ¬R)
+↑ Each term is a conjunction (AND)
+↑ Terms are connected by disjunction (OR)
+                    </div>
+
+                    <p><strong>Conversion Steps:</strong></p>
+                    <ol>
+                        <li>Eliminate implications and biconditionals</li>
+                        <li>Move negations inward using De Morgan's laws</li>
+                        <li>Apply distributive laws to achieve desired form</li>
+                        <li>Simplify using equivalence laws</li>
+                    </ol>
+                </div>
+
+                <h3>Topic 3: Predicate Logic</h3>
+                <p><strong>Key Concepts:</strong></p>
+                <ul>
+                    <li><strong>Predicate:</strong> A function that returns true or false (e.g., isEven(x), Student(x))</li>
+                    <li><strong>Domain of Discourse:</strong> The set of all possible values for variables</li>
+                    <li><strong>Propositional Functions:</strong> Statements with variables that become propositions when values are assigned</li>
+                    <li><strong>Free vs Bound Variables:</strong> Variables with and without quantifiers</li>
+                    <li><strong>Scope of Quantifiers:</strong> The portion of a statement affected by a quantifier</li>
+                </ul>
+
+                <div class="info-box blue">
+                    <h4>🔍 Predicate Logic Examples</h4>
+                    <p><strong>Simple Predicates:</strong></p>
+                    <div class="code-block">
+isEven(4) → true
+isEven(5) → false
+
+Student(Alice, CSC240) → true
+Student(Bob, MTH80) → true
+                    </div>
+
+                    <p><strong>Predicates with Multiple Arguments:</strong></p>
+                    <div class="code-block">
+GreaterThan(x, y) — "x is greater than y"
+Enrolled(student, course) — "student is enrolled in course"
+ParentOf(p, c) — "p is a parent of c"
+                    </div>
+                </div>
+
+                <h3>Topic 4: Universal and Existential Quantifiers</h3>
+                <p><strong>Key Concepts:</strong></p>
+                <ul>
+                    <li><strong>Universal Quantifier (∀):</strong> "for all," "for every," "for each"</li>
+                    <li><strong>Existential Quantifier (∃):</strong> "there exists," "for some," "there is at least one"</li>
+                    <li><strong>Uniqueness Quantifier (∃!):</strong> "there exists exactly one"</li>
+                    <li><strong>Domain Specification:</strong> Explicitly stating the set of values being quantified over</li>
+                    <li><strong>Vacuous Truth:</strong> ∀x P(x) is true if the domain is empty</li>
+                </ul>
+
+                <div class="info-box green">
+                    <h4>✨ Quantifier Examples</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>English Statement</th>
+                                <th>Predicate Logic</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>All integers are rational</td>
+                                <td>∀x (Integer(x) → Rational(x))</td>
+                                <td>Universal with implication</td>
+                            </tr>
+                            <tr>
+                                <td>Some students are programmers</td>
+                                <td>∃x (Student(x) ∧ Programmer(x))</td>
+                                <td>Existential with conjunction</td>
+                            </tr>
+                            <tr>
+                                <td>Every course has at least one student</td>
+                                <td>∀c ∃s Enrolled(s, c)</td>
+                                <td>Nested quantifiers</td>
+                            </tr>
+                            <tr>
+                                <td>There is a perfect square</td>
+                                <td>∃x ∃y (x = y²)</td>
+                                <td>Multiple existential</td>
+                            </tr>
+                            <tr>
+                                <td>No prime number is even except 2</td>
+                                <td>∀x (Prime(x) ∧ Even(x) → x = 2)</td>
+                                <td>Universal with exception</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Topic 5: Nested Quantifiers</h3>
+                <p><strong>Key Concepts:</strong></p>
+                <ul>
+                    <li><strong>Quantifier Order:</strong> The order of quantifiers matters: ∀x∃y ≠ ∃y∀x</li>
+                    <li><strong>Reading Nested Quantifiers:</strong> Read from left to right, outside to inside</li>
+                    <li><strong>Common Patterns:</strong> ∀∀ (all-all), ∃∃ (some-some), ∀∃ (all-some), ∃∀ (some-all)</li>
+                    <li><strong>Negating Nested Quantifiers:</strong> Apply De Morgan's laws repeatedly</li>
+                </ul>
+
+                <div class="info-box orange">
+                    <h4>⚠️ Order Matters!</h4>
+                    <p><strong>Example: Difference in quantifier order</strong></p>
+                    <div class="code-block">
+∀x ∃y (x + y = 0)
+"For every x, there exists a y such that x + y = 0"
+TRUE: For any number x, we can find y = -x
+
+∃y ∀x (x + y = 0)
+"There exists a y such that for all x, x + y = 0"
+FALSE: No single y works for all x
+                    </div>
+
+                    <p><strong>Negation Example:</strong></p>
+                    <div class="code-block">
+Original: ∀x ∃y P(x, y)
+Step 1:   ¬∀x ∃y P(x, y)
+Step 2:   ∃x ¬∃y P(x, y)  [Negate ∀ → ∃]
+Step 3:   ∃x ∀y ¬P(x, y)  [Negate ∃ → ∀]
+                    </div>
+                </div>
+
+                <h3>Topic 6: Negation of Quantified Statements</h3>
+                <p><strong>Key Concepts:</strong></p>
+                <ul>
+                    <li><strong>De Morgan's Laws for Quantifiers:</strong> ¬∀x P(x) ≡ ∃x ¬P(x) and ¬∃x P(x) ≡ ∀x ¬P(x)</li>
+                    <li><strong>Negating Implications:</strong> ¬(P → Q) ≡ P ∧ ¬Q</li>
+                    <li><strong>Step-by-Step Negation:</strong> Work from outside to inside, one quantifier at a time</li>
+                    <li><strong>Common Errors:</strong> Forgetting to negate the predicate, incorrect quantifier swap</li>
+                </ul>
+
+                <div class="info-box blue">
+                    <h4>🎯 Negation Practice</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Original Statement</th>
+                                <th>Negation</th>
+                                <th>English</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>∀x P(x)</td>
+                                <td>∃x ¬P(x)</td>
+                                <td>"Not all x satisfy P" → "Some x doesn't satisfy P"</td>
+                            </tr>
+                            <tr>
+                                <td>∃x P(x)</td>
+                                <td>∀x ¬P(x)</td>
+                                <td>"It's not true that some x satisfies P" → "No x satisfies P"</td>
+                            </tr>
+                            <tr>
+                                <td>∀x (P(x) → Q(x))</td>
+                                <td>∃x (P(x) ∧ ¬Q(x))</td>
+                                <td>"Not all P's are Q's" → "Some P is not Q"</td>
+                            </tr>
+                            <tr>
+                                <td>∃x (P(x) ∧ Q(x))</td>
+                                <td>∀x (¬P(x) ∨ ¬Q(x))</td>
+                                <td>"No x is both P and Q"</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2><span class="card-icon" aria-hidden="true">💻</span> Programming Connections</h2>
+                <p>This week's logic concepts directly apply to programming:</p>
+
+                <h3>1. Boolean Expression Simplification</h3>
+                <div class="code-block">
+// Original complex condition
+if (!(!isValid || !isActive)) {
+    // process
+}
+
+// Simplified using De Morgan's law
+if (isValid && isActive) {
+    // process
+}
+                </div>
+
+                <h3>2. Database Queries (SQL)</h3>
+                <div class="code-block">
+-- Universal quantifier: Find courses where ALL students passed
+SELECT course_id 
+FROM courses c
+WHERE NOT EXISTS (
+    SELECT * FROM enrollments e 
+    WHERE e.course_id = c.course_id 
+    AND e.grade < 'C'
+);
+
+-- Existential quantifier: Find students who took AT LEAST ONE CS course
+SELECT student_id 
+FROM enrollments 
+WHERE course_id LIKE 'CSC%';
+                </div>
+
+                <h3>3. Loop Invariants and Assertions</h3>
+                <div class="code-block">
+// Predicate: "All elements before index i are sorted"
+// ∀j (0 ≤ j < i → arr[j] ≤ arr[j+1])
+
+for (int i = 1; i < n; i++) {
+    // Invariant: arr[0..i-1] is sorted
+    // Insert arr[i] into sorted position
+}
+                </div>
+
+                <h3>4. Formal Specifications</h3>
+                <div class="code-block">
+/**
+ * Precondition: ∀i (0 ≤ i < arr.length → arr[i] ≥ 0)
+ * Postcondition: ∃i (arr[i] == target) ∨ (return == -1)
+ */
+public int search(int[] arr, int target) {
+    // Implementation
+}
+                </div>
+            </div>
+        </section>
+
+        <!-- ASSIGNMENTS SECTION -->
+        <section id="assignments-section" class="content-section" role="tabpanel" aria-labelledby="tab-assignments">
+            <div class="card">
+                <h2><span class="card-icon" aria-hidden="true">✏️</span> Week 4 Assignments</h2>
+                <p>Complete all assignments by their due dates. All times are Pacific Time.</p>
+            </div>
+
+            <div class="card">
+                <h2>📝 Assignment 1: PE-04 - Logic Expression Simplifier</h2>
+                <div class="info-box orange">
+                    <p><strong>⏰ Due:</strong> Sunday, February 17, 2026 at 11:59 PM PT</p>
+                    <p><strong>📊 Points:</strong> 20 points (2% of final grade)</p>
+                    <p><strong>⏱️ Estimated Time:</strong> 3-4 hours</p>
+                </div>
+
+                <h3>Overview</h3>
+                <p>Implement a program that converts logical expressions to CNF (Conjunctive Normal Form) or DNF (Disjunctive Normal Form) and simplifies expressions using logical equivalences. This assignment reinforces your understanding of normal forms and equivalence laws.</p>
+
+                <h3>Requirements</h3>
+                <ul class="checklist">
+                    <li><strong>Input:</strong> Accept a logical expression with variables and operators</li>
+                    <li><strong>Operators:</strong> Support AND (∧), OR (∨), NOT (¬), implication (→), biconditional (↔)</li>
+                    <li><strong>CNF Conversion:</strong> Convert expression to Conjunctive Normal Form</li>
+                    <li><strong>DNF Conversion:</strong> Convert expression to Disjunctive Normal Form</li>
+                    <li><strong>Simplification:</strong> Apply equivalence laws to simplify expressions</li>
+                    <li><strong>Step-by-Step:</strong> Show transformation steps (optional for extra credit)</li>
+                </ul>
+
+                <h3>Programming Language</h3>
+                <p>You may use <strong>Java</strong> or <strong>C++</strong> (your choice). Use Visual Studio Code as your IDE.</p>
+
+                <h3>Example Input/Output</h3>
+                <div class="code-block">
+Input: (P → Q) ∧ (Q → R)
+
+Step 1: Eliminate implications
+(¬P ∨ Q) ∧ (¬Q ∨ R)
+
+CNF Output: (¬P ∨ Q) ∧ (¬Q ∨ R)
+[Already in CNF - conjunction of disjunctions]
+
+DNF Conversion:
+Apply distributive law: (¬P ∧ ¬Q) ∨ (¬P ∧ R) ∨ (Q ∧ ¬Q) ∨ (Q ∧ R)
+Simplify (Q ∧ ¬Q = F): (¬P ∧ ¬Q) ∨ (¬P ∧ R) ∨ (Q ∧ R)
+DNF Output: (¬P ∧ ¬Q) ∨ (¬P ∧ R) ∨ (Q ∧ R)
+                </div>
+
+                <h3>Grading Rubric (20 points)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Criteria</th>
+                            <th>Points</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Correctness</td>
+                            <td>12</td>
+                            <td>CNF conversion (4), DNF conversion (4), Simplification (4)</td>
+                        </tr>
+                        <tr>
+                            <td>Code Quality</td>
+                            <td>4</td>
+                            <td>Well-structured, readable, efficient</td>
+                        </tr>
+                        <tr>
+                            <td>Documentation</td>
+                            <td>4</td>
+                            <td>README, comments, test cases</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Submission Instructions</h3>
+                <ol>
+                    <li>Create a ZIP file named: <code>yourLastName_FirstName_PE04_Week4.zip</code></li>
+                    <li>Include:
+                        <ul>
+                            <li>All source code files (.java or .cpp)</li>
+                            <li>README.txt with compilation/running instructions</li>
+                            <li>At least 5 test cases with expected output</li>
+                        </ul>
+                    </li>
+                    <li>Submit via Canvas → Assignments → PE-04</li>
+                </ol>
+
+                <div class="info-box gold">
+                    <h4>💡 Extra Credit Opportunities (+3 points)</h4>
+                    <ul>
+                        <li>Show step-by-step transformations with explanations (+1 point)</li>
+                        <li>Support parentheses and operator precedence (+1 point)</li>
+                        <li>Implement additional simplification rules (absorption, etc.) (+1 point)</li>
+                    </ul>
+                </div>
+
+                <a href="#" class="btn btn-primary">📥 Download PE-04 Starter Code (Coming Soon)</a>
+                <a href="#" class="btn btn-secondary">📋 View Detailed Instructions (Canvas)</a>
+            </div>
+
+            <div class="card">
+                <h2>📚 Assignment 2: Predicate Logic Translation Exercises</h2>
+                <div class="info-box orange">
+                    <p><strong>⏰ Due:</strong> Sunday, February 17, 2026 at 11:59 PM PT</p>
+                    <p><strong>📊 Points:</strong> 10 points (1% of final grade)</p>
+                    <p><strong>⏱️ Estimated Time:</strong> 1-2 hours</p>
+                </div>
+
+                <h3>Overview</h3>
+                <p>Practice translating English statements into predicate logic notation using quantifiers. This worksheet reinforces your understanding of universal and existential quantifiers.</p>
+
+                <h3>Instructions</h3>
+                <ol>
+                    <li>Download the worksheet from Canvas</li>
+                    <li>Translate each English statement to predicate logic</li>
+                    <li>Define all predicates and domains clearly</li>
+                    <li>Show your work for partial credit</li>
+                    <li>Submit as PDF via Canvas</li>
+                </ol>
+
+                <h3>Topics Covered</h3>
+                <ul>
+                    <li>Universal quantifiers (∀)</li>
+                    <li>Existential quantifiers (∃)</li>
+                    <li>Nested quantifiers</li>
+                    <li>Quantifiers with implications</li>
+                    <li>Negation of quantified statements</li>
+                </ul>
+
+                <a href="#" class="btn btn-primary">📥 Download Worksheet (Canvas)</a>
+                <a href="#" class="btn btn-secondary">📝 Submit Assignment (Canvas)</a>
+            </div>
+
+            <div class="card">
+                <h2>🧮 Assignment 3: Quantifier Practice Problems</h2>
+                <div class="info-box orange">
+                    <p><strong>⏰ Due:</strong> Sunday, February 17, 2026 at 11:59 PM PT</p>
+                    <p><strong>📊 Points:</strong> 10 points (1% of final grade)</p>
+                    <p><strong>⏱️ Estimated Time:</strong> 1-2 hours</p>
+                </div>
+
+                <h3>Overview</h3>
+                <p>Complete practice problems focusing on nested quantifiers, negation, and De Morgan's laws for quantifiers.</p>
+
+                <h3>Problem Types</h3>
+                <ol>
+                    <li><strong>Interpretation:</strong> Explain the meaning of quantified statements</li>
+                    <li><strong>Negation:</strong> Correctly negate quantified statements</li>
+                    <li><strong>Equivalence:</strong> Determine if two quantified statements are equivalent</li>
+                    <li><strong>Order:</strong> Analyze the effect of quantifier order</li>
+                    <li><strong>Application:</strong> Apply quantifiers to programming scenarios</li>
+                </ol>
+
+                <a href="#" class="btn btn-primary">📥 Download Problems (Canvas)</a>
+                <a href="#" class="btn btn-secondary">📝 Submit Solutions (Canvas)</a>
+            </div>
+
+            <div class="card">
+                <h2>💬 Assignment 4: Discussion - Predicates in Programming</h2>
+                <div class="info-box orange">
+                    <p><strong>⏰ Initial Post Due:</strong> Thursday, February 14, 2026 at 11:59 PM PT</p>
+                    <p><strong>⏰ Peer Responses Due:</strong> Sunday, February 17, 2026 at 11:59 PM PT</p>
+                    <p><strong>📊 Points:</strong> 3 points (0.3% of final grade)</p>
+                    <p><strong>⏱️ Estimated Time:</strong> 45 minutes</p>
+                </div>
+
+                <h3>Discussion Prompt</h3>
+                <p>Reflect on how predicate logic and quantifiers apply to programming. Address the following questions in your initial post (150-200 words):</p>
+                
+                <ol>
+                    <li><strong>Database Queries:</strong> How do SQL queries use predicate logic? Give an example of a SELECT statement and translate it to predicate logic notation.</li>
+                    <li><strong>Loop Invariants:</strong> Explain how universal quantifiers can express loop invariants. Provide a code example.</li>
+                    <li><strong>Formal Specifications:</strong> Why is predicate logic useful for specifying function preconditions and postconditions? Give an example from your CSC221 experience.</li>
+                </ol>
+
+                <h3>Participation Requirements</h3>
+                <ul class="checklist">
+                    <li>Post initial response (150-200 words) by Thursday</li>
+                    <li>Respond thoughtfully to at least 2 classmates (50-75 words each) by Sunday</li>
+                    <li>Use proper predicate logic notation where appropriate</li>
+                    <li>Provide specific examples from your programming experience</li>
+                </ul>
+
+                <a href="#" class="btn btn-primary">💬 Go to Discussion Forum (Canvas)</a>
+            </div>
+
+            <div class="card">
+                <h2>📖 Reading Assignment</h2>
+                <div class="info-box blue">
+                    <p><strong>⏰ Complete by:</strong> Before Week 4 lectures</p>
+                    <p><strong>⏱️ Estimated Time:</strong> 2 hours</p>
+                </div>
+
+                <h3>Required Reading</h3>
+                <ul>
+                    <li><strong>Saylor.org CS202:</strong> Unit 3 - Mathematical Logic
+                        <ul>
+                            <li>Section 3.3: Logical Equivalences</li>
+                            <li>Section 3.4: Predicate Logic</li>
+                            <li>Section 3.5: Quantifiers</li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <h3>Reading Guide Questions</h3>
+                <p>Consider these questions as you read (no submission required):</p>
+                <ol>
+                    <li>What are the most important logical equivalence laws?</li>
+                    <li>How do you convert an expression to CNF? To DNF?</li>
+                    <li>What's the difference between ∀x∃y and ∃y∀x?</li>
+                    <li>How do you negate a statement with multiple quantifiers?</li>
+                    <li>When should you use implications vs conjunctions with quantifiers?</li>
+                </ol>
+
+                <a href="https://learn.saylor.org/course/view.php?id=67" class="btn btn-primary" target="_blank" rel="noopener">📖 Access Saylor.org Textbook</a>
+            </div>
+        </section>
+
+        <!-- RESOURCES SECTION -->
+        <section id="resources-section" class="content-section" role="tabpanel" aria-labelledby="tab-resources">
+            <div class="card">
+                <h2><span class="card-icon" aria-hidden="true">🔗</span> Week 4 Resources</h2>
+                <p>Use these resources to support your learning this week.</p>
+            </div>
+
+            <div class="card">
+                <h2>📚 Primary Course Materials</h2>
+                <h3>Required Textbook</h3>
+                <ul>
+                    <li><strong>Saylor.org CS202 - Discrete Structures</strong>
+                        <ul>
+                            <li>Unit 3: Mathematical Logic (Sections 3.3-3.5)</li>
+                            <li><a href="https://learn.saylor.org/course/view.php?id=67" target="_blank" rel="noopener">Access Textbook (Free)</a></li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <h3>Lecture Materials</h3>
+                <ul>
+                    <li>Week 4 Lecture Slides (available on Canvas)</li>
+                    <li>Week 4 Lecture Videos:
+                        <ul>
+                            <li>Part 1: Logical Equivalences and Normal Forms (45 min)</li>
+                            <li>Part 2: Predicate Logic and Quantifiers (45 min)</li>
+                            <li>Part 3: Nested Quantifiers and Negation (30 min)</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h2>🌐 Interactive Learning Tools</h2>
+                <ul>
+                    <li><strong>Quantifier Practice:</strong> <a href="https://www.whitman.edu/mathematics/higher_math_online/section01.03.html" target="_blank" rel="noopener">Whitman College Interactive Tutorial</a></li>
+                    <li><strong>CNF/DNF Converter:</strong> <a href="https://www.dcode.fr/boolean-expressions-calculator" target="_blank" rel="noopener">dCode Boolean Calculator</a></li>
+                    <li><strong>Logic Proof Checker:</strong> <a href="https://www.umsu.de/logik/trees/" target="_blank" rel="noopener">Semantic Tableaux Tool</a></li>
+                    <li><strong>Predicate Logic Visualizer:</strong> <a href="https://www.cs.cornell.edu/courses/cs2800/wiki/index.php/Predicate_Logic" target="_blank" rel="noopener">Cornell CS2800 Resources</a></li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h2>📖 Supplementary Reading</h2>
+                <h3>Logical Equivalences</h3>
+                <ul>
+                    <li><a href="https://www.cs.odu.edu/~toida/nerzic/content/logic/prop_logic/equivalences/equivalences.html" target="_blank" rel="noopener">ODU: Logical Equivalences Tutorial</a></li>
+                    <li><a href="https://www.mathsisfun.com/algebra/boolean-algebra.html" target="_blank" rel="noopener">Math is Fun: Boolean Algebra</a></li>
+                </ul>
+
+                <h3>Normal Forms</h3>
+                <ul>
+                    <li><a href="https://www.tutorialspoint.com/discrete_mathematics/discrete_mathematics_conjunctive_normal_form.htm" target="_blank" rel="noopener">TutorialsPoint: CNF and DNF</a></li>
+                    <li><a href="https://brilliant.org/wiki/conjunctive-normal-form/" target="_blank" rel="noopener">Brilliant.org: CNF Explained</a></li>
+                </ul>
+
+                <h3>Predicate Logic</h3>
+                <ul>
+                    <li><a href="https://plato.stanford.edu/entries/logic-classical/" target="_blank" rel="noopener">Stanford Encyclopedia: Classical Logic</a></li>
+                    <li><a href="https://www.khanacademy.org/computing/computer-science/informationtheory/moderninfotheory/v/quantifiers" target="_blank" rel="noopener">Khan Academy: Quantifiers</a></li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h2>💻 Programming Resources</h2>
+                <h3>Java Resources</h3>
+                <ul>
+                    <li><a href="https://docs.oracle.com/en/java/" target="_blank" rel="noopener">Official Java Documentation</a></li>
+                    <li><a href="https://www.geeksforgeeks.org/boolean-data-type-in-java/" target="_blank" rel="noopener">GeeksforGeeks: Boolean Logic in Java</a></li>
+                </ul>
+
+                <h3>C++ Resources</h3>
+                <ul>
+                    <li><a href="https://en.cppreference.com/" target="_blank" rel="noopener">C++ Reference</a></li>
+                    <li><a href="https://www.learncpp.com/cpp-tutorial/logical-operators/" target="_blank" rel="noopener">LearnCpp: Logical Operators</a></li>
+                </ul>
+
+                <h3>Development Tools</h3>
+                <ul>
+                    <li><a href="https://code.visualstudio.com/" target="_blank" rel="noopener">Visual Studio Code (Required IDE)</a></li>
+                    <li><a href="https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-java-pack" target="_blank" rel="noopener">VS Code Java Extension Pack</a></li>
+                    <li><a href="https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools" target="_blank" rel="noopener">VS Code C++ Extension</a></li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h2>🎥 Video Tutorials</h2>
+                <ul>
+                    <li><strong>Logical Equivalences:</strong> <a href="https://www.youtube.com/results?search_query=logical+equivalences+discrete+math" target="_blank" rel="noopener">YouTube Search</a></li>
+                    <li><strong>CNF and DNF:</strong> <a href="https://www.youtube.com/results?search_query=CNF+DNF+normal+forms" target="_blank" rel="noopener">YouTube Search</a></li>
+                    <li><strong>Predicate Logic:</strong> <a href="https://www.youtube.com/results?search_query=predicate+logic+quantifiers" target="_blank" rel="noopener">YouTube Search</a></li>
+                    <li><strong>Nested Quantifiers:</strong> <a href="https://www.youtube.com/results?search_query=nested+quantifiers+discrete+math" target="_blank" rel="noopener">YouTube Search</a></li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h2>❓ Getting Help</h2>
+                <h3>Instructor Support</h3>
+                <ul>
+                    <li><strong>Office Hours:</strong> [Check Canvas for schedule]</li>
+                    <li><strong>Email:</strong> [Check Canvas for instructor email]</li>
+                    <li><strong>Canvas Messages:</strong> Use Canvas inbox for quick questions</li>
+                    <li><strong>Discussion Forum:</strong> Post general questions for peer/instructor response</li>
+                </ul>
+
+                <h3>Peer Support</h3>
+                <ul>
+                    <li><strong>Study Groups:</strong> Form study groups through Canvas</li>
+                    <li><strong>Discussion Forum:</strong> Help each other with concepts (not code)</li>
+                    <li><strong>Tutoring Center:</strong> Check Mendocino College tutoring services</li>
+                </ul>
+
+                <div class="info-box orange">
+                    <h4>⚠️ Academic Integrity Reminder</h4>
+                    <p>You may discuss concepts with classmates, but all submitted work must be your own. Do not share code or copy solutions. Violations will result in a zero on the assignment and may lead to further disciplinary action.</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🔍 Practice Problems</h2>
+                <p>Additional practice beyond required assignments:</p>
+                <ul>
+                    <li><a href="https://brilliant.org/wiki/propositional-logic/" target="_blank" rel="noopener">Brilliant.org: Propositional Logic Problems</a></li>
+                    <li><a href="https://www.khanacademy.org/computing/computer-science" target="_blank" rel="noopener">Khan Academy: Computer Science</a></li>
+                    <li><a href="https://opendsa-server.cs.vt.edu/ODSA/Books/Everything/html/Propositional.html" target="_blank" rel="noopener">OpenDSA: Interactive Practice</a></li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- SCHEDULE SECTION -->
+        <section id="schedule-section" class="content-section" role="tabpanel" aria-labelledby="tab-schedule">
+            <div class="card">
+                <h2><span class="card-icon" aria-hidden="true">📅</span> Week 4 Schedule</h2>
+                <p>This detailed schedule helps you manage your time effectively throughout Week 4.</p>
+            </div>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-date">Monday, February 11, 2026</div>
+                    <h3>📖 Preparation & Reading</h3>
+                    <ul class="checklist">
+                        <li>Complete Saylor.org readings (Unit 3, Sections 3.3-3.5)</li>
+                        <li>Review Week 3 materials on propositional logic</li>
+                        <li>Watch Week 4 Lecture Part 1: Logical Equivalences (45 min)</li>
+                        <li>Take notes on equivalence laws and normal forms</li>
+                    </ul>
+                    <p><strong>Time:</strong> 2-3 hours</p>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-date">Tuesday, February 12, 2026</div>
+                    <h3>🎓 Lecture & Practice</h3>
+                    <ul class="checklist">
+                        <li>Attend Week 4 lecture (if synchronous) or watch recorded lecture</li>
+                        <li>Watch Week 4 Lecture Part 2: Predicate Logic (45 min)</li>
+                        <li>Complete in-class exercises and examples</li>
+                        <li>Start Predicate Logic Translation Exercises worksheet</li>
+                    </ul>
+                    <p><strong>Time:</strong> 2-3 hours</p>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-date">Wednesday, February 13, 2026</div>
+                    <h3>💻 Programming Work</h3>
+                    <ul class="checklist">
+                        <li>Start PE-04: Logic Expression Simplifier</li>
+                        <li>Plan program structure and algorithms</li>
+                        <li>Implement basic parsing and CNF conversion</li>
+                        <li>Test with simple expressions</li>
+                    </ul>
+                    <p><strong>Time:</strong> 2-3 hours</p>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-date">Thursday, February 14, 2026</div>
+                    <h3>📝 Assignments & Discussion</h3>
+                    <ul class="checklist">
+                        <li>Complete PE-04: Add DNF conversion and simplification</li>
+                        <li>Test thoroughly with multiple test cases</li>
+                        <li><strong>POST INITIAL DISCUSSION RESPONSE</strong> (Due 11:59 PM)</li>
+                        <li>Complete Predicate Logic Translation Exercises</li>
+                    </ul>
+                    <p><strong>Time:</strong> 2-3 hours</p>
+                    <div class="info-box orange">
+                        <p><strong>⏰ Deadline:</strong> Discussion initial post due tonight at 11:59 PM PT</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-date">Friday, February 15, 2026</div>
+                    <h3>🧮 Practice & Quantifiers</h3>
+                    <ul class="checklist">
+                        <li>Watch Week 4 Lecture Part 3: Nested Quantifiers (30 min)</li>
+                        <li>Complete Quantifier Practice Problems</li>
+                        <li>Work on nested quantifier exercises</li>
+                        <li>Practice negating quantified statements</li>
+                    </ul>
+                    <p><strong>Time:</strong> 2 hours</p>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-date">Saturday, February 16, 2026</div>
+                    <h3>🔍 Review & Finalize</h3>
+                    <ul class="checklist">
+                        <li>Review all Week 4 materials and notes</li>
+                        <li>Finalize PE-04 documentation and README</li>
+                        <li>Create ZIP file for PE-04 submission</li>
+                        <li>Read classmates' discussion posts</li>
+                        <li>Prepare thoughtful peer responses</li>
+                    </ul>
+                    <p><strong>Time:</strong> 2 hours</p>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-date">Sunday, February 17, 2026</div>
+                    <h3>✅ Final Submissions</h3>
+                    <ul class="checklist">
+                        <li><strong>SUBMIT PE-04</strong> via Canvas (Due 11:59 PM)</li>
+                        <li><strong>SUBMIT Predicate Logic Translation Exercises</strong> (Due 11:59 PM)</li>
+                        <li><strong>SUBMIT Quantifier Practice Problems</strong> (Due 11:59 PM)</li>
+                        <li><strong>POST 2 PEER DISCUSSION RESPONSES</strong> (Due 11:59 PM)</li>
+                        <li>Preview Week 5 materials on proof techniques</li>
+                    </ul>
+                    <p><strong>Time:</strong> 1-2 hours</p>
+                    <div class="info-box orange">
+                        <p><strong>⏰ All Week 4 assignments due tonight at 11:59 PM PT</strong></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📊 Time Management Summary</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Activity</th>
+                            <th>Estimated Time</th>
+                            <th>Priority</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Reading & Videos</td>
+                            <td>3 hours</td>
+                            <td>High</td>
+                        </tr>
+                        <tr>
+                            <td>PE-04 Programming</td>
+                            <td>3-4 hours</td>
+                            <td>High</td>
+                        </tr>
+                        <tr>
+                            <td>Predicate Logic Exercises</td>
+                            <td>1-2 hours</td>
+                            <td>High</td>
+                        </tr>
+                        <tr>
+                            <td>Quantifier Practice</td>
+                            <td>1-2 hours</td>
+                            <td>High</td>
+                        </tr>
+                        <tr>
+                            <td>Discussion Participation</td>
+                            <td>45 minutes</td>
+                            <td>Medium</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Total</strong></td>
+                            <td><strong>9-12 hours</strong></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="info-box blue">
+                    <h3>💡 Success Tips</h3>
+                    <ul>
+                        <li><strong>Start Early:</strong> Don't wait until the weekend to start PE-04</li>
+                        <li><strong>Break It Down:</strong> Work on assignments in small chunks throughout the week</li>
+                        <li><strong>Ask Questions:</strong> Use office hours and discussion forums if you're stuck</li>
+                        <li><strong>Test Thoroughly:</strong> PE-04 requires extensive testing with various expressions</li>
+                        <li><strong>Use Resources:</strong> The interactive tools can help verify your understanding</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🎯 Week 4 Deliverables Checklist</h2>
+                <div class="info-box green">
+                    <p>Ensure you complete all of these by Sunday, February 17 at 11:59 PM PT:</p>
+                    <ul class="checklist">
+                        <li>PE-04: Logic Expression Simplifier (ZIP file submitted via Canvas)</li>
+                        <li>Predicate Logic Translation Exercises (PDF submitted via Canvas)</li>
+                        <li>Quantifier Practice Problems (PDF submitted via Canvas)</li>
+                        <li>Discussion: Initial post (150-200 words, posted by Thursday)</li>
+                        <li>Discussion: 2 peer responses (50-75 words each, posted by Sunday)</li>
+                    </ul>
+                    <p><strong>Total Points This Week:</strong> 43 points (4.3% of final grade)</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🔜 Looking Ahead: Week 5</h2>
+                <p><strong>Next Week Preview:</strong> Proof Techniques I - Direct Proofs and Counterexamples</p>
+                <ul>
+                    <li>Introduction to mathematical proofs</li>
+                    <li>Direct proof technique</li>
+                    <li>Proof by contrapositive</li>
+                    <li>Proof by counterexample</li>
+                    <li><strong>Programming Project 1 assigned:</strong> Logic and Proof Systems</li>
+                </ul>
+                <div class="info-box gold">
+                    <p><strong>Get Ready:</strong> Week 5 begins the proof techniques unit. The logical reasoning skills from Weeks 3-4 are essential for writing proofs!</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer style="text-align: center; padding: 30px; margin-top: 40px; background: var(--light-bg); border-radius: 10px;">
+        <p><strong>CSC 240 - Discrete Structures | Week 4: Advanced Logic and Predicates</strong></p>
+        <p>Mendocino College Computer Science Department</p>
+        <p>© 2026 Mendocino College | All Rights Reserved</p>
+        <p style="margin-top: 15px; font-size: 0.9rem;">
+            Questions? Contact your instructor through Canvas or during office hours.<br>
+            Last Updated: February 11, 2026
+        </p>
+    </footer>
+
+    <script>
+        // Tab Navigation
+        function showSection(sectionId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+                section.setAttribute('aria-hidden', 'true');
+            });
+
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.nav-tab');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+                tab.setAttribute('aria-selected', 'false');
+            });
+
+            // Show selected section
+            const activeSection = document.getElementById(sectionId + '-section');
+            if (activeSection) {
+                activeSection.classList.add('active');
+                activeSection.setAttribute('aria-hidden', 'false');
+            }
+
+            // Activate clicked tab
+            const activeTab = document.getElementById('tab-' + sectionId);
+            if (activeTab) {
+                activeTab.classList.add('active');
+                activeTab.setAttribute('aria-selected', 'true');
+            }
+
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // Save to session storage
+            sessionStorage.setItem('activeTab', sectionId);
+        }
+
+        // Accordion Toggle
+        function toggleAccordion(header) {
+            const item = header.parentElement;
+            const wasActive = item.classList.contains('active');
+            
+            // Close all accordion items
+            const allItems = document.querySelectorAll('.accordion-item');
+            allItems.forEach(i => {
+                i.classList.remove('active');
+                i.querySelector('.accordion-header').setAttribute('aria-expanded', 'false');
+            });
+
+            // Open clicked item if it wasn't active
+            if (!wasActive) {
+                item.classList.add('active');
+                header.setAttribute('aria-expanded', 'true');
+            }
+        }
+
+        // Progress Tracker
+        function toggleProgress(item) {
+            const checkbox = item.querySelector('.progress-checkbox');
+            const status = item.querySelector('.progress-status');
+            
+            checkbox.checked = !checkbox.checked;
+            
+            if (checkbox.checked) {
+                status.textContent = 'Complete';
+                status.classList.remove('status-pending');
+                status.classList.add('status-complete');
+            } else {
+                status.textContent = 'Pending';
+                status.classList.remove('status-complete');
+                status.classList.add('status-pending');
+            }
+
+            // Save to session storage
+            saveProgress();
+        }
+
+        // Save progress to session storage
+        function saveProgress() {
+            const checkboxes = document.querySelectorAll('.progress-checkbox');
+            const progress = {};
+            checkboxes.forEach((checkbox, index) => {
+                progress[`item-${index}`] = checkbox.checked;
+            });
+            sessionStorage.setItem('week4Progress', JSON.stringify(progress));
+        }
+
+        // Load progress from session storage
+        function loadProgress() {
+            const savedProgress = sessionStorage.getItem('week4Progress');
+            if (savedProgress) {
+                const progress = JSON.parse(savedProgress);
+                const checkboxes = document.querySelectorAll('.progress-checkbox');
+                checkboxes.forEach((checkbox, index) => {
+                    if (progress[`item-${index}`]) {
+                        checkbox.checked = true;
+                        const item = checkbox.closest('.progress-item');
+                        const status = item.querySelector('.progress-status');
+                        status.textContent = 'Complete';
+                        status.classList.remove('status-pending');
+                        status.classList.add('status-complete');
+                    }
+                });
+            }
+        }
+
+        // Keyboard navigation for accordion
+        document.addEventListener('keydown', function(e) {
+            if (e.target.classList.contains('accordion-header')) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    toggleAccordion(e.target);
+                }
+            }
+        });
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load saved progress
+            loadProgress();
+
+            // Restore active tab from session storage
+            const savedTab = sessionStorage.getItem('activeTab');
+            if (savedTab) {
+                showSection(savedTab);
+            }
+
+            // Add smooth scrolling to all links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth' });
+                    }
+                });
+            });
+        });
+
+        // Print functionality
+        window.addEventListener('beforeprint', function() {
+            // Show all sections when printing
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => {
+                section.style.display = 'block';
+            });
+        });
+
+        window.addEventListener('afterprint', function() {
+            // Restore section visibility after printing
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => {
+                if (!section.classList.contains('active')) {
+                    section.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

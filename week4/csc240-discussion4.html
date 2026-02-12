@@ -1,0 +1,1783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Discussion: Predicates in Programming - CSC 240 Week 4 Assignment">
+    <title>Discussion: Predicates in Programming | CSC 240</title>
+    <style>
+        /* CSS Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-blue: #003366;
+            --secondary-blue: #0066cc;
+            --accent-gold: #FFB81C;
+            --success-green: #28a745;
+            --warning-orange: #ff8c00;
+            --danger-red: #dc3545;
+            --light-bg: #f8f9fa;
+            --white: #ffffff;
+            --text-dark: #212529;
+            --text-muted: #6c757d;
+            --border-color: #dee2e6;
+            --shadow: 0 2px 8px rgba(0,0,0,0.1);
+            --shadow-hover: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: var(--light-bg);
+            padding: 20px;
+            margin: 0 auto;
+            max-width: 800px;
+        }
+
+        /* Skip Link */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: var(--primary-blue);
+            color: var(--white);
+            padding: 8px;
+            text-decoration: none;
+            z-index: 100;
+        }
+
+        .skip-link:focus {
+            top: 0;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+            color: var(--white);
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+        }
+
+        .assignment-badge {
+            display: inline-block;
+            background-color: var(--accent-gold);
+            color: var(--primary-blue);
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1rem;
+            opacity: 0.95;
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+            background: var(--white);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+        }
+
+        .nav-tab {
+            flex: 1;
+            min-width: 120px;
+            padding: 12px 15px;
+            background: var(--light-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            color: var(--text-dark);
+            font-size: 0.9rem;
+        }
+
+        .nav-tab:hover {
+            background: var(--secondary-blue);
+            color: var(--white);
+            border-color: var(--secondary-blue);
+            transform: translateY(-2px);
+        }
+
+        .nav-tab.active {
+            background: var(--primary-blue);
+            color: var(--white);
+            border-color: var(--primary-blue);
+        }
+
+        .nav-tab:focus {
+            outline: 3px solid var(--accent-gold);
+            outline-offset: 2px;
+        }
+
+        /* Content Sections */
+        .content-section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Cards */
+        .card {
+            background: var(--white);
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow);
+            border-left: 5px solid var(--secondary-blue);
+        }
+
+        .card h2 {
+            color: var(--primary-blue);
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card h3 {
+            color: var(--secondary-blue);
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .card h4 {
+            color: var(--text-dark);
+            margin-top: 15px;
+            margin-bottom: 8px;
+            font-size: 1.05rem;
+            font-weight: 600;
+        }
+
+        .card-icon {
+            font-size: 1.6rem;
+        }
+
+        /* Info Boxes */
+        .info-box {
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 5px solid;
+        }
+
+        .info-box.blue {
+            background-color: #e7f3ff;
+            border-color: var(--secondary-blue);
+        }
+
+        .info-box.gold {
+            background-color: #fff8e1;
+            border-color: var(--accent-gold);
+        }
+
+        .info-box.green {
+            background-color: #e8f5e9;
+            border-color: var(--success-green);
+        }
+
+        .info-box.orange {
+            background-color: #fff3e0;
+            border-color: var(--warning-orange);
+        }
+
+        .info-box.red {
+            background-color: #ffebee;
+            border-color: var(--danger-red);
+        }
+
+        .info-box.purple {
+            background-color: #f3e5f5;
+            border-color: #9c27b0;
+        }
+
+        /* Due Date Banner */
+        .due-date-banner {
+            background: linear-gradient(135deg, var(--danger-red) 0%, var(--warning-orange) 100%);
+            color: var(--white);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow);
+        }
+
+        .due-date-banner h2 {
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+        }
+
+        .due-date-banner p {
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: var(--white);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--primary-blue);
+            color: var(--white);
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background-color: var(--light-bg);
+        }
+
+        /* Lists */
+        ul, ol {
+            margin-left: 25px;
+            margin-top: 10px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .checklist li {
+            padding-left: 30px;
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .checklist li:before {
+            content: "☐";
+            position: absolute;
+            left: 0;
+            color: var(--secondary-blue);
+            font-weight: bold;
+            font-size: 1.3rem;
+        }
+
+        /* Code Display */
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .code-comment {
+            color: #6a9955;
+        }
+
+        .expression-display {
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+            margin: 5px;
+            font-size: 1rem;
+        }
+
+        .btn:focus {
+            outline: 3px solid var(--accent-gold);
+            outline-offset: 2px;
+        }
+
+        .btn-primary {
+            background: var(--primary-blue);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: var(--secondary-blue);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .btn-success {
+            background: var(--success-green);
+            color: var(--white);
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-secondary {
+            background: var(--light-bg);
+            color: var(--primary-blue);
+            border: 2px solid var(--primary-blue);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary-blue);
+            color: var(--white);
+        }
+
+        /* Accordion */
+        .accordion {
+            margin: 20px 0;
+        }
+
+        .accordion-item {
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+
+        .accordion-header {
+            padding: 15px 20px;
+            background: var(--light-bg);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+
+        .accordion-header:hover {
+            background: #e3f2fd;
+        }
+
+        .accordion-header:focus {
+            outline: 3px solid var(--accent-gold);
+            outline-offset: -3px;
+        }
+
+        .accordion-icon {
+            transition: transform 0.3s ease;
+            font-size: 1.2rem;
+            color: var(--secondary-blue);
+        }
+
+        .accordion-item.active .accordion-icon {
+            transform: rotate(180deg);
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            padding: 0 20px;
+        }
+
+        .accordion-item.active .accordion-content {
+            max-height: 3000px;
+            padding: 20px;
+        }
+
+        /* Progress Checklist */
+        .progress-checklist {
+            background: var(--white);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            margin: 20px 0;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 12px;
+            margin: 8px 0;
+            background: var(--light-bg);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .checklist-item:hover {
+            background: #e3f2fd;
+        }
+
+        .checklist-checkbox {
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+            accent-color: var(--success-green);
+            margin-top: 2px;
+        }
+
+        .checklist-label {
+            flex: 1;
+            cursor: pointer;
+        }
+
+        /* Drafting Workspace */
+        .draft-workspace {
+            background: #fffef7;
+            border: 2px dashed var(--accent-gold);
+            border-radius: 10px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+
+        .draft-workspace h3 {
+            color: var(--accent-gold);
+            margin-bottom: 15px;
+        }
+
+        .draft-textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 15px;
+            font-size: 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            resize: vertical;
+            line-height: 1.6;
+        }
+
+        .draft-textarea:focus {
+            outline: none;
+            border-color: var(--secondary-blue);
+        }
+
+        .word-counter {
+            margin-top: 10px;
+            padding: 10px;
+            background: var(--light-bg);
+            border-radius: 5px;
+            text-align: right;
+            font-weight: 600;
+        }
+
+        .word-counter.good {
+            color: var(--success-green);
+        }
+
+        .word-counter.warning {
+            color: var(--warning-orange);
+        }
+
+        .word-counter.danger {
+            color: var(--danger-red);
+        }
+
+        /* Example Post Boxes */
+        .post-example {
+            background: var(--white);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: var(--shadow);
+        }
+
+        .post-example.good {
+            border-color: var(--success-green);
+            background: #e8f5e9;
+        }
+
+        .post-example.bad {
+            border-color: var(--danger-red);
+            background: #ffebee;
+        }
+
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .post-author {
+            font-weight: bold;
+            color: var(--primary-blue);
+        }
+
+        .post-badge {
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .post-badge.good {
+            background: var(--success-green);
+            color: var(--white);
+        }
+
+        .post-badge.bad {
+            background: var(--danger-red);
+            color: var(--white);
+        }
+
+        .post-content {
+            line-height: 1.8;
+        }
+
+        /* Process Steps */
+        .process-steps {
+            display: flex;
+            justify-content: space-between;
+            margin: 30px 0;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .process-step {
+            flex: 1;
+            min-width: 140px;
+            text-align: center;
+            padding: 15px;
+            background: var(--white);
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+
+        .process-step::after {
+            content: "→";
+            position: absolute;
+            right: -20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.5rem;
+            color: var(--secondary-blue);
+            font-weight: bold;
+        }
+
+        .process-step:last-child::after {
+            content: "";
+        }
+
+        .step-number {
+            display: inline-block;
+            width: 35px;
+            height: 35px;
+            background: var(--secondary-blue);
+            color: var(--white);
+            border-radius: 50%;
+            line-height: 35px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .step-label {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            header {
+                padding: 20px;
+            }
+
+            header h1 {
+                font-size: 1.4rem;
+            }
+
+            .card {
+                padding: 15px;
+            }
+
+            table {
+                font-size: 0.85rem;
+            }
+
+            th, td {
+                padding: 8px;
+            }
+
+            .nav-tabs {
+                flex-direction: column;
+            }
+
+            .nav-tab {
+                min-width: 100%;
+            }
+
+            .process-steps {
+                flex-direction: column;
+            }
+
+            .process-step::after {
+                content: "↓";
+                right: auto;
+                top: auto;
+                bottom: -20px;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+
+            .process-step:last-child::after {
+                content: "";
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+            }
+
+            .btn, .checklist-checkbox, .accordion-icon, .nav-tabs, .draft-workspace {
+                display: none;
+            }
+
+            .accordion-content {
+                max-height: none !important;
+                padding: 20px !important;
+            }
+
+            .content-section {
+                display: block !important;
+            }
+
+            .card {
+                page-break-inside: avoid;
+            }
+        }
+
+        /* Accessibility */
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            margin: -1px;
+            padding: 0;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0;
+        }
+
+        *:focus-visible {
+            outline: 3px solid var(--accent-gold);
+            outline-offset: 2px;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <header role="banner">
+        <div class="assignment-badge">Discussion Forum</div>
+        <h1>Discussion: Predicates in Programming</h1>
+        <p>CSC 240 - Discrete Structures | Week 4</p>
+    </header>
+
+    <div class="due-date-banner" role="alert">
+        <h2>⏰ Due Date</h2>
+        <p>Initial Post: Friday, February 15, 2026 by 11:59 PM PT<br>
+        Peer Responses: Sunday, February 17, 2026 by 11:59 PM PT</p>
+    </div>
+
+    <nav class="nav-tabs" role="navigation" aria-label="Discussion content navigation">
+        <button class="nav-tab active" onclick="showSection('overview')" role="tab" aria-selected="true" id="tab-overview">
+            📋 Overview
+        </button>
+        <button class="nav-tab" onclick="showSection('prompt')" role="tab" aria-selected="false" id="tab-prompt">
+            💬 Prompt
+        </button>
+        <button class="nav-tab" onclick="showSection('guidelines')" role="tab" aria-selected="false" id="tab-guidelines">
+            📐 Guidelines
+        </button>
+        <button class="nav-tab" onclick="showSection('examples')" role="tab" aria-selected="false" id="tab-examples">
+            💡 Examples
+        </button>
+        <button class="nav-tab" onclick="showSection('rubric')" role="tab" aria-selected="false" id="tab-rubric">
+            📊 Rubric
+        </button>
+    </nav>
+
+    <main id="main-content" role="main">
+        <!-- OVERVIEW SECTION -->
+        <section id="overview-section" class="content-section active" role="tabpanel" aria-labelledby="tab-overview">
+            <div class="card">
+                <h2><span class="card-icon" aria-hidden="true">📖</span> Discussion Overview</h2>
+                
+                <div class="info-box blue">
+                    <h3>Assignment Details</h3>
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td><strong>Points:</strong></td>
+                                <td>3 points (0.3% of final grade)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Initial Post Due:</strong></td>
+                                <td>Friday, February 15, 2026 at 11:59 PM PT</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Peer Responses Due:</strong></td>
+                                <td>Sunday, February 17, 2026 at 11:59 PM PT</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Initial Post Length:</strong></td>
+                                <td>150-200 words</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Peer Response Length:</strong></td>
+                                <td>50-100 words each (minimum 2 responses)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Related Modules:</strong></td>
+                                <td>Modules 4.3, 4.4, 4.5</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>🎯 Purpose of This Discussion</h3>
+                <ul>
+                    <li><strong>Reflect</strong> on what you've learned about predicate logic and quantifiers this week</li>
+                    <li><strong>Connect</strong> discrete structures concepts to real-world programming applications</li>
+                    <li><strong>Share</strong> insights and learn from classmates' perspectives</li>
+                    <li><strong>Build</strong> a supportive learning community</li>
+                </ul>
+
+                <h3>Why Discussions Matter</h3>
+                <p>Active participation in discussions enhances both your understanding and your professional development by:</p>
+
+                <div class="info-box green">
+                    <h4>💡 Benefits of Discussion Participation</h4>
+                    <p><strong>Reinforcing CSLO 1:</strong> Apply symbolic logic and proof methods to model and analyze program/algorithm correctness</p>
+                    <ul>
+                        <li><strong>Reflecting on practical applications</strong> solidifies theoretical understanding</li>
+                        <li><strong>Discussing real-world uses</strong> helps you see the relevance of predicate logic</li>
+                        <li><strong>Sharing questions</strong> identifies areas for deeper study</li>
+                    </ul>
+
+                    <h4>Building Critical Thinking Skills</h4>
+                    <ul>
+                        <li>Articulating ideas in writing deepens understanding</li>
+                        <li>Evaluating peers' perspectives develops analytical skills</li>
+                        <li>Defending your reasoning strengthens logical thinking</li>
+                    </ul>
+
+                    <h4>Professional Development</h4>
+                    <ul>
+                        <li>Practice technical communication (essential for CS careers)</li>
+                        <li>Learn to give and receive constructive feedback</li>
+                        <li>Develop collaborative problem-solving skills</li>
+                    </ul>
+                </div>
+
+                <h3>Connection to Week 4 Topics</h3>
+                <p>This discussion builds directly on the key concepts you've studied this week:</p>
+                <ul>
+                    <li><strong>Predicate Logic:</strong> Expressing properties and relationships</li>
+                    <li><strong>Quantifiers:</strong> Using ∀ and ∃ to make statements about all or some objects</li>
+                    <li><strong>Nested Quantifiers:</strong> Complex statements with multiple quantifiers</li>
+                    <li><strong>Programming Applications:</strong> Preconditions, postconditions, loop invariants</li>
+                    <li><strong>Database Queries:</strong> SQL as predicate logic</li>
+                </ul>
+
+                <h3>✅ What You Need to Complete</h3>
+                <p>To earn full credit (3 points), you must:</p>
+                <ol>
+                    <li><strong>Initial Post (1.5 points):</strong> Write a thoughtful 150-200 word response addressing all three discussion questions</li>
+                    <li><strong>Peer Responses (1.2 points):</strong> Respond to at least 2 classmates' posts with 50-100 words each</li>
+                    <li><strong>Professionalism (0.3 points):</strong> Use proper grammar, spelling, and academic tone throughout</li>
+                </ol>
+
+                <h3>Time Estimate Breakdown</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Activity</th>
+                            <th>Estimated Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Review Week 4 materials</td>
+                            <td>15-20 minutes</td>
+                        </tr>
+                        <tr>
+                            <td>Draft initial post</td>
+                            <td>20-30 minutes</td>
+                        </tr>
+                        <tr>
+                            <td>Read classmates' posts</td>
+                            <td>10-15 minutes</td>
+                        </tr>
+                        <tr>
+                            <td>Write 2 peer responses</td>
+                            <td>15-20 minutes</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Total Time</strong></td>
+                            <td><strong>60-85 minutes</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- PROMPT SECTION -->
+        <section id="prompt-section" class="content-section" role="tabpanel" aria-labelledby="tab-prompt">
+            <div class="card">
+                <h2><span class="card-icon" aria-hidden="true">💬</span> Discussion Prompt</h2>
+
+                <div class="info-box blue">
+                    <h3>Main Discussion Topic</h3>
+                    <p><strong>Predicate Logic and Quantifiers in Real-World Programming</strong></p>
+                    <p>This week you've learned about predicate logic and quantifiers—powerful tools for expressing properties of objects and making statements about collections. Now let's explore how these concepts appear in actual programming contexts.</p>
+                </div>
+
+                <h3>Discussion Questions</h3>
+                <p>Address all three questions in your initial post (150-200 words total):</p>
+
+                <div class="info-box gold">
+                    <h4>Question 1: Predicates in Your Code</h4>
+                    <p>Think about a program you've written (in any language). Identify a <strong>Boolean expression or conditional statement</strong> in your code and express it as a predicate. For example, if you wrote <code>if (x > 0 && x < 100)</code>, you could define a predicate <code>InRange(x) ≡ (x > 0) ∧ (x < 100)</code>.</p>
+                    <p><strong>What to discuss:</strong></p>
+                    <ul>
+                        <li>What was the Boolean expression or condition?</li>
+                        <li>How would you express it as a predicate?</li>
+                        <li>What domain does your variable(s) come from?</li>
+                    </ul>
+                </div>
+
+                <div class="info-box gold">
+                    <h4>Question 2: Quantifiers in Action</h4>
+                    <p>Consider loops or array operations you've written. Many loops implicitly use quantifiers! A <code>for</code> loop checking all elements often represents universal quantification (∀), while a search loop represents existential quantification (∃).</p>
+                    <p><strong>What to discuss:</strong></p>
+                    <ul>
+                        <li>Describe a loop or operation from your programming experience</li>
+                        <li>Would it use ∀ (checking all elements) or ∃ (finding at least one)?</li>
+                        <li>How would you express what the loop does using quantifiers?</li>
+                    </ul>
+                </div>
+
+                <div class="info-box gold">
+                    <h4>Question 3: Reflection and Application</h4>
+                    <p>Reflect on this week's learning about predicate logic and quantifiers.</p>
+                    <p><strong>What to discuss:</strong></p>
+                    <ul>
+                        <li>What was the most challenging concept this week (predicates, quantifiers, nested quantifiers, negation)?</li>
+                        <li>How do you think understanding quantifiers will help you in future programming or CS courses?</li>
+                        <li>Can you think of a situation where expressing a requirement using quantifiers would be clearer than using plain English?</li>
+                    </ul>
+                </div>
+
+                <h3>Drafting Workspace</h3>
+                <div class="draft-workspace">
+                    <h3>✏️ Draft Your Initial Post Here</h3>
+                    <p>Use this space to draft your response before posting to Canvas. The word counter below will help you stay within the 150-200 word range.</p>
+                    <textarea class="draft-textarea" id="draft-area" placeholder="Start writing your initial post here...
+
+Question 1: Predicates in Your Code
+[Your response...]
+
+Question 2: Quantifiers in Action
+[Your response...]
+
+Question 3: Reflection and Application
+[Your response...]" oninput="updateWordCount()"></textarea>
+                    <div class="word-counter" id="word-counter">
+                        Word count: 0 (Target: 150-200 words)
+                    </div>
+                    <button class="btn btn-primary" onclick="copyToClipboard()">📋 Copy to Clipboard</button>
+                    <button class="btn btn-secondary" onclick="clearDraft()">🗑️ Clear Draft</button>
+                </div>
+
+                <div style="text-align: center; margin: 30px 0;">
+                    <a href="https://canvas.mendocino.edu" class="btn btn-success" target="_blank" rel="noopener">
+                        💬 Go to Canvas Discussion Forum
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- GUIDELINES SECTION -->
+        <section id="guidelines-section" class="content-section" role="tabpanel" aria-labelledby="tab-guidelines">
+            <div class="card">
+                <h2><span class="card-icon" aria-hidden="true">📐</span> Discussion Guidelines and Policies</h2>
+                <p>To ensure a productive and respectful learning environment, please adhere to the following guidelines when participating in this week's discussion.</p>
+
+                <h3>Participation Flow</h3>
+                <div class="process-steps">
+                    <div class="process-step">
+                        <div class="step-number">1</div>
+                        <div class="step-label">Read & Reflect</div>
+                    </div>
+                    <div class="process-step">
+                        <div class="step-number">2</div>
+                        <div class="step-label">Post Initial</div>
+                    </div>
+                    <div class="process-step">
+                        <div class="step-number">3</div>
+                        <div class="step-label">Read Peers</div>
+                    </div>
+                    <div class="process-step">
+                        <div class="step-number">4</div>
+                        <div class="step-label">Respond</div>
+                    </div>
+                    <div class="process-step">
+                        <div class="step-number">5</div>
+                        <div class="step-label">Continue</div>
+                    </div>
+                </div>
+
+                <div class="accordion">
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Step 1:</strong> Read and Reflect</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <ul>
+                                <li>Review all Week 4 materials (Modules 4.3, 4.4, 4.5)</li>
+                                <li>Consider the three discussion questions</li>
+                                <li>Think about your own programming experiences and how they relate</li>
+                                <li>Draft your response in a word processor or use the workspace provided in the "Discussion Prompt" tab</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Step 2:</strong> Post Your Initial Response</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <ul>
+                                <li>Go to Canvas discussion forum</li>
+                                <li>Click "Reply" to start your post</li>
+                                <li>Address all three questions</li>
+                                <li>Write 150-200 words total</li>
+                                <li>Proofread before posting</li>
+                                <li><strong>Due: Friday, February 15 by 11:59 PM PT</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Step 3:</strong> Read Classmates' Posts</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <ul>
+                                <li>Read through several classmates' initial posts</li>
+                                <li>Look for posts that interest you or offer different perspectives</li>
+                                <li>Identify posts where you can add meaningful value</li>
+                                <li>Consider what questions you could ask or what insights you could share</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Step 4:</strong> Respond to Peers</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <ul>
+                                <li>Choose at least 2 posts to respond to</li>
+                                <li>Write thoughtful responses (aim for 50-100 words each minimum)</li>
+                                <li>Use the person's name when responding</li>
+                                <li>Be specific about what you're responding to</li>
+                                <li>Add value through questions, examples, or additional perspectives</li>
+                                <li><strong>Due: Sunday, February 17 by 11:59 PM PT</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Step 5:</strong> Continue the Conversation</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <ul>
+                                <li>Check back to see if anyone has responded to your posts</li>
+                                <li>Reply to questions or comments on your initial post</li>
+                                <li>Contribute to ongoing discussions as they develop</li>
+                                <li>Stay engaged throughout the week</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Discussion Do's and Don'ts</h3>
+                <div class="info-box green">
+                    <h4>✅ DO:</h4>
+                    <ul>
+                        <li>Use concrete examples from your programming experience</li>
+                        <li>Ask thoughtful questions to deepen the discussion</li>
+                        <li>Share both successes and challenges you've encountered</li>
+                        <li>Relate concepts to course material</li>
+                        <li>Respond constructively to others' ideas</li>
+                        <li>Use proper grammar and spelling</li>
+                    </ul>
+                </div>
+
+                <div class="info-box red">
+                    <h4>❌ DON'T:</h4>
+                    <ul>
+                        <li>Post one-line responses like "I agree" or "Good point"</li>
+                        <li>Copy content from websites or other sources</li>
+                        <li>Share complete code solutions to assignments</li>
+                        <li>Make disrespectful or dismissive comments</li>
+                        <li>Wait until the last minute to post</li>
+                        <li>Use AI tools to generate your posts</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2><span class="card-icon" aria-hidden="true">💡</span> Pro Tips for Success</h2>
+
+                <ul>
+                    <li><strong>Post early in the week:</strong> This gives you more opportunities to engage with classmates and allows for richer discussions. Early posters often receive more responses.</li>
+                    <li><strong>Be specific:</strong> Use concrete examples from your programming experience rather than vague statements</li>
+                    <li><strong>Make connections:</strong> Relate concepts to your own learning and experiences</li>
+                    <li><strong>Ask questions:</strong> Don't be afraid to share what you're still learning—it's okay to have questions!</li>
+                    <li><strong>Check back regularly:</strong> Respond to anyone who replies to your posts to keep the conversation going</li>
+                </ul>
+
+                <h3>How This Discussion Connects to Your Assignments</h3>
+                <p>This discussion complements your other Week 4 work:</p>
+                <ul>
+                    <li><strong>PE-04:</strong> Discuss how normal forms relate to simplifying Boolean conditions in code</li>
+                    <li><strong>Predicate Logic Translation:</strong> Share insights about translating between English and symbolic notation</li>
+                    <li><strong>Quantifier Practice:</strong> Discuss real-world applications of quantified statements</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h2><span class="card-icon" aria-hidden="true">⚠️</span> Important Reminders</h2>
+
+                <div class="info-box orange">
+                    <ul>
+                        <li><strong>Academic Integrity:</strong> All discussion posts must be your original work. Do not copy from classmates, AI tools, or online sources.</li>
+                        <li><strong>Respectful Engagement:</strong> Treat all classmates with courtesy and professionalism</li>
+                        <li><strong>Substantive Responses:</strong> Simple "I agree" posts do not count—add value to the discussion</li>
+                        <li><strong>Canvas Submission:</strong> Post directly on Canvas discussion board (not as a file upload)</li>
+                        <li><strong>Deadlines:</strong> Initial post by Friday, peer responses by Sunday</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- EXAMPLES SECTION -->
+        <section id="examples-section" class="content-section" role="tabpanel" aria-labelledby="tab-examples">
+            <div class="card">
+                <h2><span class="card-icon" aria-hidden="true">💡</span> Example Discussion Posts</h2>
+                <p>Learn what makes a strong discussion post by reviewing these examples. Notice the difference between thoughtful, substantive responses and weak, generic ones.</p>
+
+                <h3>Example: Strong Initial Post</h3>
+                <div class="post-example good">
+                    <div class="post-header">
+                        <span class="post-author">Sarah Chen</span>
+                        <span class="post-badge good">✓ Strong Example</span>
+                    </div>
+                    <div class="post-content">
+                        <p><strong>Question 1:</strong> In my recent Java project, I wrote a validation method with the condition <code>if (age >= 18 && age <= 65 && hasLicense)</code>. I can express this as a predicate: <code>EligibleDriver(x) ≡ (age(x) ≥ 18) ∧ (age(x) ≤ 65) ∧ HasLicense(x)</code>, where the domain is all people.</p>
+                        
+                        <p><strong>Question 2:</strong> I used a loop to verify all array elements were positive: <code>for (int i = 0; i < arr.length; i++) { if (arr[i] <= 0) return false; }</code>. This represents ∀i (0 ≤ i < n → arr[i] > 0), a universal quantifier checking every element. If I were searching for any negative value, that would be existential: ∃i (arr[i] < 0).</p>
+                        
+                        <p><strong>Question 3:</strong> Nested quantifiers were most challenging—understanding that ∀x ∃y and ∃y ∀x have completely different meanings took practice. I think quantifiers will be invaluable for writing precise specifications in software engineering, especially for describing API contracts and test conditions. For example, "every valid input produces a valid output" is much clearer as ∀x (Valid(x) → Valid(f(x))).</p>
+                        
+                        <p><em>(Word count: 187)</em></p>
+                    </div>
+                </div>
+
+                <div class="info-box green">
+                    <h4>✅ What Makes This Strong:</h4>
+                    <ul>
+                        <li>Addresses all three questions comprehensively</li>
+                        <li>Uses specific, concrete examples from actual code</li>
+                        <li>Shows proper predicate notation with domain specification</li>
+                        <li>Demonstrates understanding of quantifier concepts</li>
+                        <li>Makes connections to future applications</li>
+                        <li>Within word count range (150-200 words)</li>
+                        <li>Well-organized and easy to follow</li>
+                    </ul>
+                </div>
+
+                <h3>Example: Weak Initial Post</h3>
+                <div class="post-example bad">
+                    <div class="post-header">
+                        <span class="post-author">Anonymous Student</span>
+                        <span class="post-badge bad">✗ Weak Example</span>
+                    </div>
+                    <div class="post-content">
+                        <p>I use predicates in my code all the time with if statements. They're pretty useful. Quantifiers are hard but I guess they're important. I think understanding this stuff will help me later.</p>
+                        
+                        <p><em>(Word count: 35)</em></p>
+                    </div>
+                </div>
+
+                <div class="info-box red">
+                    <h4>❌ What's Wrong Here:</h4>
+                    <ul>
+                        <li>Too short (only 35 words, needs 150-200)</li>
+                        <li>No specific examples provided</li>
+                        <li>Doesn't actually show predicate notation</li>
+                        <li>Vague statements without substance</li>
+                        <li>Doesn't address all three questions</li>
+                        <li>No connection to course concepts</li>
+                        <li>Minimal effort and reflection</li>
+                    </ul>
+                </div>
+
+                <h3>Example: Strong Peer Response</h3>
+                <div class="post-example good">
+                    <div class="post-header">
+                        <span class="post-author">Marcus Johnson</span>
+                        <span class="post-badge good">✓ Strong Example</span>
+                    </div>
+                    <div class="post-content">
+                        <p>Hi Sarah! I really like your driver eligibility example—it's a great real-world application of predicates. Your point about nested quantifiers being challenging resonates with me too. I struggled with the ∀x ∃y vs. ∃y ∀x distinction until I thought about it in terms of "each x gets its own y" versus "one y for all x." Your API contract example is excellent—I hadn't thought about using quantifiers for documentation, but that could make requirements much more precise than natural language descriptions. Have you encountered any situations where the order of quantifiers caused confusion in a specification or requirement?</p>
+                        
+                        <p><em>(Word count: 108)</em></p>
+                    </div>
+                </div>
+
+                <div class="info-box green">
+                    <h4>✅ What Makes This Strong:</h4>
+                    <ul>
+                        <li>Uses the person's name</li>
+                        <li>References specific points from their post</li>
+                        <li>Shares own perspective and learning</li>
+                        <li>Adds new insight (documentation use case)</li>
+                        <li>Asks a thoughtful follow-up question</li>
+                        <li>Appropriate length (50-100 words)</li>
+                        <li>Encourages continued conversation</li>
+                    </ul>
+                </div>
+
+                <h3>Example: Weak Peer Response</h3>
+                <div class="post-example bad">
+                    <div class="post-header">
+                        <span class="post-author">Anonymous Student</span>
+                        <span class="post-badge bad">✗ Weak Example</span>
+                    </div>
+                    <div class="post-content">
+                        <p>I agree with you. Good points!</p>
+                        
+                        <p><em>(Word count: 6)</em></p>
+                    </div>
+                </div>
+
+                <div class="info-box red">
+                    <h4>❌ What's Wrong Here:</h4>
+                    <ul>
+                        <li>Far too short (only 6 words, needs 50-100)</li>
+                        <li>Generic response that could apply to any post</li>
+                        <li>Doesn't add any value to the discussion</li>
+                        <li>No specific reference to the original post</li>
+                        <li>No questions or new perspectives</li>
+                        <li>This type of response receives 0 points</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2><span class="card-icon" aria-hidden="true">🎓</span> Academic Integrity</h2>
+
+                <div class="info-box orange">
+                    <h3>⚠️ Academic Integrity Policy</h3>
+                    <p>All discussion posts must be your original work.</p>
+
+                    <h4>✅ Acceptable:</h4>
+                    <ul>
+                        <li>Discussing concepts and approaches with classmates</li>
+                        <li>Using course materials and recommended textbook resources</li>
+                        <li>Asking clarifying questions to the instructor</li>
+                        <li>Referencing your own programming experiences</li>
+                    </ul>
+
+                    <h4>❌ NOT Acceptable:</h4>
+                    <ul>
+                        <li>Copying posts or portions of posts from other students</li>
+                        <li>Copying content from online sources (websites, blogs, etc.) without proper citation</li>
+                        <li>Sharing your initial post or peer responses with classmates before posting</li>
+                        <li>Using AI tools (like ChatGPT) to generate your discussion posts</li>
+                        <li>Submitting work done by someone else</li>
+                    </ul>
+
+                    <h4>Consequences:</h4>
+                    <p>Violations of academic integrity will result in:</p>
+                    <ul>
+                        <li>Zero points for the assignment</li>
+                        <li>Report to the Dean of Students</li>
+                        <li>Possible further disciplinary action per college policy</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- RUBRIC SECTION -->
+        <section id="rubric-section" class="content-section" role="tabpanel" aria-labelledby="tab-rubric">
+            <div class="card">
+                <h2><span class="card-icon" aria-hidden="true">📊</span> Grading Rubric and Evaluation Criteria</h2>
+                <p>This discussion is worth <strong>3 points</strong> and will be evaluated based on the quality of your initial post, your engagement with peers, and overall professionalism. This rubric provides detailed expectations for each category.</p>
+
+                <h3>🎯 Overall Grading Breakdown</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th>Points</th>
+                            <th>Requirements</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Initial Post</strong></td>
+                            <td>1.5</td>
+                            <td>150-200 words, addresses all 3 questions, posted by Friday</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Peer Responses</strong></td>
+                            <td>1.2</td>
+                            <td>At least 2 responses, 50-100 words each, substantive</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Professionalism</strong></td>
+                            <td>0.3</td>
+                            <td>Grammar, spelling, tone, respectfulness</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"><strong>Total</strong></td>
+                            <td><strong>3.0 points</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Detailed Rubric</h3>
+
+                <div class="accordion">
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Initial Post (1.5 points)</strong></span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Score</th>
+                                        <th>Criteria</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>1.5 pts</strong><br>(Excellent)</td>
+                                        <td>
+                                            • Addresses all 3 questions thoroughly<br>
+                                            • 150-200 words<br>
+                                            • Uses specific, concrete examples<br>
+                                            • Shows clear understanding of predicates and quantifiers<br>
+                                            • Makes meaningful connections to programming<br>
+                                            • Well-organized and clearly written<br>
+                                            • Posted by Friday deadline
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>1.2 pts</strong><br>(Good)</td>
+                                        <td>
+                                            • Addresses all 3 questions<br>
+                                            • Close to word count (130-220 words)<br>
+                                            • Includes examples but could be more specific<br>
+                                            • Shows understanding with minor gaps<br>
+                                            • Makes some connections to programming<br>
+                                            • Posted by Friday deadline
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>0.9 pts</strong><br>(Satisfactory)</td>
+                                        <td>
+                                            • Addresses 2-3 questions<br>
+                                            • Below or above word count<br>
+                                            • Examples are vague or generic<br>
+                                            • Shows basic understanding<br>
+                                            • Limited connections to programming<br>
+                                            • May be posted after Friday
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>0.5 pts</strong><br>(Needs Improvement)</td>
+                                        <td>
+                                            • Addresses only 1-2 questions<br>
+                                            • Significantly too short (<100 words)<br>
+                                            • No specific examples<br>
+                                            • Shows minimal understanding<br>
+                                            • Posted late
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>0 pts</strong></td>
+                                        <td>
+                                            • Not submitted<br>
+                                            • Plagiarized<br>
+                                            • Completely off-topic
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Peer Responses (1.2 points)</strong></span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Score</th>
+                                        <th>Criteria</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>1.2 pts</strong><br>(Excellent)</td>
+                                        <td>
+                                            • Responds to 2+ classmates<br>
+                                            • Each response 50-100 words<br>
+                                            • Substantive and thoughtful<br>
+                                            • References specific points from original post<br>
+                                            • Adds new perspectives or questions<br>
+                                            • Encourages further discussion<br>
+                                            • Posted by Sunday deadline
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>0.9 pts</strong><br>(Good)</td>
+                                        <td>
+                                            • Responds to 2 classmates<br>
+                                            • Close to word count (40-120 words each)<br>
+                                            • Generally thoughtful<br>
+                                            • References original post<br>
+                                            • Some new insights<br>
+                                            • Posted by Sunday deadline
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>0.6 pts</strong><br>(Satisfactory)</td>
+                                        <td>
+                                            • Responds to 2 classmates<br>
+                                            • Responses too short (<40 words)<br>
+                                            • Basic engagement<br>
+                                            • Limited substance<br>
+                                            • May be posted late
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>0.3 pts</strong><br>(Needs Improvement)</td>
+                                        <td>
+                                            • Only 1 response<br>
+                                            • Very brief responses<br>
+                                            • Generic comments ("I agree")<br>
+                                            • No added value<br>
+                                            • Posted late
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>0 pts</strong></td>
+                                        <td>
+                                            • No responses submitted<br>
+                                            • Inappropriate or disrespectful content
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Professionalism (0.3 points)</strong></span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Score</th>
+                                        <th>Criteria</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>0.3 pts</strong><br>(Excellent)</td>
+                                        <td>
+                                            • Proper grammar and spelling throughout<br>
+                                            • Professional, academic tone<br>
+                                            • Respectful to all participants<br>
+                                            • Constructive feedback<br>
+                                            • Appropriate formatting
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>0.2 pts</strong><br>(Good)</td>
+                                        <td>
+                                            • Minor grammar/spelling errors<br>
+                                            • Generally professional tone<br>
+                                            • Respectful<br>
+                                            • Mostly constructive
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>0.1 pts</strong><br>(Needs Improvement)</td>
+                                        <td>
+                                            • Multiple grammar/spelling errors<br>
+                                            • Casual or unprofessional tone<br>
+                                            • Borderline respectful<br>
+                                            • Limited professionalism
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>0 pts</strong></td>
+                                        <td>
+                                            • Disrespectful or inappropriate content<br>
+                                            • Unprofessional language<br>
+                                            • Offensive material
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div class="progress-checklist">
+        <h2><span class="card-icon" aria-hidden="true">📋</span> Discussion Participation Checklist</h2>
+        <p>Track your progress (saved for this session only):</p>
+
+        <div class="checklist-item" onclick="toggleChecklistItem(this)">
+            <input type="checkbox" class="checklist-checkbox" id="check1" aria-label="Review Week 4 modules">
+            <label for="check1" class="checklist-label">Review Modules 4.3, 4.4, and 4.5 on predicate logic and quantifiers</label>
+        </div>
+
+        <div class="checklist-item" onclick="toggleChecklistItem(this)">
+            <input type="checkbox" class="checklist-checkbox" id="check2" aria-label="Read discussion prompt">
+            <label for="check2" class="checklist-label">Read the discussion prompt and all three questions carefully</label>
+        </div>
+
+        <div class="checklist-item" onclick="toggleChecklistItem(this)">
+            <input type="checkbox" class="checklist-checkbox" id="check3" aria-label="Review strong examples">
+            <label for="check3" class="checklist-label">Review the strong and weak example posts</label>
+        </div>
+
+        <div class="checklist-item" onclick="toggleChecklistItem(this)">
+            <input type="checkbox" class="checklist-checkbox" id="check4" aria-label="Draft initial post">
+            <label for="check4" class="checklist-label">Draft your initial post using the workspace (address all 3 questions)</label>
+        </div>
+
+        <div class="checklist-item" onclick="toggleChecklistItem(this)">
+            <input type="checkbox" class="checklist-checkbox" id="check5" aria-label="Check word count">
+            <label for="check5" class="checklist-label">Verify your initial post is 150-200 words</label>
+        </div>
+
+        <div class="checklist-item" onclick="toggleChecklistItem(this)">
+            <input type="checkbox" class="checklist-checkbox" id="check6" aria-label="Proofread initial post">
+            <label for="check6" class="checklist-label">Proofread for grammar, spelling, and clarity</label>
+        </div>
+
+        <div class="checklist-item" onclick="toggleChecklistItem(this)">
+            <input type="checkbox" class="checklist-checkbox" id="check7" aria-label="Post initial response">
+            <label for="check7" class="checklist-label">Post your initial response to Canvas by Friday, February 15</label>
+        </div>
+
+        <div class="checklist-item" onclick="toggleChecklistItem(this)">
+            <input type="checkbox" class="checklist-checkbox" id="check8" aria-label="Read peer posts">
+            <label for="check8" class="checklist-label">Read at least 5-6 classmates' initial posts</label>
+        </div>
+
+        <div class="checklist-item" onclick="toggleChecklistItem(this)">
+            <input type="checkbox" class="checklist-checkbox" id="check9" aria-label="Draft peer response 1">
+            <label for="check9" class="checklist-label">Draft first peer response (50-100 words)</label>
+        </div>
+
+        <div class="checklist-item" onclick="toggleChecklistItem(this)">
+            <input type="checkbox" class="checklist-checkbox" id="check10" aria-label="Draft peer response 2">
+            <label for="check10" class="checklist-label">Draft second peer response (50-100 words)</label>
+        </div>
+
+        <div class="checklist-item" onclick="toggleChecklistItem(this)">
+            <input type="checkbox" class="checklist-checkbox" id="check11" aria-label="Post peer responses">
+            <label for="check11" class="checklist-label">Post both peer responses to Canvas by Sunday, February 17</label>
+        </div>
+
+        <div class="checklist-item" onclick="toggleChecklistItem(this)">
+            <input type="checkbox" class="checklist-checkbox" id="check12" aria-label="Check for replies">
+            <label for="check12" class="checklist-label">Check back for replies to your posts and continue the conversation</label>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2><span class="card-icon" aria-hidden="true">🎉</span> You're Ready to Engage in Discussion!</h2>
+        
+        <p>You've reviewed all the discussion guidelines and expectations. Now it's time to share your insights!</p>
+
+        <div class="info-box blue">
+            <h3>✅ Next Steps:</h3>
+            <ol>
+                <li>Go to the Week 4 Discussion Forum on Canvas</li>
+                <li>Post your initial response to the prompt (150-200 words)</li>
+                <li>Read your classmates' posts</li>
+                <li>Respond to at least 2 classmates (50-100 words each)</li>
+                <li>Engage respectfully and thoughtfully throughout the week!</li>
+            </ol>
+        </div>
+
+        <div style="text-align: center; margin: 30px 0;">
+            <a href="https://canvas.mendocino.edu" class="btn btn-success" target="_blank" rel="noopener">
+                💬 Go to Canvas Discussion Forum
+            </a>
+        </div>
+
+        <p style="text-align: center; margin-top: 20px;"><strong>Happy discussing! 💬</strong></p>
+    </div>
+
+    <footer style="text-align: center; padding: 30px; margin-top: 40px; background: var(--light-bg); border-radius: 10px;">
+        <p><strong>Discussion: Predicates in Programming</strong></p>
+        <p>CSC 240 - Discrete Structures | Mendocino College</p>
+        <p>© 2026 Mendocino College | All Rights Reserved</p>
+        <p style="margin-top: 10px; font-size: 0.9rem;">
+            Questions? Contact your instructor through Canvas or during office hours.
+        </p>
+    </footer>
+
+    <script>
+        // Tab Navigation
+        function showSection(sectionId) {
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+
+            const tabs = document.querySelectorAll('.nav-tab');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+                tab.setAttribute('aria-selected', 'false');
+            });
+
+            const activeSection = document.getElementById(sectionId + '-section');
+            if (activeSection) {
+                activeSection.classList.add('active');
+            }
+
+            const activeTab = document.getElementById('tab-' + sectionId);
+            if (activeTab) {
+                activeTab.classList.add('active');
+                activeTab.setAttribute('aria-selected', 'true');
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            sessionStorage.setItem('activeTab', sectionId);
+        }
+
+        // Accordion Toggle
+        function toggleAccordion(header) {
+            const item = header.parentElement;
+            const wasActive = item.classList.contains('active');
+            
+            const allItems = document.querySelectorAll('.accordion-item');
+            allItems.forEach(i => {
+                i.classList.remove('active');
+                i.querySelector('.accordion-header').setAttribute('aria-expanded', 'false');
+            });
+
+            if (!wasActive) {
+                item.classList.add('active');
+                header.setAttribute('aria-expanded', 'true');
+            }
+        }
+
+        // Checklist Toggle
+        function toggleChecklistItem(item) {
+            const checkbox = item.querySelector('.checklist-checkbox');
+            checkbox.checked = !checkbox.checked;
+            saveProgress();
+        }
+
+        // Word Counter
+        function updateWordCount() {
+            const textarea = document.getElementById('draft-area');
+            const counter = document.getElementById('word-counter');
+            
+            if (!textarea || !counter) return;
+            
+            const text = textarea.value.trim();
+            const words = text.length > 0 ? text.split(/\s+/).length : 0;
+            
+            counter.textContent = `Word count: ${words} (Target: 150-200 words)`;
+            
+            // Update color based on count
+            counter.classList.remove('good', 'warning', 'danger');
+            if (words >= 150 && words <= 200) {
+                counter.classList.add('good');
+            } else if (words >= 130 && words <= 220) {
+                counter.classList.add('warning');
+            } else if (words > 0) {
+                counter.classList.add('danger');
+            }
+            
+            // Save draft
+            sessionStorage.setItem('discussionDraft', textarea.value);
+        }
+
+        // Copy to Clipboard
+        function copyToClipboard() {
+            const textarea = document.getElementById('draft-area');
+            if (!textarea) return;
+            
+            textarea.select();
+            document.execCommand('copy');
+            
+            alert('Draft copied to clipboard! You can now paste it into Canvas.');
+        }
+
+        // Clear Draft
+        function clearDraft() {
+            if (confirm('Are you sure you want to clear your draft? This cannot be undone.')) {
+                const textarea = document.getElementById('draft-area');
+                if (textarea) {
+                    textarea.value = '';
+                    updateWordCount();
+                    sessionStorage.removeItem('discussionDraft');
+                }
+            }
+        }
+
+        // Save progress to session storage
+        function saveProgress() {
+            const checkboxes = document.querySelectorAll('.checklist-checkbox');
+            const progress = {};
+            checkboxes.forEach((checkbox, index) => {
+                progress[`item-${index}`] = checkbox.checked;
+            });
+            sessionStorage.setItem('discussionProgress', JSON.stringify(progress));
+        }
+
+        // Load progress from session storage
+        function loadProgress() {
+            const savedProgress = sessionStorage.getItem('discussionProgress');
+            if (savedProgress) {
+                const progress = JSON.parse(savedProgress);
+                const checkboxes = document.querySelectorAll('.checklist-checkbox');
+                checkboxes.forEach((checkbox, index) => {
+                    if (progress[`item-${index}`]) {
+                        checkbox.checked = true;
+                    }
+                });
+            }
+            
+            // Load draft
+            const savedDraft = sessionStorage.getItem('discussionDraft');
+            const textarea = document.getElementById('draft-area');
+            if (savedDraft && textarea) {
+                textarea.value = savedDraft;
+                updateWordCount();
+            }
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.target.classList.contains('accordion-header')) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    toggleAccordion(e.target);
+                }
+            }
+        });
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTab = sessionStorage.getItem('activeTab');
+            if (savedTab) {
+                showSection(savedTab);
+            }
+            loadProgress();
+        });
+    </script>
+</body>
+</html>
