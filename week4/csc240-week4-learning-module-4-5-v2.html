@@ -1,0 +1,2762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="CSC 240 Module 4.5 - Nested Quantifiers and Negation Interactive Learning Module">
+    <title>Module 4.5: Nested Quantifiers and Negation | CSC 240</title>
+    <style>
+        /* CSS Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-blue: #003366;
+            --secondary-blue: #0066cc;
+            --accent-gold: #FFB81C;
+            --success-green: #28a745;
+            --warning-orange: #ff8c00;
+            --danger-red: #dc3545;
+            --light-bg: #f8f9fa;
+            --white: #ffffff;
+            --text-dark: #212529;
+            --text-muted: #6c757d;
+            --border-color: #dee2e6;
+            --shadow: 0 2px 8px rgba(0,0,0,0.1);
+            --shadow-hover: 0 4px 12px rgba(0,0,0,0.15);
+            --code-bg: #f5f5f5;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: var(--light-bg);
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Skip Link */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: var(--primary-blue);
+            color: var(--white);
+            padding: 8px;
+            text-decoration: none;
+            z-index: 100;
+        }
+
+        .skip-link:focus {
+            top: 0;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+            color: var(--white);
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .header-title h1 {
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+
+        .header-title p {
+            font-size: 1rem;
+            opacity: 0.95;
+        }
+
+        .module-badge {
+            background-color: var(--accent-gold);
+            color: var(--primary-blue);
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+        }
+
+        /* Navigation */
+        .nav-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+            background: var(--white);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+        }
+
+        .nav-tab {
+            flex: 1;
+            min-width: 120px;
+            padding: 12px 15px;
+            background: var(--light-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            color: var(--text-dark);
+            font-size: 0.9rem;
+        }
+
+        .nav-tab:hover {
+            background: var(--secondary-blue);
+            color: var(--white);
+            border-color: var(--secondary-blue);
+            transform: translateY(-2px);
+        }
+
+        .nav-tab.active {
+            background: var(--primary-blue);
+            color: var(--white);
+            border-color: var(--primary-blue);
+        }
+
+        .nav-tab:focus {
+            outline: 3px solid var(--accent-gold);
+            outline-offset: 2px;
+        }
+
+        /* Content Sections */
+        .content-section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Cards */
+        .card {
+            background: var(--white);
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow);
+            border-left: 5px solid var(--secondary-blue);
+        }
+
+        .card h2 {
+            color: var(--primary-blue);
+            margin-bottom: 15px;
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card h3 {
+            color: var(--secondary-blue);
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+
+        .card h4 {
+            color: var(--text-dark);
+            margin-top: 15px;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+
+        .card-icon {
+            font-size: 1.8rem;
+        }
+
+        /* Info Boxes */
+        .info-box {
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 5px solid;
+        }
+
+        .info-box.blue {
+            background-color: #e7f3ff;
+            border-color: var(--secondary-blue);
+        }
+
+        .info-box.gold {
+            background-color: #fff8e1;
+            border-color: var(--accent-gold);
+        }
+
+        .info-box.green {
+            background-color: #e8f5e9;
+            border-color: var(--success-green);
+        }
+
+        .info-box.orange {
+            background-color: #fff3e0;
+            border-color: var(--warning-orange);
+        }
+
+        .info-box.purple {
+            background-color: #f3e5f5;
+            border-color: #9c27b0;
+        }
+
+        .info-box.red {
+            background-color: #ffebee;
+            border-color: var(--danger-red);
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: var(--white);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--primary-blue);
+            color: var(--white);
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background-color: var(--light-bg);
+        }
+
+        /* Lists */
+        ul, ol {
+            margin-left: 25px;
+            margin-top: 10px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        /* Expression Display */
+        .expression-display {
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            background: var(--code-bg);
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border: 1px solid var(--border-color);
+            white-space: pre-wrap;
+            overflow-x: auto;
+            line-height: 1.6;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            overflow-x: auto;
+            font-family: 'Courier New', Consolas, Monaco, monospace;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            white-space: pre;
+            border: 1px solid #1a1a1a;
+        }
+
+        .code-block-light {
+            font-family: 'Courier New', Consolas, Monaco, monospace;
+            font-size: 0.95rem;
+            background: #f5f5f5;
+            color: #333;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 15px 0;
+            border: 1px solid var(--border-color);
+            white-space: pre;
+            overflow-x: auto;
+            line-height: 1.5;
+        }
+
+        .code-comment {
+            color: #6a9955;
+        }
+
+        /* Step-by-step boxes */
+        .step-box {
+            background: var(--white);
+            border: 2px solid var(--secondary-blue);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .step-number {
+            display: inline-block;
+            background: var(--secondary-blue);
+            color: var(--white);
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 35px;
+            font-weight: bold;
+            margin-right: 10px;
+            font-size: 1.1rem;
+        }
+
+        /* Interactive Practice Area */
+        .practice-area {
+            background: var(--light-bg);
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 2px solid var(--border-color);
+        }
+
+        .practice-question {
+            background: var(--white);
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            border-left: 4px solid var(--secondary-blue);
+        }
+
+        .practice-question h4 {
+            color: var(--primary-blue);
+            margin-bottom: 10px;
+        }
+
+        .answer-input {
+            width: 100%;
+            padding: 12px;
+            font-size: 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .answer-input:focus {
+            outline: none;
+            border-color: var(--secondary-blue);
+        }
+
+        textarea.answer-input {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+            margin: 5px;
+            font-size: 1rem;
+        }
+
+        .btn:focus {
+            outline: 3px solid var(--accent-gold);
+            outline-offset: 2px;
+        }
+
+        .btn-primary {
+            background: var(--primary-blue);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: var(--secondary-blue);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .btn-success {
+            background: var(--success-green);
+            color: var(--white);
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-secondary {
+            background: var(--light-bg);
+            color: var(--primary-blue);
+            border: 2px solid var(--primary-blue);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary-blue);
+            color: var(--white);
+        }
+
+        .feedback {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .feedback.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .feedback.correct {
+            background: #d4edda;
+            border: 2px solid var(--success-green);
+            color: #155724;
+        }
+
+        .feedback.incorrect {
+            background: #f8d7da;
+            border: 2px solid var(--danger-red);
+            color: #721c24;
+        }
+
+        .feedback.hint {
+            background: #fff3cd;
+            border: 2px solid var(--warning-orange);
+            color: #856404;
+        }
+
+        /* Progress Tracker */
+        .progress-container {
+            background: var(--white);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 30px;
+            background: var(--light-bg);
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success-green), var(--secondary-blue));
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-weight: bold;
+        }
+
+        /* Accordion */
+        .accordion {
+            margin: 20px 0;
+        }
+
+        .accordion-item {
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+
+        .accordion-header {
+            padding: 15px 20px;
+            background: var(--light-bg);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+
+        .accordion-header:hover {
+            background: #e3f2fd;
+        }
+
+        .accordion-header:focus {
+            outline: 3px solid var(--accent-gold);
+            outline-offset: -3px;
+        }
+
+        .accordion-icon {
+            transition: transform 0.3s ease;
+            font-size: 1.2rem;
+            color: var(--secondary-blue);
+        }
+
+        .accordion-item.active .accordion-icon {
+            transform: rotate(180deg);
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            padding: 0 20px;
+        }
+
+        .accordion-item.active .accordion-content {
+            max-height: 4000px;
+            padding: 20px;
+        }
+
+        /* Comparison Grid */
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .comparison-box {
+            background: var(--white);
+            border: 2px solid var(--secondary-blue);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .comparison-box h4 {
+            color: var(--primary-blue);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        /* Visual Diagram */
+        .diagram-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--white);
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+            box-shadow: var(--shadow);
+        }
+
+        .diagram-box h4 {
+            color: var(--white);
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .diagram-content {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            line-height: 1.8;
+            overflow-x: auto;
+            font-size: 0.95rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Example Boxes */
+        .example-box {
+            background: #f0f8ff;
+            border: 2px solid var(--secondary-blue);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .example-box h4 {
+            color: var(--secondary-blue);
+            margin-bottom: 10px;
+        }
+
+        /* Negation Process Boxes */
+        .negation-process {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: var(--white);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .negation-process h4 {
+            color: var(--white);
+            margin-bottom: 15px;
+        }
+
+        .negation-step {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Quiz Styles */
+        .quiz-container {
+            background: var(--white);
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            margin: 20px 0;
+        }
+
+        .quiz-question {
+            margin: 20px 0;
+        }
+
+        .quiz-options {
+            list-style: none;
+            margin: 15px 0;
+        }
+
+        .quiz-option {
+            padding: 12px;
+            margin: 8px 0;
+            background: var(--light-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-option:hover {
+            background: #e3f2fd;
+            border-color: var(--secondary-blue);
+        }
+
+        .quiz-option.selected {
+            background: var(--secondary-blue);
+            color: var(--white);
+            border-color: var(--secondary-blue);
+        }
+
+        .quiz-option.correct {
+            background: var(--success-green);
+            color: var(--white);
+            border-color: var(--success-green);
+        }
+
+        .quiz-option.incorrect {
+            background: var(--danger-red);
+            color: var(--white);
+            border-color: var(--danger-red);
+        }
+
+        /* Interactive Negation Tool */
+        .negation-tool {
+            background: var(--white);
+            border: 2px solid var(--secondary-blue);
+            border-radius: 10px;
+            padding: 25px;
+            margin: 20px 0;
+            box-shadow: var(--shadow);
+        }
+
+        .tool-output {
+            background: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            min-height: 100px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .header-title h1 {
+                font-size: 1.5rem;
+            }
+
+            .nav-tabs {
+                flex-direction: column;
+            }
+
+            .nav-tab {
+                min-width: 100%;
+            }
+
+            .card {
+                padding: 15px;
+            }
+
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            .nav-tabs, .btn, .practice-area {
+                display: none;
+            }
+
+            .content-section {
+                display: block !important;
+            }
+        }
+
+        /* Accessibility */
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            margin: -1px;
+            padding: 0;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0;
+        }
+
+        *:focus-visible {
+            outline: 3px solid var(--accent-gold);
+            outline-offset: 2px;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Special styling for quantifier symbols */
+        .quantifier-symbol {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: var(--secondary-blue);
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <header role="banner">
+        <div class="header-content">
+            <div class="header-title">
+                <h1>Module 4.5: Nested Quantifiers and Negation</h1>
+                <p>CSC 240 - Discrete Structures | Week 4</p>
+            </div>
+            <div class="module-badge" role="status">Module 4.5</div>
+        </div>
+    </header>
+
+    <nav class="nav-tabs" role="navigation" aria-label="Module content navigation">
+        <button class="nav-tab active" onclick="showSection('overview')" role="tab" aria-selected="true" id="tab-overview">
+            📋 Overview
+        </button>
+        <button class="nav-tab" onclick="showSection('nested')" role="tab" aria-selected="false" id="tab-nested">
+            🔗 Nested Quantifiers
+        </button>
+        <button class="nav-tab" onclick="showSection('order')" role="tab" aria-selected="false" id="tab-order">
+            ⚡ Order Matters
+        </button>
+        <button class="nav-tab" onclick="showSection('negation')" role="tab" aria-selected="false" id="tab-negation">
+            🔄 Negation Rules
+        </button>
+        <button class="nav-tab" onclick="showSection('examples')" role="tab" aria-selected="false" id="tab-examples">
+            💡 Examples
+        </button>
+        <button class="nav-tab" onclick="showSection('practice')" role="tab" aria-selected="false" id="tab-practice">
+            ✏️ Practice
+        </button>
+        <button class="nav-tab" onclick="showSection('quiz')" role="tab" aria-selected="false" id="tab-quiz">
+            🎯 Quiz
+        </button>
+    </nav>
+
+    <main id="main-content" role="main">
+        <!-- OVERVIEW SECTION -->
+        <section id="overview-section" class="content-section active" role="tabpanel" aria-labelledby="tab-overview">
+            <div class="card">
+                <h2><span class="card-icon" aria-hidden="true">📖</span> Module Overview</h2>
+                <p><strong>Estimated Time:</strong> 2 hours</p>
+                
+                <div class="info-box blue">
+                    <h3>🎯 Learning Objectives</h3>
+                    <ul>
+                        <li>Work with nested quantifiers (multiple quantifiers in one statement)</li>
+                        <li>Understand why quantifier order matters</li>
+                        <li>Apply De Morgan's Laws to negate quantified statements</li>
+                        <li>Correctly negate complex predicate logic expressions</li>
+                        <li>Express database queries and algorithm properties using nested quantifiers</li>
+                        <li><strong>Maps to CSLO 1:</strong> Apply symbolic logic and proof methods to model and analyze program/algorithm correctness</li>
+                    </ul>
+                </div>
+
+                <h3>📚 What You'll Learn</h3>
+                <p>This module completes your study of predicate logic by tackling two advanced topics:</p>
+                <ol>
+                    <li><strong>Nested Quantifiers:</strong> Using multiple quantifiers (∀ and ∃) in the same statement to express complex relationships</li>
+                    <li><strong>Quantifier Negation:</strong> Correctly negating statements with quantifiers using De Morgan's Laws</li>
+                </ol>
+
+                <div class="info-box gold">
+                    <h3>🔗 Connection to Previous Modules</h3>
+                    <p><strong>Module 4.3:</strong> You learned about predicates and variables</p>
+                    <p><strong>Module 4.4:</strong> You learned about individual quantifiers (∀ and ∃)</p>
+                    <p><strong>Module 4.5 (now):</strong> You'll combine multiple quantifiers and learn to negate them correctly</p>
+                    <p><strong>Week 5 (next):</strong> These negation skills are essential for proof by contradiction!</p>
+                </div>
+
+                <h3>🎯 Why This Matters</h3>
+                <p><strong>Real-World Applications:</strong></p>
+                <ul>
+                    <li><strong>Database Queries:</strong> Complex SQL queries use nested quantifiers ("Find all students who have taken every required course")</li>
+                    <li><strong>Algorithm Verification:</strong> Correctness proofs often require nested quantifiers ("For all inputs, there exists a valid output")</li>
+                    <li><strong>Mathematical Proofs:</strong> Many theorems involve nested quantifiers</li>
+                    <li><strong>Negation:</strong> Essential for proof by contradiction and understanding logical opposites</li>
+                </ul>
+
+                <h3>📋 Topics Covered</h3>
+                <ol>
+                    <li>Reading nested quantifiers left to right</li>
+                    <li>Understanding quantifier scope and variable binding</li>
+                    <li>The critical importance of quantifier order</li>
+                    <li>Common nested quantifier patterns (∀∀, ∃∃, ∀∃, ∃∀)</li>
+                    <li>De Morgan's Laws for quantifiers</li>
+                    <li>Step-by-step negation process</li>
+                    <li>Negating nested quantifiers</li>
+                    <li>Negating statements with connectives</li>
+                </ol>
+
+                <div class="diagram-box">
+                    <h4>The Two Key Skills</h4>
+                    <div class="diagram-content">
+<strong>Skill 1: Nested Quantifiers</strong>
+∀x ∃y P(x, y)
+"For every x, there exists a y such that P(x,y)"
+
+<strong>Skill 2: Negation</strong>
+¬(∀x P(x)) ≡ ∃x ¬P(x)
+"Not all x satisfy P" = "Some x doesn't satisfy P"
+
+These skills are ESSENTIAL for proof writing in Week 5!
+                    </div>
+                </div>
+            </div>
+
+            <div class="progress-container">
+                <h2><span class="card-icon" aria-hidden="true">📊</span> Your Progress</h2>
+                <p>Track your completion of this module (saved for this session only):</p>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="module-progress" style="width: 0%;" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                        0%
+                    </div>
+                </div>
+                <p id="progress-text">Complete all sections to finish this module!</p>
+            </div>
+        </section>
+
+        <!-- NESTED QUANTIFIERS SECTION -->
+        <section id="nested-section" class="content-section" role="tabpanel" aria-labelledby="tab-nested">
+            <div class="card">
+                <h2><span class="card-icon" aria-hidden="true">🔗</span> Understanding Nested Quantifiers</h2>
+
+                <div class="info-box blue">
+                    <h3>📖 Definition</h3>
+                    <p><strong>Nested quantifiers</strong> occur when a statement contains two or more quantifiers, typically with different variables.</p>
+                    <p><strong>Example:</strong>  ∀ x   ∃ y   P(x, y) </p>
+                    <p><strong>Reading:</strong> "For all x, there exists a y such that P(x, y)"</p>
+                </div>
+
+                <h3>How to Read Nested Quantifiers</h3>
+                <p><strong>Golden Rule:</strong> Read quantifiers <strong>from left to right</strong>, outside to inside.</p>
+
+                <div class="diagram-box">
+                    <h4>Reading Process</h4>
+                    <div class="diagram-content">
+∀x ∃y P(x, y)
+│  │  └─ Predicate (the actual statement)
+│  └──── Second quantifier (inner scope)
+└─────── First quantifier (outer scope)
+
+Read as:
+1. "For all x..." (start with outer quantifier)
+2. "...there exists a y..." (move to inner quantifier)
+3. "...such that P(x, y)" (finally the predicate)
+
+Complete: "For all x, there exists a y such that P(x, y)"
+                    </div>
+                </div>
+
+                <h3>Common Nested Quantifier Patterns</h3>
+
+                <div class="accordion">
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Pattern 1:</strong> ∀∀ (Universal-Universal)</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <h4>Structure:  ∀ x   ∀ y   P(x, y) </h4>
+                            <p><strong>Reading:</strong> "For all x and for all y, P(x, y)"</p>
+                            <p><strong>Meaning:</strong> The predicate must hold for EVERY pair (x, y)</p>
+
+                            <h4>Example 1: Mathematics</h4>
+                            <div class="expression-display">
+∀x ∀y (x + y = y + x)
+
+Domain: ℝ (real numbers)
+Reading: "For all x and for all y, x + y equals y + x"
+Meaning: Addition is commutative for all real numbers
+Truth Value: TRUE
+                            </div>
+
+                            <h4>Example 2: Programming</h4>
+                            <div class="expression-display">
+∀i ∀j (0 ≤ i < j < n → arr[i] ≤ arr[j])
+
+Reading: "For all valid indices i and j where i < j, 
+         arr[i] is less than or equal to arr[j]"
+Meaning: The array is sorted in non-decreasing order
+                            </div>
+
+                            <div class="info-box green">
+                                <p><strong>Note:</strong> With ∀∀, the order usually doesn't matter:  ∀ x   ∀ y   P(x,y) ≡ ∀ y   ∀ x   P(x,y) </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Pattern 2:</strong> ∃∃ (Existential-Existential)</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <h4>Structure:  ∃ x   ∃ y   P(x, y) </h4>
+                            <p><strong>Reading:</strong> "There exists an x and there exists a y such that P(x, y)"</p>
+                            <p><strong>Meaning:</strong> At least one pair (x, y) satisfies the predicate</p>
+
+                            <h4>Example 1: Mathematics</h4>
+                            <div class="expression-display">
+∃x ∃y (x² + y² = 25)
+
+Domain: ℝ (real numbers)
+Reading: "There exist x and y such that x² + y² = 25"
+Meaning: The equation has at least one solution
+Truth Value: TRUE (many solutions: (3,4), (4,3), (5,0), etc.)
+                            </div>
+
+                            <h4>Example 2: Database</h4>
+                            <div class="expression-display">
+∃s ∃c (Student(s) ∧ Course(c) ∧ Enrolled(s, c) ∧ Grade(s, c) = 'A')
+
+Reading: "There exists a student s and a course c such that
+         s is enrolled in c and got an A"
+Meaning: At least one student got an A in some course
+                            </div>
+
+                            <div class="info-box green">
+                                <p><strong>Note:</strong> With ∃∃, the order usually doesn't matter:  ∃ x   ∃ y   P(x,y) ≡ ∃ y   ∃ x   P(x,y) </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Pattern 3:</strong> ∀∃ (Universal-Existential) ⚠️ ORDER MATTERS!</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <h4>Structure:  ∀ x   ∃ y   P(x, y) </h4>
+                            <p><strong>Reading:</strong> "For all x, there exists a y such that P(x, y)"</p>
+                            <p><strong>Meaning:</strong> For EACH x, we can find SOME y (y can be different for each x)</p>
+
+                            <h4>Example 1: Mathematics</h4>
+                            <div class="expression-display">
+∀x ∃y (x + y = 0)
+
+Domain: ℤ (integers)
+Reading: "For all x, there exists a y such that x + y = 0"
+Meaning: Every integer has an additive inverse
+Truth Value: TRUE (for any x, choose y = -x)
+
+Concrete examples:
+  x = 5: choose y = -5, then 5 + (-5) = 0 ✓
+  x = -3: choose y = 3, then -3 + 3 = 0 ✓
+  x = 0: choose y = 0, then 0 + 0 = 0 ✓
+                            </div>
+
+                            <h4>Example 2: Computer Science</h4>
+                            <div class="expression-display">
+∀s (Student(s) → ∃c Enrolled(s, c))
+
+Reading: "For all s, if s is a student, then there exists 
+         a course c such that s is enrolled in c"
+Meaning: Every student is enrolled in at least one course
+                            </div>
+
+                            <div class="code-block">
+<span class="code-comment">// In SQL</span>
+SELECT s.name
+FROM students s
+WHERE EXISTS (
+    SELECT 1 
+    FROM enrollments e 
+    WHERE e.student_id = s.id
+);
+
+<span class="code-comment">-- This finds all students with at least one enrollment</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Pattern 4:</strong> ∃∀ (Existential-Universal) ⚠️ ORDER MATTERS!</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <h4>Structure:  ∃ y   ∀ x   P(x, y) </h4>
+                            <p><strong>Reading:</strong> "There exists a y such that for all x, P(x, y)"</p>
+                            <p><strong>Meaning:</strong> There is ONE y that works for ALL x (same y for every x)</p>
+
+                            <h4>Example 1: Mathematics</h4>
+                            <div class="expression-display">
+∃y ∀x (x + y = 0)
+
+Domain: ℤ (integers)
+Reading: "There exists a y such that for all x, x + y = 0"
+Meaning: There's one number that when added to ANY number gives 0
+Truth Value: FALSE (no such y exists!)
+
+Why false:
+  If y = -5, then 5 + (-5) = 0 ✓ but 3 + (-5) = -2 ✗
+  If y = 0, then 0 + 0 = 0 ✓ but 5 + 0 = 5 ✗
+  No single y works for all x!
+                            </div>
+
+                            <h4>Example 2: Computer Science</h4>
+                            <div class="expression-display">
+∃c ∀s (Student(s) → Enrolled(s, c))
+
+Reading: "There exists a course c such that for all s,
+         if s is a student, then s is enrolled in c"
+Meaning: There's one course that EVERY student takes
+Truth Value: Depends on the university!
+  (TRUE if there's a required course for all students)
+                            </div>
+
+                            <div class="info-box orange">
+                                <p><strong>⚠️ Critical Difference:</strong></p>
+                                <ul>
+                                    <li><strong>∀x ∃y:</strong> y can be different for each x</li>
+                                    <li><strong>∃y ∀x:</strong> same y must work for all x</li>
+                                    <li>∃y ∀x is MUCH STRONGER (harder to satisfy)!</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ORDER MATTERS SECTION -->
+        <section id="order-section" class="content-section" role="tabpanel" aria-labelledby="tab-order">
+            <div class="card">
+                <h2><span class="card-icon" aria-hidden="true">⚡</span> Why Quantifier Order Matters</h2>
+
+                <div class="info-box red">
+                    <h3>🚨 CRITICAL CONCEPT</h3>
+                    <p>Changing the order of quantifiers can <strong>completely change the meaning</strong> of a statement!</p>
+                    <p>This is one of the most important concepts in predicate logic.</p>
+                </div>
+
+                <h3>The Fundamental Difference</h3>
+
+                <div class="comparison-grid">
+                    <div class="comparison-box">
+                        <h4>∀x ∃y P(x, y)</h4>
+                        <div class="expression-display">
+"For every x,
+ there exists a y
+ such that P(x, y)"
+                        </div>
+                        <p><strong>Key point:</strong> y can be <strong>different</strong> for each x</p>
+                        <p><strong>Think:</strong> "Each person has a mother" (different mother for each person)</p>
+                    </div>
+
+                    <div class="comparison-box">
+                        <h4>∃y ∀x P(x, y)</h4>
+                        <div class="expression-display">
+"There exists a y
+ such that for all x,
+ P(x, y)"
+                        </div>
+                        <p><strong>Key point:</strong> <strong>Same</strong> y works for all x</p>
+                        <p><strong>Think:</strong> "There's one person who is everyone's mother" (impossible!)</p>
+                    </div>
+                </div>
+
+                <h3>Detailed Examples: Order Matters</h3>
+
+                <div class="accordion">
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Example 1:</strong> Additive Inverses</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <h4>Domain: ℤ (integers)</h4>
+
+                            <div class="comparison-grid">
+                                <div class="comparison-box">
+                                    <h4>Version A: ∀x ∃y (x + y = 0)</h4>
+                                    <p><strong>Reading:</strong> "For every x, there exists a y such that x + y = 0"</p>
+                                    <p><strong>Meaning:</strong> Every number has an additive inverse</p>
+                                    <p><strong>Truth Value:</strong> TRUE</p>
+                                    <p><strong>Why:</strong></p>
+                                    <ul>
+                                        <li>For x = 5, choose y = -5</li>
+                                        <li>For x = -3, choose y = 3</li>
+                                        <li>For x = 0, choose y = 0</li>
+                                        <li>Different y for each x ✓</li>
+                                    </ul>
+                                </div>
+
+                                <div class="comparison-box">
+                                    <h4>Version B: ∃y ∀x (x + y = 0)</h4>
+                                    <p><strong>Reading:</strong> "There exists a y such that for all x, x + y = 0"</p>
+                                    <p><strong>Meaning:</strong> There's one number that when added to ANY number gives 0</p>
+                                    <p><strong>Truth Value:</strong> FALSE</p>
+                                    <p><strong>Why:</strong></p>
+                                    <ul>
+                                        <li>If y = 0: then 5 + 0 = 5 ≠ 0 ✗</li>
+                                        <li>If y = -5: then 5 + (-5) = 0 ✓ but 3 + (-5) = -2 ✗</li>
+                                        <li>No single y works for all x ✗</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="info-box gold">
+                                <p><strong>Key Insight:</strong> Same predicate P(x,y), same domain, but DIFFERENT truth values just by swapping quantifier order!</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Example 2:</strong> Greater Than Relationship</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <h4>Domain: ℝ (real numbers)</h4>
+
+                            <div class="comparison-grid">
+                                <div class="comparison-box">
+                                    <h4>Version A: ∀x ∃y (x < y)</h4>
+                                    <p><strong>Reading:</strong> "For every x, there exists a y such that x < y"</p>
+                                    <p><strong>Meaning:</strong> Every number has a larger number</p>
+                                    <p><strong>Truth Value:</strong> TRUE</p>
+                                    <p><strong>Why:</strong></p>
+                                    <ul>
+                                        <li>For any x, choose y = x + 1</li>
+                                        <li>Then x < x + 1 ✓</li>
+                                        <li>Works for every x!</li>
+                                    </ul>
+                                </div>
+
+                                <div class="comparison-box">
+                                    <h4>Version B: ∃y ∀x (x < y)</h4>
+                                    <p><strong>Reading:</strong> "There exists a y such that for all x, x < y"</p>
+                                    <p><strong>Meaning:</strong> There's a number larger than ALL numbers</p>
+                                    <p><strong>Truth Value:</strong> FALSE</p>
+                                    <p><strong>Why:</strong></p>
+                                    <ul>
+                                        <li>No matter what y we choose...</li>
+                                        <li>We can find x = y + 1</li>
+                                        <li>Then x ≮ y (since y + 1 > y) ✗</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Example 3:</strong> Student-Course Relationship</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <h4>Domain: Students and Courses</h4>
+
+                            <div class="comparison-grid">
+                                <div class="comparison-box">
+                                    <h4>Version A: ∀s ∃c Enrolled(s, c)</h4>
+                                    <p><strong>Reading:</strong> "For every student s, there exists a course c such that s is enrolled in c"</p>
+                                    <p><strong>Meaning:</strong> Every student is enrolled in at least one course</p>
+                                    <p><strong>English:</strong> "Every student has a course"</p>
+                                    <p><strong>Note:</strong> Different students can be in different courses</p>
+                                </div>
+
+                                <div class="comparison-box">
+                                    <h4>Version B: ∃c ∀s Enrolled(s, c)</h4>
+                                    <p><strong>Reading:</strong> "There exists a course c such that for every student s, s is enrolled in c"</p>
+                                    <p><strong>Meaning:</strong> There's one course that EVERY student takes</p>
+                                    <p><strong>English:</strong> "There's a course that everyone takes"</p>
+                                    <p><strong>Note:</strong> All students must be in the SAME course</p>
+                                </div>
+                            </div>
+
+                            <div class="code-block">
+<span class="code-comment">-- Version A: Every student has at least one course</span>
+SELECT s.name
+FROM students s
+WHERE EXISTS (
+    SELECT 1 FROM enrollments e WHERE e.student_id = s.id
+);
+
+<span class="code-comment">-- Version B: Find courses where ALL students are enrolled</span>
+SELECT c.course_id
+FROM courses c
+WHERE NOT EXISTS (
+    SELECT 1 FROM students s 
+    WHERE NOT EXISTS (
+        SELECT 1 FROM enrollments e 
+        WHERE e.student_id = s.id AND e.course_id = c.course_id
+    )
+);
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Example 4:</strong> The "Favorite Course" Example</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <h4>Two Very Different Statements</h4>
+
+                            <div class="comparison-grid">
+                                <div class="comparison-box">
+                                    <h4>∀s ∃c Favorite(s, c)</h4>
+                                    <p><strong>English:</strong> "Every student has a favorite course"</p>
+                                    <p><strong>Meaning:</strong> Each student has their own favorite (can be different)</p>
+                                    <p><strong>Example:</strong></p>
+                                    <ul>
+                                        <li>Alice's favorite: CSC240</li>
+                                        <li>Bob's favorite: MTH80</li>
+                                        <li>Carol's favorite: ENG101</li>
+                                    </ul>
+                                    <p>Statement is TRUE ✓</p>
+                                </div>
+
+                                <div class="comparison-box">
+                                    <h4>∃c ∀s Favorite(s, c)</h4>
+                                    <p><strong>English:</strong> "There's a course that every student likes best"</p>
+                                    <p><strong>Meaning:</strong> One course is everyone's favorite (same course for all)</p>
+                                    <p><strong>Example:</strong></p>
+                                    <ul>
+                                        <li>Would require ALL students to have the same favorite</li>
+                                        <li>Very unlikely!</li>
+                                    </ul>
+                                    <p>Statement is probably FALSE ✗</p>
+                                </div>
+                            </div>
+
+                            <div class="info-box red">
+                                <h4>⚠️ Common Mistake in Translation</h4>
+                                <p>Students often confuse these when translating from English!</p>
+                                <p><strong>"Every student has a favorite course"</strong> means each student has <em>their own</em> favorite → ∀s ∃c</p>
+                                <p><strong>"There's a course that every student likes"</strong> means <em>one</em> course loved by all → ∃c ∀s</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Quick Reference: Quantifier Order</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Pattern</th>
+                            <th>Reading</th>
+                            <th>Key Characteristic</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>∀x ∀y</td>
+                            <td>For all x and all y</td>
+                            <td>Must hold for every pair</td>
+                            <td>Commutativity: ∀x ∀y (x+y = y+x)</td>
+                        </tr>
+                        <tr>
+                            <td>∃x ∃y</td>
+                            <td>There exist x and y</td>
+                            <td>At least one pair works</td>
+                            <td>Solution exists: ∃x ∃y (x²+y² = 25)</td>
+                        </tr>
+                        <tr>
+                            <td>∀x ∃y</td>
+                            <td>For each x, some y</td>
+                            <td>y can vary with x</td>
+                            <td>Every number has inverse: ∀x ∃y (x+y=0)</td>
+                        </tr>
+                        <tr>
+                            <td>∃y ∀x</td>
+                            <td>Some y for all x</td>
+                            <td>Same y for every x</td>
+                            <td>Universal constant: ∃y ∀x (x·y=x) [y=1]</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- NEGATION SECTION -->
+        <section id="negation-section" class="content-section" role="tabpanel" aria-labelledby="tab-negation">
+            <div class="card">
+                <h2><span class="card-icon" aria-hidden="true">🔄</span> Negating Quantified Statements</h2>
+
+                <h3>De Morgan's Laws for Quantifiers</h3>
+                <div class="negation-process">
+                    <h4>The Two Fundamental Rules</h4>
+                    <div class="negation-step">
+Rule 1: ¬(∀x P(x)) ≡ ∃x ¬P(x)
+
+"Not all x satisfy P" = "Some x doesn't satisfy P"
+                    </div>
+                    <div class="negation-step">
+Rule 2: ¬(∃x P(x)) ≡ ∀x ¬P(x)
+
+"No x satisfies P" = "All x don't satisfy P"
+                    </div>
+                </div>
+
+                <div class="info-box blue">
+                    <h3>🔑 The Pattern</h3>
+                    <p>When negating a quantified statement:</p>
+                    <ol>
+                        <li><strong>Swap the quantifier:</strong> ∀ ↔ ∃</li>
+                        <li><strong>Negate the predicate:</strong> P(x) → ¬P(x)</li>
+                        <li><strong>Keep the variable:</strong> x stays x</li>
+                    </ol>
+                </div>
+
+                <h3>Simple Negation Examples</h3>
+
+                <div class="accordion">
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Example 1:</strong> Negate "All birds can fly"</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <h4>Original Statement:</h4>
+                            <div class="expression-display">
+∀x (Bird(x) → CanFly(x))
+"For all x, if x is a bird, then x can fly"
+                            </div>
+
+                            <h4>Step-by-Step Negation:</h4>
+                            <div class="step-box">
+                                <p><span class="step-number">1</span><strong>Add negation to the outside:</strong></p>
+                                <div class="expression-display">
+¬(∀x (Bird(x) → CanFly(x)))
+                                </div>
+                            </div>
+
+                            <div class="step-box">
+                                <p><span class="step-number">2</span><strong>Apply De Morgan's for quantifiers (∀ becomes ∃):</strong></p>
+                                <div class="expression-display">
+∃x ¬(Bird(x) → CanFly(x))
+                                </div>
+                            </div>
+
+                            <div class="step-box">
+                                <p><span class="step-number">3</span><strong>Negate the implication (recall: ¬(P → Q) ≡ P ∧ ¬Q):</strong></p>
+                                <div class="expression-display">
+∃x (Bird(x) ∧ ¬CanFly(x))
+                                </div>
+                            </div>
+
+                            <div class="info-box green">
+                                <p><strong>Final Result:</strong>  ∃ x   (Bird(x) ∧ ¬ CanFly(x)) </p>
+                                <p><strong>English:</strong> "There exists a bird that cannot fly"</p>
+                                <p><strong>Example:</strong> Penguins! This negation is actually TRUE.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Example 2:</strong> Negate "Some students are programmers"</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <h4>Original Statement:</h4>
+                            <div class="expression-display">
+∃x (Student(x) ∧ Programmer(x))
+"There exists an x such that x is a student and x is a programmer"
+                            </div>
+
+                            <h4>Step-by-Step Negation:</h4>
+                            <div class="step-box">
+                                <p><span class="step-number">1</span><strong>Add negation:</strong></p>
+                                <div class="expression-display">
+¬(∃x (Student(x) ∧ Programmer(x)))
+                                </div>
+                            </div>
+
+                            <div class="step-box">
+                                <p><span class="step-number">2</span><strong>Apply De Morgan's for quantifiers (∃ becomes ∀):</strong></p>
+                                <div class="expression-display">
+∀x ¬(Student(x) ∧ Programmer(x))
+                                </div>
+                            </div>
+
+                            <div class="step-box">
+                                <p><span class="step-number">3</span><strong>Apply De Morgan's for conjunction:</strong></p>
+                                <div class="expression-display">
+∀x (¬Student(x) ∨ ¬Programmer(x))
+                                </div>
+                            </div>
+
+                            <div class="step-box">
+                                <p><span class="step-number">4</span><strong>Rewrite using implication (optional but clearer):</strong></p>
+                                <div class="expression-display">
+∀x (Student(x) → ¬Programmer(x))
+                                </div>
+                            </div>
+
+                            <div class="info-box green">
+                                <p><strong>Final Result:</strong>  ∀ x   (Student(x) → ¬ Programmer(x)) </p>
+                                <p><strong>English:</strong> "No students are programmers" or "All students are not programmers"</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Example 3:</strong> Negate "No students failed"</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <h4>Original Statement (Method 1):</h4>
+                            <div class="expression-display">
+∀x (Student(x) → ¬Failed(x))
+"For all x, if x is a student, then x did not fail"
+                            </div>
+
+                            <h4>Negation:</h4>
+                            <div class="step-box">
+                                <p><span class="step-number">1</span><strong>Add negation:</strong></p>
+                                <div class="expression-display">
+¬(∀x (Student(x) → ¬Failed(x)))
+                                </div>
+                            </div>
+
+                            <div class="step-box">
+                                <p><span class="step-number">2</span><strong>Swap quantifier:</strong></p>
+                                <div class="expression-display">
+∃x ¬(Student(x) → ¬Failed(x))
+                                </div>
+                            </div>
+
+                            <div class="step-box">
+                                <p><span class="step-number">3</span><strong>Negate implication:</strong></p>
+                                <div class="expression-display">
+∃x (Student(x) ∧ ¬¬Failed(x))
+                                </div>
+                            </div>
+
+                            <div class="step-box">
+                                <p><span class="step-number">4</span><strong>Double negation:</strong></p>
+                                <div class="expression-display">
+∃x (Student(x) ∧ Failed(x))
+                                </div>
+                            </div>
+
+                            <div class="info-box green">
+                                <p><strong>Final Result:</strong>  ∃ x   (Student(x) ∧ Failed(x)) </p>
+                                <p><strong>English:</strong> "At least one student failed"</p>
+                                <p><strong>Makes sense!</strong> The opposite of "no students failed" is "some student failed"</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Negating Nested Quantifiers</h3>
+                <p>With nested quantifiers, apply negation rules <strong>one quantifier at a time</strong>, working from outside to inside:</p>
+
+                <div class="accordion">
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Nested Example 1:</strong> Negate ∀x ∃y P(x, y)</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <h4>Original:</h4>
+                            <div class="expression-display">
+∀x ∃y P(x, y)
+"For all x, there exists a y such that P(x, y)"
+                            </div>
+
+                            <h4>Negation Process:</h4>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Step</th>
+                                        <th>Expression</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>0</td>
+                                        <td> ∀ x   ∃ y   P(x, y) </td>
+                                        <td>Original</td>
+                                    </tr>
+                                    <tr>
+                                        <td>1</td>
+                                        <td> ¬(∀ x   ∃ y   P(x, y)) </td>
+                                        <td>Add negation</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td> ∃ x   ¬(∃ y   P(x, y)) </td>
+                                        <td>Negate outer ∀ → ∃</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td> ∃ x   ∀ y   ¬ P(x, y) </td>
+                                        <td>Negate inner ∃ → ∀</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="info-box green">
+                                <p><strong>Final Result:</strong>  ∃ x   ∀ y   ¬ P(x, y) </p>
+                                <p><strong>English:</strong> "There exists an x such that for all y, P(x, y) is false"</p>
+                                <p><strong>Or:</strong> "There's some x for which no y satisfies P(x, y)"</p>
+                            </div>
+
+                            <h4>Concrete Example:</h4>
+                            <div class="expression-display">
+Original: ∀x ∃y (x + y = 0)
+"Every number has an additive inverse"
+
+Negation: ∃x ∀y (x + y ≠ 0)
+"There exists a number that has no additive inverse"
+"Some number, when added to ANY other number, never gives 0"
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Nested Example 2:</strong> Negate ∃x ∀y (x < y)</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <h4>Original:</h4>
+                            <div class="expression-display">
+∃x ∀y (x < y)
+"There exists an x such that for all y, x < y"
+"There's a number smaller than all numbers"
+                            </div>
+
+                            <h4>Negation Process:</h4>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Step</th>
+                                        <th>Expression</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>0</td>
+                                        <td> ∃ x   ∀ y   (x < y) </td>
+                                        <td>Original</td>
+                                    </tr>
+                                    <tr>
+                                        <td>1</td>
+                                        <td> ¬(∃ x   ∀ y   (x < y)) </td>
+                                        <td>Add negation</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td> ∀ x   ¬(∀ y   (x < y)) </td>
+                                        <td>Negate outer ∃ → ∀</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td> ∀ x   ∃ y   ¬(x < y) </td>
+                                        <td>Negate inner ∀ → ∃</td>
+                                    </tr>
+                                    <tr>
+                                        <td>4</td>
+                                        <td> ∀ x   ∃ y   (x ≥ y) </td>
+                                        <td>Simplify ¬(x < y)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="info-box green">
+                                <p><strong>Final Result:</strong>  ∀ x   ∃ y   (x ≥ y) </p>
+                                <p><strong>English:</strong> "For every x, there exists a y such that x ≥ y"</p>
+                                <p><strong>Or:</strong> "Every number has a number less than or equal to it"</p>
+                                <p><strong>Truth Value:</strong> TRUE (for any x, choose y = x or y = x - 1)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Nested Example 3:</strong> Triple Nested Quantifier</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <h4>Original:</h4>
+                            <div class="expression-display">
+∀x ∃y ∀z P(x, y, z)
+"For all x, there exists a y such that for all z, P(x,y,z)"
+                            </div>
+
+                            <h4>Negation Process:</h4>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Step</th>
+                                        <th>Expression</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>0</td>
+                                        <td> ∀ x   ∃ y   ∀ z   P(x, y, z) </td>
+                                        <td>Original</td>
+                                    </tr>
+                                    <tr>
+                                        <td>1</td>
+                                        <td> ¬(∀ x   ∃ y   ∀ z   P(x, y, z)) </td>
+                                        <td>Add negation</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td> ∃ x   ¬(∃ y   ∀ z   P(x, y, z)) </td>
+                                        <td>Negate first ∀ → ∃</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td> ∃ x   ∀ y   ¬(∀ z   P(x, y, z)) </td>
+                                        <td>Negate second ∃ → ∀</td>
+                                    </tr>
+                                    <tr>
+                                        <td>4</td>
+                                        <td> ∃ x   ∀ y   ∃ z   ¬ P(x, y, z) </td>
+                                        <td>Negate third ∀ → ∃</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="info-box green">
+                                <p><strong>Final Result:</strong>  ∃ x   ∀ y   ∃ z   ¬ P(x, y, z) </p>
+                                <p><strong>Pattern:</strong> Each quantifier flips: ∀→∃, ∃→∀, ∀→∃</p>
+                                <p><strong>English:</strong> "There exists an x such that for all y, there exists a z such that P(x,y,z) is false"</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Negation with Connectives</h3>
+                <p>When the predicate contains logical connectives, you must negate those too:</p>
+
+                <div class="accordion">
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Complex Example 1:</strong> Negate ∀x (P(x) → Q(x))</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <h4>Step-by-Step:</h4>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Step</th>
+                                        <th>Expression</th>
+                                        <th>Rule Applied</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>0</td>
+                                        <td> ∀ x   (P(x) → Q(x)) </td>
+                                        <td>Original</td>
+                                    </tr>
+                                    <tr>
+                                        <td>1</td>
+                                        <td> ¬(∀ x   (P(x) → Q(x))) </td>
+                                        <td>Add negation</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td> ∃ x   ¬(P(x) → Q(x)) </td>
+                                        <td>De Morgan's for quantifiers</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td> ∃ x   (P(x) ∧ ¬ Q(x)) </td>
+                                        <td>Negate implication: ¬(P→Q) ≡ P∧¬Q</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="info-box green">
+                                <p><strong>Result:</strong>  ∃ x   (P(x) ∧ ¬ Q(x)) </p>
+                                <p><strong>English:</strong> "There exists an x such that P(x) is true but Q(x) is false"</p>
+                                <p><strong>Interpretation:</strong> The negation of "All P's are Q's" is "Some P is not Q"</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Complex Example 2:</strong> Negate ∃x (P(x) ∧ Q(x))</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <h4>Step-by-Step:</h4>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Step</th>
+                                        <th>Expression</th>
+                                        <th>Rule Applied</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>0</td>
+                                        <td> ∃ x   (P(x) ∧ Q(x)) </td>
+                                        <td>Original</td>
+                                    </tr>
+                                    <tr>
+                                        <td>1</td>
+                                        <td> ¬(∃ x   (P(x) ∧ Q(x))) </td>
+                                        <td>Add negation</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td> ∀ x   ¬(P(x) ∧ Q(x)) </td>
+                                        <td>De Morgan's for quantifiers</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td> ∀ x   (¬ P(x) ∨ ¬ Q(x)) </td>
+                                        <td>De Morgan's for conjunction</td>
+                                    </tr>
+                                    <tr>
+                                        <td>4</td>
+                                        <td> ∀ x   (P(x) → ¬ Q(x)) </td>
+                                        <td>Optional: rewrite as implication</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="info-box green">
+                                <p><strong>Result:</strong>  ∀ x   (¬ P(x) ∨ ¬ Q(x)) </p>
+                                <p><strong>English:</strong> "For all x, either P(x) is false or Q(x) is false (or both)"</p>
+                                <p><strong>Or:</strong> "Nothing is both P and Q"</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Complex Example 3:</strong> Negate ∀x ∃y (P(x) → Q(x, y))</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <h4>Step-by-Step:</h4>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Step</th>
+                                        <th>Expression</th>
+                                        <th>Rule Applied</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>0</td>
+                                        <td> ∀ x   ∃ y   (P(x) → Q(x, y)) </td>
+                                        <td>Original</td>
+                                    </tr>
+                                    <tr>
+                                        <td>1</td>
+                                        <td> ¬(∀ x   ∃ y   (P(x) → Q(x, y))) </td>
+                                        <td>Add negation</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td> ∃ x   ¬(∃ y   (P(x) → Q(x, y))) </td>
+                                        <td>Negate ∀ → ∃</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td> ∃ x   ∀ y   ¬(P(x) → Q(x, y)) </td>
+                                        <td>Negate ∃ → ∀</td>
+                                    </tr>
+                                    <tr>
+                                        <td>4</td>
+                                        <td> ∃ x   ∀ y   (P(x) ∧ ¬ Q(x, y)) </td>
+                                        <td>Negate implication</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="info-box green">
+                                <p><strong>Final Result:</strong>  ∃ x   ∀ y   (P(x) ∧ ¬ Q(x, y)) </p>
+                                <p><strong>English:</strong> "There exists an x such that P(x) is true, and for all y, Q(x,y) is false"</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Negation Algorithm</h3>
+                <div class="info-box purple">
+                    <h4>📋 Step-by-Step Negation Process</h4>
+                    <ol>
+                        <li><strong>Write the negation symbol</strong> in front of the entire statement</li>
+                        <li><strong>Work from left to right</strong> (outside to inside)</li>
+                        <li><strong>For each quantifier:</strong>
+                            <ul>
+                                <li>Swap ∀ ↔ ∃</li>
+                                <li>Move the negation past the quantifier</li>
+                            </ul>
+                        </li>
+                        <li><strong>When you reach the predicate:</strong>
+                            <ul>
+                                <li>Apply De Morgan's Laws to connectives</li>
+                                <li>Negate implications: ¬(P → Q) ≡ P ∧ ¬Q</li>
+                                <li>Apply double negation: ¬¬P ≡ P</li>
+                            </ul>
+                        </li>
+                        <li><strong>Simplify the result</strong></li>
+                    </ol>
+                </div>
+
+                <h3>Quick Reference: Negation Rules</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Original</th>
+                            <th>Negation</th>
+                            <th>English</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>∀x P(x)</td>
+                            <td>∃x ¬P(x)</td>
+                            <td>"Not all" → "Some not"</td>
+                        </tr>
+                        <tr>
+                            <td>∃x P(x)</td>
+                            <td>∀x ¬P(x)</td>
+                            <td>"Not some" → "All not" (i.e., "None")</td>
+                        </tr>
+                        <tr>
+                            <td>∀x ∃y P(x,y)</td>
+                            <td>∃x ∀y ¬P(x,y)</td>
+                            <td>Flip both quantifiers, negate predicate</td>
+                        </tr>
+                        <tr>
+                            <td>∃x ∀y P(x,y)</td>
+                            <td>∀x ∃y ¬P(x,y)</td>
+                            <td>Flip both quantifiers, negate predicate</td>
+                        </tr>
+                        <tr>
+                            <td>∀x (P(x) → Q(x))</td>
+                            <td>∃x (P(x) ∧ ¬Q(x))</td>
+                            <td>"Not all P's are Q's" → "Some P is not Q"</td>
+                        </tr>
+                        <tr>
+                            <td>∃x (P(x) ∧ Q(x))</td>
+                            <td>∀x (¬P(x) ∨ ¬Q(x))</td>
+                            <td>"Not some P and Q" → "All are not-P or not-Q"</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- EXAMPLES SECTION -->
+        <section id="examples-section" class="content-section" role="tabpanel" aria-labelledby="tab-examples">
+            <div class="card">
+                <h2><span class="card-icon" aria-hidden="true">💡</span> Real-World Examples</h2>
+
+                <h3>Example 1: Database Queries</h3>
+                <div class="example-box">
+                    <h4>Scenario: Student Enrollment System</h4>
+                    
+                    <p><strong>Statement 1:</strong> "All students are enrolled in at least one course"</p>
+                    <div class="expression-display">
+∀s (Student(s) → ∃c Enrolled(s, c))
+
+Reading: "For all s, if s is a student, then there exists 
+         a course c such that s is enrolled in c"
+                    </div>
+
+                    <div class="code-block">
+<span class="code-comment">-- SQL Implementation</span>
+SELECT COUNT(*) = 0 AS all_enrolled
+FROM students s
+WHERE NOT EXISTS (
+    SELECT 1 FROM enrollments e WHERE e.student_id = s.id
+);
+
+<span class="code-comment">-- Returns TRUE if no students have zero enrollments</span>
+                    </div>
+
+                    <p><strong>Negation:</strong> "Not all students are enrolled in at least one course"</p>
+                    <div class="expression-display">
+∃s (Student(s) ∧ ∀c ¬Enrolled(s, c))
+
+Or equivalently:
+∃s (Student(s) ∧ ¬∃c Enrolled(s, c))
+
+English: "There exists a student who is not enrolled in any course"
+                    </div>
+
+                    <div class="code-block">
+<span class="code-comment">-- SQL for negation: Find students with NO enrollments</span>
+SELECT s.name
+FROM students s
+WHERE NOT EXISTS (
+    SELECT 1 FROM enrollments e WHERE e.student_id = s.id
+);
+                    </div>
+                </div>
+
+                <h3>Example 2: Algorithm Correctness</h3>
+                <div class="example-box">
+                    <h4>Scenario: Sorting Algorithm Specification</h4>
+                    
+                    <p><strong>Statement:</strong> "For all inputs, the algorithm produces a sorted output"</p>
+                    <div class="expression-display">
+∀arr ∃sorted (Algorithm(arr, sorted) ∧ 
+              ∀i (0 ≤ i < sorted.length-1 → sorted[i] ≤ sorted[i+1]))
+
+Reading: "For all input arrays arr, there exists an output sorted 
+         such that the algorithm produces sorted from arr, and
+         for all valid indices i, sorted[i] ≤ sorted[i+1]"
+                    </div>
+
+                    <p><strong>Negation:</strong> "There exists an input where the algorithm fails"</p>
+                    <div class="expression-display">
+∃arr ∀sorted (Algorithm(arr, sorted) → 
+              ∃i (0 ≤ i < sorted.length-1 ∧ sorted[i] > sorted[i+1]))
+
+English: "There exists an input array such that for any output 
+         the algorithm produces, there exists an index where 
+         elements are out of order"
+                    </div>
+
+                    <div class="info-box blue">
+                        <p><strong>Testing Connection:</strong> Finding a counterexample (the negation being true) means the algorithm is incorrect!</p>
+                    </div>
+                </div>
+
+                <h3>Example 3: Mathematical Statements</h3>
+                <div class="accordion">
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Statement:</strong> "Between any two distinct real numbers, there's another real number"</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <h4>Translation:</h4>
+                            <div class="expression-display">
+∀x ∀y (x < y → ∃z (x < z ∧ z < y))
+
+Reading: "For all x and y, if x < y, then there exists a z 
+         such that x < z and z < y"
+
+Domain: ℝ (real numbers)
+Truth Value: TRUE (density of real numbers)
+Witness: z = (x + y)/2 (midpoint always works)
+                            </div>
+
+                            <h4>Negation:</h4>
+                            <div class="step-box">
+                                <p><span class="step-number">1</span> ¬(∀ x   ∀ y   (x < y → ∃ z   (x < z ∧ z < y))) </p>
+                            </div>
+                            <div class="step-box">
+                                <p><span class="step-number">2</span> ∃ x   ¬(∀ y   (x < y → ∃ z   (x < z ∧ z < y))) </p>
+                            </div>
+                            <div class="step-box">
+                                <p><span class="step-number">3</span> ∃ x   ∃ y   ¬(x < y → ∃ z   (x < z ∧ z < y)) </p>
+                            </div>
+                            <div class="step-box">
+                                <p><span class="step-number">4</span> ∃ x   ∃ y   (x < y ∧ ¬ ∃ z   (x < z ∧ z < y)) </p>
+                            </div>
+                            <div class="step-box">
+                                <p><span class="step-number">5</span> ∃ x   ∃ y   (x < y ∧ ∀ z   ¬(x < z ∧ z < y)) </p>
+                            </div>
+                            <div class="step-box">
+                                <p><span class="step-number">6</span> ∃ x   ∃ y   (x < y ∧ ∀ z   (z ≤ x ∨ z ≥ y)) </p>
+                            </div>
+
+                            <div class="info-box green">
+                                <p><strong>Final Negation:</strong> "There exist two numbers x < y such that no number lies strictly between them"</p>
+                                <p><strong>Truth Value:</strong> FALSE for real numbers (always can find a number between)</p>
+                                <p><strong>But TRUE for integers!</strong> (e.g., x=5, y=6, no integer between them)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PRACTICE SECTION -->
+        <section id="practice-section" class="content-section" role="tabpanel" aria-labelledby="tab-practice">
+            <div class="card">
+                <h2><span class="card-icon" aria-hidden="true">✏️</span> Interactive Practice</h2>
+                <p>Test your understanding with these practice problems!</p>
+            </div>
+
+            <div class="practice-area">
+                <h3>Practice Problem 1: Interpret Nested Quantifiers</h3>
+                <div class="practice-question">
+                    <h4>Problem:</h4>
+                    <p>Translate to English: ∀x ∃y (x < y)</p>
+                    <p><strong>Domain:</strong> ℝ (real numbers)</p>
+                    <label for="practice1-answer"><strong>Your answer:</strong></label>
+                    <textarea id="practice1-answer" class="answer-input" placeholder="Write in plain English..."></textarea>
+                    <button class="btn btn-primary" onclick="checkAnswer(1, 'every')">Check Answer</button>
+                    <button class="btn btn-secondary" onclick="showHint(1)">Show Hint</button>
+                    <div id="practice1-feedback" class="feedback"></div>
+                    <div id="practice1-hint" class="feedback hint" style="display: none;">
+                        <strong>Hint:</strong> Start with "For all x..." then continue with "there exists a y..." What does x < y mean?
+                    </div>
+                </div>
+
+                <div class="practice-question">
+                    <h4>Problem 2:</h4>
+                    <p>Negate: ∀x P(x)</p>
+                    <label for="practice2-answer"><strong>Your answer (symbolic form):</strong></label>
+                    <input type="text" id="practice2-answer" class="answer-input" placeholder="Use ∃, ∀, ¬, etc.">
+                    <button class="btn btn-primary" onclick="checkAnswer(2, '∃x ¬P(x)')">Check Answer</button>
+                    <button class="btn btn-secondary" onclick="showHint(2)">Show Hint</button>
+                    <div id="practice2-feedback" class="feedback"></div>
+                    <div id="practice2-hint" class="feedback hint" style="display: none;">
+                        <strong>Hint:</strong> Use De Morgan's Law: ¬(∀x P(x)) ≡ ∃x ¬P(x)
+                    </div>
+                </div>
+
+                <div class="practice-question">
+                    <h4>Problem 3:</h4>
+                    <p>Negate: ∃x (Student(x) ∧ Programmer(x))</p>
+                    <label for="practice3-answer"><strong>Your answer:</strong></label>
+                    <input type="text" id="practice3-answer" class="answer-input" placeholder="Enter negated form...">
+                    <button class="btn btn-primary" onclick="checkAnswer(3, '∀x')">Check Answer</button>
+                    <button class="btn btn-secondary" onclick="showHint(3)">Show Hint</button>
+                    <div id="practice3-feedback" class="feedback"></div>
+                    <div id="practice3-hint" class="feedback hint" style="display: none;">
+                        <strong>Hint:</strong> First swap ∃ → ∀, then negate the conjunction using De Morgan's Law
+                    </div>
+                </div>
+
+                <div class="practice-question">
+                    <h4>Problem 4:</h4>
+                    <p>Are these equivalent? ∀x ∃y P(x,y) and ∃y ∀x P(x,y)</p>
+                    <label for="practice4-answer"><strong>Your answer (Yes or No, with explanation):</strong></label>
+                    <textarea id="practice4-answer" class="answer-input" placeholder="Yes or No, and explain why..."></textarea>
+                    <button class="btn btn-primary" onclick="checkAnswer(4, 'no')">Check Answer</button>
+                    <button class="btn btn-secondary" onclick="showHint(4)">Show Hint</button>
+                    <div id="practice4-feedback" class="feedback"></div>
+                    <div id="practice4-hint" class="feedback hint" style="display: none;">
+                        <strong>Hint:</strong> Think about the additive inverse example. Can y be different for each x vs. same y for all x?
+                    </div>
+                </div>
+
+                <div class="practice-question">
+                    <h4>Problem 5:</h4>
+                    <p>Negate: ∀x ∃y (x + y = 0)</p>
+                    <label for="practice5-answer"><strong>Your answer:</strong></label>
+                    <input type="text" id="practice5-answer" class="answer-input" placeholder="Enter fully negated form...">
+                    <button class="btn btn-primary" onclick="checkAnswer(5, '∃x ∀y')">Check Answer</button>
+                    <button class="btn btn-secondary" onclick="showHint(5)">Show Hint</button>
+                    <div id="practice5-feedback" class="feedback"></div>
+                    <div id="practice5-hint" class="feedback hint" style="display: none;">
+                        <strong>Hint:</strong> Swap both quantifiers and negate the predicate: ∃x ∀y (x + y ≠ 0)
+                    </div>
+                </div>
+
+                <div class="practice-question">
+                    <h4>Problem 6:</h4>
+                    <p>Negate: ∀x (P(x) → Q(x))</p>
+                    <label for="practice6-answer"><strong>Your answer:</strong></label>
+                    <input type="text" id="practice6-answer" class="answer-input" placeholder="Enter negated form...">
+                    <button class="btn btn-primary" onclick="checkAnswer(6, '∃x (P(x) ∧ ¬Q(x))')">Check Answer</button>
+                    <button class="btn btn-secondary" onclick="showHint(6)">Show Hint</button>
+                    <div id="practice6-feedback" class="feedback"></div>
+                    <div id="practice6-hint" class="feedback hint" style="display: none;">
+                        <strong>Hint:</strong> First swap ∀ → ∃, then negate the implication: ¬(P→Q) ≡ P∧¬Q
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2><span class="card-icon" aria-hidden="true">🎓</span> Challenge Problems</h2>
+                
+                <div class="accordion">
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Challenge 1:</strong> Complex Nested Negation</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <h4>Problem:</h4>
+                            <p>Negate:  ∀ x   ∃ y   ∀ z   ((P(x) ∧ Q(y)) → R(z)) </p>
+
+                            <h4>Solution:</h4>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Step</th>
+                                        <th>Expression</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>0</td>
+                                        <td> ∀ x   ∃ y   ∀ z   ((P(x) ∧ Q(y)) → R(z)) </td>
+                                        <td>Original</td>
+                                    </tr>
+                                    <tr>
+                                        <td>1</td>
+                                        <td> ∃ x   ¬(∃ y   ∀ z   ((P(x) ∧ Q(y)) → R(z))) </td>
+                                        <td>Negate ∀ → ∃</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td> ∃ x   ∀ y   ¬(∀ z   ((P(x) ∧ Q(y)) → R(z))) </td>
+                                        <td>Negate ∃ → ∀</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td> ∃ x   ∀ y   ∃ z   ¬((P(x) ∧ Q(y)) → R(z)) </td>
+                                        <td>Negate ∀ → ∃</td>
+                                    </tr>
+                                    <tr>
+                                        <td>4</td>
+                                        <td> ∃ x   ∀ y   ∃ z   ((P(x) ∧ Q(y)) ∧ ¬ R(z)) </td>
+                                        <td>Negate implication</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="info-box green">
+                                <p><strong>Final Answer:</strong>  ∃ x   ∀ y   ∃ z   ((P(x) ∧ Q(y)) ∧ ¬ R(z)) </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Challenge 2:</strong> SQL Query Translation</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <h4>Problem:</h4>
+                            <p>Express in predicate logic: "Find all courses where every enrolled student passed"</p>
+
+                            <h4>Solution:</h4>
+                            <div class="expression-display">
+{c | Course(c) ∧ ∀s (Enrolled(s, c) → Passed(s, c))}
+
+Reading: "The set of courses c such that c is a course and 
+         for all students s, if s is enrolled in c, then s passed c"
+                            </div>
+
+                            <div class="code-block">
+<span class="code-comment">-- SQL Implementation</span>
+SELECT c.course_id
+FROM courses c
+WHERE NOT EXISTS (
+    SELECT 1 
+    FROM enrollments e 
+    WHERE e.course_id = c.course_id 
+      AND e.grade = 'F'
+);
+
+<span class="code-comment">-- Or equivalently:</span>
+SELECT c.course_id
+FROM courses c
+LEFT JOIN enrollments e ON c.course_id = e.course_id AND e.grade = 'F'
+WHERE e.student_id IS NULL;
+                            </div>
+
+                            <h4>Negation (courses where at least one student failed):</h4>
+                            <div class="expression-display">
+{c | Course(c) ∧ ∃s (Enrolled(s, c) ∧ ¬Passed(s, c))}
+                            </div>
+
+                            <div class="code-block">
+<span class="code-comment">-- SQL for negation</span>
+SELECT DISTINCT c.course_id
+FROM courses c
+JOIN enrollments e ON c.course_id = e.course_id
+WHERE e.grade = 'F';
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)" tabindex="0" role="button" aria-expanded="false">
+                            <span><strong>Challenge 3:</strong> Limit Definition (Calculus Connection)</span>
+                            <span class="accordion-icon" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <h4>The Formal Definition of Limit:</h4>
+                            <div class="expression-display">
+lim(x→a) f(x) = L means:
+
+∀ε > 0, ∃δ > 0, ∀x (0 < |x - a| < δ → |f(x) - L| < ε)
+
+Reading: "For every epsilon greater than 0, there exists a delta 
+         greater than 0 such that for all x, if x is within delta 
+         of a (but not equal to a), then f(x) is within epsilon of L"
+                            </div>
+
+                            <h4>Negation (limit does NOT equal L):</h4>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Step</th>
+                                        <th>Expression</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Original</td>
+                                        <td> ∀ ε > 0   ∃ δ > 0   ∀ x   (0 < |x-a| < δ → |f(x)-L| < ε) </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Negate ∀ε</td>
+                                        <td> ∃ ε > 0   ¬(∃ δ > 0   ∀ x   (0 < |x-a| < δ → |f(x)-L| < ε)) </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Negate ∃δ</td>
+                                        <td> ∃ ε > 0   ∀ δ > 0   ¬(∀ x   (0 < |x-a| < δ → |f(x)-L| < ε)) </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Negate ∀x</td>
+                                        <td> ∃ ε > 0   ∀ δ > 0   ∃ x   ¬(0 < |x-a| < δ → |f(x)-L| < ε) </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Negate →</td>
+                                        <td> ∃ ε > 0   ∀ δ > 0   ∃ x   (0 < |x-a| < δ ∧ |f(x)-L| ≥ ε) </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="info-box green">
+                                <p><strong>English:</strong> "There exists a positive epsilon such that for every positive delta, there exists an x within delta of a where f(x) is NOT within epsilon of L"</p>
+                                <p><strong>Meaning:</strong> No matter how close we get to a, we can't get f(x) arbitrarily close to L</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="negation-tool">
+                <h3>🔄 Interactive Negation Practice Tool</h3>
+                <p>Enter a quantified statement and see the negation process step-by-step:</p>
+                
+                <div class="converter-input-group">
+                    <label for="negation-input">Enter statement (e.g., ∀x P(x) or ∃x ∀y Q(x,y)):</label>
+                    <input type="text" id="negation-input" class="answer-input" placeholder="Example: ∀x ∃y (x < y)">
+                </div>
+
+                <button class="btn btn-primary" onclick="demonstrateNegation()">Show Negation Steps</button>
+                <button class="btn btn-secondary" onclick="clearNegationTool()">Clear</button>
+
+                <div id="negation-output" class="tool-output">
+                    <em>Enter a statement and click "Show Negation Steps" to see the process.</em>
+                </div>
+            </div>
+        </section>
+
+        <!-- QUIZ SECTION -->
+        <section id="quiz-section" class="content-section" role="tabpanel" aria-labelledby="tab-quiz">
+            <div class="card">
+                <h2><span class="card-icon" aria-hidden="true">🎯</span> Self-Assessment Quiz</h2>
+                <p>Test your understanding of nested quantifiers and negation!</p>
+            </div>
+
+            <div class="quiz-container">
+                <div class="quiz-question" id="q1">
+                    <h3>Question 1:</h3>
+                    <p>What is the negation of ∀x P(x)?</p>
+                    <ul class="quiz-options">
+                        <li class="quiz-option" onclick="selectQuizOption(1, 'A', false)">A) ∀x ¬P(x)</li>
+                        <li class="quiz-option" onclick="selectQuizOption(1, 'B', true)">B) ∃x ¬P(x)</li>
+                        <li class="quiz-option" onclick="selectQuizOption(1, 'C', false)">C) ∃x P(x)</li>
+                        <li class="quiz-option" onclick="selectQuizOption(1, 'D', false)">D) ¬∀x ¬P(x)</li>
+                    </ul>
+                    <div id="q1-feedback" class="feedback"></div>
+                </div>
+
+                <div class="quiz-question" id="q2">
+                    <h3>Question 2:</h3>
+                    <p>Are ∀x ∃y P(x,y) and ∃y ∀x P(x,y) equivalent?</p>
+                    <ul class="quiz-options">
+                        <li class="quiz-option" onclick="selectQuizOption(2, 'A', false)">A) Yes, always</li>
+                        <li class="quiz-option" onclick="selectQuizOption(2, 'B', true)">B) No, they have different meanings</li>
+                        <li class="quiz-option" onclick="selectQuizOption(2, 'C', false)">C) Yes, but only for finite domains</li>
+                        <li class="quiz-option" onclick="selectQuizOption(2, 'D', false)">D) It depends on the predicate P</li>
+                    </ul>
+                    <div id="q2-feedback" class="feedback"></div>
+                </div>
+
+                <div class="quiz-question" id="q3">
+                    <h3>Question 3:</h3>
+                    <p>What is the negation of ∃x (P(x) ∧ Q(x))?</p>
+                    <ul class="quiz-options">
+                        <li class="quiz-option" onclick="selectQuizOption(3, 'A', false)">A) ∃x (¬P(x) ∨ ¬Q(x))</li>
+                        <li class="quiz-option" onclick="selectQuizOption(3, 'B', true)">B) ∀x (¬P(x) ∨ ¬Q(x))</li>
+                        <li class="quiz-option" onclick="selectQuizOption(3, 'C', false)">C) ∀x (¬P(x) ∧ ¬Q(x))</li>
+                        <li class="quiz-option" onclick="selectQuizOption(3, 'D', false)">D) ∃x (P(x) → ¬Q(x))</li>
+                    </ul>
+                    <div id="q3-feedback" class="feedback"></div>
+                </div>
+
+                <div class="quiz-question" id="q4">
+                    <h3>Question 4:</h3>
+                    <p>Given domain ℤ, which is TRUE: ∀x ∃y (x+y=0) or ∃y ∀x (x+y=0)?</p>
+                    <ul class="quiz-options">
+                        <li class="quiz-option" onclick="selectQuizOption(4, 'A', true)">A) Only ∀x ∃y (x+y=0) is true</li>
+                        <li class="quiz-option" onclick="selectQuizOption(4, 'B', false)">B) Only ∃y ∀x (x+y=0) is true</li>
+                        <li class="quiz-option" onclick="selectQuizOption(4, 'C', false)">C) Both are true</li>
+                        <li class="quiz-option" onclick="selectQuizOption(4, 'D', false)">D) Neither is true</li>
+                    </ul>
+                    <div id="q4-feedback" class="feedback"></div>
+                </div>
+
+                <div class="quiz-question" id="q5">
+                    <h3>Question 5:</h3>
+                    <p>What is the negation of ∀x (P(x) → Q(x))?</p>
+                    <ul class="quiz-options">
+                        <li class="quiz-option" onclick="selectQuizOption(5, 'A', false)">A) ∀x (¬P(x) → ¬Q(x))</li>
+                        <li class="quiz-option" onclick="selectQuizOption(5, 'B', false)">B) ∃x (¬P(x) ∨ ¬Q(x))</li>
+                        <li class="quiz-option" onclick="selectQuizOption(5, 'C', true)">C) ∃x (P(x) ∧ ¬Q(x))</li>
+                        <li class="quiz-option" onclick="selectQuizOption(5, 'D', false)">D) ∀x (P(x) ∧ ¬Q(x))</li>
+                    </ul>
+                    <div id="q5-feedback" class="feedback"></div>
+                </div>
+
+                <div class="quiz-question" id="q6">
+                    <h3>Question 6:</h3>
+                    <p>The statement "Every student has a favorite course" should be translated as:</p>
+                    <ul class="quiz-options">
+                        <li class="quiz-option" onclick="selectQuizOption(6, 'A', true)">A) ∀s ∃c Favorite(s, c)</li>
+                        <li class="quiz-option" onclick="selectQuizOption(6, 'B', false)">B) ∃c ∀s Favorite(s, c)</li>
+                        <li class="quiz-option" onclick="selectQuizOption(6, 'C', false)">C) ∀s ∀c Favorite(s, c)</li>
+                        <li class="quiz-option" onclick="selectQuizOption(6, 'D', false)">D) ∃s ∃c Favorite(s, c)</li>
+                    </ul>
+                    <div id="q6-feedback" class="feedback"></div>
+                </div>
+
+                <button class="btn btn-success" onclick="submitQuiz()" id="submit-quiz-btn">Submit Quiz</button>
+                <div id="quiz-results" class="feedback" style="display: none;"></div>
+            </div>
+
+            <div class="card">
+                <h2><span class="card-icon" aria-hidden="true">🎓</span> Week 4 Complete!</h2>
+                <div class="info-box blue">
+                    <h3>✅ What You've Accomplished</h3>
+                    <p>Congratulations on completing all 5 modules of Week 4! You now have mastery over:</p>
+                    <ul>
+                        <li>✓ Logical equivalences and simplification (Module 4.1)</li>
+                        <li>✓ Conjunctive and Disjunctive Normal Forms (Module 4.2)</li>
+                        <li>✓ Predicate logic fundamentals (Module 4.3)</li>
+                        <li>✓ Universal and existential quantifiers (Module 4.4)</li>
+                        <li>✓ Nested quantifiers and negation (Module 4.5)</li>
+                    </ul>
+                </div>
+
+                <div class="info-box gold">
+                    <h3>🔜 Next Steps</h3>
+                    <p><strong>Week 5: Proof Techniques I</strong></p>
+                    <p>Next week, you'll use all these logical reasoning skills to write mathematical proofs:</p>
+                    <ul>
+                        <li>Direct proofs</li>
+                        <li>Proof by contrapositive</li>
+                        <li>Proof by counterexample</li>
+                        <li>Using quantifiers in proofs</li>
+                    </ul>
+                    <p><strong>The logic skills you've learned this week are ESSENTIAL for proof writing!</strong></p>
+                </div>
+
+                <div class="info-box green">
+                    <h3>💻 Programming Project 1 Coming!</h3>
+                    <p><strong>Week 5 Assignment: Logic and Proof Systems</strong></p>
+                    <p>You'll implement a comprehensive logic toolkit that includes everything from Weeks 3-4:</p>
+                    <ul>
+                        <li>Truth table generator (PE-03)</li>
+                        <li>Logical equivalence checker</li>
+                        <li>CNF/DNF converter (PE-04)</li>
+                        <li>Propositional logic parser</li>
+                        <li>Proof step validator</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer style="text-align: center; padding: 30px; margin-top: 40px; background: var(--light-bg); border-radius: 10px;">
+        <p><strong>Module 4.5: Nested Quantifiers and Negation</strong></p>
+        <p>CSC 240 - Discrete Structures | Mendocino College</p>
+        <p>© 2026 Mendocino College | All Rights Reserved</p>
+    </footer>
+
+    <script>
+        // Global state
+        let quizAnswers = {};
+        let practiceCompleted = {1: false, 2: false, 3: false, 4: false, 5: false, 6: false};
+
+        // Tab Navigation
+        function showSection(sectionId) {
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+
+            const tabs = document.querySelectorAll('.nav-tab');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+                tab.setAttribute('aria-selected', 'false');
+            });
+
+            const activeSection = document.getElementById(sectionId + '-section');
+            if (activeSection) {
+                activeSection.classList.add('active');
+            }
+
+            const activeTab = document.getElementById('tab-' + sectionId);
+            if (activeTab) {
+                activeTab.classList.add('active');
+                activeTab.setAttribute('aria-selected', 'true');
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            sessionStorage.setItem('activeTab', sectionId);
+            updateProgress();
+        }
+
+        // Accordion Toggle
+        function toggleAccordion(header) {
+            const item = header.parentElement;
+            const wasActive = item.classList.contains('active');
+            
+            const allItems = document.querySelectorAll('.accordion-item');
+            allItems.forEach(i => {
+                i.classList.remove('active');
+                i.querySelector('.accordion-header').setAttribute('aria-expanded', 'false');
+            });
+
+            if (!wasActive) {
+                item.classList.add('active');
+                header.setAttribute('aria-expanded', 'true');
+            }
+        }
+
+        // Practice Problems
+        function checkAnswer(problemNum, expectedKeyword) {
+            const input = document.getElementById(`practice${problemNum}-answer`);
+            const feedback = document.getElementById(`practice${problemNum}-feedback`);
+            const userAnswer = input.value.trim().toLowerCase();
+
+            feedback.classList.remove('correct', 'incorrect');
+            feedback.classList.add('show');
+
+            let isCorrect = false;
+            
+            if (problemNum === 1) {
+                isCorrect = userAnswer.includes('every') || userAnswer.includes('all');
+            } else if (problemNum === 2) {
+                isCorrect = userAnswer.includes('∃') && userAnswer.includes('¬');
+            } else if (problemNum === 3) {
+                isCorrect = userAnswer.includes('∀');
+            } else if (problemNum === 4) {
+                isCorrect = userAnswer.includes('no');
+            } else if (problemNum === 5) {
+                isCorrect = userAnswer.includes('∃') && userAnswer.includes('∀');
+            } else if (problemNum === 6) {
+                isCorrect = userAnswer.includes('∃') && userAnswer.includes('∧');
+            }
+
+            if (isCorrect) {
+                feedback.classList.add('correct');
+                feedback.innerHTML = `<strong>✓ Correct!</strong> Well done!`;
+                practiceCompleted[problemNum] = true;
+                updateProgress();
+            } else {
+                feedback.classList.add('incorrect');
+                feedback.innerHTML = `<strong>✗ Not quite.</strong> Try again or click "Show Hint" for help.`;
+            }
+        }
+
+        function showHint(problemNum) {
+            const hint = document.getElementById(`practice${problemNum}-hint`);
+            hint.style.display = 'block';
+        }
+
+        // Negation Tool
+        function demonstrateNegation() {
+            const input = document.getElementById('negation-input').value.trim();
+            const output = document.getElementById('negation-output');
+            
+            if (!input) {
+                output.innerHTML = '<em style="color: var(--danger-red);">Please enter a statement first.</em>';
+                return;
+            }
+
+            // Demonstration for common patterns
+            let demo = '';
+            
+            if (input.includes('∀') && !input.includes('∃')) {
+                demo = `
+<h4>Negating: ${input}</h4>
+<p><strong>Step 1:</strong> Add negation: ¬(${input})</p>
+<p><strong>Step 2:</strong> Apply De Morgan's Law for quantifiers:</p>
+<p>Change ∀ to ∃ and negate the predicate</p>
+<p><strong>Pattern:</strong> ¬(∀x P(x)) ≡ ∃x ¬P(x)</p>
+<p><em>Apply this rule to your specific statement!</em></p>
+                `;
+            } else if (input.includes('∃') && !input.includes('∀')) {
+                demo = `
+<h4>Negating: ${input}</h4>
+<p><strong>Step 1:</strong> Add negation: ¬(${input})</p>
+<p><strong>Step 2:</strong> Apply De Morgan's Law for quantifiers:</p>
+<p>Change ∃ to ∀ and negate the predicate</p>
+<p><strong>Pattern:</strong> ¬(∃x P(x)) ≡ ∀x ¬P(x)</p>
+<p><em>Apply this rule to your specific statement!</em></p>
+                `;
+            } else if (input.includes('∀') && input.includes('∃')) {
+                demo = `
+<h4>Negating Nested Quantifiers: ${input}</h4>
+<p><strong>Step 1:</strong> Add negation to the outside</p>
+<p><strong>Step 2:</strong> Work left to right, flipping each quantifier:</p>
+<ul>
+    <li>∀ becomes ∃</li>
+    <li>∃ becomes ∀</li>
+</ul>
+<p><strong>Step 3:</strong> Negate the final predicate</p>
+<p><strong>Remember:</strong> Process one quantifier at a time!</p>
+<p><em>Work through this step-by-step for your statement.</em></p>
+                `;
+            } else {
+                demo = `
+<h4>Analyzing: ${input}</h4>
+<p>This statement should contain quantifiers (∀ or ∃).</p>
+<p><strong>To negate quantified statements:</strong></p>
+<ol>
+    <li>Add ¬ to the outside</li>
+    <li>Swap quantifiers: ∀ ↔ ∃</li>
+    <li>Negate the predicate</li>
+</ol>
+<p><em>Try entering a statement with quantifiers like: ∀x P(x) or ∃x ∀y Q(x,y)</em></p>
+                `;
+            }
+
+            output.innerHTML = demo;
+        }
+
+        function clearNegationTool() {
+            document.getElementById('negation-input').value = '';
+            document.getElementById('negation-output').innerHTML = '<em>Enter a statement and click "Show Negation Steps" to see the process.</em>';
+        }
+
+        // Quiz Functions
+        function selectQuizOption(questionNum, option, isCorrect) {
+            const question = document.getElementById(`q${questionNum}`);
+            const options = question.querySelectorAll('.quiz-option');
+            const feedback = document.getElementById(`q${questionNum}-feedback`);
+
+            options.forEach(opt => {
+                opt.classList.remove('selected');
+            });
+
+            event.target.classList.add('selected');
+            quizAnswers[questionNum] = {option, isCorrect};
+
+            feedback.style.display = 'none';
+            feedback.classList.remove('show', 'correct', 'incorrect');
+        }
+
+        function submitQuiz() {
+            let correct = 0;
+            const total = 6;
+
+            for (let i = 1; i <= total; i++) {
+                const question = document.getElementById(`q${i}`);
+                const options = question.querySelectorAll('.quiz-option');
+                const feedback = document.getElementById(`q${i}-feedback`);
+                const answer = quizAnswers[i];
+
+                if (answer) {
+                    feedback.classList.add('show');
+                    if (answer.isCorrect) {
+                        feedback.classList.add('correct');
+                        feedback.innerHTML = '<strong>✓ Correct!</strong>';
+                        correct++;
+                        
+                        options.forEach(opt => {
+                            if (opt.classList.contains('selected')) {
+                                opt.classList.add('correct');
+                            }
+                        });
+                    } else {
+                        feedback.classList.add('incorrect');
+                        feedback.innerHTML = '<strong>✗ Incorrect.</strong> Review the concepts and try again.';
+                        
+                        options.forEach(opt => {
+                            if (opt.classList.contains('selected')) {
+                                opt.classList.add('incorrect');
+                            }
+                        });
+                    }
+                }
+            }
+
+            const results = document.getElementById('quiz-results');
+            results.style.display = 'block';
+            results.classList.add('show');
+            
+            const percentage = Math.round((correct / total) * 100);
+            
+            if (percentage >= 80) {
+                results.classList.add('correct');
+                results.innerHTML = `<strong>🎉 Excellent!</strong> You scored ${correct}/${total} (${percentage}%). You've mastered nested quantifiers and negation!<br><br><strong>You're ready for Week 5: Proof Techniques!</strong>`;
+            } else if (percentage >= 60) {
+                results.classList.add('hint');
+                results.innerHTML = `<strong>Good effort!</strong> You scored ${correct}/${total} (${percentage}%). Review the negation rules and try again.`;
+            } else {
+                results.classList.add('incorrect');
+                results.innerHTML = `<strong>Keep practicing!</strong> You scored ${correct}/${total} (${percentage}%). These concepts are crucial for proofs. Review the material carefully.`;
+            }
+
+            document.getElementById('submit-quiz-btn').style.display = 'none';
+            updateProgress();
+        }
+
+        // Progress Tracking
+        function updateProgress() {
+            const sectionsVisited = new Set(JSON.parse(sessionStorage.getItem('sectionsVisited') || '[]'));
+            const currentTab = sessionStorage.getItem('activeTab');
+            if (currentTab) {
+                sectionsVisited.add(currentTab);
+                sessionStorage.setItem('sectionsVisited', JSON.stringify([...sectionsVisited]));
+            }
+
+            const totalSections = 7;
+            const practiceScore = Object.values(practiceCompleted).filter(Boolean).length;
+            const quizScore = Object.keys(quizAnswers).length;
+
+            let progress = (sectionsVisited.size / totalSections) * 40;
+            progress += (practiceScore / 6) * 30;
+            progress += (quizScore / 6) * 30;
+
+            progress = Math.min(Math.round(progress), 100);
+
+            const progressBar = document.getElementById('module-progress');
+            const progressText = document.getElementById('progress-text');
+            
+            progressBar.style.width = progress + '%';
+            progressBar.textContent = progress + '%';
+            progressBar.setAttribute('aria-valuenow', progress);
+
+            if (progress === 100) {
+                progressText.textContent = '🎉 Module Complete! All of Week 4 is done!';
+            } else {
+                progressText.textContent = `${progress}% complete - Keep going!`;
+            }
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.target.classList.contains('accordion-header')) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    toggleAccordion(e.target);
+                }
+            }
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTab = sessionStorage.getItem('activeTab');
+            if (savedTab) {
+                showSection(savedTab);
+            }
+            updateProgress();
+        });
+    </script>
+</body>
+</html>
