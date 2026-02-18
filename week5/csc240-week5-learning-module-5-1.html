@@ -1,0 +1,2323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 5.1: Introduction to Mathematical Proofs | CSC 240</title>
+    <style>
+        /* ==================== CSS RESET AND BASE ==================== */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #1a1a2e;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        /* ==================== HEADER STYLES ==================== */
+        header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        
+        header h1 {
+            margin: 0 0 10px 0;
+            font-size: 1.9rem;
+        }
+        
+        .module-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+        
+        .module-info span {
+            background: rgba(255,255,255,0.1);
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+        
+        /* ==================== PROGRESS TRACKING ==================== */
+        .progress-container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: #e0e0e0;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            border-radius: 6px;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+        
+        .progress-text {
+            text-align: center;
+            margin-top: 10px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        /* ==================== MAIN SECTIONS ==================== */
+        section {
+            background: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        
+        section h2 {
+            color: #1a1a2e;
+            border-bottom: 3px solid #4CAF50;
+            padding-bottom: 10px;
+            margin-top: 0;
+            font-size: 1.5rem;
+        }
+        
+        section h3 {
+            color: #16213e;
+            margin-top: 25px;
+            font-size: 1.25rem;
+        }
+        
+        section h4 {
+            color: #333;
+            margin-top: 20px;
+            font-size: 1.1rem;
+        }
+        
+        /* ==================== CONTENT BOXES ==================== */
+        .definition-box {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border-left: 5px solid #4CAF50;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 10px 10px 0;
+        }
+        
+        .definition-box h4 {
+            color: #2e7d32;
+            margin-top: 0;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .theorem-box {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-left: 5px solid #2196F3;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 10px 10px 0;
+        }
+        
+        .theorem-box h4 {
+            color: #1565c0;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        
+        .example-box {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            border-left: 5px solid #FF9800;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 10px 10px 0;
+        }
+        
+        .example-box h4 {
+            color: #e65100;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        
+        .warning-box {
+            background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+            border-left: 5px solid #f44336;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 10px 10px 0;
+        }
+        
+        .warning-box h4 {
+            color: #c62828;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        
+        .insight-box {
+            background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+            border-left: 5px solid #9c27b0;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 10px 10px 0;
+        }
+        
+        .insight-box h4 {
+            color: #7b1fa2;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        
+        .strategy-box {
+            background: linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 100%);
+            border-left: 5px solid #009688;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 10px 10px 0;
+        }
+        
+        .strategy-box h4 {
+            color: #00695c;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        
+        .learning-objectives {
+            background: linear-gradient(135deg, #fff9c4 0%, #fff59d 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #f9a825;
+        }
+        
+        .learning-objectives h3 {
+            color: #f57f17;
+            margin-top: 0;
+        }
+        
+        .learning-objectives ul {
+            margin-bottom: 0;
+        }
+        
+        .learning-objectives li {
+            margin: 10px 0;
+        }
+        
+        /* ==================== TABLES ==================== */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        th {
+            background: #1a1a2e;
+            color: #fff;
+            font-weight: 600;
+        }
+        
+        tr:hover {
+            background: #f5f5f5;
+        }
+        
+        tr:last-child td {
+            border-bottom: none;
+        }
+        
+        /* ==================== INTERACTIVE ELEMENTS ==================== */
+        .interactive-activity {
+            background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            border: 2px solid #00bcd4;
+        }
+        
+        .interactive-activity h3 {
+            color: #00838f;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .knowledge-check {
+            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            border: 2px solid #e91e63;
+        }
+        
+        .knowledge-check h3 {
+            color: #c2185b;
+            margin-top: 0;
+        }
+        
+        .quiz-question {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .quiz-question p {
+            margin-bottom: 15px;
+        }
+        
+        .quiz-question p:first-child {
+            font-weight: 600;
+        }
+        
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .quiz-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 15px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .quiz-option:hover {
+            background: #e3f2fd;
+            border-color: #2196F3;
+        }
+        
+        .quiz-option.selected {
+            background: #e3f2fd;
+            border-color: #2196F3;
+        }
+        
+        .quiz-option.correct {
+            background: #e8f5e9;
+            border-color: #4CAF50;
+        }
+        
+        .quiz-option.incorrect {
+            background: #ffebee;
+            border-color: #f44336;
+        }
+        
+        .quiz-option input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            margin: 0;
+        }
+        
+        /* ==================== BUTTONS ==================== */
+        button {
+            background: linear-gradient(135deg, #4CAF50 0%, #8BC34A 100%);
+            color: #fff;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+        }
+        
+        button:focus {
+            outline: 3px solid #2e7d32;
+            outline-offset: 2px;
+        }
+        
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        button.secondary {
+            background: linear-gradient(135deg, #2196F3 0%, #42a5f5 100%);
+            box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
+        }
+        
+        button.secondary:hover {
+            box-shadow: 0 6px 20px rgba(33, 150, 243, 0.4);
+        }
+        
+        /* ==================== FEEDBACK ==================== */
+        .feedback {
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .feedback.show {
+            display: block;
+        }
+        
+        .feedback.correct {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #4CAF50;
+        }
+        
+        .feedback.incorrect {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #f44336;
+        }
+        
+        .feedback.info {
+            background: #e3f2fd;
+            color: #1565c0;
+            border: 1px solid #2196F3;
+        }
+        
+        /* ==================== COLLAPSIBLE SECTIONS ==================== */
+        .collapsible {
+            background: #f5f5f5;
+            border: none;
+            padding: 15px 20px;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            margin: 10px 0;
+            color: #333;
+        }
+        
+        .collapsible:hover {
+            background: #e0e0e0;
+        }
+        
+        .collapsible::after {
+            content: '▼';
+            font-size: 0.8rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .collapsible.active::after {
+            transform: rotate(180deg);
+        }
+        
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            background: #fff;
+            border-radius: 0 0 10px 10px;
+        }
+        
+        .collapsible-content.show {
+            max-height: 5000px;
+        }
+        
+        .collapsible-content-inner {
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-top: none;
+            border-radius: 0 0 10px 10px;
+        }
+        
+        /* ==================== PROOF STRUCTURES ==================== */
+        .proof-structure {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Georgia', 'Times New Roman', serif;
+        }
+        
+        .proof-structure .proof-header {
+            font-weight: bold;
+            color: #1a1a2e;
+            margin-bottom: 15px;
+        }
+        
+        .proof-structure .proof-line {
+            margin: 8px 0;
+            padding-left: 20px;
+        }
+        
+        .proof-structure .proof-line em {
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        .proof-structure .proof-end {
+            text-align: right;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+        
+        /* ==================== SECTION CHECKBOXES ==================== */
+        .section-check {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 15px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            margin: 10px 0;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .section-check:hover {
+            background: #e8f5e9;
+        }
+        
+        .section-check input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            margin: 0;
+        }
+        
+        .section-check.completed {
+            background: #e8f5e9;
+            border-left: 3px solid #4CAF50;
+        }
+        
+        .section-check span {
+            font-weight: 500;
+        }
+        
+        /* ==================== CODE FORMATTING ==================== */
+        code {
+            background: #f5f5f5;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.95em;
+            color: #c7254e;
+        }
+        
+        pre {
+            background: #1a1a2e;
+            color: #a8e6cf;
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            line-height: 1.6;
+            white-space: pre;
+            margin: 15px 0;
+        }
+        
+        /* ==================== NAVIGATION ==================== */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .nav-buttons a {
+            text-decoration: none;
+        }
+        
+        .nav-button {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            padding: 12px 25px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }
+        
+        .nav-button:focus {
+            outline: 3px solid #4CAF50;
+            outline-offset: 2px;
+        }
+        
+        /* ==================== FOOTER ==================== */
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+            border-top: 1px solid #ddd;
+            margin-top: 40px;
+            background: #fff;
+            border-radius: 15px;
+        }
+        
+        footer a {
+            color: #1a1a2e;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        footer a:hover {
+            text-decoration: underline;
+        }
+        
+        /* ==================== LISTS ==================== */
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 25px;
+        }
+        
+        li {
+            margin: 8px 0;
+        }
+        
+        /* ==================== ACCESSIBILITY ==================== */
+        :focus {
+            outline: 3px solid #4CAF50;
+            outline-offset: 2px;
+        }
+        
+        :focus:not(:focus-visible) {
+            outline: none;
+        }
+        
+        :focus-visible {
+            outline: 3px solid #4CAF50;
+            outline-offset: 2px;
+        }
+        
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+        
+        /* Skip link for keyboard navigation */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: #1a1a2e;
+            color: #fff;
+            padding: 8px 16px;
+            z-index: 100;
+            transition: top 0.3s ease;
+        }
+        
+        .skip-link:focus {
+            top: 0;
+        }
+        
+        /* ==================== MATH DISPLAY ==================== */
+        .math-display {
+            overflow-x: auto;
+            padding: 10px 0;
+        }
+        
+        .math-block {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+            font-size: 1.1em;
+        }
+        
+        /* ==================== RESPONSIVE DESIGN ==================== */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            
+            header {
+                padding: 20px;
+            }
+            
+            header h1 {
+                font-size: 1.5rem;
+            }
+            
+            section {
+                padding: 20px;
+            }
+            
+            .module-info {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .nav-buttons {
+                flex-direction: column;
+            }
+            
+            .nav-button {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            table {
+                font-size: 0.9rem;
+            }
+            
+            th, td {
+                padding: 10px;
+            }
+            
+            .quiz-option {
+                padding: 10px 12px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            header h1 {
+                font-size: 1.3rem;
+            }
+            
+            section h2 {
+                font-size: 1.3rem;
+            }
+            
+            .definition-box, .example-box, .theorem-box, 
+            .warning-box, .insight-box, .strategy-box {
+                padding: 15px;
+            }
+        }
+        
+        /* ==================== PRINT STYLES ==================== */
+        @media print {
+            body {
+                background: #fff;
+            }
+            
+            header, section, footer {
+                box-shadow: none;
+            }
+            
+            .progress-container, .nav-buttons, button {
+                display: none;
+            }
+            
+            .collapsible-content {
+                max-height: none;
+            }
+        }
+        
+        /* ==================== UTILITY CLASSES ==================== */
+        .text-center {
+            text-align: center;
+        }
+        
+        .mt-20 {
+            margin-top: 20px;
+        }
+        
+        .mb-20 {
+            margin-bottom: 20px;
+        }
+        
+        .highlight {
+            background: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        
+        .emoji-icon {
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <!-- Skip link for accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <header>
+        <h1>📐 Module 5.1: Introduction to Mathematical Proofs</h1>
+        <div class="module-info">
+            <span>📚 CSC 240 - Discrete Structures</span>
+            <span>⏱️ Estimated Time: 1.5 hours</span>
+            <span>📅 Week 5 of 17</span>
+        </div>
+    </header>
+    
+    <div class="progress-container" role="region" aria-label="Module progress tracker">
+        <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="progress-text" id="progressText" aria-live="polite">0% Complete</div>
+    </div>
+    
+    <main id="main-content">
+        <!-- Learning Objectives -->
+        <div class="learning-objectives">
+            <h3>🎯 Learning Objectives</h3>
+            <p>By the end of this module, you will be able to:</p>
+            <ul>
+                <li>Explain the purpose and importance of mathematical proofs in computer science</li>
+                <li>Identify the components of a well-structured proof</li>
+                <li>Recognize common theorem forms and their logical structures</li>
+                <li>Distinguish between a theorem, its converse, inverse, and contrapositive</li>
+                <li>Understand the role of definitions in mathematical proofs</li>
+            </ul>
+            <p><strong>Course Learning Outcome:</strong> CSLO 1 - Apply symbolic logic and proof methods to model and analyze program/algorithm correctness.</p>
+        </div>
+        
+        <!-- Prerequisites -->
+        <section id="prerequisites">
+            <h2>Prerequisites from Weeks 3-4</h2>
+            
+            <p>Before beginning this module, ensure you're comfortable with these concepts from our logic units:</p>
+            
+            <ul>
+                <li><strong>Propositional logic</strong> and logical connectives (∧, ∨, ¬, →, ↔)</li>
+                <li><strong>Truth tables</strong> and logical equivalences</li>
+                <li><strong>Predicate logic</strong> with quantifiers (∀, ∃)</li>
+                <li><strong>Contrapositive equivalence:</strong> $$(P \rightarrow Q) \equiv (\neg Q \rightarrow \neg P)$$</li>
+                <li><strong>Negation of quantified statements</strong></li>
+            </ul>
+            
+            <div class="insight-box">
+                <h4><span class="emoji-icon">💡</span> Building on Your Foundation</h4>
+                <p>The logic skills you developed in Weeks 3-4 are the foundation for proof writing. In those weeks, you learned <em>how to reason logically</em>. Now, you'll learn <em>how to communicate that reasoning</em> in the formal language of mathematical proofs.</p>
+            </div>
+        </section>
+        
+        <!-- Section 1: What is a Mathematical Proof? -->
+        <section id="section1">
+            <h2>1. What is a Mathematical Proof?</h2>
+            
+            <label class="section-check" id="check1">
+                <input type="checkbox" onchange="updateProgress()" aria-label="Mark section 1 as complete">
+                <span>Mark this section as complete</span>
+            </label>
+            
+            <div class="definition-box">
+                <h4><span class="emoji-icon">📖</span> Definition: Mathematical Proof</h4>
+                <p>A <strong>mathematical proof</strong> is a rigorous, logical argument that establishes the truth of a mathematical statement beyond any doubt. It consists of a sequence of statements, where each statement follows logically from:</p>
+                <ul>
+                    <li>Previous statements in the proof</li>
+                    <li>Axioms (statements accepted as true without proof)</li>
+                    <li>Definitions</li>
+                    <li>Previously proven theorems</li>
+                </ul>
+            </div>
+            
+            <h3>Why Proofs Matter in Computer Science</h3>
+            
+            <p>You might wonder why a computer science course emphasizes mathematical proofs. The answer is that proofs are <strong>essential tools</strong> for building reliable software and understanding algorithms. Here's why:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Application</th>
+                        <th>Description</th>
+                        <th>Real-World Example</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Algorithm Correctness</strong></td>
+                        <td>Proving that an algorithm produces the correct output for ALL valid inputs</td>
+                        <td>Proving that a sorting algorithm always produces a sorted list, regardless of input</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Program Verification</strong></td>
+                        <td>Formally verifying that software meets its specifications</td>
+                        <td>Proving that a banking system never allows an account balance to go negative</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Security Analysis</strong></td>
+                        <td>Proving that cryptographic protocols are secure against attacks</td>
+                        <td>Proving that an encryption scheme cannot be broken without the key</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Complexity Analysis</strong></td>
+                        <td>Proving bounds on algorithm running time and space usage</td>
+                        <td>Proving that quicksort has O(n log n) average-case time complexity</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Data Structure Properties</strong></td>
+                        <td>Proving that data structures maintain required invariants</td>
+                        <td>Proving that a binary search tree always maintains the BST property after insertion</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3>Proofs vs. Testing: A Critical Distinction</h3>
+            
+            <p>As programmers, you're familiar with testing code. But there's a fundamental difference between <strong>testing</strong> and <strong>proving</strong>:</p>
+            
+            <div class="warning-box">
+                <h4><span class="emoji-icon">⚠️</span> The Limitation of Testing</h4>
+                <p><strong>Testing</strong> can show that something works for specific cases, but it can NEVER prove that something works for ALL cases.</p>
+                <p><strong>Proofs</strong> establish truth for ALL cases simultaneously—including infinitely many cases that could never be tested.</p>
+                <p>As computer scientist Edsger Dijkstra famously said: <em>"Testing shows the presence, not the absence of bugs."</em></p>
+            </div>
+            
+            <div class="example-box">
+                <h4><span class="emoji-icon">📝</span> Example: The Danger of Relying on Testing</h4>
+                <p>Consider the claim: <strong>"For all positive integers n, the expression $$n^2 + n + 41$$ is prime."</strong></p>
+                
+                <p><strong>Testing approach:</strong> Let's check several values:</p>
+                <ul>
+                    <li>n = 1: $$1 + 1 + 41 = 43$$ ✓ (prime)</li>
+                    <li>n = 2: $$4 + 2 + 41 = 47$$ ✓ (prime)</li>
+                    <li>n = 3: $$9 + 3 + 41 = 53$$ ✓ (prime)</li>
+                    <li>n = 4: $$16 + 4 + 41 = 61$$ ✓ (prime)</li>
+                    <li>n = 5: $$25 + 5 + 41 = 71$$ ✓ (prime)</li>
+                    <li>...</li>
+                    <li>n = 39: $$1521 + 39 + 41 = 1601$$ ✓ (prime)</li>
+                </ul>
+                
+                <p>After 39 successful tests, you might be confident the claim is true. <strong>But wait!</strong></p>
+                
+                <p>When n = 40:</p>
+                <div class="math-block">
+                    $$40^2 + 40 + 41 = 1600 + 40 + 41 = 1681 = 41 \times 41$$
+                </div>
+                <p>1681 is NOT prime—it's 41². The claim is <strong>FALSE</strong>!</p>
+                
+                <p><strong>Lesson:</strong> Even 39 successful tests couldn't reveal this failure. A single counterexample disproves a universal statement, but no amount of testing can prove one true.</p>
+            </div>
+            
+            <div class="insight-box">
+                <h4><span class="emoji-icon">💡</span> Connection to Your Programming Experience</h4>
+                <p>Think about debugging: when you trace through your code step-by-step to verify it works correctly, you're performing an <em>informal proof</em>. Mathematical proofs formalize this reasoning process, making it:</p>
+                <ul>
+                    <li><strong>Rigorous:</strong> Every step must be justified</li>
+                    <li><strong>Universal:</strong> Applies to all cases, not just tested ones</li>
+                    <li><strong>Verifiable:</strong> Others can check your reasoning</li>
+                    <li><strong>Permanent:</strong> Once proven, always true</li>
+                </ul>
+            </div>
+        </section>
+        
+        <!-- Section 2: Types of Mathematical Statements -->
+        <section id="section2">
+            <h2>2. Types of Mathematical Statements</h2>
+            
+            <label class="section-check" id="check2">
+                <input type="checkbox" onchange="updateProgress()" aria-label="Mark section 2 as complete">
+                <span>Mark this section as complete</span>
+            </label>
+            
+            <p>In mathematics, we use different terms to describe statements based on their importance, how they're established, and their role in the mathematical hierarchy:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Term</th>
+                        <th>Definition</th>
+                        <th>Example</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Axiom</strong> (or Postulate)</td>
+                        <td>A fundamental statement accepted as true without proof; the starting point for a mathematical system</td>
+                        <td>"For all real numbers a and b, a + b = b + a." (Commutative property)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Definition</strong></td>
+                        <td>A precise description that gives meaning to a mathematical term</td>
+                        <td>"An integer n is <em>even</em> if n = 2k for some integer k."</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Theorem</strong></td>
+                        <td>An important mathematical statement that has been proven true</td>
+                        <td>The Pythagorean Theorem: In a right triangle, $$a^2 + b^2 = c^2$$</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Proposition</strong></td>
+                        <td>A proven statement of lesser importance than a theorem</td>
+                        <td>"The sum of two even numbers is even."</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Lemma</strong></td>
+                        <td>A "helper" theorem—a proven statement used as a stepping stone to prove a larger result</td>
+                        <td>"If gcd(a, b) = 1 and a | bc, then a | c."</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Corollary</strong></td>
+                        <td>A result that follows easily and directly from a theorem</td>
+                        <td>"If n² is even, then n is even." (follows from properties of even numbers)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Conjecture</strong></td>
+                        <td>A statement believed to be true but not yet proven</td>
+                        <td>Goldbach's Conjecture: "Every even integer greater than 2 is the sum of two primes."</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="insight-box">
+                <h4><span class="emoji-icon">💡</span> Computer Science Analogy</h4>
+                <p>These mathematical concepts map naturally to programming constructs:</p>
+                <ul>
+                    <li><strong>Axioms</strong> → Language specifications, primitive operations</li>
+                    <li><strong>Definitions</strong> → Type definitions, interfaces, contracts</li>
+                    <li><strong>Theorems</strong> → Proven properties of algorithms or data structures</li>
+                    <li><strong>Lemmas</strong> → Helper functions or methods</li>
+                    <li><strong>Corollaries</strong> → Simple consequences of main results</li>
+                    <li><strong>Conjectures</strong> → Unverified assumptions in code (potential bugs!)</li>
+                </ul>
+            </div>
+            
+            <h3>The Hierarchy of Mathematical Truth</h3>
+            
+            <p>Mathematical knowledge is built in layers:</p>
+            
+            <div class="strategy-box">
+                <h4><span class="emoji-icon">🏗️</span> Building Mathematical Knowledge</h4>
+                <ol>
+                    <li><strong>Start with axioms</strong> (accepted without proof)</li>
+                    <li><strong>Establish definitions</strong> (give meaning to terms)</li>
+                    <li><strong>Prove lemmas</strong> (small helper results)</li>
+                    <li><strong>Prove theorems</strong> (major results, using lemmas)</li>
+                    <li><strong>Derive corollaries</strong> (easy consequences of theorems)</li>
+                </ol>
+                <p>Each level builds on the previous levels. You can never use an unproven statement (conjecture) as justification in a proof!</p>
+            </div>
+        </section>
+        
+        <!-- Section 3: Components of a Well-Structured Proof -->
+        <section id="section3">
+            <h2>3. Components of a Well-Structured Proof</h2>
+            
+            <label class="section-check" id="check3">
+                <input type="checkbox" onchange="updateProgress()" aria-label="Mark section 3 as complete">
+                <span>Mark this section as complete</span>
+            </label>
+            
+            <p>Every well-written proof contains several essential components. Understanding these components will help you both read and write proofs effectively.</p>
+            
+            <h3>The Anatomy of a Proof</h3>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>Purpose</th>
+                        <th>Example Phrases</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Statement</strong></td>
+                        <td>The theorem or proposition to be proven; clearly states what we're proving</td>
+                        <td>"<strong>Theorem:</strong> If n is even, then n² is even."</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Proof Declaration</strong></td>
+                        <td>Signals the beginning of the proof</td>
+                        <td>"<strong>Proof:</strong>" or "<strong>Proof.</strong>"</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Assumptions</strong></td>
+                        <td>States what we assume to be true (the hypothesis)</td>
+                        <td>"Assume n is even." / "Let n be an even integer." / "Suppose that..."</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Definitions Applied</strong></td>
+                        <td>Expands terms using their formal definitions</td>
+                        <td>"By definition of even, n = 2k for some integer k."</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Logical Steps</strong></td>
+                        <td>The chain of reasoning from assumptions to conclusion</td>
+                        <td>"Then...", "Therefore...", "It follows that...", "Thus..."</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Justifications</strong></td>
+                        <td>Explains why each step is valid</td>
+                        <td>"by algebra", "by definition of...", "by Theorem X", "since..."</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Conclusion</strong></td>
+                        <td>The final statement that was to be proven</td>
+                        <td>"Therefore, n² is even."</td>
+                    </tr>
+                    <tr>
+                        <td><strong>End Marker</strong></td>
+                        <td>Signals the proof is complete</td>
+                        <td>"∎" or "□" or "QED" or "■"</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="definition-box">
+                <h4><span class="emoji-icon">📖</span> Definition: QED and ∎</h4>
+                <p><strong>QED</strong> stands for the Latin phrase "<em>quod erat demonstrandum</em>," meaning "which was to be demonstrated" or "what was to be shown."</p>
+                <p>The symbol <strong>∎</strong> (called a "tombstone," "Halmos symbol," or "end-of-proof symbol") serves the same purpose—it indicates that the proof is complete. Named after mathematician Paul Halmos who popularized its use.</p>
+            </div>
+            
+            <h3>A Complete Example: Annotated Proof</h3>
+            
+            <p>Let's examine a complete proof with each component labeled:</p>
+            
+            <div class="proof-structure">
+                <p class="proof-header">Theorem: If n is an even integer, then n² is an even integer.</p>
+                <p><strong>Proof:</strong></p>
+                <p class="proof-line">Let n be an even integer. <em>(Assumption—we assume the hypothesis is true)</em></p>
+                <p class="proof-line">By definition of even, n = 2k for some integer k. <em>(Applying the definition of "even")</em></p>
+                <p class="proof-line">Then n² = (2k)² <em>(Substitution)</em></p>
+                <p class="proof-line">= 4k² <em>(Algebra—expanding the square)</em></p>
+                <p class="proof-line">= 2(2k²). <em>(Algebra—factoring out 2)</em></p>
+                <p class="proof-line">Let m = 2k². <em>(Introducing a new variable for clarity)</em></p>
+                <p class="proof-line">Since k is an integer, 2k² is an integer, so m is an integer. <em>(Justification—integers are closed under multiplication)</em></p>
+                <p class="proof-line">Thus n² = 2m where m is an integer. <em>(Substitution)</em></p>
+                <p class="proof-line">By definition of even, n² is even. <em>(Applying the definition of "even" to conclude)</em></p>
+                <p class="proof-end">∎</p>
+            </div>
+            
+            <div class="insight-box">
+                <h4><span class="emoji-icon">💡</span> Key Observations</h4>
+                <ul>
+                    <li>The proof starts by assuming the hypothesis (n is even)</li>
+                    <li>The definition of "even" is used twice: once to unpack the assumption, once to establish the conclusion</li>
+                    <li>Every algebraic step is justified</li>
+                    <li>The proof ends by explicitly stating what was proven</li>
+                    <li>The structure mirrors the logical form: P → Q (assume P, derive Q)</li>
+                </ul>
+            </div>
+        </section>
+        
+        <!-- Section 4: Common Theorem Forms -->
+        <section id="section4">
+            <h2>4. Common Theorem Forms and Logical Structures</h2>
+            
+            <label class="section-check" id="check4">
+                <input type="checkbox" onchange="updateProgress()" aria-label="Mark section 4 as complete">
+                <span>Mark this section as complete</span>
+            </label>
+            
+            <p>Mathematical theorems come in several common forms. Recognizing these forms is crucial because <strong>the form of a theorem often determines which proof technique to use</strong>.</p>
+            
+            <h3>Common Theorem Forms</h3>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Form</th>
+                        <th>Logical Structure</th>
+                        <th>Example</th>
+                        <th>Typical Proof Method</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Conditional</strong></td>
+                        <td>$$P \rightarrow Q$$</td>
+                        <td>"If n is divisible by 6, then n is divisible by 2."</td>
+                        <td>Direct proof or contrapositive</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Biconditional</strong></td>
+                        <td>$$P \leftrightarrow Q$$</td>
+                        <td>"n is even if and only if n² is even."</td>
+                        <td>Prove both directions: P→Q and Q→P</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Universal</strong></td>
+                        <td>$$\forall x, P(x)$$</td>
+                        <td>"For all integers n, n + 0 = n."</td>
+                        <td>Direct proof with arbitrary element</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Existential</strong></td>
+                        <td>$$\exists x, P(x)$$</td>
+                        <td>"There exists a prime number greater than 100."</td>
+                        <td>Construct a specific example</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Uniqueness</strong></td>
+                        <td>$$\exists! x, P(x)$$</td>
+                        <td>"There exists a unique real number x such that x + 3 = 5."</td>
+                        <td>Show existence, then show uniqueness</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Negation of Universal</strong></td>
+                        <td>$$\neg(\forall x, P(x)) \equiv \exists x, \neg P(x)$$</td>
+                        <td>"Not all primes are odd."</td>
+                        <td>Provide a counterexample</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3>Understanding Conditional Statements: The Most Common Form</h3>
+            
+            <p>The <strong>conditional statement</strong> "If P, then Q" (written $$P \rightarrow Q$$) is by far the most common theorem form. Let's understand its components thoroughly:</p>
+            
+            <div class="definition-box">
+                <h4><span class="emoji-icon">📖</span> Terminology for $$P \rightarrow Q$$</h4>
+                <table>
+                    <tr>
+                        <td><strong>P</strong></td>
+                        <td>Called the <em>hypothesis</em>, <em>antecedent</em>, <em>premise</em>, or <em>assumption</em></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Q</strong></td>
+                        <td>Called the <em>conclusion</em> or <em>consequent</em></td>
+                    </tr>
+                </table>
+                <p><strong>Alternative phrasings:</strong></p>
+                <ul>
+                    <li>"P implies Q"</li>
+                    <li>"P is sufficient for Q" (if we have P, that's enough to guarantee Q)</li>
+                    <li>"Q is necessary for P" (P can't happen without Q)</li>
+                    <li>"P only if Q" (P happens only when Q also happens)</li>
+                    <li>"Q whenever P" (every time P occurs, Q occurs)</li>
+                </ul>
+            </div>
+            
+            <div class="example-box">
+                <h4><span class="emoji-icon">📝</span> Example: Identifying P and Q</h4>
+                <p><strong>Statement:</strong> "If a number is divisible by 6, then it is divisible by 2."</p>
+                <ul>
+                    <li><strong>P (hypothesis):</strong> "a number is divisible by 6"</li>
+                    <li><strong>Q (conclusion):</strong> "it is divisible by 2"</li>
+                </ul>
+                <p><strong>Statement:</strong> "Whenever it rains, the ground gets wet."</p>
+                <ul>
+                    <li><strong>P (hypothesis):</strong> "it rains"</li>
+                    <li><strong>Q (conclusion):</strong> "the ground gets wet"</li>
+                </ul>
+            </div>
+        </section>
+        
+        <!-- Section 5: Related Conditional Statements -->
+        <section id="section5">
+            <h2>5. Related Conditional Statements</h2>
+            
+            <label class="section-check" id="check5">
+                <input type="checkbox" onchange="updateProgress()" aria-label="Mark section 5 as complete">
+                <span>Mark this section as complete</span>
+            </label>
+            
+            <p>Given any conditional statement $$P \rightarrow Q$$, we can form three related statements. Understanding these relationships is <strong>essential</strong> for proof writing.</p>
+            
+            <h3>The Four Related Statements</h3>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Symbolic Form</th>
+                        <th>Example (Original: "If it rains, then the ground is wet.")</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Original (Conditional)</strong></td>
+                        <td>$$P \rightarrow Q$$</td>
+                        <td>"If it rains, then the ground is wet."</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Converse</strong></td>
+                        <td>$$Q \rightarrow P$$</td>
+                        <td>"If the ground is wet, then it rains."</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Inverse</strong></td>
+                        <td>$$\neg P \rightarrow \neg Q$$</td>
+                        <td>"If it doesn't rain, then the ground is not wet."</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Contrapositive</strong></td>
+                        <td>$$\neg Q \rightarrow \neg P$$</td>
+                        <td>"If the ground is not wet, then it doesn't rain."</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="theorem-box">
+                <h4><span class="emoji-icon">📐</span> Critical Theorem: Contrapositive Equivalence</h4>
+                <p>A conditional statement is <strong>logically equivalent</strong> to its contrapositive:</p>
+                <div class="math-block">
+                    $$(P \rightarrow Q) \equiv (\neg Q \rightarrow \neg P)$$
+                </div>
+                <p>This means: proving the contrapositive is <strong>exactly the same</strong> as proving the original statement!</p>
+            </div>
+            
+            <div class="warning-box">
+                <h4><span class="emoji-icon">⚠️</span> Critical Warning: Converse ≠ Original</h4>
+                <p>A conditional statement is <strong>NOT</strong> logically equivalent to its converse or inverse!</p>
+                <ul>
+                    <li>$$(P \rightarrow Q) \not\equiv (Q \rightarrow P)$$ — The converse may be true or false independently</li>
+                    <li>$$(P \rightarrow Q) \not\equiv (\neg P \rightarrow \neg Q)$$ — The inverse may be true or false independently</li>
+                </ul>
+                <p><strong>However:</strong> The converse and inverse are equivalent to each other (they're contrapositives of each other).</p>
+            </div>
+            
+            <h3>Logical Equivalence Diagram</h3>
+            
+            <div class="strategy-box">
+                <h4><span class="emoji-icon">🔗</span> Equivalence Relationships</h4>
+                <pre>
+Original:       P → Q    ←——— EQUIVALENT ———→    ¬Q → ¬P   :Contrapositive
+                 ↑                                    ↑
+                 |         NOT equivalent             |
+                 ↓                                    ↓
+Converse:       Q → P    ←——— EQUIVALENT ———→    ¬P → ¬Q   :Inverse
+                </pre>
+                <p><strong>Summary:</strong></p>
+                <ul>
+                    <li>Original ≡ Contrapositive (always have the same truth value)</li>
+                    <li>Converse ≡ Inverse (always have the same truth value)</li>
+                    <li>Original and Converse are independent (one can be true while the other is false)</li>
+                </ul>
+            </div>
+            
+            <div class="example-box">
+                <h4><span class="emoji-icon">📝</span> Example: Why Converse ≠ Original</h4>
+                <p><strong>Original (TRUE):</strong> "If n is divisible by 4, then n is divisible by 2."</p>
+                <p><strong>Converse (FALSE):</strong> "If n is divisible by 2, then n is divisible by 4."</p>
+                <p><strong>Counterexample:</strong> n = 6</p>
+                <ul>
+                    <li>6 is divisible by 2 ✓ (6 = 2 × 3)</li>
+                    <li>6 is NOT divisible by 4 ✗ (6 ÷ 4 = 1.5)</li>
+                </ul>
+                <p>The converse is false even though the original is true!</p>
+            </div>
+            
+            <div class="example-box">
+                <h4><span class="emoji-icon">📝</span> Example: Forming All Four Statements</h4>
+                <p><strong>Original:</strong> "If a function is differentiable, then it is continuous."</p>
+                <p>Let P = "a function is differentiable" and Q = "it is continuous"</p>
+                <table>
+                    <tr>
+                        <td><strong>Original</strong> ($$P \rightarrow Q$$):</td>
+                        <td>"If a function is differentiable, then it is continuous." (TRUE)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Converse</strong> ($$Q \rightarrow P$$):</td>
+                        <td>"If a function is continuous, then it is differentiable." (FALSE—|x| is continuous but not differentiable at 0)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Inverse</strong> ($$\neg P \rightarrow \neg Q$$):</td>
+                        <td>"If a function is not differentiable, then it is not continuous." (FALSE—same counterexample)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Contrapositive</strong> ($$\neg Q \rightarrow \neg P$$):</td>
+                        <td>"If a function is not continuous, then it is not differentiable." (TRUE—equivalent to original)</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <h3>Why This Matters for Proofs</h3>
+            
+            <p>The contrapositive equivalence gives us a powerful proof technique:</p>
+            
+            <div class="insight-box">
+                <h4><span class="emoji-icon">💡</span> Proof Strategy: Contrapositive</h4>
+                <p>To prove $$P \rightarrow Q$$, you can instead prove $$\neg Q \rightarrow \neg P$$.</p>
+                <p><strong>When is this useful?</strong></p>
+                <ul>
+                    <li>When starting from ¬Q gives you more useful information than starting from P</li>
+                    <li>When the negation of Q is easier to work with</li>
+                    <li>Classic example: To prove "If n² is even, then n is even," prove "If n is odd, then n² is odd" (much easier!)</li>
+                </ul>
+                <p>We'll explore this technique in depth in Module 5.4.</p>
+            </div>
+        </section>
+        
+        <!-- Section 6: Essential Definitions for Proofs -->
+        <section id="section6">
+            <h2>6. Essential Definitions for Proofs</h2>
+            
+            <label class="section-check" id="check6">
+                <input type="checkbox" onchange="updateProgress()" aria-label="Mark section 6 as complete">
+                <span>Mark this section as complete</span>
+            </label>
+            
+            <p>To write proofs effectively, you must know and use <strong>precise mathematical definitions</strong>. Here are the essential definitions we'll use throughout this course:</p>
+            
+            <h3>Number Theory Definitions</h3>
+            
+            <div class="definition-box">
+                <h4><span class="emoji-icon">📖</span> Definition: Even Integer</h4>
+                <p>An integer n is <strong>even</strong> if and only if there exists an integer k such that n = 2k.</p>
+                <p><strong>Symbolically:</strong> $$n \text{ is even} \Leftrightarrow \exists k \in \mathbb{Z}, n = 2k$$</p>
+                <p><strong>Examples:</strong></p>
+                <ul>
+                    <li>6 is even because 6 = 2(3), where k = 3</li>
+                    <li>0 is even because 0 = 2(0), where k = 0</li>
+                    <li>-8 is even because -8 = 2(-4), where k = -4</li>
+                </ul>
+            </div>
+            
+            <div class="definition-box">
+                <h4><span class="emoji-icon">📖</span> Definition: Odd Integer</h4>
+                <p>An integer n is <strong>odd</strong> if and only if there exists an integer k such that n = 2k + 1.</p>
+                <p><strong>Symbolically:</strong> $$n \text{ is odd} \Leftrightarrow \exists k \in \mathbb{Z}, n = 2k + 1$$</p>
+                <p><strong>Examples:</strong></p>
+                <ul>
+                    <li>7 is odd because 7 = 2(3) + 1, where k = 3</li>
+                    <li>1 is odd because 1 = 2(0) + 1, where k = 0</li>
+                    <li>-5 is odd because -5 = 2(-3) + 1, where k = -3</li>
+                </ul>
+            </div>
+            
+            <div class="definition-box">
+                <h4><span class="emoji-icon">📖</span> Definition: Divisibility</h4>
+                <p>An integer a <strong>divides</strong> an integer b (written $$a \mid b$$) if and only if there exists an integer k such that b = ak.</p>
+                <p><strong>Symbolically:</strong> $$a \mid b \Leftrightarrow \exists k \in \mathbb{Z}, b = ak$$</p>
+                <p><strong>Terminology:</strong></p>
+                <ul>
+                    <li>"a divides b"</li>
+                    <li>"a is a divisor of b"</li>
+                    <li>"a is a factor of b"</li>
+                    <li>"b is a multiple of a"</li>
+                    <li>"b is divisible by a"</li>
+                </ul>
+                <p><strong>Examples:</strong></p>
+                <ul>
+                    <li>$$3 \mid 12$$ because 12 = 3(4)</li>
+                    <li>$$5 \mid 0$$ because 0 = 5(0)</li>
+                    <li>$$7 \nmid 15$$ because there's no integer k with 15 = 7k</li>
+                </ul>
+            </div>
+            
+            <div class="definition-box">
+                <h4><span class="emoji-icon">📖</span> Definition: Prime Number</h4>
+                <p>An integer p > 1 is <strong>prime</strong> if and only if its only positive divisors are 1 and p itself.</p>
+                <p><strong>Equivalently:</strong> p > 1 is prime if whenever p = ab for positive integers a and b, then a = 1 or b = 1.</p>
+                <p><strong>Examples:</strong> 2, 3, 5, 7, 11, 13, 17, 19, 23, ...</p>
+                <p><strong>Non-examples:</strong> 1 (not greater than 1), 4 = 2×2, 6 = 2×3</p>
+            </div>
+            
+            <div class="definition-box">
+                <h4><span class="emoji-icon">📖</span> Definition: Composite Number</h4>
+                <p>An integer n > 1 is <strong>composite</strong> if and only if it is not prime—that is, if it has a positive divisor other than 1 and itself.</p>
+                <p><strong>Examples:</strong> 4, 6, 8, 9, 10, 12, ...</p>
+            </div>
+            
+            <div class="definition-box">
+                <h4><span class="emoji-icon">📖</span> Definition: Rational Number</h4>
+                <p>A real number r is <strong>rational</strong> if and only if there exist integers a and b with b ≠ 0 such that r = a/b.</p>
+                <p><strong>Symbolically:</strong> $$r \in \mathbb{Q} \Leftrightarrow \exists a, b \in \mathbb{Z}, b \neq 0, r = \frac{a}{b}$$</p>
+                <p><strong>Examples:</strong></p>
+                <ul>
+                    <li>3/4 is rational (a = 3, b = 4)</li>
+                    <li>-2/7 is rational (a = -2, b = 7)</li>
+                    <li>5 is rational (5 = 5/1, so a = 5, b = 1)</li>
+                    <li>0.75 is rational (0.75 = 3/4)</li>
+                </ul>
+            </div>
+            
+            <div class="definition-box">
+                <h4><span class="emoji-icon">📖</span> Definition: Irrational Number</h4>
+                <p>A real number is <strong>irrational</strong> if and only if it is not rational—that is, it cannot be expressed as a ratio of two integers.</p>
+                <p><strong>Examples:</strong> $$\sqrt{2}$$, $$\pi$$, $$e$$, $$\sqrt{3}$$</p>
+            </div>
+            
+            <div class="warning-box">
+                <h4><span class="emoji-icon">⚠️</span> Common Mistake: Definition vs. Test</h4>
+                <p>Don't confuse the <strong>definition</strong> of a property with a <strong>test</strong> for that property:</p>
+                <table>
+                    <tr>
+                        <td><strong>Definition of even:</strong></td>
+                        <td>n = 2k for some integer k</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Test for even (in code):</strong></td>
+                        <td><code>n % 2 == 0</code></td>
+                    </tr>
+                </table>
+                <p>In proofs, <strong>always use the formal definition</strong>, not the computational test!</p>
+                <p><strong>Correct:</strong> "Since n is even, n = 2k for some integer k."</p>
+                <p><strong>Incorrect:</strong> "Since n is even, n % 2 = 0."</p>
+            </div>
+            
+            <h3>Why Definitions Are Critical</h3>
+            
+            <p>In proofs, definitions serve two essential purposes:</p>
+            
+            <div class="strategy-box">
+                <h4><span class="emoji-icon">🎯</span> Using Definitions in Proofs</h4>
+                <ol>
+                    <li><strong>Unpacking assumptions:</strong> When you assume something is true, the definition tells you what that means mathematically.
+                        <ul>
+                            <li>"Assume n is even" → "Then n = 2k for some integer k"</li>
+                        </ul>
+                    </li>
+                    <li><strong>Establishing conclusions:</strong> To prove something has a property, show it satisfies the definition.
+                        <ul>
+                            <li>To prove n is even → Show n = 2m for some integer m</li>
+                        </ul>
+                    </li>
+                </ol>
+            </div>
+        </section>
+        
+        <!-- Section 7: Overview of Proof Techniques -->
+        <section id="section7">
+            <h2>7. Overview of Proof Techniques</h2>
+            
+            <label class="section-check" id="check7">
+                <input type="checkbox" onchange="updateProgress()" aria-label="Mark section 7 as complete">
+                <span>Mark this section as complete</span>
+            </label>
+            
+            <p>There are several standard proof techniques, each suited to different types of statements. This week (Week 5), we'll focus on the first four; mathematical induction will be covered in Week 6.</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Technique</th>
+                        <th>When to Use</th>
+                        <th>Basic Approach</th>
+                        <th>Module</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Direct Proof</strong></td>
+                        <td>Proving $$P \rightarrow Q$$</td>
+                        <td>Assume P is true, derive Q through logical steps</td>
+                        <td>5.2</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Proof by Cases</strong></td>
+                        <td>When the domain naturally splits into cases</td>
+                        <td>Prove the result holds in each case separately</td>
+                        <td>5.3</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Proof by Contrapositive</strong></td>
+                        <td>When direct proof is difficult</td>
+                        <td>Prove $$\neg Q \rightarrow \neg P$$ instead</td>
+                        <td>5.4</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Proof by Counterexample</strong></td>
+                        <td>Disproving universal statements</td>
+                        <td>Find one example where the statement fails</td>
+                        <td>5.5</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Proof by Contradiction</strong></td>
+                        <td>Proving something is impossible</td>
+                        <td>Assume the opposite, derive a contradiction</td>
+                        <td>Week 6</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Mathematical Induction</strong></td>
+                        <td>Proving $$\forall n \geq n_0, P(n)$$</td>
+                        <td>Prove base case, prove inductive step</td>
+                        <td>Week 6</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3>Preview of This Week's Techniques</h3>
+            
+            <button class="collapsible" onclick="toggleCollapsible(this)" aria-expanded="false">
+                <span>Preview: Direct Proof (Module 5.2)</span>
+            </button>
+            <div class="collapsible-content">
+                <div class="collapsible-content-inner">
+                    <p><strong>To prove $$P \rightarrow Q$$ directly:</strong></p>
+                    <ol>
+                        <li>Assume P is true</li>
+                        <li>Use definitions, axioms, and previously proven theorems</li>
+                        <li>Derive Q through a chain of logical implications</li>
+                    </ol>
+                    <p><strong>Example:</strong> To prove "If n is even, then n² is even":</p>
+                    <ul>
+                        <li>Assume n is even</li>
+                        <li>Apply definition: n = 2k</li>
+                        <li>Compute: n² = 4k² = 2(2k²)</li>
+                        <li>Conclude: n² is even</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <button class="collapsible" onclick="toggleCollapsible(this)" aria-expanded="false">
+                <span>Preview: Proof by Cases (Module 5.3)</span>
+            </button>
+            <div class="collapsible-content">
+                <div class="collapsible-content-inner">
+                    <p><strong>When the domain naturally divides into cases:</strong></p>
+                    <ol>
+                        <li>Identify exhaustive, mutually exclusive cases</li>
+                        <li>Prove the result holds in each case</li>
+                        <li>Conclude the result holds in general</li>
+                    </ol>
+                    <p><strong>Example:</strong> To prove "For any integer n, n(n+1) is even":</p>
+                    <ul>
+                        <li><strong>Case 1:</strong> n is even → n(n+1) = (even)(anything) = even</li>
+                        <li><strong>Case 2:</strong> n is odd → n+1 is even → n(n+1) = (anything)(even) = even</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <button class="collapsible" onclick="toggleCollapsible(this)" aria-expanded="false">
+                <span>Preview: Proof by Contrapositive (Module 5.4)</span>
+            </button>
+            <div class="collapsible-content">
+                <div class="collapsible-content-inner">
+                    <p><strong>Since $$(P \rightarrow Q) \equiv (\neg Q \rightarrow \neg P)$$:</strong></p>
+                    <ol>
+                        <li>Assume ¬Q is true</li>
+                        <li>Derive ¬P through logical steps</li>
+                        <li>Conclude that $$P \rightarrow Q$$ is true</li>
+                    </ol>
+                    <p><strong>Example:</strong> To prove "If n² is even, then n is even":</p>
+                    <ul>
+                        <li>Prove the contrapositive: "If n is odd, then n² is odd"</li>
+                        <li>Assume n is odd: n = 2k + 1</li>
+                        <li>Compute: n² = 4k² + 4k + 1 = 2(2k² + 2k) + 1</li>
+                        <li>Conclude: n² is odd</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <button class="collapsible" onclick="toggleCollapsible(this)" aria-expanded="false">
+                <span>Preview: Proof by Counterexample (Module 5.5)</span>
+            </button>
+            <div class="collapsible-content">
+                <div class="collapsible-content-inner">
+                    <p><strong>To disprove a universal statement $$\forall x, P(x)$$:</strong></p>
+                    <ol>
+                        <li>Find a specific value c in the domain</li>
+                        <li>Show that P(c) is false</li>
+                        <li>Conclude that $$\forall x, P(x)$$ is false</li>
+                    </ol>
+                    <p><strong>Example:</strong> Disprove "All prime numbers are odd":</p>
+                    <ul>
+                        <li>Counterexample: 2</li>
+                        <li>2 is prime (only divisors are 1 and 2)</li>
+                        <li>2 is even (not odd)</li>
+                        <li>Therefore, the statement is false</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Interactive Activity -->
+        <section id="activity">
+            <h2>8. Interactive Activities</h2>
+            
+            <div class="interactive-activity">
+                <h3><span class="emoji-icon">🎮</span> Activity 1: Identify Theorem Components</h3>
+                
+                <p>For the following theorem and proof, identify each component:</p>
+                
+                <div class="proof-structure">
+                    <p><strong>Theorem:</strong> If n is an odd integer, then n + 1 is even.</p>
+                    <p><strong>Proof:</strong> Let n be an odd integer. By definition, n = 2k + 1 for some integer k. Then n + 1 = (2k + 1) + 1 = 2k + 2 = 2(k + 1). Let m = k + 1. Since k is an integer, m is an integer. Thus n + 1 = 2m where m is an integer. By definition, n + 1 is even. ∎</p>
+                </div>
+                
+                <div class="quiz-question" id="activity1q1">
+                    <p><strong>Question 1:</strong> "Let n be an odd integer" is the:</p>
+                    <div class="quiz-options">
+                        <label class="quiz-option">
+                            <input type="radio" name="a1q1" value="a">
+                            <span>Statement of the theorem</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="a1q1" value="b">
+                            <span>Assumption (hypothesis)</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="a1q1" value="c">
+                            <span>Conclusion</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="a1q1" value="d">
+                            <span>Justification</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="quiz-question" id="activity1q2">
+                    <p><strong>Question 2:</strong> "By definition, n = 2k + 1 for some integer k" is:</p>
+                    <div class="quiz-options">
+                        <label class="quiz-option">
+                            <input type="radio" name="a1q2" value="a">
+                            <span>Applying a definition</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="a1q2" value="b">
+                            <span>Making a new assumption</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="a1q2" value="c">
+                            <span>Stating the conclusion</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="a1q2" value="d">
+                            <span>Using algebra</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="quiz-question" id="activity1q3">
+                    <p><strong>Question 3:</strong> "n + 1 = (2k + 1) + 1 = 2k + 2 = 2(k + 1)" is:</p>
+                    <div class="quiz-options">
+                        <label class="quiz-option">
+                            <input type="radio" name="a1q3" value="a">
+                            <span>Applying a definition</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="a1q3" value="b">
+                            <span>Making an assumption</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="a1q3" value="c">
+                            <span>Algebraic manipulation</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="a1q3" value="d">
+                            <span>The conclusion</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <button onclick="checkActivity1()" class="mt-20">Check Answers</button>
+                <div class="feedback" id="activity1Feedback"></div>
+            </div>
+            
+            <div class="interactive-activity">
+                <h3><span class="emoji-icon">🎮</span> Activity 2: Identify Related Statements</h3>
+                
+                <p>Given the statement: <strong>"If a number is divisible by 6, then it is divisible by 3."</strong></p>
+                
+                <div class="quiz-question" id="activity2q1">
+                    <p><strong>Question 1:</strong> What is the converse?</p>
+                    <div class="quiz-options">
+                        <label class="quiz-option">
+                            <input type="radio" name="a2q1" value="a">
+                            <span>If a number is divisible by 3, then it is divisible by 6.</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="a2q1" value="b">
+                            <span>If a number is not divisible by 6, then it is not divisible by 3.</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="a2q1" value="c">
+                            <span>If a number is not divisible by 3, then it is not divisible by 6.</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="a2q1" value="d">
+                            <span>A number is divisible by 6 if and only if it is divisible by 3.</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="quiz-question" id="activity2q2">
+                    <p><strong>Question 2:</strong> What is the contrapositive?</p>
+                    <div class="quiz-options">
+                        <label class="quiz-option">
+                            <input type="radio" name="a2q2" value="a">
+                            <span>If a number is divisible by 3, then it is divisible by 6.</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="a2q2" value="b">
+                            <span>If a number is not divisible by 6, then it is not divisible by 3.</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="a2q2" value="c">
+                            <span>If a number is not divisible by 3, then it is not divisible by 6.</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="a2q2" value="d">
+                            <span>A number is divisible by 6 if and only if it is divisible by 3.</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="quiz-question" id="activity2q3">
+                    <p><strong>Question 3:</strong> Is the converse true or false?</p>
+                    <div class="quiz-options">
+                        <label class="quiz-option">
+                            <input type="radio" name="a2q3" value="a">
+                            <span>True - every number divisible by 3 is also divisible by 6</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="a2q3" value="b">
+                            <span>False - counterexample: 9 is divisible by 3 but not by 6</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <button onclick="checkActivity2()" class="mt-20">Check Answers</button>
+                <div class="feedback" id="activity2Feedback"></div>
+            </div>
+            
+            <div class="interactive-activity">
+                <h3><span class="emoji-icon">🎮</span> Activity 3: Apply Definitions</h3>
+                
+                <p>Use the formal definitions to complete these exercises:</p>
+                
+                <div class="quiz-question" id="activity3q1">
+                    <p><strong>Question 1:</strong> Using the definition of "even," express 14 in the form n = 2k.</p>
+                    <p>14 = 2 × <input type="number" id="def1" style="width: 80px; padding: 8px; font-size: 1rem; border: 2px solid #ddd; border-radius: 5px;" aria-label="Value of k for 14 equals 2k"></p>
+                </div>
+                
+                <div class="quiz-question" id="activity3q2">
+                    <p><strong>Question 2:</strong> Using the definition of "odd," express 17 in the form n = 2k + 1.</p>
+                    <p>17 = 2 × <input type="number" id="def2" style="width: 80px; padding: 8px; font-size: 1rem; border: 2px solid #ddd; border-radius: 5px;" aria-label="Value of k for 17 equals 2k plus 1"> + 1</p>
+                </div>
+                
+                <div class="quiz-question" id="activity3q3">
+                    <p><strong>Question 3:</strong> Using the definition of divisibility, express "5 | 35" by finding k where 35 = 5k.</p>
+                    <p>35 = 5 × <input type="number" id="def3" style="width: 80px; padding: 8px; font-size: 1rem; border: 2px solid #ddd; border-radius: 5px;" aria-label="Value of k for 35 equals 5k"></p>
+                </div>
+                
+                <div class="quiz-question" id="activity3q4">
+                    <p><strong>Question 4:</strong> Express -10 as an even number using the definition n = 2k.</p>
+                    <p>-10 = 2 × <input type="number" id="def4" style="width: 80px; padding: 8px; font-size: 1rem; border: 2px solid #ddd; border-radius: 5px;" aria-label="Value of k for negative 10 equals 2k"></p>
+                </div>
+                
+                <button onclick="checkActivity3()" class="mt-20">Check Answers</button>
+                <div class="feedback" id="activity3Feedback"></div>
+            </div>
+        </section>
+        
+        <!-- Knowledge Check -->
+        <section id="knowledge-check">
+            <h2>9. Knowledge Check</h2>
+            
+            <div class="knowledge-check">
+                <h3><span class="emoji-icon">✅</span> Module 5.1 Knowledge Check</h3>
+                <p>Test your understanding of the key concepts from this module.</p>
+                
+                <div class="quiz-question" id="kcq1">
+                    <p><strong>Question 1:</strong> What is the main difference between testing and proving?</p>
+                    <div class="quiz-options">
+                        <label class="quiz-option">
+                            <input type="radio" name="kc1" value="a">
+                            <span>Testing is faster than proving</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="kc1" value="b">
+                            <span>Testing verifies specific cases; proving establishes truth for all cases</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="kc1" value="c">
+                            <span>Testing is more accurate than proving</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="kc1" value="d">
+                            <span>There is no significant difference</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="quiz-question" id="kcq2">
+                    <p><strong>Question 2:</strong> Which statement is logically equivalent to $$P \rightarrow Q$$?</p>
+                    <div class="quiz-options">
+                        <label class="quiz-option">
+                            <input type="radio" name="kc2" value="a">
+                            <span>$$Q \rightarrow P$$ (converse)</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="kc2" value="b">
+                            <span>$$\neg P \rightarrow \neg Q$$ (inverse)</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="kc2" value="c">
+                            <span>$$\neg Q \rightarrow \neg P$$ (contrapositive)</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="kc2" value="d">
+                            <span>All of the above</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="quiz-question" id="kcq3">
+                    <p><strong>Question 3:</strong> According to the definition, an integer n is even if and only if:</p>
+                    <div class="quiz-options">
+                        <label class="quiz-option">
+                            <input type="radio" name="kc3" value="a">
+                            <span>n % 2 == 0</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="kc3" value="b">
+                            <span>n = 2k for some integer k</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="kc3" value="c">
+                            <span>n is divisible by 2</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="kc3" value="d">
+                            <span>n ends in 0, 2, 4, 6, or 8</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="quiz-question" id="kcq4">
+                    <p><strong>Question 4:</strong> A lemma is:</p>
+                    <div class="quiz-options">
+                        <label class="quiz-option">
+                            <input type="radio" name="kc4" value="a">
+                            <span>A statement accepted without proof</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="kc4" value="b">
+                            <span>A statement believed true but not yet proven</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="kc4" value="c">
+                            <span>A helper theorem used to prove a larger result</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="kc4" value="d">
+                            <span>A result that follows easily from a theorem</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="quiz-question" id="kcq5">
+                    <p><strong>Question 5:</strong> What does the symbol ∎ indicate at the end of a proof?</p>
+                    <div class="quiz-options">
+                        <label class="quiz-option">
+                            <input type="radio" name="kc5" value="a">
+                            <span>The proof contains an error</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="kc5" value="b">
+                            <span>The proof is incomplete</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="kc5" value="c">
+                            <span>The proof is complete</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="kc5" value="d">
+                            <span>The proof uses contradiction</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <button onclick="checkKnowledgeCheck()" class="mt-20">Submit Knowledge Check</button>
+                <div class="feedback" id="kcFeedback"></div>
+            </div>
+        </section>
+        
+        <!-- Summary -->
+        <section id="summary">
+            <h2>10. Summary and Key Takeaways</h2>
+            
+            <label class="section-check" id="check8">
+                <input type="checkbox" onchange="updateProgress()" aria-label="Mark summary as complete">
+                <span>Mark this section as complete</span>
+            </label>
+            
+            <div class="definition-box">
+                <h4><span class="emoji-icon">📋</span> Key Takeaways from Module 5.1</h4>
+                <ol>
+                    <li><strong>Mathematical proofs</strong> establish truth for ALL cases, unlike testing which only checks specific cases.</li>
+                    <li>A well-structured proof contains: <strong>statement, assumptions, definitions applied, logical steps, justifications, and conclusion</strong>.</li>
+                    <li>The most common theorem form is the <strong>conditional</strong>: $$P \rightarrow Q$$.</li>
+                    <li>A conditional is <strong>logically equivalent to its contrapositive</strong>: $$(P \rightarrow Q) \equiv (\neg Q \rightarrow \neg P)$$</li>
+                    <li>A conditional is <strong>NOT equivalent</strong> to its converse or inverse.</li>
+                    <li><strong>Formal definitions</strong> are essential for proofs—always use them precisely.</li>
+                    <li>Different <strong>proof techniques</strong> are suited for different types of statements.</li>
+                </ol>
+            </div>
+            
+            <h3>Preparing for Module 5.2: Direct Proofs</h3>
+            
+            <p>In the next module, you'll learn your first proof technique: <strong>Direct Proof</strong>. Make sure you:</p>
+            <ul>
+                <li>✓ Understand the structure of a conditional statement $$P \rightarrow Q$$</li>
+                <li>✓ Know the definitions of even, odd, divisibility, and rational numbers</li>
+                <li>✓ Can identify the hypothesis and conclusion in a theorem</li>
+                <li>✓ Understand why proving the contrapositive proves the original statement</li>
+            </ul>
+            
+            <div class="insight-box">
+                <h4><span class="emoji-icon">🎯</span> What's Next?</h4>
+                <p><strong>Module 5.2: Direct Proofs</strong> will teach you how to construct your first complete mathematical proofs using the direct proof technique. You'll learn to:</p>
+                <ul>
+                    <li>Start with an assumption and derive a conclusion</li>
+                    <li>Apply definitions correctly in proofs</li>
+                    <li>Write clear, step-by-step logical arguments</li>
+                    <li>Prove properties about even/odd numbers, divisibility, and rational numbers</li>
+                </ul>
+            </div>
+        </section>
+        
+        <!-- Resources -->
+        <section id="resources">
+            <h2>📚 Additional Resources</h2>
+            
+            <h3>Required Reading</h3>
+            <ul>
+                <li><a href="hammack-book-of-proof-3rd-ed.pdf" target="_blank">Book of Proof, 3rd Edition (Hammack)</a> - Chapter 4: Direct Proof (Sections 4.1-4.2)</li>
+                <li>Saylor.org CS202 - Unit 4: Mathematical Induction and Proofs (Sections 4.1-4.2)</li>
+            </ul>
+            
+            <h3>Supplementary Materials</h3>
+            <ul>
+                <li><a href="https://www.people.vcu.edu/~rhammack/BookOfProof/" target="_blank" rel="noopener noreferrer">Book of Proof - Free Online Version</a></li>
+                <li><a href="https://brilliant.org/wiki/proof-writing/" target="_blank" rel="noopener noreferrer">Brilliant.org - Proof Writing Guide</a></li>
+                <li><a href="https://www.khanacademy.org/math/geometry-home/geometry-miscellaneous/geometry-proofs/v/two-column-proof-showing-segments-are-perpendicular" target="_blank" rel="noopener noreferrer">Khan Academy - Introduction to Proofs</a></li>
+            </ul>
+            
+            <h3>Practice Resources</h3>
+            <ul>
+                <li>Problem Set 5 (PS-05): Proof Writing Fundamentals (available on Canvas)</li>
+                <li>Additional practice problems in the Book of Proof, Chapter 4</li>
+            </ul>
+        </section>
+    </main>
+    
+    <!-- Navigation -->
+    <nav class="nav-buttons" aria-label="Module navigation">
+        <a href="csc240-week4-module6.html" class="nav-button">
+            ← Previous: Module 4.6
+        </a>
+        <a href="csc240-week5-module2.html" class="nav-button">
+            Next: Module 5.2 - Direct Proofs →
+        </a>
+    </nav>
+    
+    <footer>
+        <p><strong>Module 5.1: Introduction to Mathematical Proofs</strong></p>
+        <p>CSC 240 - Discrete Structures | Mendocino College</p>
+        <p>© 2026 Mendocino College | All Rights Reserved</p>
+        <p><a href="mailto:instructor@mendocino.edu">Contact Instructor</a> | <a href="https://www.mendocino.edu">College Website</a></p>
+    </footer>
+    
+    <script>
+        // ==================== PROGRESS TRACKING ====================
+        function updateProgress() {
+            const checkboxes = document.querySelectorAll('.section-check input[type="checkbox"]');
+            let completed = 0;
+            
+            checkboxes.forEach((checkbox, index) => {
+                const key = `module5_1_section${index + 1}`;
+                if (checkbox.checked) {
+                    completed++;
+                    checkbox.parentElement.classList.add('completed');
+                    sessionStorage.setItem(key, 'true');
+                } else {
+                    checkbox.parentElement.classList.remove('completed');
+                    sessionStorage.setItem(key, 'false');
+                }
+            });
+            
+            const percentage = Math.round((completed / checkboxes.length) * 100);
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            const progressBar = progressFill.parentElement;
+            
+            progressFill.style.width = percentage + '%';
+            progressText.textContent = percentage + '% Complete';
+            progressBar.setAttribute('aria-valuenow', percentage);
+            
+            sessionStorage.setItem('module5_1_progress', percentage);
+        }
+        
+        function loadProgress() {
+            const checkboxes = document.querySelectorAll('.section-check input[type="checkbox"]');
+            
+            checkboxes.forEach((checkbox, index) => {
+                const key = `module5_1_section${index + 1}`;
+                const saved = sessionStorage.getItem(key);
+                if (saved === 'true') {
+                    checkbox.checked = true;
+                    checkbox.parentElement.classList.add('completed');
+                }
+            });
+            
+            updateProgress();
+        }
+        
+        // ==================== COLLAPSIBLE SECTIONS ====================
+        function toggleCollapsible(button) {
+            const isExpanded = button.classList.contains('active');
+            button.classList.toggle('active');
+            const content = button.nextElementSibling;
+            content.classList.toggle('show');
+            button.setAttribute('aria-expanded', !isExpanded);
+        }
+        
+        // ==================== ACTIVITY 1 CHECKER ====================
+        function checkActivity1() {
+            const answers = {
+                'a1q1': 'b',
+                'a1q2': 'a',
+                'a1q3': 'c'
+            };
+            
+            let correct = 0;
+            let total = 3;
+            let allAnswered = true;
+            
+            // Clear previous styling
+            document.querySelectorAll('#activity1q1 .quiz-option, #activity1q2 .quiz-option, #activity1q3 .quiz-option').forEach(opt => {
+                opt.classList.remove('correct', 'incorrect');
+            });
+            
+            for (const [name, correctAnswer] of Object.entries(answers)) {
+                const selected = document.querySelector(`input[name="${name}"]:checked`);
+                if (!selected) {
+                    allAnswered = false;
+                    continue;
+                }
+                
+                if (selected.value === correctAnswer) {
+                    correct++;
+                    selected.parentElement.classList.add('correct');
+                } else {
+                    selected.parentElement.classList.add('incorrect');
+                    document.querySelector(`input[name="${name}"][value="${correctAnswer}"]`).parentElement.classList.add('correct');
+                }
+            }
+            
+            const feedback = document.getElementById('activity1Feedback');
+            
+            if (!allAnswered) {
+                feedback.className = 'feedback incorrect show';
+                feedback.textContent = 'Please answer all questions before checking.';
+                return;
+            }
+            
+            if (correct === total) {
+                feedback.className = 'feedback correct show';
+                feedback.innerHTML = `<strong>Excellent!</strong> ${correct}/${total} correct. You understand the components of a proof!`;
+            } else {
+                feedback.className = 'feedback incorrect show';
+                feedback.innerHTML = `<strong>${correct}/${total} correct.</strong> Review the proof components table and try again. The correct answers are highlighted in green.`;
+            }
+        }
+        
+        // ==================== ACTIVITY 2 CHECKER ====================
+        function checkActivity2() {
+            const answers = {
+                'a2q1': 'a',
+                'a2q2': 'c',
+                'a2q3': 'b'
+            };
+            
+            let correct = 0;
+            let total = 3;
+            let allAnswered = true;
+            
+            // Clear previous styling
+            document.querySelectorAll('#activity2q1 .quiz-option, #activity2q2 .quiz-option, #activity2q3 .quiz-option').forEach(opt => {
+                opt.classList.remove('correct', 'incorrect');
+            });
+            
+            for (const [name, correctAnswer] of Object.entries(answers)) {
+                const selected = document.querySelector(`input[name="${name}"]:checked`);
+                if (!selected) {
+                    allAnswered = false;
+                    continue;
+                }
+                
+                if (selected.value === correctAnswer) {
+                    correct++;
+                    selected.parentElement.classList.add('correct');
+                } else {
+                    selected.parentElement.classList.add('incorrect');
+                    document.querySelector(`input[name="${name}"][value="${correctAnswer}"]`).parentElement.classList.add('correct');
+                }
+            }
+            
+            const feedback = document.getElementById('activity2Feedback');
+            
+            if (!allAnswered) {
+                feedback.className = 'feedback incorrect show';
+                feedback.textContent = 'Please answer all questions before checking.';
+                return;
+            }
+            
+            let explanation = '';
+            if (correct < total) {
+                explanation = '<br><br><strong>Remember:</strong><br>' +
+                    '• Converse: Swap P and Q → Q → P<br>' +
+                    '• Contrapositive: Negate and swap → ¬Q → ¬P<br>' +
+                    '• The converse is FALSE because 9 is divisible by 3 but not by 6.';
+            }
+            
+            if (correct === total) {
+                feedback.className = 'feedback correct show';
+                feedback.innerHTML = `<strong>Perfect!</strong> ${correct}/${total} correct. You understand related conditional statements!`;
+            } else {
+                feedback.className = 'feedback incorrect show';
+                feedback.innerHTML = `<strong>${correct}/${total} correct.</strong>${explanation}`;
+            }
+        }
+        
+        // ==================== ACTIVITY 3 CHECKER ====================
+        function checkActivity3() {
+            const answers = {
+                'def1': 7,   // 14 = 2 × 7
+                'def2': 8,   // 17 = 2 × 8 + 1
+                'def3': 7,   // 35 = 5 × 7
+                'def4': -5   // -10 = 2 × (-5)
+            };
+            
+            let correct = 0;
+            let total = 4;
+            let results = [];
+            
+            for (const [id, correctAnswer] of Object.entries(answers)) {
+                const input = document.getElementById(id);
+                const userAnswer = parseInt(input.value);
+                
+                if (userAnswer === correctAnswer) {
+                    correct++;
+                    input.style.borderColor = '#4CAF50';
+                    input.style.backgroundColor = '#e8f5e9';
+                } else if (input.value === '') {
+                    input.style.borderColor = '#f44336';
+                    input.style.backgroundColor = '#ffebee';
+                    results.push(`Question ${id.slice(-1)}: Please enter an answer`);
+                } else {
+                    input.style.borderColor = '#f44336';
+                    input.style.backgroundColor = '#ffebee';
+                    results.push(`Question ${id.slice(-1)}: You entered ${userAnswer}, correct answer is ${correctAnswer}`);
+                }
+            }
+            
+            const feedback = document.getElementById('activity3Feedback');
+            
+            if (correct === total) {
+                feedback.className = 'feedback correct show';
+                feedback.innerHTML = `<strong>Excellent!</strong> ${correct}/${total} correct. You can apply formal definitions correctly!`;
+            } else {
+                feedback.className = 'feedback incorrect show';
+                feedback.innerHTML = `<strong>${correct}/${total} correct.</strong><br>` + results.join('<br>');
+            }
+        }
+        
+        // ==================== KNOWLEDGE CHECK ====================
+        function checkKnowledgeCheck() {
+            const answers = {
+                'kc1': 'b',
+                'kc2': 'c',
+                'kc3': 'b',
+                'kc4': 'c',
+                'kc5': 'c'
+            };
+            
+            let correct = 0;
+            let total = 5;
+            let allAnswered = true;
+            
+            // Clear previous styling
+            for (let i = 1; i <= 5; i++) {
+                document.querySelectorAll(`#kcq${i} .quiz-option`).forEach(opt => {
+                    opt.classList.remove('correct', 'incorrect');
+                });
+            }
+            
+            for (const [name, correctAnswer] of Object.entries(answers)) {
+                const selected = document.querySelector(`input[name="${name}"]:checked`);
+                if (!selected) {
+                    allAnswered = false;
+                    continue;
+                }
+                
+                if (selected.value === correctAnswer) {
+                    correct++;
+                    selected.parentElement.classList.add('correct');
+                } else {
+                    selected.parentElement.classList.add('incorrect');
+                    document.querySelector(`input[name="${name}"][value="${correctAnswer}"]`).parentElement.classList.add('correct');
+                }
+            }
+            
+            const feedback = document.getElementById('kcFeedback');
+            
+            if (!allAnswered) {
+                feedback.className = 'feedback incorrect show';
+                feedback.textContent = 'Please answer all questions before submitting.';
+                return;
+            }
+            
+            const percentage = Math.round((correct / total) * 100);
+            
+            if (percentage >= 80) {
+                feedback.className = 'feedback correct show';
+                feedback.innerHTML = `<strong>Great job!</strong> You scored ${correct}/${total} (${percentage}%). You're ready to move on to Module 5.2!`;
+            } else if (percentage >= 60) {
+                feedback.className = 'feedback info show';
+                feedback.innerHTML = `<strong>Good effort!</strong> You scored ${correct}/${total} (${percentage}%). Review the sections you missed before moving on.`;
+            } else {
+                feedback.className = 'feedback incorrect show';
+                feedback.innerHTML = `<strong>Keep studying!</strong> You scored ${correct}/${total} (${percentage}%). Please review this module before proceeding.`;
+            }
+            
+            // Save score to session storage
+            sessionStorage.setItem('module5_1_quiz_score', percentage);
+        }
+        
+        // ==================== INITIALIZE ON PAGE LOAD ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProgress();
+            
+            // Add keyboard navigation for collapsibles
+            document.querySelectorAll('.collapsible').forEach(button => {
+                button.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        toggleCollapsible(this);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,2532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 5.4: Proof by Contrapositive | CSC 240</title>
+    <style>
+        /* ==================== CSS RESET AND BASE ==================== */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #1a1a2e;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        /* ==================== HEADER STYLES ==================== */
+        header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        
+        header h1 {
+            margin: 0 0 10px 0;
+            font-size: 1.9rem;
+        }
+        
+        .module-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+        
+        .module-info span {
+            background: rgba(255,255,255,0.1);
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+        
+        /* ==================== PROGRESS TRACKING ==================== */
+        .progress-container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: #e0e0e0;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #9c27b0, #ba68c8);
+            border-radius: 6px;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+        
+        .progress-text {
+            text-align: center;
+            margin-top: 10px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        /* ==================== MAIN SECTIONS ==================== */
+        section {
+            background: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        
+        section h2 {
+            color: #1a1a2e;
+            border-bottom: 3px solid #9c27b0;
+            padding-bottom: 10px;
+            margin-top: 0;
+            font-size: 1.5rem;
+        }
+        
+        section h3 {
+            color: #16213e;
+            margin-top: 25px;
+            font-size: 1.25rem;
+        }
+        
+        section h4 {
+            color: #333;
+            margin-top: 20px;
+            font-size: 1.1rem;
+        }
+        
+        /* ==================== CONTENT BOXES ==================== */
+        .definition-box {
+            background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+            border-left: 5px solid #9c27b0;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 10px 10px 0;
+        }
+        
+        .definition-box h4 {
+            color: #7b1fa2;
+            margin-top: 0;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .theorem-box {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border-left: 5px solid #4CAF50;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 10px 10px 0;
+        }
+        
+        .theorem-box h4 {
+            color: #2e7d32;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        
+        .example-box {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-left: 5px solid #2196F3;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 10px 10px 0;
+        }
+        
+        .example-box h4 {
+            color: #1565c0;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        
+        .warning-box {
+            background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+            border-left: 5px solid #f44336;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 10px 10px 0;
+        }
+        
+        .warning-box h4 {
+            color: #c62828;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        
+        .insight-box {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            border-left: 5px solid #FF9800;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 10px 10px 0;
+        }
+        
+        .insight-box h4 {
+            color: #e65100;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        
+        .strategy-box {
+            background: linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 100%);
+            border-left: 5px solid #009688;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 10px 10px 0;
+        }
+        
+        .strategy-box h4 {
+            color: #00695c;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        
+        .learning-objectives {
+            background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #7b1fa2;
+        }
+        
+        .learning-objectives h3 {
+            color: #7b1fa2;
+            margin-top: 0;
+        }
+        
+        .learning-objectives ul {
+            margin-bottom: 0;
+        }
+        
+        .learning-objectives li {
+            margin: 10px 0;
+        }
+        
+        /* ==================== COMPARISON BOX ==================== */
+        .comparison-box {
+            background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
+            border: 2px solid #9c27b0;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .comparison-box h4 {
+            color: #7b1fa2;
+            margin-top: 0;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        .comparison-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .comparison-column {
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .comparison-column h5 {
+            margin-top: 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid;
+        }
+        
+        .comparison-column.direct h5 {
+            color: #2196F3;
+            border-color: #2196F3;
+        }
+        
+        .comparison-column.contrapositive h5 {
+            color: #9c27b0;
+            border-color: #9c27b0;
+        }
+        
+        /* ==================== TABLES ==================== */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        th {
+            background: #1a1a2e;
+            color: #fff;
+            font-weight: 600;
+        }
+        
+        tr:hover {
+            background: #f5f5f5;
+        }
+        
+        tr:last-child td {
+            border-bottom: none;
+        }
+        
+        /* ==================== INTERACTIVE ELEMENTS ==================== */
+        .interactive-activity {
+            background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            border: 2px solid #9c27b0;
+        }
+        
+        .interactive-activity h3 {
+            color: #7b1fa2;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .knowledge-check {
+            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            border: 2px solid #e91e63;
+        }
+        
+        .knowledge-check h3 {
+            color: #c2185b;
+            margin-top: 0;
+        }
+        
+        .quiz-question {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .quiz-question p {
+            margin-bottom: 15px;
+        }
+        
+        .quiz-question p:first-child {
+            font-weight: 600;
+        }
+        
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .quiz-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 15px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .quiz-option:hover {
+            background: #f3e5f5;
+            border-color: #9c27b0;
+        }
+        
+        .quiz-option.selected {
+            background: #f3e5f5;
+            border-color: #9c27b0;
+        }
+        
+        .quiz-option.correct {
+            background: #e8f5e9;
+            border-color: #4CAF50;
+        }
+        
+        .quiz-option.incorrect {
+            background: #ffebee;
+            border-color: #f44336;
+        }
+        
+        .quiz-option input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            margin: 0;
+        }
+        
+        /* ==================== BUTTONS ==================== */
+        button {
+            background: linear-gradient(135deg, #9c27b0 0%, #ba68c8 100%);
+            color: #fff;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(156, 39, 176, 0.3);
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(156, 39, 176, 0.4);
+        }
+        
+        button:focus {
+            outline: 3px solid #7b1fa2;
+            outline-offset: 2px;
+        }
+        
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        button.secondary {
+            background: linear-gradient(135deg, #2196F3 0%, #64b5f6 100%);
+            box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
+        }
+        
+        button.secondary:hover {
+            box-shadow: 0 6px 20px rgba(33, 150, 243, 0.4);
+        }
+        
+        /* ==================== FEEDBACK ==================== */
+        .feedback {
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .feedback.show {
+            display: block;
+        }
+        
+        .feedback.correct {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #4CAF50;
+        }
+        
+        .feedback.incorrect {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #f44336;
+        }
+        
+        .feedback.info {
+            background: #f3e5f5;
+            color: #7b1fa2;
+            border: 1px solid #9c27b0;
+        }
+        
+        /* ==================== COLLAPSIBLE SECTIONS ==================== */
+        .collapsible {
+            background: #f5f5f5;
+            border: none;
+            padding: 15px 20px;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            margin: 10px 0;
+            color: #333;
+        }
+        
+        .collapsible:hover {
+            background: #e0e0e0;
+        }
+        
+        .collapsible::after {
+            content: '▼';
+            font-size: 0.8rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .collapsible.active::after {
+            transform: rotate(180deg);
+        }
+        
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            background: #fff;
+            border-radius: 0 0 10px 10px;
+        }
+        
+        .collapsible-content.show {
+            max-height: 5000px;
+        }
+        
+        .collapsible-content-inner {
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-top: none;
+            border-radius: 0 0 10px 10px;
+        }
+        
+        /* ==================== PROOF STRUCTURES ==================== */
+        .proof-structure {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Georgia', 'Times New Roman', serif;
+        }
+        
+        .proof-structure .proof-header {
+            font-weight: bold;
+            color: #1a1a2e;
+            margin-bottom: 15px;
+        }
+        
+        .proof-structure .proof-line {
+            margin: 8px 0;
+            padding-left: 20px;
+        }
+        
+        .proof-structure .proof-line em {
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        .proof-structure .proof-end {
+            text-align: right;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+        
+        .proof-structure.contrapositive {
+            border-color: #9c27b0;
+            background: linear-gradient(135deg, #fafafa 0%, #f3e5f5 100%);
+        }
+        
+        .proof-template {
+            background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+            border: 2px dashed #9c27b0;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .proof-template h4 {
+            color: #7b1fa2;
+            margin-top: 0;
+        }
+        
+        .proof-template ol {
+            margin-bottom: 0;
+        }
+        
+        .proof-template li {
+            margin: 10px 0;
+            padding: 5px 0;
+        }
+        
+        .proof-template .template-placeholder {
+            background: #fff;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-family: 'Consolas', monospace;
+            color: #7b1fa2;
+        }
+        
+        /* ==================== SECTION CHECKBOXES ==================== */
+        .section-check {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 15px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            margin: 10px 0;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .section-check:hover {
+            background: #f3e5f5;
+        }
+        
+        .section-check input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            margin: 0;
+        }
+        
+        .section-check.completed {
+            background: #f3e5f5;
+            border-left: 3px solid #9c27b0;
+        }
+        
+        .section-check span {
+            font-weight: 500;
+        }
+        
+        /* ==================== CODE FORMATTING ==================== */
+        code {
+            background: #f5f5f5;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.95em;
+            color: #c7254e;
+        }
+        
+        pre {
+            background: #1a1a2e;
+            color: #a8e6cf;
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            line-height: 1.6;
+            white-space: pre;
+            margin: 15px 0;
+        }
+        
+        /* ==================== NAVIGATION ==================== */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .nav-buttons a {
+            text-decoration: none;
+        }
+        
+        .nav-button {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            padding: 12px 25px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }
+        
+        .nav-button:focus {
+            outline: 3px solid #9c27b0;
+            outline-offset: 2px;
+        }
+        
+        /* ==================== FOOTER ==================== */
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+            border-top: 1px solid #ddd;
+            margin-top: 40px;
+            background: #fff;
+            border-radius: 15px;
+        }
+        
+        footer a {
+            color: #1a1a2e;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        footer a:hover {
+            text-decoration: underline;
+        }
+        
+        /* ==================== LISTS ==================== */
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 25px;
+        }
+        
+        li {
+            margin: 8px 0;
+        }
+        
+        /* ==================== TRANSFORMATION VISUAL ==================== */
+        .transformation-visual {
+            background: #f8f9fa;
+            border: 2px solid #9c27b0;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .transformation-visual h4 {
+            color: #7b1fa2;
+            margin-top: 0;
+        }
+        
+        .transformation-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+        
+        .transformation-box {
+            background: #fff;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            min-width: 200px;
+        }
+        
+        .transformation-box.original {
+            border: 2px solid #2196F3;
+        }
+        
+        .transformation-box.contrapositive {
+            border: 2px solid #9c27b0;
+        }
+        
+        .transformation-box .label {
+            font-size: 0.85em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .transformation-box .statement {
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+        
+        .arrow-symbol {
+            font-size: 2rem;
+            color: #9c27b0;
+        }
+        
+        /* ==================== DECISION FLOWCHART ==================== */
+        .decision-flowchart {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .decision-flowchart h4 {
+            text-align: center;
+            color: #333;
+            margin-top: 0;
+        }
+        
+        .flowchart-step {
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 4px solid #9c27b0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .flowchart-step .question {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .flowchart-step .answer {
+            margin-top: 10px;
+            padding-left: 20px;
+        }
+        
+        .flowchart-step .answer.yes {
+            color: #2e7d32;
+        }
+        
+        .flowchart-step .answer.no {
+            color: #c62828;
+        }
+        
+        /* ==================== ACCESSIBILITY ==================== */
+        :focus {
+            outline: 3px solid #9c27b0;
+            outline-offset: 2px;
+        }
+        
+        :focus:not(:focus-visible) {
+            outline: none;
+        }
+        
+        :focus-visible {
+            outline: 3px solid #9c27b0;
+            outline-offset: 2px;
+        }
+        
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+        
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: #1a1a2e;
+            color: #fff;
+            padding: 8px 16px;
+            z-index: 100;
+            transition: top 0.3s ease;
+        }
+        
+        .skip-link:focus {
+            top: 0;
+        }
+        
+        /* ==================== MATH DISPLAY ==================== */
+        .math-display {
+            overflow-x: auto;
+            padding: 10px 0;
+        }
+        
+        .math-block {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+            font-size: 1.1em;
+        }
+        
+        /* ==================== RESPONSIVE DESIGN ==================== */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            
+            header {
+                padding: 20px;
+            }
+            
+            header h1 {
+                font-size: 1.5rem;
+            }
+            
+            section {
+                padding: 20px;
+            }
+            
+            .module-info {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .nav-buttons {
+                flex-direction: column;
+            }
+            
+            .nav-button {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            table {
+                font-size: 0.9rem;
+            }
+            
+            th, td {
+                padding: 10px;
+            }
+            
+            .quiz-option {
+                padding: 10px 12px;
+            }
+            
+            .comparison-columns {
+                grid-template-columns: 1fr;
+            }
+            
+            .transformation-arrow {
+                flex-direction: column;
+            }
+            
+            .arrow-symbol {
+                transform: rotate(90deg);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            header h1 {
+                font-size: 1.3rem;
+            }
+            
+            section h2 {
+                font-size: 1.3rem;
+            }
+            
+            .definition-box, .example-box, .theorem-box, 
+            .warning-box, .insight-box, .strategy-box {
+                padding: 15px;
+            }
+        }
+        
+        /* ==================== PRINT STYLES ==================== */
+        @media print {
+            body {
+                background: #fff;
+            }
+            
+            header, section, footer {
+                box-shadow: none;
+            }
+            
+            .progress-container, .nav-buttons, button {
+                display: none;
+            }
+            
+            .collapsible-content {
+                max-height: none;
+            }
+        }
+        
+        /* ==================== UTILITY CLASSES ==================== */
+        .text-center {
+            text-align: center;
+        }
+        
+        .mt-20 {
+            margin-top: 20px;
+        }
+        
+        .mb-20 {
+            margin-bottom: 20px;
+        }
+        
+        .highlight {
+            background: #f3e5f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        
+        .emoji-icon {
+            font-size: 1.2em;
+        }
+        
+        /* ==================== PRACTICE PROBLEM STYLES ==================== */
+        .practice-problem {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        
+        .practice-problem h4 {
+            color: #7b1fa2;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .practice-problem .problem-statement {
+            font-weight: 600;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #fff;
+            border-radius: 5px;
+        }
+        
+        .difficulty-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+        
+        .difficulty-badge.easy {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .difficulty-badge.medium {
+            background: #fff3e0;
+            color: #e65100;
+        }
+        
+        .difficulty-badge.hard {
+            background: #ffebee;
+            color: #c62828;
+        }
+    </style>
+</head>
+<body>
+    <!-- Skip link for accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <header>
+        <h1>🔄 Module 5.4: Proof by Contrapositive</h1>
+        <div class="module-info">
+            <span>📚 CSC 240 - Discrete Structures</span>
+            <span>⏱️ Estimated Time: 1.5 hours</span>
+            <span>📅 Week 5 of 17</span>
+        </div>
+    </header>
+    
+    <div class="progress-container" role="region" aria-label="Module progress tracker">
+        <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="progress-text" id="progressText" aria-live="polite">0% Complete</div>
+    </div>
+    
+    <main id="main-content">
+        <!-- Learning Objectives -->
+        <div class="learning-objectives">
+            <h3>🎯 Learning Objectives</h3>
+            <p>By the end of this module, you will be able to:</p>
+            <ul>
+                <li>Explain why a statement and its contrapositive are logically equivalent</li>
+                <li>Recognize when proof by contrapositive is advantageous over direct proof</li>
+                <li>Correctly form the contrapositive of a given conditional statement</li>
+                <li>Apply the contrapositive technique to prove mathematical theorems</li>
+                <li>Compare and contrast direct proof and contrapositive proof approaches</li>
+            </ul>
+            <p><strong>Course Learning Outcome:</strong> CSLO 1 - Apply symbolic logic and proof methods to model and analyze program/algorithm correctness.</p>
+        </div>
+        
+        <!-- Prerequisites -->
+        <section id="prerequisites">
+            <h2>Prerequisites from Modules 5.1-5.3</h2>
+            
+            <p>Before beginning this module, ensure you're comfortable with:</p>
+            
+            <ul>
+                <li><strong>Direct proof technique:</strong> Assuming P and deriving Q to prove $$P \rightarrow Q$$</li>
+                <li><strong>Proof by cases:</strong> Dividing into exhaustive cases and proving each</li>
+                <li><strong>Logical equivalences:</strong> Especially from Week 4's logic content</li>
+                <li><strong>Contrapositive equivalence:</strong> $$(P \rightarrow Q) \equiv (\neg Q \rightarrow \neg P)$$</li>
+                <li><strong>Negation rules:</strong> How to negate statements, including De Morgan's Laws</li>
+            </ul>
+            
+            <div class="insight-box">
+                <h4><span class="emoji-icon">💡</span> Building on Your Logic Foundation</h4>
+                <p>In Week 4, you learned that $$(P \rightarrow Q) \equiv (\neg Q \rightarrow \neg P)$$. This logical equivalence is the foundation of proof by contrapositive. Now you'll see how to use this equivalence as a powerful proof technique!</p>
+            </div>
+        </section>
+        
+        <!-- Section 1: The Contrapositive Equivalence -->
+        <section id="section1">
+            <h2>1. The Contrapositive Equivalence: Review and Proof</h2>
+            
+            <label class="section-check" id="check1">
+                <input type="checkbox" onchange="updateProgress()" aria-label="Mark section 1 as complete">
+                <span>Mark this section as complete</span>
+            </label>
+            
+            <div class="definition-box">
+                <h4><span class="emoji-icon">📖</span> Definition: Contrapositive</h4>
+                <p>The <strong>contrapositive</strong> of a conditional statement $$P \rightarrow Q$$ is the statement $$\neg Q \rightarrow \neg P$$.</p>
+                <p>In words: The contrapositive of "If P, then Q" is "If not Q, then not P."</p>
+            </div>
+            
+            <h3>Visualizing the Transformation</h3>
+            
+            <div class="transformation-visual">
+                <h4>From Original to Contrapositive</h4>
+                <div class="transformation-arrow">
+                    <div class="transformation-box original">
+                        <div class="label">Original Statement</div>
+                        <div class="statement">$$P \rightarrow Q$$</div>
+                        <div style="margin-top: 10px; font-size: 0.9em;">"If P, then Q"</div>
+                    </div>
+                    <div class="arrow-symbol">⟺</div>
+                    <div class="transformation-box contrapositive">
+                        <div class="label">Contrapositive</div>
+                        <div class="statement">$$\neg Q \rightarrow \neg P$$</div>
+                        <div style="margin-top: 10px; font-size: 0.9em;">"If not Q, then not P"</div>
+                    </div>
+                </div>
+                <p><strong>Key Point:</strong> These two statements are <em>logically equivalent</em>—they have the same truth value in all cases!</p>
+            </div>
+            
+            <h3>Why Are They Equivalent? The Truth Table Proof</h3>
+            
+            <p>Let's verify the equivalence using a truth table:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>P</th>
+                        <th>Q</th>
+                        <th>¬P</th>
+                        <th>¬Q</th>
+                        <th>$$P \rightarrow Q$$</th>
+                        <th>$$\neg Q \rightarrow \neg P$$</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>T</td>
+                        <td>T</td>
+                        <td>F</td>
+                        <td>F</td>
+                        <td><strong>T</strong></td>
+                        <td><strong>T</strong></td>
+                    </tr>
+                    <tr>
+                        <td>T</td>
+                        <td>F</td>
+                        <td>F</td>
+                        <td>T</td>
+                        <td><strong>F</strong></td>
+                        <td><strong>F</strong></td>
+                    </tr>
+                    <tr>
+                        <td>F</td>
+                        <td>T</td>
+                        <td>T</td>
+                        <td>F</td>
+                        <td><strong>T</strong></td>
+                        <td><strong>T</strong></td>
+                    </tr>
+                    <tr>
+                        <td>F</td>
+                        <td>F</td>
+                        <td>T</td>
+                        <td>T</td>
+                        <td><strong>T</strong></td>
+                        <td><strong>T</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="theorem-box">
+                <h4><span class="emoji-icon">📐</span> Theorem: Contrapositive Equivalence</h4>
+                <p>For any statements P and Q:</p>
+                <div class="math-block">
+                    $$(P \rightarrow Q) \equiv (\neg Q \rightarrow \neg P)$$
+                </div>
+                <p>The last two columns of the truth table are identical, proving the equivalence.</p>
+            </div>
+            
+            <h3>The Four Related Statements: A Complete Picture</h3>
+            
+            <p>Given a conditional $$P \rightarrow Q$$, here are all four related statements:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Form</th>
+                        <th>Equivalent To</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Original</strong></td>
+                        <td>$$P \rightarrow Q$$</td>
+                        <td>Contrapositive</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Converse</strong></td>
+                        <td>$$Q \rightarrow P$$</td>
+                        <td>Inverse</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Inverse</strong></td>
+                        <td>$$\neg P \rightarrow \neg Q$$</td>
+                        <td>Converse</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Contrapositive</strong></td>
+                        <td>$$\neg Q \rightarrow \neg P$$</td>
+                        <td>Original</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="warning-box">
+                <h4><span class="emoji-icon">⚠️</span> Critical Reminder</h4>
+                <p><strong>Original ≡ Contrapositive</strong> (always have the same truth value)</p>
+                <p><strong>Converse ≡ Inverse</strong> (always have the same truth value)</p>
+                <p><strong>Original ≢ Converse</strong> (may have different truth values!)</p>
+                <p>Don't confuse contrapositive with converse—they are very different!</p>
+            </div>
+        </section>
+        
+        <!-- Section 2: What is Proof by Contrapositive? -->
+        <section id="section2">
+            <h2>2. What is Proof by Contrapositive?</h2>
+            
+            <label class="section-check" id="check2">
+                <input type="checkbox" onchange="updateProgress()" aria-label="Mark section 2 as complete">
+                <span>Mark this section as complete</span>
+            </label>
+            
+            <div class="definition-box">
+                <h4><span class="emoji-icon">📖</span> Definition: Proof by Contrapositive</h4>
+                <p>A <strong>proof by contrapositive</strong> is a method of proving a conditional statement $$P \rightarrow Q$$ by instead proving its contrapositive $$\neg Q \rightarrow \neg P$$.</p>
+                <p>Since the original and contrapositive are logically equivalent, proving one proves the other.</p>
+            </div>
+            
+            <h3>The Contrapositive Proof Template</h3>
+            
+            <div class="proof-template">
+                <h4><span class="emoji-icon">📋</span> Proof by Contrapositive Template</h4>
+                <ol>
+                    <li><strong>State the theorem:</strong> <span class="template-placeholder">"Theorem: If P, then Q."</span></li>
+                    <li><strong>Announce the method:</strong> <span class="template-placeholder">"Proof (by contrapositive):" or "We prove the contrapositive."</span></li>
+                    <li><strong>State the contrapositive:</strong> <span class="template-placeholder">"We will show: If ¬Q, then ¬P."</span></li>
+                    <li><strong>Assume ¬Q:</strong> <span class="template-placeholder">"Assume ¬Q." (Assume the negation of the conclusion)</span></li>
+                    <li><strong>Derive ¬P:</strong> <span class="template-placeholder">Use definitions and logical steps to show ¬P follows.</span></li>
+                    <li><strong>Conclude:</strong> <span class="template-placeholder">"Therefore, ¬Q → ¬P, which proves P → Q by contrapositive."</span></li>
+                    <li><strong>End the proof:</strong> <span class="template-placeholder">∎</span></li>
+                </ol>
+            </div>
+            
+            <h3>Comparing Direct Proof and Contrapositive Proof</h3>
+            
+            <div class="comparison-box">
+                <h4>Direct Proof vs. Contrapositive Proof</h4>
+                <div class="comparison-columns">
+                    <div class="comparison-column direct">
+                        <h5>Direct Proof of $$P \rightarrow Q$$</h5>
+                        <ol>
+                            <li>Assume P is true</li>
+                            <li>Apply definitions to P</li>
+                            <li>Use logical/algebraic steps</li>
+                            <li>Derive Q</li>
+                            <li>Conclude $$P \rightarrow Q$$</li>
+                        </ol>
+                    </div>
+                    <div class="comparison-column contrapositive">
+                        <h5>Contrapositive Proof of $$P \rightarrow Q$$</h5>
+                        <ol>
+                            <li>Assume ¬Q is true</li>
+                            <li>Apply definitions to ¬Q</li>
+                            <li>Use logical/algebraic steps</li>
+                            <li>Derive ¬P</li>
+                            <li>Conclude $$P \rightarrow Q$$</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="insight-box">
+                <h4><span class="emoji-icon">💡</span> Key Insight: Same Destination, Different Starting Point</h4>
+                <p>Both methods prove the same statement $$P \rightarrow Q$$. The difference is:</p>
+                <ul>
+                    <li><strong>Direct:</strong> Start with P, end with Q</li>
+                    <li><strong>Contrapositive:</strong> Start with ¬Q, end with ¬P</li>
+                </ul>
+                <p>Sometimes starting with ¬Q gives you more useful information to work with!</p>
+            </div>
+        </section>
+        
+        <!-- Section 3: When to Use Contrapositive -->
+        <section id="section3">
+            <h2>3. When to Use Proof by Contrapositive</h2>
+            
+            <label class="section-check" id="check3">
+                <input type="checkbox" onchange="updateProgress()" aria-label="Mark section 3 as complete">
+                <span>Mark this section as complete</span>
+            </label>
+            
+            <p>Proof by contrapositive is especially useful in certain situations. Here's a guide to help you decide:</p>
+            
+            <div class="decision-flowchart">
+                <h4>🤔 Should I Use Contrapositive?</h4>
+                
+                <div class="flowchart-step">
+                    <div class="question">1. Does the conclusion Q involve a negative condition or "not"?</div>
+                    <div class="answer yes">→ <strong>Yes:</strong> Contrapositive might help! ¬Q becomes a positive statement.</div>
+                    <div class="answer no">→ <strong>No:</strong> Continue to next question.</div>
+                </div>
+                
+                <div class="flowchart-step">
+                    <div class="question">2. Does assuming ¬Q give you more concrete information than assuming P?</div>
+                    <div class="answer yes">→ <strong>Yes:</strong> Use contrapositive! (Classic example: "n is even" gives n = 2k)</div>
+                    <div class="answer no">→ <strong>No:</strong> Continue to next question.</div>
+                </div>
+                
+                <div class="flowchart-step">
+                    <div class="question">3. Have you tried direct proof and gotten stuck?</div>
+                    <div class="answer yes">→ <strong>Yes:</strong> Try contrapositive as an alternative approach.</div>
+                    <div class="answer no">→ <strong>No:</strong> Direct proof is probably fine.</div>
+                </div>
+            </div>
+            
+            <h3>Common Scenarios Where Contrapositive Excels</h3>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Scenario</th>
+                        <th>Why Contrapositive Helps</th>
+                        <th>Example</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Proving "If A, then B is [parity]"</strong></td>
+                        <td>¬B gives a concrete form (n = 2k or n = 2k+1)</td>
+                        <td>"If n² is even, then n is even"</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Conclusion involves "not divisible"</strong></td>
+                        <td>¬Q becomes "divisible," which is easier to use</td>
+                        <td>"If 3∤n², then 3∤n"</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Hypothesis is abstract, conclusion is concrete</strong></td>
+                        <td>Starting with ¬Q (concrete) is easier</td>
+                        <td>"If ab is irrational, then a or b is irrational"</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Statement has form "If not A, then not B"</strong></td>
+                        <td>Contrapositive removes double negatives</td>
+                        <td>"If x ≠ y, then f(x) ≠ f(y)"</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="example-box">
+                <h4><span class="emoji-icon">📝</span> The Classic Example: Why Contrapositive is Better</h4>
+                <p><strong>Theorem:</strong> If n² is even, then n is even.</p>
+                
+                <p><strong>Direct Proof Attempt:</strong></p>
+                <ul>
+                    <li>Assume n² is even</li>
+                    <li>Then n² = 2k for some integer k</li>
+                    <li>So n = √(2k)... but this doesn't obviously give us n = 2m!</li>
+                    <li><em>We're stuck!</em> 😕</li>
+                </ul>
+                
+                <p><strong>Contrapositive Proof:</strong></p>
+                <ul>
+                    <li>Prove: If n is odd, then n² is odd</li>
+                    <li>Assume n is odd</li>
+                    <li>Then n = 2k + 1 for some integer k</li>
+                    <li>So n² = (2k + 1)² = 4k² + 4k + 1 = 2(2k² + 2k) + 1</li>
+                    <li>This is odd! ✓</li>
+                </ul>
+                
+                <p><strong>Lesson:</strong> Starting with "n is odd" gives us a concrete form (n = 2k + 1) that we can square. Starting with "n² is even" only gives us n² = 2m, which is hard to "unsquare."</p>
+            </div>
+        </section>
+        
+        <!-- Section 4: Forming the Contrapositive -->
+        <section id="section4">
+            <h2>4. How to Form the Contrapositive Correctly</h2>
+            
+            <label class="section-check" id="check4">
+                <input type="checkbox" onchange="updateProgress()" aria-label="Mark section 4 as complete">
+                <span>Mark this section as complete</span>
+            </label>
+            
+            <p>Forming the contrapositive requires careful attention to negation. Here's a systematic approach:</p>
+            
+            <div class="strategy-box">
+                <h4><span class="emoji-icon">📋</span> Steps to Form the Contrapositive</h4>
+                <ol>
+                    <li><strong>Identify P and Q</strong> in the statement "If P, then Q"</li>
+                    <li><strong>Form ¬Q</strong> (negate the conclusion)</li>
+                    <li><strong>Form ¬P</strong> (negate the hypothesis)</li>
+                    <li><strong>Write the contrapositive:</strong> "If ¬Q, then ¬P"</li>
+                </ol>
+            </div>
+            
+            <h3>Negation Rules You'll Need</h3>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Original Statement</th>
+                        <th>Negation</th>
+                        <th>Rule</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>n is even</td>
+                        <td>n is odd</td>
+                        <td>Integers are either even or odd</td>
+                    </tr>
+                    <tr>
+                        <td>n is odd</td>
+                        <td>n is even</td>
+                        <td>Integers are either even or odd</td>
+                    </tr>
+                    <tr>
+                        <td>a | b (a divides b)</td>
+                        <td>a ∤ b (a does not divide b)</td>
+                        <td>Direct negation</td>
+                    </tr>
+                    <tr>
+                        <td>x = y</td>
+                        <td>x ≠ y</td>
+                        <td>Direct negation</td>
+                    </tr>
+                    <tr>
+                        <td>x < y</td>
+                        <td>x ≥ y</td>
+                        <td>Negation of strict inequality</td>
+                    </tr>
+                    <tr>
+                        <td>P ∧ Q (P and Q)</td>
+                        <td>¬P ∨ ¬Q (not P or not Q)</td>
+                        <td>De Morgan's Law</td>
+                    </tr>
+                    <tr>
+                        <td>P ∨ Q (P or Q)</td>
+                        <td>¬P ∧ ¬Q (not P and not Q)</td>
+                        <td>De Morgan's Law</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="example-box">
+                <h4><span class="emoji-icon">📝</span> Example: Forming Contrapositives</h4>
+                
+                <p><strong>Example 1:</strong> "If n is divisible by 6, then n is divisible by 3."</p>
+                <ul>
+                    <li>P: n is divisible by 6</li>
+                    <li>Q: n is divisible by 3</li>
+                    <li>¬Q: n is NOT divisible by 3</li>
+                    <li>¬P: n is NOT divisible by 6</li>
+                    <li><strong>Contrapositive:</strong> "If n is not divisible by 3, then n is not divisible by 6."</li>
+                </ul>
+                
+                <p><strong>Example 2:</strong> "If x = 0 and y = 0, then xy = 0."</p>
+                <ul>
+                    <li>P: x = 0 AND y = 0</li>
+                    <li>Q: xy = 0</li>
+                    <li>¬Q: xy ≠ 0</li>
+                    <li>¬P: ¬(x = 0 AND y = 0) = (x ≠ 0 OR y ≠ 0) <em>(De Morgan's Law)</em></li>
+                    <li><strong>Contrapositive:</strong> "If xy ≠ 0, then x ≠ 0 or y ≠ 0."</li>
+                </ul>
+                
+                <p><strong>Example 3:</strong> "If n² is even, then n is even."</p>
+                <ul>
+                    <li>P: n² is even</li>
+                    <li>Q: n is even</li>
+                    <li>¬Q: n is odd</li>
+                    <li>¬P: n² is odd</li>
+                    <li><strong>Contrapositive:</strong> "If n is odd, then n² is odd."</li>
+                </ul>
+            </div>
+            
+            <div class="warning-box">
+                <h4><span class="emoji-icon">⚠️</span> Common Mistakes When Forming Contrapositives</h4>
+                
+                <p><strong>Mistake 1: Confusing contrapositive with converse</strong></p>
+                <ul>
+                    <li>Original: If P, then Q</li>
+                    <li>Contrapositive: If ¬Q, then ¬P ✓</li>
+                    <li>Converse: If Q, then P ✗ (This is NOT the contrapositive!)</li>
+                </ul>
+                
+                <p><strong>Mistake 2: Forgetting De Morgan's Laws</strong></p>
+                <ul>
+                    <li>Original: "If A and B, then C"</li>
+                    <li>Wrong contrapositive: "If ¬C, then ¬A and ¬B" ✗</li>
+                    <li>Correct contrapositive: "If ¬C, then ¬A or ¬B" ✓</li>
+                </ul>
+                
+                <p><strong>Mistake 3: Incorrectly negating inequalities</strong></p>
+                <ul>
+                    <li>¬(x < 5) = x ≥ 5, NOT x > 5</li>
+                    <li>¬(x ≤ 5) = x > 5, NOT x ≥ 5</li>
+                </ul>
+            </div>
+        </section>
+        
+        <!-- Section 5: Complete Contrapositive Proofs -->
+        <section id="section5">
+            <h2>5. Complete Contrapositive Proofs</h2>
+            
+            <label class="section-check" id="check5">
+                <input type="checkbox" onchange="updateProgress()" aria-label="Mark section 5 as complete">
+                <span>Mark this section as complete</span>
+            </label>
+            
+            <p>Let's work through several complete contrapositive proofs, from classic examples to more challenging ones.</p>
+            
+            <div class="example-box">
+                <h4><span class="emoji-icon">📝</span> Example 1: The Classic - If n² is even, then n is even</h4>
+                <p><strong>Theorem:</strong> For any integer n, if n² is even, then n is even.</p>
+                
+                <button class="collapsible" onclick="toggleCollapsible(this)" aria-expanded="false">
+                    <span>Show Complete Proof</span>
+                </button>
+                <div class="collapsible-content">
+                    <div class="collapsible-content-inner">
+                        <div class="proof-structure contrapositive">
+                            <p class="proof-header">Theorem: For any integer n, if n² is even, then n is even.</p>
+                            <p><strong>Proof (by contrapositive):</strong></p>
+                            <p class="proof-line">We prove the contrapositive: If n is odd, then n² is odd.</p>
+                            <p class="proof-line">Assume n is an odd integer. <em>(Assumption of ¬Q)</em></p>
+                            <p class="proof-line">By definition of odd, n = 2k + 1 for some integer k. <em>(Definition)</em></p>
+                            <p class="proof-line">Then n² = (2k + 1)² <em>(Substitution)</em></p>
+                            <p class="proof-line">= 4k² + 4k + 1 <em>(Expanding)</em></p>
+                            <p class="proof-line">= 2(2k² + 2k) + 1. <em>(Factoring)</em></p>
+                            <p class="proof-line">Let m = 2k² + 2k. Since k is an integer, m is an integer. <em>(Closure)</em></p>
+                            <p class="proof-line">Thus n² = 2m + 1 where m is an integer. <em>(Substitution)</em></p>
+                            <p class="proof-line">By definition of odd, n² is odd. <em>(Definition)</em></p>
+                            <p class="proof-line">This proves the contrapositive, therefore the original statement holds.</p>
+                            <p class="proof-end">∎</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="example-box">
+                <h4><span class="emoji-icon">📝</span> Example 2: If n³ is odd, then n is odd</h4>
+                <p><strong>Theorem:</strong> For any integer n, if n³ is odd, then n is odd.</p>
+                
+                <button class="collapsible" onclick="toggleCollapsible(this)" aria-expanded="false">
+                    <span>Show Complete Proof</span>
+                </button>
+                <div class="collapsible-content">
+                    <div class="collapsible-content-inner">
+                        <div class="proof-structure contrapositive">
+                            <p class="proof-header">Theorem: For any integer n, if n³ is odd, then n is odd.</p>
+                            <p><strong>Proof (by contrapositive):</strong></p>
+                            <p class="proof-line">We prove the contrapositive: If n is even, then n³ is even.</p>
+                            <p class="proof-line">Assume n is an even integer. <em>(Assumption of ¬Q)</em></p>
+                            <p class="proof-line">By definition of even, n = 2k for some integer k. <em>(Definition)</em></p>
+                            <p class="proof-line">Then n³ = (2k)³ = 8k³ = 2(4k³). <em>(Algebra)</em></p>
+                            <p class="proof-line">Let m = 4k³. Since k is an integer, m is an integer. <em>(Closure)</em></p>
+                            <p class="proof-line">Thus n³ = 2m where m is an integer. <em>(Substitution)</em></p>
+                            <p class="proof-line">By definition of even, n³ is even. <em>(Definition)</em></p>
+                            <p class="proof-line">This proves the contrapositive, therefore the original statement holds.</p>
+                            <p class="proof-end">∎</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="example-box">
+                <h4><span class="emoji-icon">📝</span> Example 3: Divisibility - If 3∤n², then 3∤n</h4>
+                <p><strong>Theorem:</strong> For any integer n, if 3 does not divide n², then 3 does not divide n.</p>
+                <p><em>(Notation: 3∤n means "3 does not divide n")</em></p>
+                
+                <button class="collapsible" onclick="toggleCollapsible(this)" aria-expanded="false">
+                    <span>Show Complete Proof</span>
+                </button>
+                <div class="collapsible-content">
+                    <div class="collapsible-content-inner">
+                        <div class="proof-structure contrapositive">
+                            <p class="proof-header">Theorem: For any integer n, if 3∤n², then 3∤n.</p>
+                            <p><strong>Proof (by contrapositive):</strong></p>
+                            <p class="proof-line">We prove the contrapositive: If 3 | n, then 3 | n².</p>
+                            <p class="proof-line">Assume 3 | n. <em>(Assumption of ¬Q)</em></p>
+                            <p class="proof-line">By definition of divisibility, n = 3k for some integer k. <em>(Definition)</em></p>
+                            <p class="proof-line">Then n² = (3k)² = 9k² = 3(3k²). <em>(Algebra)</em></p>
+                            <p class="proof-line">Let m = 3k². Since k is an integer, m is an integer. <em>(Closure)</em></p>
+                            <p class="proof-line">Thus n² = 3m where m is an integer. <em>(Substitution)</em></p>
+                            <p class="proof-line">By definition of divisibility, 3 | n². <em>(Definition)</em></p>
+                            <p class="proof-line">This proves the contrapositive, therefore the original statement holds.</p>
+                            <p class="proof-end">∎</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="example-box">
+                <h4><span class="emoji-icon">📝</span> Example 4: If 5∤n², then 5∤n</h4>
+                <p><strong>Theorem:</strong> For any integer n, if 5 does not divide n², then 5 does not divide n.</p>
+                
+                <button class="collapsible" onclick="toggleCollapsible(this)" aria-expanded="false">
+                    <span>Show Complete Proof</span>
+                </button>
+                <div class="collapsible-content">
+                    <div class="collapsible-content-inner">
+                        <div class="proof-structure contrapositive">
+                            <p class="proof-header">Theorem: For any integer n, if 5∤n², then 5∤n.</p>
+                            <p><strong>Proof (by contrapositive):</strong></p>
+                            <p class="proof-line">We prove the contrapositive: If 5 | n, then 5 | n².</p>
+                            <p class="proof-line">Assume 5 | n. <em>(Assumption)</em></p>
+                            <p class="proof-line">By definition, n = 5k for some integer k. <em>(Definition)</em></p>
+                            <p class="proof-line">Then n² = (5k)² = 25k² = 5(5k²). <em>(Algebra)</em></p>
+                            <p class="proof-line">Let m = 5k². Since k is an integer, m is an integer. <em>(Closure)</em></p>
+                            <p class="proof-line">Thus n² = 5m where m is an integer, so 5 | n². <em>(Definition)</em></p>
+                            <p class="proof-end">∎</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="example-box">
+                <h4><span class="emoji-icon">📝</span> Example 5: If x + y is irrational, then x is irrational or y is irrational</h4>
+                <p><strong>Theorem:</strong> For real numbers x and y, if x + y is irrational, then x is irrational or y is irrational.</p>
+                
+                <button class="collapsible" onclick="toggleCollapsible(this)" aria-expanded="false">
+                    <span>Show Complete Proof</span>
+                </button>
+                <div class="collapsible-content">
+                    <div class="collapsible-content-inner">
+                        <p><strong>First, let's form the contrapositive:</strong></p>
+                        <ul>
+                            <li>P: x + y is irrational</li>
+                            <li>Q: x is irrational OR y is irrational</li>
+                            <li>¬Q: x is rational AND y is rational (De Morgan's Law)</li>
+                            <li>¬P: x + y is rational</li>
+                            <li>Contrapositive: If x is rational and y is rational, then x + y is rational.</li>
+                        </ul>
+                        
+                        <div class="proof-structure contrapositive">
+                            <p class="proof-header">Theorem: If x + y is irrational, then x is irrational or y is irrational.</p>
+                            <p><strong>Proof (by contrapositive):</strong></p>
+                            <p class="proof-line">We prove the contrapositive: If x is rational and y is rational, then x + y is rational.</p>
+                            <p class="proof-line">Assume x and y are both rational. <em>(Assumption)</em></p>
+                            <p class="proof-line">By definition, x = a/b for integers a, b with b ≠ 0. <em>(Definition)</em></p>
+                            <p class="proof-line">By definition, y = c/d for integers c, d with d ≠ 0. <em>(Definition)</em></p>
+                            <p class="proof-line">Then x + y = a/b + c/d = (ad + bc)/(bd). <em>(Algebra)</em></p>
+                            <p class="proof-line">Let p = ad + bc and q = bd. <em>(Substitution)</em></p>
+                            <p class="proof-line">Since a, b, c, d are integers, p and q are integers. <em>(Closure)</em></p>
+                            <p class="proof-line">Since b ≠ 0 and d ≠ 0, we have q = bd ≠ 0. <em>(Nonzero product)</em></p>
+                            <p class="proof-line">Thus x + y = p/q where p, q are integers with q ≠ 0. <em>(Substitution)</em></p>
+                            <p class="proof-line">By definition, x + y is rational. <em>(Definition)</em></p>
+                            <p class="proof-line">This proves the contrapositive, therefore the original statement holds.</p>
+                            <p class="proof-end">∎</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="example-box">
+                <h4><span class="emoji-icon">📝</span> Example 6: If n² is not divisible by 4, then n is odd</h4>
+                <p><strong>Theorem:</strong> For any integer n, if n² is not divisible by 4, then n is odd.</p>
+                
+                <button class="collapsible" onclick="toggleCollapsible(this)" aria-expanded="false">
+                    <span>Show Complete Proof</span>
+                </button>
+                <div class="collapsible-content">
+                    <div class="collapsible-content-inner">
+                        <p><strong>Forming the contrapositive:</strong></p>
+                        <ul>
+                            <li>P: 4 ∤ n²</li>
+                            <li>Q: n is odd</li>
+                            <li>¬Q: n is even</li>
+                            <li>¬P: 4 | n²</li>
+                            <li>Contrapositive: If n is even, then 4 | n².</li>
+                        </ul>
+                        
+                        <div class="proof-structure contrapositive">
+                            <p class="proof-header">Theorem: If 4 ∤ n², then n is odd.</p>
+                            <p><strong>Proof (by contrapositive):</strong></p>
+                            <p class="proof-line">We prove the contrapositive: If n is even, then 4 | n².</p>
+                            <p class="proof-line">Assume n is even. <em>(Assumption)</em></p>
+                            <p class="proof-line">By definition, n = 2k for some integer k. <em>(Definition)</em></p>
+                            <p class="proof-line">Then n² = (2k)² = 4k². <em>(Algebra)</em></p>
+                            <p class="proof-line">Since n² = 4k² = 4(k²) and k² is an integer, we have 4 | n². <em>(Definition)</em></p>
+                            <p class="proof-end">∎</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Section 6: Comparing Direct and Contrapositive -->
+        <section id="section6">
+            <h2>6. Side-by-Side Comparison: Direct vs. Contrapositive</h2>
+            
+            <label class="section-check" id="check6">
+                <input type="checkbox" onchange="updateProgress()" aria-label="Mark section 6 as complete">
+                <span>Mark this section as complete</span>
+            </label>
+            
+            <p>Sometimes the same theorem can be proved both ways. Let's compare both approaches for the same statement.</p>
+            
+            <div class="example-box">
+                <h4><span class="emoji-icon">📝</span> Theorem: If n is odd, then n² is odd</h4>
+                <p>This theorem can be proved directly (and we did in Module 5.2). Let's see both proofs side by side.</p>
+                
+                <div class="comparison-box">
+                    <h4>Two Proofs of the Same Theorem</h4>
+                    <div class="comparison-columns">
+                        <div class="comparison-column direct">
+                            <h5>Direct Proof</h5>
+                            <p><strong>Prove:</strong> If n is odd, then n² is odd.</p>
+                            <p>Assume n is odd.</p>
+                            <p>Then n = 2k + 1.</p>
+                            <p>n² = (2k+1)² = 4k² + 4k + 1</p>
+                            <p>= 2(2k² + 2k) + 1</p>
+                            <p>This is odd. ∎</p>
+                        </div>
+                        <div class="comparison-column contrapositive">
+                            <h5>Contrapositive Proof</h5>
+                            <p><strong>Prove:</strong> If n² is even, then n is even.</p>
+                            <p>Assume n² is even.</p>
+                            <p>Then n² = 2m... 🤔</p>
+                            <p><em>Hard to proceed!</em></p>
+                            <p>Direct proof is easier here.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <p><strong>Conclusion:</strong> For "If n is odd, then n² is odd," direct proof is easier!</p>
+            </div>
+            
+            <div class="example-box">
+                <h4><span class="emoji-icon">📝</span> Theorem: If n² is even, then n is even</h4>
+                <p>Now let's compare both approaches for the converse statement.</p>
+                
+                <div class="comparison-box">
+                    <h4>Two Proofs of the Same Theorem</h4>
+                    <div class="comparison-columns">
+                        <div class="comparison-column direct">
+                            <h5>Direct Proof (Attempt)</h5>
+                            <p><strong>Prove:</strong> If n² is even, then n is even.</p>
+                            <p>Assume n² is even.</p>
+                            <p>Then n² = 2k.</p>
+                            <p>So n = √(2k)... 🤔</p>
+                            <p><em>Stuck! Can't show n = 2m.</em></p>
+                        </div>
+                        <div class="comparison-column contrapositive">
+                            <h5>Contrapositive Proof</h5>
+                            <p><strong>Prove:</strong> If n is odd, then n² is odd.</p>
+                            <p>Assume n is odd.</p>
+                            <p>Then n = 2k + 1.</p>
+                            <p>n² = 4k² + 4k + 1 = 2(2k²+2k) + 1</p>
+                            <p>This is odd. ∎</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <p><strong>Conclusion:</strong> For "If n² is even, then n is even," contrapositive is much easier!</p>
+            </div>
+            
+            <div class="insight-box">
+                <h4><span class="emoji-icon">💡</span> Pattern Recognition</h4>
+                <p>Notice the pattern:</p>
+                <ul>
+                    <li><strong>"If [property of n], then [property of n²]"</strong> → Direct proof is usually easier (you can compute n²)</li>
+                    <li><strong>"If [property of n²], then [property of n]"</strong> → Contrapositive is usually easier (you can't easily "unsquare")</li>
+                </ul>
+                <p>The key insight: It's easier to <em>compute</em> n² from n than to <em>deduce</em> properties of n from n².</p>
+            </div>
+        </section>
+        
+        <!-- Section 7: Interactive Activities -->
+        <section id="section7">
+            <h2>7. Interactive Activities</h2>
+            
+            <div class="interactive-activity">
+                <h3><span class="emoji-icon">🎮</span> Activity 1: Form the Contrapositive</h3>
+                
+                <p>For each statement, identify the correct contrapositive:</p>
+                
+                <div class="quiz-question" id="act1q1">
+                    <p><strong>Statement:</strong> "If n is divisible by 6, then n is divisible by 2."</p>
+                    <p>What is the contrapositive?</p>
+                    <div class="quiz-options">
+                        <label class="quiz-option">
+                            <input type="radio" name="act1q1" value="a">
+                            <span>If n is divisible by 2, then n is divisible by 6.</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="act1q1" value="b">
+                            <span>If n is not divisible by 2, then n is not divisible by 6.</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="act1q1" value="c">
+                            <span>If n is not divisible by 6, then n is not divisible by 2.</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="act1q1" value="d">
+                            <span>If n is divisible by 6, then n is not divisible by 2.</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="quiz-question" id="act1q2">
+                    <p><strong>Statement:</strong> "If x = 0 and y = 0, then xy = 0."</p>
+                    <p>What is the contrapositive?</p>
+                    <div class="quiz-options">
+                        <label class="quiz-option">
+                            <input type="radio" name="act1q2" value="a">
+                            <span>If xy ≠ 0, then x ≠ 0 or y ≠ 0.</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="act1q2" value="b">
+                            <span>If xy ≠ 0, then x ≠ 0 and y ≠ 0.</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="act1q2" value="c">
+                            <span>If xy = 0, then x ≠ 0 or y ≠ 0.</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="act1q2" value="d">
+                            <span>If x ≠ 0 and y ≠ 0, then xy ≠ 0.</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="quiz-question" id="act1q3">
+                    <p><strong>Statement:</strong> "If n² is odd, then n is odd."</p>
+                    <p>What is the contrapositive?</p>
+                    <div class="quiz-options">
+                        <label class="quiz-option">
+                            <input type="radio" name="act1q3" value="a">
+                            <span>If n is odd, then n² is odd.</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="act1q3" value="b">
+                            <span>If n is even, then n² is even.</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="act1q3" value="c">
+                            <span>If n² is even, then n is even.</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="act1q3" value="d">
+                            <span>If n is even, then n² is odd.</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <button onclick="checkActivity1()" class="mt-20">Check Answers</button>
+                <div class="feedback" id="act1Feedback"></div>
+            </div>
+            
+            <div class="interactive-activity">
+                <h3><span class="emoji-icon">🎮</span> Activity 2: Choose the Best Proof Method</h3>
+                
+                <p>For each theorem, decide whether direct proof or contrapositive proof would be easier:</p>
+                
+                <div class="quiz-question" id="act2q1">
+                    <p><strong>Theorem:</strong> If n is even, then n³ is even.</p>
+                    <div class="quiz-options">
+                        <label class="quiz-option">
+                            <input type="radio" name="act2q1" value="a">
+                            <span>Direct proof (assume n is even, show n³ is even)</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="act2q1" value="b">
+                            <span>Contrapositive (assume n³ is odd, show n is odd)</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="quiz-question" id="act2q2">
+                    <p><strong>Theorem:</strong> If n³ is even, then n is even.</p>
+                    <div class="quiz-options">
+                        <label class="quiz-option">
+                            <input type="radio" name="act2q2" value="a">
+                            <span>Direct proof (assume n³ is even, show n is even)</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="act2q2" value="b">
+                            <span>Contrapositive (assume n is odd, show n³ is odd)</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="quiz-question" id="act2q3">
+                    <p><strong>Theorem:</strong> If 7∤n², then 7∤n.</p>
+                    <div class="quiz-options">
+                        <label class="quiz-option">
+                            <input type="radio" name="act2q3" value="a">
+                            <span>Direct proof (assume 7∤n², show 7∤n)</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="act2q3" value="b">
+                            <span>Contrapositive (assume 7|n, show 7|n²)</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <button onclick="checkActivity2()" class="mt-20">Check Answers</button>
+                <div class="feedback" id="act2Feedback"></div>
+            </div>
+            
+            <div class="interactive-activity">
+                <h3><span class="emoji-icon">🎮</span> Activity 3: Complete the Contrapositive Proof</h3>
+                
+                <p><strong>Theorem:</strong> For any integer n, if n² is divisible by 3, then n is divisible by 3.</p>
+                
+                <p>Fill in the blanks to complete this contrapositive proof:</p>
+                
+                <div class="quiz-question">
+                    <p><strong>Proof (by contrapositive):</strong></p>
+                    <p>We prove the contrapositive: If <input type="text" id="blank1" style="width: 120px;" placeholder="¬Q">, then <input type="text" id="blank2" style="width: 120px;" placeholder="¬P">.</p>
+                    <p>Assume 3 does not divide n. <em>(Assumption)</em></p>
+                    <p>We need to show that 3 does not divide n².</p>
+                    <p>Since 3∤n, we know n is not a multiple of 3.</p>
+                    <p>By the Division Algorithm, n = 3q + r where r ∈ {1, 2}.</p>
+                    <p><strong>Case 1:</strong> n = 3q + 1</p>
+                    <p>Then n² = (3q + 1)² = 9q² + 6q + 1 = 3(<input type="text" id="blank3" style="width: 100px;" placeholder="?">) + 1.</p>
+                    <p>So n² has remainder <input type="text" id="blank4" style="width: 50px;" placeholder="?"> when divided by 3, meaning 3∤n².</p>
+                    <p><strong>Case 2:</strong> n = 3q + 2</p>
+                    <p>Then n² = (3q + 2)² = 9q² + 12q + 4 = 3(3q² + 4q + 1) + 1.</p>
+                    <p>So n² has remainder 1 when divided by 3, meaning 3∤n².</p>
+                    <p>In both cases, 3∤n², proving the contrapositive. ∎</p>
+                </div>
+                
+                <button onclick="checkActivity3()" class="mt-20">Check Answers</button>
+                <div class="feedback" id="act3Feedback"></div>
+            </div>
+        </section>
+        
+        <!-- Section 8: Practice Problems -->
+        <section id="section8">
+            <h2>8. Practice Problems</h2>
+            
+            <label class="section-check" id="check7">
+                <input type="checkbox" onchange="updateProgress()" aria-label="Mark section 8 as complete">
+                <span>Mark this section as complete</span>
+            </label>
+            
+            <p>Complete these practice problems to solidify your understanding of proof by contrapositive.</p>
+            
+            <div class="practice-problem">
+                <h4><span class="emoji-icon">📝</span> Problem 1 <span class="difficulty-badge easy">Easy</span></h4>
+                <div class="problem-statement">
+                    Prove by contrapositive: If n² is even, then n is even.
+                </div>
+                <button class="collapsible" onclick="toggleCollapsible(this)">Show Hint</button>
+                <div class="collapsible-content">
+                    <div class="collapsible-content-inner">
+                        <p>Contrapositive: If n is odd, then n² is odd. Use n = 2k + 1.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="practice-problem">
+                <h4><span class="emoji-icon">📝</span> Problem 2 <span class="difficulty-badge easy">Easy</span></h4>
+                <div class="problem-statement">
+                    Prove by contrapositive: If n³ is odd, then n is odd.
+                </div>
+                <button class="collapsible" onclick="toggleCollapsible(this)">Show Hint</button>
+                <div class="collapsible-content">
+                    <div class="collapsible-content-inner">
+                        <p>Contrapositive: If n is even, then n³ is even. Use n = 2k.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="practice-problem">
+                <h4><span class="emoji-icon">📝</span> Problem 3 <span class="difficulty-badge medium">Medium</span></h4>
+                <div class="problem-statement">
+                    Prove by contrapositive: If 3∤n², then 3∤n.
+                </div>
+                <button class="collapsible" onclick="toggleCollapsible(this)">Show Hint</button>
+                <div class="collapsible-content">
+                    <div class="collapsible-content-inner">
+                        <p>Contrapositive: If 3|n, then 3|n². Use n = 3k.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="practice-problem">
+                <h4><span class="emoji-icon">📝</span> Problem 4 <span class="difficulty-badge medium">Medium</span></h4>
+                <div class="problem-statement">
+                    Prove by contrapositive: If 5∤n², then 5∤n.
+                </div>
+                <button class="collapsible" onclick="toggleCollapsible(this)">Show Hint</button>
+                <div class="collapsible-content">
+                    <div class="collapsible-content-inner">
+                        <p>Contrapositive: If 5|n, then 5|n². Use n = 5k.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="practice-problem">
+                <h4><span class="emoji-icon">📝</span> Problem 5 <span class="difficulty-badge medium">Medium</span></h4>
+                <div class="problem-statement">
+                    Prove by contrapositive: If xy is irrational, then x is irrational or y is irrational.
+                </div>
+                <button class="collapsible" onclick="toggleCollapsible(this)">Show Hint</button>
+                <div class="collapsible-content">
+                    <div class="collapsible-content-inner">
+                        <p>Contrapositive: If x is rational AND y is rational, then xy is rational. (De Morgan's Law)</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="practice-problem">
+                <h4><span class="emoji-icon">📝</span> Problem 6 <span class="difficulty-badge hard">Hard</span></h4>
+                <div class="problem-statement">
+                    For each of the following theorems, write proofs using BOTH direct and contrapositive methods, then compare which was easier:
+                    <ol type="a">
+                        <li>If n is odd, then n + 1 is even.</li>
+                        <li>If n + 1 is odd, then n is even.</li>
+                    </ol>
+                </div>
+                <button class="collapsible" onclick="toggleCollapsible(this)">Show Hint</button>
+                <div class="collapsible-content">
+                    <div class="collapsible-content-inner">
+                        <p>(a) Direct is easier: assume n = 2k+1, then n+1 = 2k+2 = 2(k+1).</p>
+                        <p>(b) Both work well. Direct: n+1 = 2k+1 means n = 2k. Contrapositive: If n is odd, then n+1 is even.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Knowledge Check -->
+        <section id="knowledge-check">
+            <h2>9. Knowledge Check</h2>
+            
+            <div class="knowledge-check">
+                <h3><span class="emoji-icon">✅</span> Module 5.4 Knowledge Check</h3>
+                <p>Test your understanding of proof by contrapositive.</p>
+                
+                <div class="quiz-question" id="kcq1">
+                    <p><strong>Question 1:</strong> The contrapositive of $$P \rightarrow Q$$ is:</p>
+                    <div class="quiz-options">
+                        <label class="quiz-option">
+                            <input type="radio" name="kc1" value="a">
+                            <span>$$Q \rightarrow P$$</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="kc1" value="b">
+                            <span>$$\neg P \rightarrow \neg Q$$</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="kc1" value="c">
+                            <span>$$\neg Q \rightarrow \neg P$$</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="kc1" value="d">
+                            <span>$$P \wedge \neg Q$$</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="quiz-question" id="kcq2">
+                    <p><strong>Question 2:</strong> Why can we prove $$P \rightarrow Q$$ by proving $$\neg Q \rightarrow \neg P$$?</p>
+                    <div class="quiz-options">
+                        <label class="quiz-option">
+                            <input type="radio" name="kc2" value="a">
+                            <span>Because the contrapositive is easier to prove</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="kc2" value="b">
+                            <span>Because they are logically equivalent</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="kc2" value="c">
+                            <span>Because the contrapositive is always true</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="kc2" value="d">
+                            <span>Because P implies ¬Q</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="quiz-question" id="kcq3">
+                    <p><strong>Question 3:</strong> Proof by contrapositive is especially useful when:</p>
+                    <div class="quiz-options">
+                        <label class="quiz-option">
+                            <input type="radio" name="kc3" value="a">
+                            <span>The hypothesis P is easy to work with</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="kc3" value="b">
+                            <span>Assuming ¬Q gives more useful information than assuming P</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="kc3" value="c">
+                            <span>The statement involves only even numbers</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="kc3" value="d">
+                            <span>Direct proof is impossible</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="quiz-question" id="kcq4">
+                    <p><strong>Question 4:</strong> The negation of "P and Q" is:</p>
+                    <div class="quiz-options">
+                        <label class="quiz-option">
+                            <input type="radio" name="kc4" value="a">
+                            <span>¬P and ¬Q</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="kc4" value="b">
+                            <span>¬P or ¬Q</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="kc4" value="c">
+                            <span>P or Q</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="kc4" value="d">
+                            <span>P and ¬Q</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="quiz-question" id="kcq5">
+                    <p><strong>Question 5:</strong> To prove "If n² is even, then n is even" by contrapositive, we assume:</p>
+                    <div class="quiz-options">
+                        <label class="quiz-option">
+                            <input type="radio" name="kc5" value="a">
+                            <span>n² is even</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="kc5" value="b">
+                            <span>n is even</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="kc5" value="c">
+                            <span>n is odd</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="kc5" value="d">
+                            <span>n² is odd</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <button onclick="checkKnowledgeCheck()" class="mt-20">Submit Knowledge Check</button>
+                <div class="feedback" id="kcFeedback"></div>
+            </div>
+        </section>
+        
+        <!-- Summary -->
+        <section id="summary">
+            <h2>10. Summary and Key Takeaways</h2>
+            
+            <label class="section-check" id="check8">
+                <input type="checkbox" onchange="updateProgress()" aria-label="Mark summary as complete">
+                <span>Mark this section as complete</span>
+            </label>
+            
+            <div class="definition-box">
+                <h4><span class="emoji-icon">📋</span> Key Takeaways from Module 5.4</h4>
+                <ol>
+                    <li><strong>Contrapositive equivalence:</strong> $$(P \rightarrow Q) \equiv (\neg Q \rightarrow \neg P)$$</li>
+                    <li><strong>Proof by contrapositive:</strong> To prove $$P \rightarrow Q$$, prove $$\neg Q \rightarrow \neg P$$ instead.</li>
+                    <li><strong>When to use it:</strong> When assuming ¬Q gives more useful information than assuming P, especially for statements like "If [property of n²], then [property of n]."</li>
+                    <li><strong>Forming the contrapositive:</strong> Negate both P and Q, then swap their positions. Remember De Morgan's Laws!</li>
+                    <li><strong>Don't confuse with converse:</strong> Contrapositive (¬Q → ¬P) ≠ Converse (Q → P).</li>
+                    <li><strong>Both methods are valid:</strong> Direct and contrapositive proofs are equally valid; choose based on which is easier.</li>
+                </ol>
+            </div>
+            
+            <h3>Preparing for Module 5.5: Proof by Counterexample</h3>
+            
+            <p>In the next module, you'll learn how to <strong>disprove</strong> statements using counterexamples. Make sure you:</p>
+            <ul>
+                <li>✓ Can form contrapositives correctly</li>
+                <li>✓ Understand the difference between proving and disproving</li>
+                <li>✓ Remember that one counterexample disproves a universal statement</li>
+                <li>✓ Know the negation of "for all" is "there exists"</li>
+            </ul>
+            
+            <div class="insight-box">
+                <h4><span class="emoji-icon">🎯</span> What's Next?</h4>
+                <p><strong>Module 5.5: Proof by Counterexample</strong> will teach you how to disprove false statements by finding specific examples where they fail. You'll learn to:</p>
+                <ul>
+                    <li>Recognize when a statement can be disproved</li>
+                    <li>Systematically search for counterexamples</li>
+                    <li>Present counterexamples clearly and completely</li>
+                    <li>Connect counterexamples to software testing</li>
+                </ul>
+            </div>
+        </section>
+        
+        <!-- Resources -->
+        <section id="resources">
+            <h2>📚 Additional Resources</h2>
+            
+            <h3>Required Reading</h3>
+            <ul>
+                <li><a href="hammack-book-of-proof-3rd-ed.pdf" target="_blank">Book of Proof, 3rd Edition (Hammack)</a> - Chapter 5: Contrapositive Proof</li>
+                <li>Saylor.org CS202 - Unit 4: Mathematical Induction and Proofs</li>
+            </ul>
+            
+            <h3>Supplementary Materials</h3>
+            <ul>
+                <li><a href="https://www.people.vcu.edu/~rhammack/BookOfProof/" target="_blank" rel="noopener noreferrer">Book of Proof - Free Online Version</a></li>
+                <li><a href="https://brilliant.org/wiki/contrapositive/" target="_blank" rel="noopener noreferrer">Brilliant.org - Contrapositive</a></li>
+            </ul>
+            
+            <h3>Deliverables</h3>
+            <ul>
+                <li><strong>Contrapositive proof worksheet</strong> with 4 complete proofs (submit to Canvas)</li>
+                <li>Include problems 1-4 from the practice problems section</li>
+            </ul>
+        </section>
+    </main>
+    
+    <!-- Navigation -->
+    <nav class="nav-buttons" aria-label="Module navigation">
+        <a href="csc240-week5-module3.html" class="nav-button">
+            ← Previous: Module 5.3
+        </a>
+        <a href="csc240-week5-module5.html" class="nav-button">
+            Next: Module 5.5 - Proof by Counterexample →
+        </a>
+    </nav>
+    
+    <footer>
+        <p><strong>Module 5.4: Proof by Contrapositive</strong></p>
+        <p>CSC 240 - Discrete Structures | Mendocino College</p>
+        <p>© 2026 Mendocino College | All Rights Reserved</p>
+        <p><a href="mailto:instructor@mendocino.edu">Contact Instructor</a> | <a href="https://www.mendocino.edu">College Website</a></p>
+    </footer>
+    
+    <script>
+        // ==================== PROGRESS TRACKING ====================
+        function updateProgress() {
+            const checkboxes = document.querySelectorAll('.section-check input[type="checkbox"]');
+            let completed = 0;
+            
+            checkboxes.forEach((checkbox, index) => {
+                const key = `module5_4_section${index + 1}`;
+                if (checkbox.checked) {
+                    completed++;
+                    checkbox.parentElement.classList.add('completed');
+                    sessionStorage.setItem(key, 'true');
+                } else {
+                    checkbox.parentElement.classList.remove('completed');
+                    sessionStorage.setItem(key, 'false');
+                }
+            });
+            
+            const percentage = Math.round((completed / checkboxes.length) * 100);
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            const progressBar = progressFill.parentElement;
+            
+            progressFill.style.width = percentage + '%';
+            progressText.textContent = percentage + '% Complete';
+            progressBar.setAttribute('aria-valuenow', percentage);
+            
+            sessionStorage.setItem('module5_4_progress', percentage);
+        }
+        
+        function loadProgress() {
+            const checkboxes = document.querySelectorAll('.section-check input[type="checkbox"]');
+            
+            checkboxes.forEach((checkbox, index) => {
+                const key = `module5_4_section${index + 1}`;
+                const saved = sessionStorage.getItem(key);
+                if (saved === 'true') {
+                    checkbox.checked = true;
+                    checkbox.parentElement.classList.add('completed');
+                }
+            });
+            
+            updateProgress();
+        }
+        
+        // ==================== COLLAPSIBLE SECTIONS ====================
+        function toggleCollapsible(button) {
+            const isExpanded = button.classList.contains('active');
+            button.classList.toggle('active');
+            const content = button.nextElementSibling;
+            content.classList.toggle('show');
+            button.setAttribute('aria-expanded', !isExpanded);
+        }
+        
+        // ==================== ACTIVITY 1 CHECKER ====================
+        function checkActivity1() {
+            const answers = {
+                'act1q1': 'b',
+                'act1q2': 'a',
+                'act1q3': 'b'
+            };
+            
+            let correct = 0;
+            let total = 3;
+            let allAnswered = true;
+            
+            // Clear previous styling
+            for (let i = 1; i <= 3; i++) {
+                document.querySelectorAll(`#act1q${i} .quiz-option`).forEach(opt => {
+                    opt.classList.remove('correct', 'incorrect');
+                });
+            }
+            
+            for (const [name, correctAnswer] of Object.entries(answers)) {
+                const selected = document.querySelector(`input[name="${name}"]:checked`);
+                if (!selected) {
+                    allAnswered = false;
+                    continue;
+                }
+                
+                if (selected.value === correctAnswer) {
+                    correct++;
+                    selected.parentElement.classList.add('correct');
+                } else {
+                    selected.parentElement.classList.add('incorrect');
+                    document.querySelector(`input[name="${name}"][value="${correctAnswer}"]`).parentElement.classList.add('correct');
+                }
+            }
+            
+            const feedback = document.getElementById('act1Feedback');
+            
+            if (!allAnswered) {
+                feedback.className = 'feedback incorrect show';
+                feedback.textContent = 'Please answer all questions before checking.';
+                return;
+            }
+            
+            let explanation = '';
+            if (correct < total) {
+                explanation = '<br><br><strong>Remember:</strong><br>' +
+                    '• Contrapositive: Negate BOTH parts and SWAP them.<br>' +
+                    '• ¬(P ∧ Q) = ¬P ∨ ¬Q (De Morgan\'s Law)<br>' +
+                    '• ¬(even) = odd, ¬(odd) = even';
+            }
+            
+            if (correct === total) {
+                feedback.className = 'feedback correct show';
+                feedback.innerHTML = `<strong>Excellent!</strong> ${correct}/${total} correct. You can form contrapositives correctly!`;
+            } else {
+                feedback.className = 'feedback incorrect show';
+                feedback.innerHTML = `<strong>${correct}/${total} correct.</strong>${explanation}`;
+            }
+        }
+        
+        // ==================== ACTIVITY 2 CHECKER ====================
+        function checkActivity2() {
+            const answers = {
+                'act2q1': 'a',
+                'act2q2': 'b',
+                'act2q3': 'b'
+            };
+            
+            let correct = 0;
+            let total = 3;
+            let allAnswered = true;
+            
+            // Clear previous styling
+            for (let i = 1; i <= 3; i++) {
+                document.querySelectorAll(`#act2q${i} .quiz-option`).forEach(opt => {
+                    opt.classList.remove('correct', 'incorrect');
+                });
+            }
+            
+            for (const [name, correctAnswer] of Object.entries(answers)) {
+                const selected = document.querySelector(`input[name="${name}"]:checked`);
+                if (!selected) {
+                    allAnswered = false;
+                    continue;
+                }
+                
+                if (selected.value === correctAnswer) {
+                    correct++;
+                    selected.parentElement.classList.add('correct');
+                } else {
+                    selected.parentElement.classList.add('incorrect');
+                    document.querySelector(`input[name="${name}"][value="${correctAnswer}"]`).parentElement.classList.add('correct');
+                }
+            }
+            
+            const feedback = document.getElementById('act2Feedback');
+            
+            if (!allAnswered) {
+                feedback.className = 'feedback incorrect show';
+                feedback.textContent = 'Please answer all questions before checking.';
+                return;
+            }
+            
+            let explanation = '';
+            if (correct < total) {
+                explanation = '<br><br><strong>Key insight:</strong><br>' +
+                    '• "If [property of n], then [property of n²/n³]" → Direct is easier (you can compute powers)<br>' +
+                    '• "If [property of n²/n³], then [property of n]" → Contrapositive is easier (you can\'t easily "unpower")<br>' +
+                    '• "If p∤n², then p∤n" → Contrapositive gives you n = pk to work with';
+            }
+            
+            if (correct === total) {
+                feedback.className = 'feedback correct show';
+                feedback.innerHTML = `<strong>Perfect!</strong> ${correct}/${total} correct. You know when to use contrapositive!`;
+            } else {
+                feedback.className = 'feedback incorrect show';
+                feedback.innerHTML = `<strong>${correct}/${total} correct.</strong>${explanation}`;
+            }
+        }
+        
+        // ==================== ACTIVITY 3 CHECKER ====================
+        function checkActivity3() {
+            const answers = {
+                'blank1': ['3∤n', '3 does not divide n', '3 ∤ n', 'n is not divisible by 3'],
+                'blank2': ['3∤n²', '3 does not divide n²', '3 ∤ n²', 'n² is not divisible by 3'],
+                'blank3': ['3q² + 2q', '3q^2 + 2q'],
+                'blank4': ['1']
+            };
+            
+            let correct = 0;
+            let total = 4;
+            let results = [];
+            
+            for (let i = 1; i <= 4; i++) {
+                const input = document.getElementById(`blank${i}`);
+                const userAnswer = input.value.toLowerCase().trim().replace(/\s+/g, ' ');
+                const correctAnswers = answers[`blank${i}`].map(a => a.toLowerCase().replace(/\s+/g, ' '));
+                
+                let isCorrect = correctAnswers.some(ca => 
+                    userAnswer === ca || 
+                    userAnswer.replace(/\s/g, '') === ca.replace(/\s/g, '') ||
+                    userAnswer.includes(ca)
+                );
+                
+                if (isCorrect) {
+                    correct++;
+                    input.style.borderColor = '#4CAF50';
+                    input.style.backgroundColor = '#e8f5e9';
+                } else if (input.value === '') {
+                    input.style.borderColor = '#f44336';
+                    input.style.backgroundColor = '#ffebee';
+                    results.push(`Blank ${i}: Please enter an answer`);
+                } else {
+                    input.style.borderColor = '#f44336';
+                    input.style.backgroundColor = '#ffebee';
+                    results.push(`Blank ${i}: Expected something like "${answers[`blank${i}`][0]}"`);
+                }
+            }
+            
+            const feedback = document.getElementById('act3Feedback');
+            
+            if (correct === total) {
+                feedback.className = 'feedback correct show';
+                feedback.innerHTML = `<strong>Excellent!</strong> ${correct}/${total} correct. You can complete a contrapositive proof!`;
+            } else {
+                feedback.className = 'feedback incorrect show';
+                feedback.innerHTML = `<strong>${correct}/${total} correct.</strong><br>` + results.join('<br>');
+            }
+        }
+        
+        // ==================== KNOWLEDGE CHECK ====================
+        function checkKnowledgeCheck() {
+            const answers = {
+                'kc1': 'c',
+                'kc2': 'b',
+                'kc3': 'b',
+                'kc4': 'b',
+                'kc5': 'c'
+            };
+            
+            let correct = 0;
+            let total = 5;
+            let allAnswered = true;
+            
+            // Clear previous styling
+            for (let i = 1; i <= 5; i++) {
+                document.querySelectorAll(`#kcq${i} .quiz-option`).forEach(opt => {
+                    opt.classList.remove('correct', 'incorrect');
+                });
+            }
+            
+            for (const [name, correctAnswer] of Object.entries(answers)) {
+                const selected = document.querySelector(`input[name="${name}"]:checked`);
+                if (!selected) {
+                    allAnswered = false;
+                    continue;
+                }
+                
+                if (selected.value === correctAnswer) {
+                    correct++;
+                    selected.parentElement.classList.add('correct');
+                } else {
+                    selected.parentElement.classList.add('incorrect');
+                    document.querySelector(`input[name="${name}"][value="${correctAnswer}"]`).parentElement.classList.add('correct');
+                }
+            }
+            
+            const feedback = document.getElementById('kcFeedback');
+            
+            if (!allAnswered) {
+                feedback.className = 'feedback incorrect show';
+                feedback.textContent = 'Please answer all questions before submitting.';
+                return;
+            }
+            
+            const percentage = Math.round((correct / total) * 100);
+            
+            if (percentage >= 80) {
+                feedback.className = 'feedback correct show';
+                feedback.innerHTML = `<strong>Great job!</strong> You scored ${correct}/${total} (${percentage}%). You're ready to move on to Module 5.5!`;
+            } else if (percentage >= 60) {
+                feedback.className = 'feedback info show';
+                feedback.innerHTML = `<strong>Good effort!</strong> You scored ${correct}/${total} (${percentage}%). Review the sections you missed before moving on.`;
+            } else {
+                feedback.className = 'feedback incorrect show';
+                feedback.innerHTML = `<strong>Keep studying!</strong> You scored ${correct}/${total} (${percentage}%). Please review this module before proceeding.`;
+            }
+            
+            sessionStorage.setItem('module5_4_quiz_score', percentage);
+        }
+        
+        // ==================== INITIALIZE ON PAGE LOAD ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProgress();
+            
+            // Add keyboard navigation for collapsibles
+            document.querySelectorAll('.collapsible').forEach(button => {
+                button.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        toggleCollapsible(this);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

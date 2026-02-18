@@ -1,0 +1,2547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 5.3: Proof by Cases | CSC 240</title>
+    <style>
+        /* ==================== CSS RESET AND BASE ==================== */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #1a1a2e;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        /* ==================== HEADER STYLES ==================== */
+        header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        
+        header h1 {
+            margin: 0 0 10px 0;
+            font-size: 1.9rem;
+        }
+        
+        .module-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+        
+        .module-info span {
+            background: rgba(255,255,255,0.1);
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+        
+        /* ==================== PROGRESS TRACKING ==================== */
+        .progress-container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: #e0e0e0;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #FF9800, #FFC107);
+            border-radius: 6px;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+        
+        .progress-text {
+            text-align: center;
+            margin-top: 10px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        /* ==================== MAIN SECTIONS ==================== */
+        section {
+            background: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        
+        section h2 {
+            color: #1a1a2e;
+            border-bottom: 3px solid #FF9800;
+            padding-bottom: 10px;
+            margin-top: 0;
+            font-size: 1.5rem;
+        }
+        
+        section h3 {
+            color: #16213e;
+            margin-top: 25px;
+            font-size: 1.25rem;
+        }
+        
+        section h4 {
+            color: #333;
+            margin-top: 20px;
+            font-size: 1.1rem;
+        }
+        
+        /* ==================== CONTENT BOXES ==================== */
+        .definition-box {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            border-left: 5px solid #FF9800;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 10px 10px 0;
+        }
+        
+        .definition-box h4 {
+            color: #e65100;
+            margin-top: 0;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .theorem-box {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border-left: 5px solid #4CAF50;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 10px 10px 0;
+        }
+        
+        .theorem-box h4 {
+            color: #2e7d32;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        
+        .example-box {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-left: 5px solid #2196F3;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 10px 10px 0;
+        }
+        
+        .example-box h4 {
+            color: #1565c0;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        
+        .warning-box {
+            background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+            border-left: 5px solid #f44336;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 10px 10px 0;
+        }
+        
+        .warning-box h4 {
+            color: #c62828;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        
+        .insight-box {
+            background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+            border-left: 5px solid #9c27b0;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 10px 10px 0;
+        }
+        
+        .insight-box h4 {
+            color: #7b1fa2;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        
+        .strategy-box {
+            background: linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 100%);
+            border-left: 5px solid #009688;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 10px 10px 0;
+        }
+        
+        .strategy-box h4 {
+            color: #00695c;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        
+        .learning-objectives {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #e65100;
+        }
+        
+        .learning-objectives h3 {
+            color: #e65100;
+            margin-top: 0;
+        }
+        
+        .learning-objectives ul {
+            margin-bottom: 0;
+        }
+        
+        .learning-objectives li {
+            margin: 10px 0;
+        }
+        
+        /* ==================== TABLES ==================== */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        th {
+            background: #1a1a2e;
+            color: #fff;
+            font-weight: 600;
+        }
+        
+        tr:hover {
+            background: #f5f5f5;
+        }
+        
+        tr:last-child td {
+            border-bottom: none;
+        }
+        
+        /* ==================== INTERACTIVE ELEMENTS ==================== */
+        .interactive-activity {
+            background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            border: 2px solid #FF9800;
+        }
+        
+        .interactive-activity h3 {
+            color: #e65100;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .knowledge-check {
+            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            border: 2px solid #e91e63;
+        }
+        
+        .knowledge-check h3 {
+            color: #c2185b;
+            margin-top: 0;
+        }
+        
+        .quiz-question {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .quiz-question p {
+            margin-bottom: 15px;
+        }
+        
+        .quiz-question p:first-child {
+            font-weight: 600;
+        }
+        
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .quiz-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 15px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .quiz-option:hover {
+            background: #fff3e0;
+            border-color: #FF9800;
+        }
+        
+        .quiz-option.selected {
+            background: #fff3e0;
+            border-color: #FF9800;
+        }
+        
+        .quiz-option.correct {
+            background: #e8f5e9;
+            border-color: #4CAF50;
+        }
+        
+        .quiz-option.incorrect {
+            background: #ffebee;
+            border-color: #f44336;
+        }
+        
+        .quiz-option input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            margin: 0;
+        }
+        
+        /* ==================== BUTTONS ==================== */
+        button {
+            background: linear-gradient(135deg, #FF9800 0%, #FFC107 100%);
+            color: #fff;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3);
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 152, 0, 0.4);
+        }
+        
+        button:focus {
+            outline: 3px solid #e65100;
+            outline-offset: 2px;
+        }
+        
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        button.secondary {
+            background: linear-gradient(135deg, #4CAF50 0%, #81c784 100%);
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+        
+        button.secondary:hover {
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+        }
+        
+        /* ==================== FEEDBACK ==================== */
+        .feedback {
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .feedback.show {
+            display: block;
+        }
+        
+        .feedback.correct {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #4CAF50;
+        }
+        
+        .feedback.incorrect {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #f44336;
+        }
+        
+        .feedback.info {
+            background: #fff3e0;
+            color: #e65100;
+            border: 1px solid #FF9800;
+        }
+        
+        /* ==================== COLLAPSIBLE SECTIONS ==================== */
+        .collapsible {
+            background: #f5f5f5;
+            border: none;
+            padding: 15px 20px;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            margin: 10px 0;
+            color: #333;
+        }
+        
+        .collapsible:hover {
+            background: #e0e0e0;
+        }
+        
+        .collapsible::after {
+            content: '▼';
+            font-size: 0.8rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .collapsible.active::after {
+            transform: rotate(180deg);
+        }
+        
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            background: #fff;
+            border-radius: 0 0 10px 10px;
+        }
+        
+        .collapsible-content.show {
+            max-height: 5000px;
+        }
+        
+        .collapsible-content-inner {
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-top: none;
+            border-radius: 0 0 10px 10px;
+        }
+        
+        /* ==================== PROOF STRUCTURES ==================== */
+        .proof-structure {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Georgia', 'Times New Roman', serif;
+        }
+        
+        .proof-structure .proof-header {
+            font-weight: bold;
+            color: #1a1a2e;
+            margin-bottom: 15px;
+        }
+        
+        .proof-structure .proof-line {
+            margin: 8px 0;
+            padding-left: 20px;
+        }
+        
+        .proof-structure .proof-line em {
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        .proof-structure .proof-end {
+            text-align: right;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+        
+        .proof-structure .case-header {
+            font-weight: bold;
+            color: #e65100;
+            margin-top: 15px;
+            margin-bottom: 10px;
+            padding-left: 10px;
+            border-left: 3px solid #FF9800;
+        }
+        
+        .proof-template {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            border: 2px dashed #FF9800;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .proof-template h4 {
+            color: #e65100;
+            margin-top: 0;
+        }
+        
+        .proof-template ol {
+            margin-bottom: 0;
+        }
+        
+        .proof-template li {
+            margin: 10px 0;
+            padding: 5px 0;
+        }
+        
+        .proof-template .template-placeholder {
+            background: #fff;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-family: 'Consolas', monospace;
+            color: #e65100;
+        }
+        
+        /* ==================== SECTION CHECKBOXES ==================== */
+        .section-check {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 15px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            margin: 10px 0;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .section-check:hover {
+            background: #fff3e0;
+        }
+        
+        .section-check input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            margin: 0;
+        }
+        
+        .section-check.completed {
+            background: #fff3e0;
+            border-left: 3px solid #FF9800;
+        }
+        
+        .section-check span {
+            font-weight: 500;
+        }
+        
+        /* ==================== CODE FORMATTING ==================== */
+        code {
+            background: #f5f5f5;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.95em;
+            color: #c7254e;
+        }
+        
+        pre {
+            background: #1a1a2e;
+            color: #a8e6cf;
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            line-height: 1.6;
+            white-space: pre;
+            margin: 15px 0;
+        }
+        
+        /* ==================== NAVIGATION ==================== */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .nav-buttons a {
+            text-decoration: none;
+        }
+        
+        .nav-button {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            padding: 12px 25px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }
+        
+        .nav-button:focus {
+            outline: 3px solid #FF9800;
+            outline-offset: 2px;
+        }
+        
+        /* ==================== FOOTER ==================== */
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+            border-top: 1px solid #ddd;
+            margin-top: 40px;
+            background: #fff;
+            border-radius: 15px;
+        }
+        
+        footer a {
+            color: #1a1a2e;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        footer a:hover {
+            text-decoration: underline;
+        }
+        
+        /* ==================== LISTS ==================== */
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 25px;
+        }
+        
+        li {
+            margin: 8px 0;
+        }
+        
+        /* ==================== CASE DIAGRAM ==================== */
+        .case-diagram {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin: 25px 0;
+        }
+        
+        .case-box {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            border: 2px solid #FF9800;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            min-width: 180px;
+            flex: 1;
+            max-width: 250px;
+        }
+        
+        .case-box h5 {
+            color: #e65100;
+            margin: 0 0 10px 0;
+            font-size: 1.1rem;
+        }
+        
+        .case-box .case-condition {
+            background: #fff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .case-box .case-result {
+            color: #333;
+            font-size: 0.95em;
+        }
+        
+        /* ==================== EXHAUSTIVE CASES VISUAL ==================== */
+        .exhaustive-visual {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .exhaustive-visual h4 {
+            margin-top: 0;
+            color: #333;
+        }
+        
+        .domain-bar {
+            display: flex;
+            height: 50px;
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+        
+        .domain-segment {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+        
+        .domain-segment:hover {
+            filter: brightness(1.1);
+        }
+        
+        .domain-segment.even {
+            background: linear-gradient(135deg, #4CAF50, #81c784);
+            flex: 1;
+        }
+        
+        .domain-segment.odd {
+            background: linear-gradient(135deg, #2196F3, #64b5f6);
+            flex: 1;
+        }
+        
+        .domain-segment.positive {
+            background: linear-gradient(135deg, #4CAF50, #81c784);
+            flex: 1;
+        }
+        
+        .domain-segment.zero {
+            background: linear-gradient(135deg, #FF9800, #FFC107);
+            flex: 0.3;
+        }
+        
+        .domain-segment.negative {
+            background: linear-gradient(135deg, #f44336, #ef5350);
+            flex: 1;
+        }
+        
+        /* ==================== ACCESSIBILITY ==================== */
+        :focus {
+            outline: 3px solid #FF9800;
+            outline-offset: 2px;
+        }
+        
+        :focus:not(:focus-visible) {
+            outline: none;
+        }
+        
+        :focus-visible {
+            outline: 3px solid #FF9800;
+            outline-offset: 2px;
+        }
+        
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+        
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: #1a1a2e;
+            color: #fff;
+            padding: 8px 16px;
+            z-index: 100;
+            transition: top 0.3s ease;
+        }
+        
+        .skip-link:focus {
+            top: 0;
+        }
+        
+        /* ==================== MATH DISPLAY ==================== */
+        .math-display {
+            overflow-x: auto;
+            padding: 10px 0;
+        }
+        
+        .math-block {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+            font-size: 1.1em;
+        }
+        
+        /* ==================== RESPONSIVE DESIGN ==================== */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            
+            header {
+                padding: 20px;
+            }
+            
+            header h1 {
+                font-size: 1.5rem;
+            }
+            
+            section {
+                padding: 20px;
+            }
+            
+            .module-info {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .nav-buttons {
+                flex-direction: column;
+            }
+            
+            .nav-button {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            table {
+                font-size: 0.9rem;
+            }
+            
+            th, td {
+                padding: 10px;
+            }
+            
+            .quiz-option {
+                padding: 10px 12px;
+            }
+            
+            .case-diagram {
+                flex-direction: column;
+            }
+            
+            .case-box {
+                max-width: 100%;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            header h1 {
+                font-size: 1.3rem;
+            }
+            
+            section h2 {
+                font-size: 1.3rem;
+            }
+            
+            .definition-box, .example-box, .theorem-box, 
+            .warning-box, .insight-box, .strategy-box {
+                padding: 15px;
+            }
+        }
+        
+        /* ==================== PRINT STYLES ==================== */
+        @media print {
+            body {
+                background: #fff;
+            }
+            
+            header, section, footer {
+                box-shadow: none;
+            }
+            
+            .progress-container, .nav-buttons, button {
+                display: none;
+            }
+            
+            .collapsible-content {
+                max-height: none;
+            }
+        }
+        
+        /* ==================== UTILITY CLASSES ==================== */
+        .text-center {
+            text-align: center;
+        }
+        
+        .mt-20 {
+            margin-top: 20px;
+        }
+        
+        .mb-20 {
+            margin-bottom: 20px;
+        }
+        
+        .highlight {
+            background: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        
+        .emoji-icon {
+            font-size: 1.2em;
+        }
+        
+        /* ==================== PRACTICE PROBLEM STYLES ==================== */
+        .practice-problem {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        
+        .practice-problem h4 {
+            color: #e65100;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .practice-problem .problem-statement {
+            font-weight: 600;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #fff;
+            border-radius: 5px;
+        }
+        
+        .difficulty-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+        
+        .difficulty-badge.easy {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .difficulty-badge.medium {
+            background: #fff3e0;
+            color: #e65100;
+        }
+        
+        .difficulty-badge.hard {
+            background: #ffebee;
+            color: #c62828;
+        }
+        
+        /* ==================== WLOG BOX ==================== */
+        .wlog-box {
+            background: linear-gradient(135deg, #e8eaf6 0%, #c5cae9 100%);
+            border-left: 5px solid #3f51b5;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 10px 10px 0;
+        }
+        
+        .wlog-box h4 {
+            color: #283593;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Skip link for accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <header>
+        <h1>🔀 Module 5.3: Proof by Cases</h1>
+        <div class="module-info">
+            <span>📚 CSC 240 - Discrete Structures</span>
+            <span>⏱️ Estimated Time: 1.5 hours</span>
+            <span>📅 Week 5 of 17</span>
+        </div>
+    </header>
+    
+    <div class="progress-container" role="region" aria-label="Module progress tracker">
+        <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="progress-text" id="progressText" aria-live="polite">0% Complete</div>
+    </div>
+    
+    <main id="main-content">
+        <!-- Learning Objectives -->
+        <div class="learning-objectives">
+            <h3>🎯 Learning Objectives</h3>
+            <p>By the end of this module, you will be able to:</p>
+            <ul>
+                <li>Recognize when proof by cases is the appropriate technique</li>
+                <li>Partition a domain into exhaustive, mutually exclusive cases</li>
+                <li>Construct complete proofs by cases with proper structure</li>
+                <li>Apply proof by cases to problems involving parity, absolute values, and inequalities</li>
+                <li>Use "without loss of generality" (WLOG) when cases are symmetric</li>
+            </ul>
+            <p><strong>Course Learning Outcome:</strong> CSLO 1 - Apply symbolic logic and proof methods to model and analyze program/algorithm correctness.</p>
+        </div>
+        
+        <!-- Prerequisites -->
+        <section id="prerequisites">
+            <h2>Prerequisites from Modules 5.1-5.2</h2>
+            
+            <p>Before beginning this module, ensure you're comfortable with:</p>
+            
+            <ul>
+                <li><strong>Direct proof technique:</strong> Assuming the hypothesis and deriving the conclusion</li>
+                <li><strong>Applying definitions:</strong> Using definitions of even, odd, divisibility, etc.</li>
+                <li><strong>Proof structure:</strong> Statement, assumption, logical steps, justifications, conclusion</li>
+                <li><strong>Logical disjunction:</strong> Understanding "or" statements ($$P \vee Q$$)</li>
+            </ul>
+            
+            <div class="insight-box">
+                <h4><span class="emoji-icon">💡</span> Building on Direct Proofs</h4>
+                <p>In Module 5.2, you learned to prove statements by assuming the hypothesis and deriving the conclusion. <strong>Proof by cases</strong> extends this technique by handling situations where the hypothesis naturally splits into multiple scenarios. You'll essentially perform several "mini direct proofs"—one for each case.</p>
+            </div>
+        </section>
+        
+        <!-- Section 1: What is Proof by Cases? -->
+        <section id="section1">
+            <h2>1. What is Proof by Cases?</h2>
+            
+            <label class="section-check" id="check1">
+                <input type="checkbox" onchange="updateProgress()" aria-label="Mark section 1 as complete">
+                <span>Mark this section as complete</span>
+            </label>
+            
+            <div class="definition-box">
+                <h4><span class="emoji-icon">📖</span> Definition: Proof by Cases (Proof by Exhaustion)</h4>
+                <p>A <strong>proof by cases</strong> is a proof technique where we:</p>
+                <ol>
+                    <li>Divide the domain (or hypothesis) into several <strong>mutually exclusive</strong> cases that together <strong>cover all possibilities</strong></li>
+                    <li>Prove that the conclusion holds in <strong>each case</strong> separately</li>
+                    <li>Conclude that since the cases are exhaustive, the conclusion holds in general</li>
+                </ol>
+                <p><strong>Also known as:</strong> Proof by exhaustion, case analysis, or case-by-case proof.</p>
+            </div>
+            
+            <h3>The Logical Foundation</h3>
+            
+            <p>Proof by cases is based on a fundamental logical equivalence. If we know that either $$P_1$$ or $$P_2$$ (or ... or $$P_n$$) must be true, and we can show that each one implies Q, then Q must be true:</p>
+            
+            <div class="math-block">
+                $$[(P_1 \vee P_2 \vee \cdots \vee P_n) \wedge (P_1 \rightarrow Q) \wedge (P_2 \rightarrow Q) \wedge \cdots \wedge (P_n \rightarrow Q)] \rightarrow Q$$
+            </div>
+            
+            <p>In simpler terms:</p>
+            
+            <div class="theorem-box">
+                <h4><span class="emoji-icon">📐</span> Logical Principle Behind Proof by Cases</h4>
+                <p>If we can partition the domain into cases $$C_1, C_2, \ldots, C_n$$ such that:</p>
+                <ol>
+                    <li><strong>Exhaustive:</strong> Every element belongs to at least one case (no gaps)</li>
+                    <li><strong>The conclusion holds in each case:</strong> $$C_i \rightarrow Q$$ for all i</li>
+                </ol>
+                <p>Then Q is true for all elements in the domain.</p>
+            </div>
+            
+            <h3>Visualizing Exhaustive Cases</h3>
+            
+            <p>Think of the domain as a space that must be completely covered by your cases:</p>
+            
+            <div class="exhaustive-visual">
+                <h4>Example: Integers partitioned by parity</h4>
+                <p>Every integer is either even OR odd (never both, never neither)</p>
+                <div class="domain-bar">
+                    <div class="domain-segment even">Even integers</div>
+                    <div class="domain-segment odd">Odd integers</div>
+                </div>
+                <p><strong>Together, these two cases cover ALL integers</strong></p>
+            </div>
+            
+            <div class="exhaustive-visual">
+                <h4>Example: Real numbers partitioned by sign</h4>
+                <p>Every real number is positive, zero, OR negative</p>
+                <div class="domain-bar">
+                    <div class="domain-segment negative">x &lt; 0</div>
+                    <div class="domain-segment zero">x = 0</div>
+                    <div class="domain-segment positive">x &gt; 0</div>
+                </div>
+                <p><strong>Together, these three cases cover ALL real numbers</strong></p>
+            </div>
+            
+            <h3>When to Use Proof by Cases</h3>
+            
+            <p>Proof by cases is appropriate when:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Situation</th>
+                        <th>Common Cases</th>
+                        <th>Example Statement</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Parity of integers</strong></td>
+                        <td>n is even, n is odd</td>
+                        <td>"For all integers n, n² + n is even"</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Sign of numbers</strong></td>
+                        <td>x > 0, x = 0, x < 0</td>
+                        <td>"For all real x, |x| ≥ 0"</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Absolute value</strong></td>
+                        <td>x ≥ 0, x < 0</td>
+                        <td>"For all real x, |x| = |-x|"</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Divisibility classes</strong></td>
+                        <td>n ≡ 0, 1, 2 (mod 3)</td>
+                        <td>"For all integers n, n³ ≡ n (mod 3)"</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Comparison</strong></td>
+                        <td>a ≤ b, a > b</td>
+                        <td>"max(a,b) + min(a,b) = a + b"</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Disjunctive hypothesis</strong></td>
+                        <td>Given "P or Q"</td>
+                        <td>"If x = 2 or x = 3, then x² - 5x + 6 = 0"</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="insight-box">
+                <h4><span class="emoji-icon">💡</span> Computer Science Connection</h4>
+                <p>Proof by cases directly corresponds to <strong>conditional statements</strong> in programming:</p>
+                <pre>
+// Proof by cases ↔ if-else structure
+if (n % 2 == 0) {
+    // Case 1: n is even
+    // ... prove property holds for even n
+} else {
+    // Case 2: n is odd
+    // ... prove property holds for odd n
+}
+// Since both branches establish the property,
+// it holds for ALL integers n</pre>
+                <p>When you verify that a program handles all possible inputs correctly by checking each branch, you're essentially doing proof by cases!</p>
+            </div>
+        </section>
+        
+        <!-- Section 2: The Proof by Cases Template -->
+        <section id="section2">
+            <h2>2. The Proof by Cases Template</h2>
+            
+            <label class="section-check" id="check2">
+                <input type="checkbox" onchange="updateProgress()" aria-label="Mark section 2 as complete">
+                <span>Mark this section as complete</span>
+            </label>
+            
+            <p>Every proof by cases follows a standard structure. Here's the template:</p>
+            
+            <div class="proof-template">
+                <h4><span class="emoji-icon">📋</span> Proof by Cases Template</h4>
+                <ol>
+                    <li><strong>State the theorem:</strong> <span class="template-placeholder">"Theorem: [Statement to prove]"</span></li>
+                    <li><strong>Begin the proof:</strong> <span class="template-placeholder">"Proof:"</span></li>
+                    <li><strong>Introduce the cases:</strong> <span class="template-placeholder">"We consider [n] cases." or "We proceed by cases."</span></li>
+                    <li><strong>State and verify exhaustiveness:</strong> <span class="template-placeholder">"Note that every [element] is either [Case 1] or [Case 2] (or ... [Case n])."</span> (Optional but helpful)</li>
+                    <li><strong>For each case:</strong>
+                        <ul>
+                            <li><span class="template-placeholder">"<strong>Case k:</strong> [Condition for case k]"</span></li>
+                            <li>Prove the conclusion holds using direct proof</li>
+                        </ul>
+                    </li>
+                    <li><strong>Conclude:</strong> <span class="template-placeholder">"In all cases, [conclusion] holds. Therefore, [theorem statement]."</span></li>
+                    <li><strong>End the proof:</strong> <span class="template-placeholder">∎</span></li>
+                </ol>
+            </div>
+            
+            <h3>Key Requirements for Valid Cases</h3>
+            
+            <div class="strategy-box">
+                <h4><span class="emoji-icon">✅</span> Checklist for Valid Case Division</h4>
+                <table>
+                    <tr>
+                        <td><strong>Exhaustive</strong></td>
+                        <td>The cases must cover ALL possibilities. No element can fall outside all cases.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Example (Good)</strong></td>
+                        <td>For integers: "n is even" and "n is odd" — every integer is one or the other</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Example (Bad)</strong></td>
+                        <td>For integers: "n > 0" and "n < 0" — misses n = 0!</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div class="warning-box">
+                <h4><span class="emoji-icon">⚠️</span> Common Mistake: Non-Exhaustive Cases</h4>
+                <p>If your cases don't cover all possibilities, your proof is incomplete!</p>
+                <p><strong>Wrong:</strong> "We consider two cases: x > 0 and x < 0."</p>
+                <p><strong>Problem:</strong> What about x = 0?</p>
+                <p><strong>Correct:</strong> "We consider three cases: x > 0, x = 0, and x < 0."</p>
+            </div>
+            
+            <h3>Do Cases Need to Be Mutually Exclusive?</h3>
+            
+            <p>Technically, cases don't <em>need</em> to be mutually exclusive (non-overlapping), but it's strongly recommended:</p>
+            
+            <ul>
+                <li><strong>Mutually exclusive cases</strong> are cleaner and easier to follow</li>
+                <li><strong>Overlapping cases</strong> are valid but may cause confusion or redundant work</li>
+            </ul>
+            
+            <div class="example-box">
+                <h4><span class="emoji-icon">📝</span> Example: Overlapping vs. Non-Overlapping Cases</h4>
+                <p><strong>Overlapping (Valid but not ideal):</strong></p>
+                <ul>
+                    <li>Case 1: n ≤ 5</li>
+                    <li>Case 2: n ≥ 3</li>
+                </ul>
+                <p>These overlap when 3 ≤ n ≤ 5. Valid, but you might prove the same thing twice.</p>
+                
+                <p><strong>Non-overlapping (Better):</strong></p>
+                <ul>
+                    <li>Case 1: n < 3</li>
+                    <li>Case 2: 3 ≤ n ≤ 5</li>
+                    <li>Case 3: n > 5</li>
+                </ul>
+                <p>Each integer falls into exactly one case.</p>
+            </div>
+        </section>
+        
+        <!-- Section 3: Parity-Based Case Proofs -->
+        <section id="section3">
+            <h2>3. Parity-Based Case Proofs</h2>
+            
+            <label class="section-check" id="check3">
+                <input type="checkbox" onchange="updateProgress()" aria-label="Mark section 3 as complete">
+                <span>Mark this section as complete</span>
+            </label>
+            
+            <p>The most common application of proof by cases involves the <strong>parity</strong> (evenness or oddness) of integers. Since every integer is either even or odd, we can always split into these two cases.</p>
+            
+            <div class="case-diagram">
+                <div class="case-box">
+                    <h5>Case 1: n is even</h5>
+                    <div class="case-condition">n = 2k</div>
+                    <div class="case-result">Use this form in the proof</div>
+                </div>
+                <div class="case-box">
+                    <h5>Case 2: n is odd</h5>
+                    <div class="case-condition">n = 2k + 1</div>
+                    <div class="case-result">Use this form in the proof</div>
+                </div>
+            </div>
+            
+            <div class="example-box">
+                <h4><span class="emoji-icon">📝</span> Example 1: Product of Consecutive Integers</h4>
+                <p><strong>Theorem:</strong> For any integer n, the product n(n + 1) is even.</p>
+                
+                <button class="collapsible" onclick="toggleCollapsible(this)" aria-expanded="false">
+                    <span>Show Proof Strategy</span>
+                </button>
+                <div class="collapsible-content">
+                    <div class="collapsible-content-inner">
+                        <p><strong>Why use cases?</strong> The expression n(n + 1) involves n, and the parity of n affects the calculation. If n is even, then n itself contributes a factor of 2. If n is odd, then n + 1 is even and contributes a factor of 2.</p>
+                        <p><strong>Cases:</strong></p>
+                        <ul>
+                            <li>Case 1: n is even → n = 2k → n(n+1) = 2k(n+1) = 2[k(n+1)]</li>
+                            <li>Case 2: n is odd → n+1 is even → n+1 = 2m → n(n+1) = n(2m) = 2[nm]</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <button class="collapsible" onclick="toggleCollapsible(this)" aria-expanded="false">
+                    <span>Show Complete Proof</span>
+                </button>
+                <div class="collapsible-content">
+                    <div class="collapsible-content-inner">
+                        <div class="proof-structure">
+                            <p class="proof-header">Theorem: For any integer n, the product n(n + 1) is even.</p>
+                            <p><strong>Proof:</strong></p>
+                            <p class="proof-line">Let n be any integer. We consider two cases based on the parity of n.</p>
+                            
+                            <p class="case-header">Case 1: n is even.</p>
+                            <p class="proof-line">By definition of even, n = 2k for some integer k. <em>(Definition)</em></p>
+                            <p class="proof-line">Then n(n + 1) = 2k(n + 1) = 2[k(n + 1)]. <em>(Algebra)</em></p>
+                            <p class="proof-line">Let m = k(n + 1). Since k and n + 1 are integers, m is an integer. <em>(Closure)</em></p>
+                            <p class="proof-line">Thus n(n + 1) = 2m where m is an integer, so n(n + 1) is even. <em>(Definition of even)</em></p>
+                            
+                            <p class="case-header">Case 2: n is odd.</p>
+                            <p class="proof-line">Since n is odd, n + 1 is even. <em>(Odd + 1 = Even, proven in Module 5.2)</em></p>
+                            <p class="proof-line">By definition of even, n + 1 = 2j for some integer j. <em>(Definition)</em></p>
+                            <p class="proof-line">Then n(n + 1) = n(2j) = 2(nj). <em>(Algebra)</em></p>
+                            <p class="proof-line">Let m = nj. Since n and j are integers, m is an integer. <em>(Closure)</em></p>
+                            <p class="proof-line">Thus n(n + 1) = 2m where m is an integer, so n(n + 1) is even. <em>(Definition of even)</em></p>
+                            
+                            <p class="proof-line" style="margin-top: 15px;">In both cases, n(n + 1) is even. Since every integer is either even or odd, we conclude that for any integer n, n(n + 1) is even.</p>
+                            <p class="proof-end">∎</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="example-box">
+                <h4><span class="emoji-icon">📝</span> Example 2: n² + n is Always Even</h4>
+                <p><strong>Theorem:</strong> For any integer n, n² + n is even.</p>
+                
+                <button class="collapsible" onclick="toggleCollapsible(this)" aria-expanded="false">
+                    <span>Show Complete Proof</span>
+                </button>
+                <div class="collapsible-content">
+                    <div class="collapsible-content-inner">
+                        <div class="proof-structure">
+                            <p class="proof-header">Theorem: For any integer n, n² + n is even.</p>
+                            <p><strong>Proof:</strong></p>
+                            <p class="proof-line">Let n be any integer. We proceed by cases on the parity of n.</p>
+                            
+                            <p class="case-header">Case 1: n is even.</p>
+                            <p class="proof-line">Then n = 2k for some integer k. <em>(Definition of even)</em></p>
+                            <p class="proof-line">So n² + n = (2k)² + 2k = 4k² + 2k = 2(2k² + k). <em>(Algebra)</em></p>
+                            <p class="proof-line">Since 2k² + k is an integer, n² + n is even. <em>(Definition of even)</em></p>
+                            
+                            <p class="case-header">Case 2: n is odd.</p>
+                            <p class="proof-line">Then n = 2k + 1 for some integer k. <em>(Definition of odd)</em></p>
+                            <p class="proof-line">So n² + n = (2k + 1)² + (2k + 1) <em>(Substitution)</em></p>
+                            <p class="proof-line">= 4k² + 4k + 1 + 2k + 1 <em>(Expanding)</em></p>
+                            <p class="proof-line">= 4k² + 6k + 2 <em>(Simplifying)</em></p>
+                            <p class="proof-line">= 2(2k² + 3k + 1). <em>(Factoring out 2)</em></p>
+                            <p class="proof-line">Since 2k² + 3k + 1 is an integer, n² + n is even. <em>(Definition of even)</em></p>
+                            
+                            <p class="proof-line" style="margin-top: 15px;">In both cases, n² + n is even.</p>
+                            <p class="proof-end">∎</p>
+                        </div>
+                        
+                        <div class="insight-box">
+                            <h4>Alternative Approach</h4>
+                            <p>Notice that n² + n = n(n + 1). This is the product of consecutive integers, which we already proved is even in Example 1! Sometimes recognizing a factorization lets you reuse previous results.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="example-box">
+                <h4><span class="emoji-icon">📝</span> Example 3: Square Modulo 4</h4>
+                <p><strong>Theorem:</strong> For any integer n, n² leaves a remainder of 0 or 1 when divided by 4.</p>
+                <p><em>(Equivalently: n² ≡ 0 (mod 4) or n² ≡ 1 (mod 4))</em></p>
+                
+                <button class="collapsible" onclick="toggleCollapsible(this)" aria-expanded="false">
+                    <span>Show Complete Proof</span>
+                </button>
+                <div class="collapsible-content">
+                    <div class="collapsible-content-inner">
+                        <div class="proof-structure">
+                            <p class="proof-header">Theorem: For any integer n, n² ≡ 0 or 1 (mod 4).</p>
+                            <p><strong>Proof:</strong></p>
+                            <p class="proof-line">Let n be any integer. We consider two cases.</p>
+                            
+                            <p class="case-header">Case 1: n is even.</p>
+                            <p class="proof-line">Then n = 2k for some integer k. <em>(Definition of even)</em></p>
+                            <p class="proof-line">So n² = (2k)² = 4k². <em>(Algebra)</em></p>
+                            <p class="proof-line">Since n² = 4k² = 4k² + 0, we have n² ≡ 0 (mod 4). <em>(Definition of mod)</em></p>
+                            
+                            <p class="case-header">Case 2: n is odd.</p>
+                            <p class="proof-line">Then n = 2k + 1 for some integer k. <em>(Definition of odd)</em></p>
+                            <p class="proof-line">So n² = (2k + 1)² = 4k² + 4k + 1 = 4(k² + k) + 1. <em>(Algebra)</em></p>
+                            <p class="proof-line">Since n² = 4(k² + k) + 1, we have n² ≡ 1 (mod 4). <em>(Definition of mod)</em></p>
+                            
+                            <p class="proof-line" style="margin-top: 15px;">In both cases, n² ≡ 0 or 1 (mod 4).</p>
+                            <p class="proof-end">∎</p>
+                        </div>
+                        
+                        <div class="insight-box">
+                            <h4>Why This Matters</h4>
+                            <p>This result is useful for proving that certain numbers are NOT perfect squares. For example, any number that is ≡ 2 or 3 (mod 4) cannot be a perfect square!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Section 4: Absolute Value Proofs -->
+        <section id="section4">
+            <h2>4. Absolute Value Proofs</h2>
+            
+            <label class="section-check" id="check4">
+                <input type="checkbox" onchange="updateProgress()" aria-label="Mark section 4 as complete">
+                <span>Mark this section as complete</span>
+            </label>
+            
+            <p>Proofs involving absolute values naturally require case analysis because the absolute value function is defined differently for non-negative and negative numbers.</p>
+            
+            <div class="definition-box">
+                <h4><span class="emoji-icon">📖</span> Definition: Absolute Value</h4>
+                <p>For any real number x, the <strong>absolute value</strong> of x, denoted |x|, is defined as:</p>
+                <div class="math-block">
+                    $$|x| = \begin{cases} x & \text{if } x \geq 0 \\ -x & \text{if } x < 0 \end{cases}$$
+                </div>
+                <p>The absolute value represents the <strong>distance</strong> from x to 0 on the number line.</p>
+            </div>
+            
+            <div class="case-diagram">
+                <div class="case-box">
+                    <h5>Case 1: x ≥ 0</h5>
+                    <div class="case-condition">|x| = x</div>
+                    <div class="case-result">The number is already non-negative</div>
+                </div>
+                <div class="case-box">
+                    <h5>Case 2: x < 0</h5>
+                    <div class="case-condition">|x| = -x</div>
+                    <div class="case-result">Negate to make it positive</div>
+                </div>
+            </div>
+            
+            <div class="example-box">
+                <h4><span class="emoji-icon">📝</span> Example 4: Absolute Value is Non-Negative</h4>
+                <p><strong>Theorem:</strong> For any real number x, |x| ≥ 0.</p>
+                
+                <button class="collapsible" onclick="toggleCollapsible(this)" aria-expanded="false">
+                    <span>Show Complete Proof</span>
+                </button>
+                <div class="collapsible-content">
+                    <div class="collapsible-content-inner">
+                        <div class="proof-structure">
+                            <p class="proof-header">Theorem: For any real number x, |x| ≥ 0.</p>
+                            <p><strong>Proof:</strong></p>
+                            <p class="proof-line">Let x be any real number. We consider two cases.</p>
+                            
+                            <p class="case-header">Case 1: x ≥ 0.</p>
+                            <p class="proof-line">By definition of absolute value, |x| = x. <em>(Definition, since x ≥ 0)</em></p>
+                            <p class="proof-line">Since x ≥ 0, we have |x| = x ≥ 0. <em>(Substitution)</em></p>
+                            
+                            <p class="case-header">Case 2: x < 0.</p>
+                            <p class="proof-line">By definition of absolute value, |x| = -x. <em>(Definition, since x < 0)</em></p>
+                            <p class="proof-line">Since x < 0, we have -x > 0, so |x| = -x > 0 ≥ 0. <em>(Properties of inequalities)</em></p>
+                            
+                            <p class="proof-line" style="margin-top: 15px;">In both cases, |x| ≥ 0.</p>
+                            <p class="proof-end">∎</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="example-box">
+                <h4><span class="emoji-icon">📝</span> Example 5: Absolute Value of Negation</h4>
+                <p><strong>Theorem:</strong> For any real number x, |-x| = |x|.</p>
+                
+                <button class="collapsible" onclick="toggleCollapsible(this)" aria-expanded="false">
+                    <span>Show Complete Proof</span>
+                </button>
+                <div class="collapsible-content">
+                    <div class="collapsible-content-inner">
+                        <div class="proof-structure">
+                            <p class="proof-header">Theorem: For any real number x, |-x| = |x|.</p>
+                            <p><strong>Proof:</strong></p>
+                            <p class="proof-line">Let x be any real number. We consider two cases.</p>
+                            
+                            <p class="case-header">Case 1: x ≥ 0.</p>
+                            <p class="proof-line">Then -x ≤ 0. <em>(Negating both sides of x ≥ 0)</em></p>
+                            <p class="proof-line">By definition, |x| = x (since x ≥ 0). <em>(Definition)</em></p>
+                            <p class="proof-line">By definition, |-x| = -(-x) = x (since -x ≤ 0). <em>(Definition)</em></p>
+                            <p class="proof-line">Therefore, |-x| = x = |x|. <em>(Transitivity of equality)</em></p>
+                            
+                            <p class="case-header">Case 2: x < 0.</p>
+                            <p class="proof-line">Then -x > 0. <em>(Negating both sides of x < 0)</em></p>
+                            <p class="proof-line">By definition, |x| = -x (since x < 0). <em>(Definition)</em></p>
+                            <p class="proof-line">By definition, |-x| = -x (since -x > 0, so |-x| = -x). <em>(Definition)</em></p>
+                            <p class="proof-line">Therefore, |-x| = -x = |x|. <em>(Transitivity of equality)</em></p>
+                            
+                            <p class="proof-line" style="margin-top: 15px;">In both cases, |-x| = |x|.</p>
+                            <p class="proof-end">∎</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="example-box">
+                <h4><span class="emoji-icon">📝</span> Example 6: Triangle Inequality (Simple Case)</h4>
+                <p><strong>Theorem:</strong> For any real number x, -|x| ≤ x ≤ |x|.</p>
+                
+                <button class="collapsible" onclick="toggleCollapsible(this)" aria-expanded="false">
+                    <span>Show Complete Proof</span>
+                </button>
+                <div class="collapsible-content">
+                    <div class="collapsible-content-inner">
+                        <div class="proof-structure">
+                            <p class="proof-header">Theorem: For any real number x, -|x| ≤ x ≤ |x|.</p>
+                            <p><strong>Proof:</strong></p>
+                            <p class="proof-line">Let x be any real number. We consider two cases.</p>
+                            
+                            <p class="case-header">Case 1: x ≥ 0.</p>
+                            <p class="proof-line">Then |x| = x. <em>(Definition)</em></p>
+                            <p class="proof-line">We need to show: -|x| ≤ x ≤ |x|, i.e., -x ≤ x ≤ x.</p>
+                            <p class="proof-line">The right inequality x ≤ x is trivially true. <em>(Reflexivity)</em></p>
+                            <p class="proof-line">For the left inequality: Since x ≥ 0, we have -x ≤ 0 ≤ x, so -x ≤ x. ✓</p>
+                            
+                            <p class="case-header">Case 2: x < 0.</p>
+                            <p class="proof-line">Then |x| = -x. <em>(Definition)</em></p>
+                            <p class="proof-line">We need to show: -|x| ≤ x ≤ |x|, i.e., -(-x) ≤ x ≤ -x, i.e., x ≤ x ≤ -x.</p>
+                            <p class="proof-line">The left inequality x ≤ x is trivially true. <em>(Reflexivity)</em></p>
+                            <p class="proof-line">For the right inequality: Since x < 0, we have x < 0 < -x, so x ≤ -x. ✓</p>
+                            
+                            <p class="proof-line" style="margin-top: 15px;">In both cases, -|x| ≤ x ≤ |x|.</p>
+                            <p class="proof-end">∎</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Section 5: Without Loss of Generality (WLOG) -->
+        <section id="section5">
+            <h2>5. Without Loss of Generality (WLOG)</h2>
+            
+            <label class="section-check" id="check5">
+                <input type="checkbox" onchange="updateProgress()" aria-label="Mark section 5 as complete">
+                <span>Mark this section as complete</span>
+            </label>
+            
+            <p>Sometimes, cases are <strong>symmetric</strong>—the proof for one case is essentially identical to another, just with variables swapped. In such situations, we can use the phrase "without loss of generality" to handle only one case.</p>
+            
+            <div class="wlog-box">
+                <h4><span class="emoji-icon">📖</span> Definition: Without Loss of Generality (WLOG)</h4>
+                <p><strong>"Without loss of generality"</strong> (abbreviated WLOG or w.l.o.g.) is a phrase used when:</p>
+                <ul>
+                    <li>Multiple cases are <strong>symmetric</strong> (interchangeable by relabeling)</li>
+                    <li>The proof for one case works identically for the others</li>
+                    <li>We choose to present only one case to avoid redundancy</li>
+                </ul>
+                <p>When you write "WLOG, assume [condition]," you're claiming that proving this case is sufficient because the other case(s) follow by symmetry.</p>
+            </div>
+            
+            <div class="example-box">
+                <h4><span class="emoji-icon">📝</span> Example 7: Sum of Even and Odd (Using WLOG)</h4>
+                <p><strong>Theorem:</strong> If one of two integers is even and the other is odd, then their sum is odd.</p>
+                
+                <p><strong>Without WLOG</strong>, we would need two cases:</p>
+                <ul>
+                    <li>Case 1: m is even and n is odd</li>
+                    <li>Case 2: m is odd and n is even</li>
+                </ul>
+                <p>But these cases are symmetric! The proof for Case 2 is identical to Case 1, just swapping m and n.</p>
+                
+                <button class="collapsible" onclick="toggleCollapsible(this)" aria-expanded="false">
+                    <span>Show Proof Using WLOG</span>
+                </button>
+                <div class="collapsible-content">
+                    <div class="collapsible-content-inner">
+                        <div class="proof-structure">
+                            <p class="proof-header">Theorem: If one of m and n is even and the other is odd, then m + n is odd.</p>
+                            <p><strong>Proof:</strong></p>
+                            <p class="proof-line">Without loss of generality, assume m is even and n is odd.</p>
+                            <p class="proof-line">(The case where m is odd and n is even follows by symmetry, since addition is commutative.)</p>
+                            <p class="proof-line">By definition, m = 2a for some integer a, and n = 2b + 1 for some integer b. <em>(Definitions)</em></p>
+                            <p class="proof-line">Then m + n = 2a + (2b + 1) = 2(a + b) + 1. <em>(Algebra)</em></p>
+                            <p class="proof-line">Let c = a + b. Since a and b are integers, c is an integer. <em>(Closure)</em></p>
+                            <p class="proof-line">Thus m + n = 2c + 1 where c is an integer, so m + n is odd. <em>(Definition of odd)</em></p>
+                            <p class="proof-end">∎</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="example-box">
+                <h4><span class="emoji-icon">📝</span> Example 8: Maximum Function</h4>
+                <p><strong>Theorem:</strong> For any real numbers a and b, max(a, b) + min(a, b) = a + b.</p>
+                
+                <button class="collapsible" onclick="toggleCollapsible(this)" aria-expanded="false">
+                    <span>Show Proof Using WLOG</span>
+                </button>
+                <div class="collapsible-content">
+                    <div class="collapsible-content-inner">
+                        <div class="proof-structure">
+                            <p class="proof-header">Theorem: For any real numbers a and b, max(a, b) + min(a, b) = a + b.</p>
+                            <p><strong>Proof:</strong></p>
+                            <p class="proof-line">Let a and b be any real numbers.</p>
+                            <p class="proof-line">Without loss of generality, assume a ≤ b.</p>
+                            <p class="proof-line">(The case a > b follows by symmetry, swapping a and b.)</p>
+                            <p class="proof-line">Since a ≤ b, by definition of max and min: <em>(Definitions)</em></p>
+                            <p class="proof-line">max(a, b) = b and min(a, b) = a.</p>
+                            <p class="proof-line">Therefore, max(a, b) + min(a, b) = b + a = a + b. <em>(Commutativity of addition)</em></p>
+                            <p class="proof-end">∎</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="warning-box">
+                <h4><span class="emoji-icon">⚠️</span> When NOT to Use WLOG</h4>
+                <p>Only use WLOG when cases are <strong>truly symmetric</strong>. If the cases have different properties or require different reasoning, you must handle them separately.</p>
+                
+                <p><strong>Symmetric (WLOG OK):</strong></p>
+                <ul>
+                    <li>"m is even and n is odd" vs. "m is odd and n is even" (for addition/multiplication)</li>
+                    <li>"a ≤ b" vs. "a > b" (when the roles of a and b are interchangeable)</li>
+                </ul>
+                
+                <p><strong>NOT Symmetric (WLOG NOT OK):</strong></p>
+                <ul>
+                    <li>"x > 0" vs. "x < 0" — positive and negative numbers have different properties</li>
+                    <li>"n is prime" vs. "n is composite" — these have fundamentally different structures</li>
+                    <li>"a divides b" vs. "b divides a" — divisibility is not symmetric</li>
+                </ul>
+            </div>
+        </section>
+        
+        <!-- Section 6: More Than Two Cases -->
+        <section id="section6">
+            <h2>6. Proofs with More Than Two Cases</h2>
+            
+            <label class="section-check" id="check6">
+                <input type="checkbox" onchange="updateProgress()" aria-label="Mark section 6 as complete">
+                <span>Mark this section as complete</span>
+            </label>
+            
+            <p>Sometimes we need more than two cases. Common examples include:</p>
+            <ul>
+                <li>Three cases: positive, zero, negative</li>
+                <li>Three cases: divisibility by 3 (remainder 0, 1, or 2)</li>
+                <li>Four or more cases: divisibility by larger numbers</li>
+            </ul>
+            
+            <div class="example-box">
+                <h4><span class="emoji-icon">📝</span> Example 9: n³ - n is Divisible by 3</h4>
+                <p><strong>Theorem:</strong> For any integer n, 3 | (n³ - n).</p>
+                
+                <button class="collapsible" onclick="toggleCollapsible(this)" aria-expanded="false">
+                    <span>Show Proof Strategy</span>
+                </button>
+                <div class="collapsible-content">
+                    <div class="collapsible-content-inner">
+                        <p><strong>Why three cases?</strong> We're proving divisibility by 3, so it makes sense to consider the three possible remainders when n is divided by 3:</p>
+                        <ul>
+                            <li>Case 1: n ≡ 0 (mod 3), i.e., n = 3k</li>
+                            <li>Case 2: n ≡ 1 (mod 3), i.e., n = 3k + 1</li>
+                            <li>Case 3: n ≡ 2 (mod 3), i.e., n = 3k + 2</li>
+                        </ul>
+                        <p>Every integer falls into exactly one of these cases.</p>
+                    </div>
+                </div>
+                
+                <button class="collapsible" onclick="toggleCollapsible(this)" aria-expanded="false">
+                    <span>Show Complete Proof</span>
+                </button>
+                <div class="collapsible-content">
+                    <div class="collapsible-content-inner">
+                        <div class="proof-structure">
+                            <p class="proof-header">Theorem: For any integer n, 3 | (n³ - n).</p>
+                            <p><strong>Proof:</strong></p>
+                            <p class="proof-line">Let n be any integer. Every integer has a remainder of 0, 1, or 2 when divided by 3. We consider these three cases.</p>
+                            
+                            <p class="case-header">Case 1: n ≡ 0 (mod 3).</p>
+                            <p class="proof-line">Then n = 3k for some integer k. <em>(Definition of congruence)</em></p>
+                            <p class="proof-line">So n³ - n = (3k)³ - 3k = 27k³ - 3k = 3(9k³ - k). <em>(Algebra)</em></p>
+                            <p class="proof-line">Since 9k³ - k is an integer, 3 | (n³ - n). <em>(Definition of divisibility)</em></p>
+                            
+                            <p class="case-header">Case 2: n ≡ 1 (mod 3).</p>
+                            <p class="proof-line">Then n = 3k + 1 for some integer k. <em>(Definition)</em></p>
+                            <p class="proof-line">So n³ - n = (3k + 1)³ - (3k + 1). <em>(Substitution)</em></p>
+                            <p class="proof-line">= (27k³ + 27k² + 9k + 1) - (3k + 1) <em>(Expanding)</em></p>
+                            <p class="proof-line">= 27k³ + 27k² + 9k + 1 - 3k - 1 <em>(Distributing)</em></p>
+                            <p class="proof-line">= 27k³ + 27k² + 6k <em>(Simplifying)</em></p>
+                            <p class="proof-line">= 3(9k³ + 9k² + 2k). <em>(Factoring out 3)</em></p>
+                            <p class="proof-line">Since 9k³ + 9k² + 2k is an integer, 3 | (n³ - n). <em>(Definition)</em></p>
+                            
+                            <p class="case-header">Case 3: n ≡ 2 (mod 3).</p>
+                            <p class="proof-line">Then n = 3k + 2 for some integer k. <em>(Definition)</em></p>
+                            <p class="proof-line">So n³ - n = (3k + 2)³ - (3k + 2). <em>(Substitution)</em></p>
+                            <p class="proof-line">= (27k³ + 54k² + 36k + 8) - (3k + 2) <em>(Expanding)</em></p>
+                            <p class="proof-line">= 27k³ + 54k² + 36k + 8 - 3k - 2 <em>(Distributing)</em></p>
+                            <p class="proof-line">= 27k³ + 54k² + 33k + 6 <em>(Simplifying)</em></p>
+                            <p class="proof-line">= 3(9k³ + 18k² + 11k + 2). <em>(Factoring out 3)</em></p>
+                            <p class="proof-line">Since 9k³ + 18k² + 11k + 2 is an integer, 3 | (n³ - n). <em>(Definition)</em></p>
+                            
+                            <p class="proof-line" style="margin-top: 15px;">In all three cases, 3 | (n³ - n).</p>
+                            <p class="proof-end">∎</p>
+                        </div>
+                        
+                        <div class="insight-box">
+                            <h4>Alternative Approach</h4>
+                            <p>Notice that n³ - n = n(n² - 1) = n(n-1)(n+1) = (n-1)n(n+1).</p>
+                            <p>This is the product of three consecutive integers! Among any three consecutive integers, exactly one is divisible by 3. Therefore, the product is divisible by 3.</p>
+                            <p>This factoring approach is more elegant but still requires case analysis to prove that one of three consecutive integers is divisible by 3.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="example-box">
+                <h4><span class="emoji-icon">📝</span> Example 10: Three Consecutive Integers</h4>
+                <p><strong>Theorem:</strong> Among any three consecutive integers, exactly one is divisible by 3.</p>
+                
+                <button class="collapsible" onclick="toggleCollapsible(this)" aria-expanded="false">
+                    <span>Show Complete Proof</span>
+                </button>
+                <div class="collapsible-content">
+                    <div class="collapsible-content-inner">
+                        <div class="proof-structure">
+                            <p class="proof-header">Theorem: Among any three consecutive integers n, n+1, n+2, exactly one is divisible by 3.</p>
+                            <p><strong>Proof:</strong></p>
+                            <p class="proof-line">Let n be any integer. Consider the three consecutive integers n, n+1, and n+2.</p>
+                            <p class="proof-line">Every integer has remainder 0, 1, or 2 when divided by 3. We consider three cases based on n.</p>
+                            
+                            <p class="case-header">Case 1: n ≡ 0 (mod 3).</p>
+                            <p class="proof-line">Then 3 | n. <em>(Definition)</em></p>
+                            <p class="proof-line">Also, n + 1 ≡ 1 (mod 3) and n + 2 ≡ 2 (mod 3), so 3 ∤ (n+1) and 3 ∤ (n+2).</p>
+                            <p class="proof-line">Exactly one (namely n) is divisible by 3. ✓</p>
+                            
+                            <p class="case-header">Case 2: n ≡ 1 (mod 3).</p>
+                            <p class="proof-line">Then n + 2 ≡ 1 + 2 ≡ 0 (mod 3), so 3 | (n + 2). <em>(Arithmetic mod 3)</em></p>
+                            <p class="proof-line">Also, n ≡ 1 and n + 1 ≡ 2 (mod 3), so 3 ∤ n and 3 ∤ (n+1).</p>
+                            <p class="proof-line">Exactly one (namely n+2) is divisible by 3. ✓</p>
+                            
+                            <p class="case-header">Case 3: n ≡ 2 (mod 3).</p>
+                            <p class="proof-line">Then n + 1 ≡ 2 + 1 ≡ 0 (mod 3), so 3 | (n + 1). <em>(Arithmetic mod 3)</em></p>
+                            <p class="proof-line">Also, n ≡ 2 and n + 2 ≡ 1 (mod 3), so 3 ∤ n and 3 ∤ (n+2).</p>
+                            <p class="proof-line">Exactly one (namely n+1) is divisible by 3. ✓</p>
+                            
+                            <p class="proof-line" style="margin-top: 15px;">In all cases, exactly one of n, n+1, n+2 is divisible by 3.</p>
+                            <p class="proof-end">∎</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Section 7: Interactive Activities -->
+        <section id="section7">
+            <h2>7. Interactive Activities</h2>
+            
+            <div class="interactive-activity">
+                <h3><span class="emoji-icon">🎮</span> Activity 1: Identify the Cases</h3>
+                
+                <p>For each theorem, identify the appropriate cases to use:</p>
+                
+                <div class="quiz-question" id="act1q1">
+                    <p><strong>Theorem:</strong> For any integer n, n² - n is even.</p>
+                    <p>What cases should you consider?</p>
+                    <div class="quiz-options">
+                        <label class="quiz-option">
+                            <input type="radio" name="act1q1" value="a">
+                            <span>n > 0, n = 0, n < 0</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="act1q1" value="b">
+                            <span>n is even, n is odd</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="act1q1" value="c">
+                            <span>n is prime, n is composite</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="act1q1" value="d">
+                            <span>n ≡ 0, 1, 2, 3 (mod 4)</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="quiz-question" id="act1q2">
+                    <p><strong>Theorem:</strong> For any real number x, x² ≥ 0.</p>
+                    <p>What cases should you consider?</p>
+                    <div class="quiz-options">
+                        <label class="quiz-option">
+                            <input type="radio" name="act1q2" value="a">
+                            <span>x is rational, x is irrational</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="act1q2" value="b">
+                            <span>x is even, x is odd</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="act1q2" value="c">
+                            <span>x ≥ 0, x < 0</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="act1q2" value="d">
+                            <span>x = 0, x ≠ 0</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="quiz-question" id="act1q3">
+                    <p><strong>Theorem:</strong> For any integer n, 6 | n(n+1)(n+2).</p>
+                    <p>What's the most efficient set of cases?</p>
+                    <div class="quiz-options">
+                        <label class="quiz-option">
+                            <input type="radio" name="act1q3" value="a">
+                            <span>n is even, n is odd</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="act1q3" value="b">
+                            <span>n ≡ 0, 1, 2, 3, 4, 5 (mod 6)</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="act1q3" value="c">
+                            <span>n > 0, n = 0, n < 0</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="act1q3" value="d">
+                            <span>n is divisible by 6, n is not divisible by 6</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <button onclick="checkActivity1()" class="mt-20">Check Answers</button>
+                <div class="feedback" id="act1Feedback"></div>
+            </div>
+            
+            <div class="interactive-activity">
+                <h3><span class="emoji-icon">🎮</span> Activity 2: Complete the Case Proof</h3>
+                
+                <p><strong>Theorem:</strong> For any integer n, n² + n is even.</p>
+                
+                <p>Fill in the blanks to complete this proof:</p>
+                
+                <div class="quiz-question">
+                    <p><strong>Proof:</strong></p>
+                    <p>Let n be any integer. We consider two cases.</p>
+                    
+                    <p><strong>Case 1:</strong> n is <input type="text" id="blank1" style="width: 80px;" placeholder="???">.</p>
+                    <p>Then n = 2k for some integer k.</p>
+                    <p>So n² + n = (2k)² + 2k = 4k² + 2k = <input type="text" id="blank2" style="width: 120px;" placeholder="factor out 2">.</p>
+                    <p>Since <input type="text" id="blank3" style="width: 100px;" placeholder="???"> is an integer, n² + n is even.</p>
+                    
+                    <p style="margin-top: 15px;"><strong>Case 2:</strong> n is <input type="text" id="blank4" style="width: 80px;" placeholder="???">.</p>
+                    <p>Then n = 2k + 1 for some integer k.</p>
+                    <p>So n² + n = (2k+1)² + (2k+1) = 4k² + 4k + 1 + 2k + 1 = 4k² + 6k + 2 = <input type="text" id="blank5" style="width: 150px;" placeholder="factor out 2">.</p>
+                    <p>Since 2k² + 3k + 1 is an integer, n² + n is even.</p>
+                    
+                    <p style="margin-top: 15px;">In both cases, n² + n is <input type="text" id="blank6" style="width: 80px;" placeholder="???">. ∎</p>
+                </div>
+                
+                <button onclick="checkActivity2()" class="mt-20">Check Answers</button>
+                <div class="feedback" id="act2Feedback"></div>
+            </div>
+            
+            <div class="interactive-activity">
+                <h3><span class="emoji-icon">🎮</span> Activity 3: Is WLOG Appropriate?</h3>
+                
+                <p>For each situation, determine whether "without loss of generality" is appropriate:</p>
+                
+                <div class="quiz-question" id="act3q1">
+                    <p><strong>Theorem:</strong> If m and n are integers with opposite parity, then mn is even.</p>
+                    <p>Can we use WLOG to assume m is even and n is odd?</p>
+                    <div class="quiz-options">
+                        <label class="quiz-option">
+                            <input type="radio" name="act3q1" value="a">
+                            <span>Yes - the cases are symmetric since multiplication is commutative</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="act3q1" value="b">
+                            <span>No - even and odd numbers have different properties</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="quiz-question" id="act3q2">
+                    <p><strong>Theorem:</strong> For any real number x, |x| ≥ 0.</p>
+                    <p>Can we use WLOG to assume x ≥ 0?</p>
+                    <div class="quiz-options">
+                        <label class="quiz-option">
+                            <input type="radio" name="act3q2" value="a">
+                            <span>Yes - positive and negative cases are symmetric</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="act3q2" value="b">
+                            <span>No - the definition of |x| differs for x ≥ 0 and x < 0</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="quiz-question" id="act3q3">
+                    <p><strong>Theorem:</strong> For any integers a and b, (a + b)² = a² + 2ab + b².</p>
+                    <p>Can we use WLOG to assume a ≤ b?</p>
+                    <div class="quiz-options">
+                        <label class="quiz-option">
+                            <input type="radio" name="act3q3" value="a">
+                            <span>Yes - swapping a and b doesn't change the equation</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="act3q3" value="b">
+                            <span>No need for WLOG - this doesn't require cases at all</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <button onclick="checkActivity3()" class="mt-20">Check Answers</button>
+                <div class="feedback" id="act3Feedback"></div>
+            </div>
+        </section>
+        
+        <!-- Section 8: Practice Problems -->
+        <section id="section8">
+            <h2>8. Practice Problems</h2>
+            
+            <label class="section-check" id="check7">
+                <input type="checkbox" onchange="updateProgress()" aria-label="Mark section 8 as complete">
+                <span>Mark this section as complete</span>
+            </label>
+            
+            <p>Complete these practice problems to solidify your understanding of proof by cases.</p>
+            
+            <h3>Parity-Based Proofs</h3>
+            
+            <div class="practice-problem">
+                <h4><span class="emoji-icon">📝</span> Problem 1 <span class="difficulty-badge easy">Easy</span></h4>
+                <div class="problem-statement">
+                    Prove: For any integer n, n² - n is even.
+                </div>
+                <button class="collapsible" onclick="toggleCollapsible(this)">Show Hint</button>
+                <div class="collapsible-content">
+                    <div class="collapsible-content-inner">
+                        <p>Factor: n² - n = n(n - 1). This is the product of consecutive integers. Alternatively, use cases on the parity of n.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="practice-problem">
+                <h4><span class="emoji-icon">📝</span> Problem 2 <span class="difficulty-badge easy">Easy</span></h4>
+                <div class="problem-statement">
+                    Prove: For any integer n, n³ - n is even.
+                </div>
+                <button class="collapsible" onclick="toggleCollapsible(this)">Show Hint</button>
+                <div class="collapsible-content">
+                    <div class="collapsible-content-inner">
+                        <p>Factor: n³ - n = n(n² - 1) = n(n-1)(n+1). Among any two consecutive integers, one is even.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="practice-problem">
+                <h4><span class="emoji-icon">📝</span> Problem 3 <span class="difficulty-badge medium">Medium</span></h4>
+                <div class="problem-statement">
+                    Prove: For any integers m and n, if mn is odd, then both m and n are odd.
+                </div>
+                <button class="collapsible" onclick="toggleCollapsible(this)">Show Hint</button>
+                <div class="collapsible-content">
+                    <div class="collapsible-content-inner">
+                        <p>Use the contrapositive: If m is even OR n is even, then mn is even. Consider two cases: (1) m is even, (2) n is even.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <h3>Absolute Value Proofs</h3>
+            
+            <div class="practice-problem">
+                <h4><span class="emoji-icon">📝</span> Problem 4 <span class="difficulty-badge medium">Medium</span></h4>
+                <div class="problem-statement">
+                    Prove: For any real number x, |x²| = x².
+                </div>
+                <button class="collapsible" onclick="toggleCollapsible(this)">Show Hint</button>
+                <div class="collapsible-content">
+                    <div class="collapsible-content-inner">
+                        <p>Since x² ≥ 0 for all real x, what does the definition of absolute value give us?</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="practice-problem">
+                <h4><span class="emoji-icon">📝</span> Problem 5 <span class="difficulty-badge medium">Medium</span></h4>
+                <div class="problem-statement">
+                    Prove: For any real numbers x and y, |xy| = |x| · |y|.
+                </div>
+                <button class="collapsible" onclick="toggleCollapsible(this)">Show Hint</button>
+                <div class="collapsible-content">
+                    <div class="collapsible-content-inner">
+                        <p>Consider four cases based on the signs of x and y: (1) x ≥ 0 and y ≥ 0, (2) x ≥ 0 and y < 0, (3) x < 0 and y ≥ 0, (4) x < 0 and y < 0. You can use WLOG to reduce to fewer cases.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <h3>Divisibility Proofs</h3>
+            
+            <div class="practice-problem">
+                <h4><span class="emoji-icon">📝</span> Problem 6 <span class="difficulty-badge medium">Medium</span></h4>
+                <div class="problem-statement">
+                    Prove: For any integer n, n(n + 1)(n + 2) is divisible by 6.
+                </div>
+                <button class="collapsible" onclick="toggleCollapsible(this)">Show Hint</button>
+                <div class="collapsible-content">
+                    <div class="collapsible-content-inner">
+                        <p>6 = 2 × 3. Show that the product is divisible by both 2 and 3. For divisibility by 2, use the fact that among two consecutive integers, one is even. For divisibility by 3, use the result from Example 10.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="practice-problem">
+                <h4><span class="emoji-icon">📝</span> Problem 7 <span class="difficulty-badge hard">Hard</span></h4>
+                <div class="problem-statement">
+                    Prove: For any integer n, n² ≡ 0 or 1 (mod 3).
+                </div>
+                <button class="collapsible" onclick="toggleCollapsible(this)">Show Hint</button>
+                <div class="collapsible-content">
+                    <div class="collapsible-content-inner">
+                        <p>Consider three cases: n ≡ 0, 1, or 2 (mod 3). Compute n² in each case.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="practice-problem">
+                <h4><span class="emoji-icon">📝</span> Problem 8 <span class="difficulty-badge hard">Hard</span></h4>
+                <div class="problem-statement">
+                    Prove: For any odd integer n, n² ≡ 1 (mod 8).
+                </div>
+                <button class="collapsible" onclick="toggleCollapsible(this)">Show Hint</button>
+                <div class="collapsible-content">
+                    <div class="collapsible-content-inner">
+                        <p>Consider four cases: n ≡ 1, 3, 5, or 7 (mod 8). Alternatively, write n = 2k + 1 and show that (2k + 1)² - 1 is divisible by 8.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Knowledge Check -->
+        <section id="knowledge-check">
+            <h2>9. Knowledge Check</h2>
+            
+            <div class="knowledge-check">
+                <h3><span class="emoji-icon">✅</span> Module 5.3 Knowledge Check</h3>
+                <p>Test your understanding of proof by cases.</p>
+                
+                <div class="quiz-question" id="kcq1">
+                    <p><strong>Question 1:</strong> When is proof by cases appropriate?</p>
+                    <div class="quiz-options">
+                        <label class="quiz-option">
+                            <input type="radio" name="kc1" value="a">
+                            <span>When you want to prove something is false</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="kc1" value="b">
+                            <span>When the domain naturally splits into distinct scenarios that together cover all possibilities</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="kc1" value="c">
+                            <span>When direct proof is impossible</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="kc1" value="d">
+                            <span>Only when proving statements about integers</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="quiz-question" id="kcq2">
+                    <p><strong>Question 2:</strong> What does it mean for cases to be "exhaustive"?</p>
+                    <div class="quiz-options">
+                        <label class="quiz-option">
+                            <input type="radio" name="kc2" value="a">
+                            <span>The cases don't overlap</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="kc2" value="b">
+                            <span>The cases are difficult to prove</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="kc2" value="c">
+                            <span>Every element in the domain falls into at least one case</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="kc2" value="d">
+                            <span>There are exactly two cases</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="quiz-question" id="kcq3">
+                    <p><strong>Question 3:</strong> "Without loss of generality" (WLOG) is appropriate when:</p>
+                    <div class="quiz-options">
+                        <label class="quiz-option">
+                            <input type="radio" name="kc3" value="a">
+                            <span>You want to skip some cases</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="kc3" value="b">
+                            <span>Cases are symmetric and the proof for one applies to others by relabeling</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="kc3" value="c">
+                            <span>The cases are too hard to prove separately</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="kc3" value="d">
+                            <span>You're proving a statement about real numbers</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="quiz-question" id="kcq4">
+                    <p><strong>Question 4:</strong> To prove a statement about all integers using parity cases, how many cases do you need?</p>
+                    <div class="quiz-options">
+                        <label class="quiz-option">
+                            <input type="radio" name="kc4" value="a">
+                            <span>One (just prove it for even numbers)</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="kc4" value="b">
+                            <span>Two (even and odd)</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="kc4" value="c">
+                            <span>Three (positive, zero, negative)</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="kc4" value="d">
+                            <span>Infinitely many</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="quiz-question" id="kcq5">
+                    <p><strong>Question 5:</strong> If you're proving divisibility by 3, what cases are typically most useful?</p>
+                    <div class="quiz-options">
+                        <label class="quiz-option">
+                            <input type="radio" name="kc5" value="a">
+                            <span>n is even, n is odd</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="kc5" value="b">
+                            <span>n > 0, n = 0, n < 0</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="kc5" value="c">
+                            <span>n ≡ 0, 1, 2 (mod 3)</span>
+                        </label>
+                        <label class="quiz-option">
+                            <input type="radio" name="kc5" value="d">
+                            <span>n is prime, n is composite</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <button onclick="checkKnowledgeCheck()" class="mt-20">Submit Knowledge Check</button>
+                <div class="feedback" id="kcFeedback"></div>
+            </div>
+        </section>
+        
+        <!-- Summary -->
+        <section id="summary">
+            <h2>10. Summary and Key Takeaways</h2>
+            
+            <label class="section-check" id="check8">
+                <input type="checkbox" onchange="updateProgress()" aria-label="Mark summary as complete">
+                <span>Mark this section as complete</span>
+            </label>
+            
+            <div class="definition-box">
+                <h4><span class="emoji-icon">📋</span> Key Takeaways from Module 5.3</h4>
+                <ol>
+                    <li><strong>Proof by cases</strong> divides the domain into exhaustive scenarios and proves the conclusion in each.</li>
+                    <li>Cases must be <strong>exhaustive</strong>—every element must fall into at least one case.</li>
+                    <li>Common case divisions:
+                        <ul>
+                            <li>Parity: n is even, n is odd</li>
+                            <li>Sign: x > 0, x = 0, x < 0</li>
+                            <li>Absolute value: x ≥ 0, x < 0</li>
+                            <li>Modular: n ≡ 0, 1, ..., k-1 (mod k)</li>
+                        </ul>
+                    </li>
+                    <li><strong>WLOG</strong> can be used when cases are symmetric, allowing you to prove just one case.</li>
+                    <li>Each case is essentially a <strong>mini direct proof</strong>—assume the case condition and derive the conclusion.</li>
+                    <li>Proof by cases corresponds to <strong>if-else structures</strong> in programming.</li>
+                </ol>
+            </div>
+            
+            <h3>Preparing for Module 5.4: Proof by Contrapositive</h3>
+            
+            <p>In the next module, you'll learn <strong>Proof by Contrapositive</strong>—a technique that proves $$P \rightarrow Q$$ by instead proving $$\neg Q \rightarrow \neg P$$. Make sure you:</p>
+            <ul>
+                <li>✓ Can construct proofs by cases with proper structure</li>
+                <li>✓ Understand when cases are exhaustive</li>
+                <li>✓ Know when WLOG is appropriate</li>
+                <li>✓ Remember the contrapositive equivalence from Module 5.1</li>
+            </ul>
+            
+            <div class="insight-box">
+                <h4><span class="emoji-icon">🎯</span> What's Next?</h4>
+                <p><strong>Module 5.4: Proof by Contrapositive</strong> will teach you an alternative to direct proof that's especially useful when:</p>
+                <ul>
+                    <li>The conclusion is easier to negate than to prove directly</li>
+                    <li>Assuming ¬Q gives you more useful information than assuming P</li>
+                    <li>The statement has the form "If [something], then [something] is not..."</li>
+                </ul>
+                <p>The classic example: proving "If n² is even, then n is even" is much easier using the contrapositive!</p>
+            </div>
+        </section>
+        
+        <!-- Resources -->
+        <section id="resources">
+            <h2>📚 Additional Resources</h2>
+            
+            <h3>Required Reading</h3>
+            <ul>
+                <li><a href="hammack-book-of-proof-3rd-ed.pdf" target="_blank">Book of Proof, 3rd Edition (Hammack)</a> - Chapter 4, Section 4.3: Proof by Cases</li>
+                <li>Saylor.org CS202 - Unit 4: Mathematical Induction and Proofs</li>
+            </ul>
+            
+            <h3>Supplementary Materials</h3>
+            <ul>
+                <li><a href="https://www.people.vcu.edu/~rhammack/BookOfProof/" target="_blank" rel="noopener noreferrer">Book of Proof - Free Online Version</a></li>
+                <li><a href="https://brilliant.org/wiki/proof-by-exhaustion/" target="_blank" rel="noopener noreferrer">Brilliant.org - Proof by Exhaustion</a></li>
+            </ul>
+        </section>
+    </main>
+    
+    <!-- Navigation -->
+    <nav class="nav-buttons" aria-label="Module navigation">
+        <a href="csc240-week5-module2.html" class="nav-button">
+            ← Previous: Module 5.2
+        </a>
+        <a href="csc240-week5-module4.html" class="nav-button">
+            Next: Module 5.4 - Proof by Contrapositive →
+        </a>
+    </nav>
+    
+    <footer>
+        <p><strong>Module 5.3: Proof by Cases</strong></p>
+        <p>CSC 240 - Discrete Structures | Mendocino College</p>
+        <p>© 2026 Mendocino College | All Rights Reserved</p>
+        <p><a href="mailto:instructor@mendocino.edu">Contact Instructor</a> | <a href="https://www.mendocino.edu">College Website</a></p>
+    </footer>
+    
+    <script>
+        // ==================== PROGRESS TRACKING ====================
+        function updateProgress() {
+            const checkboxes = document.querySelectorAll('.section-check input[type="checkbox"]');
+            let completed = 0;
+            
+            checkboxes.forEach((checkbox, index) => {
+                const key = `module5_3_section${index + 1}`;
+                if (checkbox.checked) {
+                    completed++;
+                    checkbox.parentElement.classList.add('completed');
+                    sessionStorage.setItem(key, 'true');
+                } else {
+                    checkbox.parentElement.classList.remove('completed');
+                    sessionStorage.setItem(key, 'false');
+                }
+            });
+            
+            const percentage = Math.round((completed / checkboxes.length) * 100);
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            const progressBar = progressFill.parentElement;
+            
+            progressFill.style.width = percentage + '%';
+            progressText.textContent = percentage + '% Complete';
+            progressBar.setAttribute('aria-valuenow', percentage);
+            
+            sessionStorage.setItem('module5_3_progress', percentage);
+        }
+        
+        function loadProgress() {
+            const checkboxes = document.querySelectorAll('.section-check input[type="checkbox"]');
+            
+            checkboxes.forEach((checkbox, index) => {
+                const key = `module5_3_section${index + 1}`;
+                const saved = sessionStorage.getItem(key);
+                if (saved === 'true') {
+                    checkbox.checked = true;
+                    checkbox.parentElement.classList.add('completed');
+                }
+            });
+            
+            updateProgress();
+        }
+        
+        // ==================== COLLAPSIBLE SECTIONS ====================
+        function toggleCollapsible(button) {
+            const isExpanded = button.classList.contains('active');
+            button.classList.toggle('active');
+            const content = button.nextElementSibling;
+            content.classList.toggle('show');
+            button.setAttribute('aria-expanded', !isExpanded);
+        }
+        
+        // ==================== ACTIVITY 1 CHECKER ====================
+        function checkActivity1() {
+            const answers = {
+                'act1q1': 'b',
+                'act1q2': 'c',
+                'act1q3': 'b'
+            };
+            
+            let correct = 0;
+            let total = 3;
+            let allAnswered = true;
+            
+            // Clear previous styling
+            for (let i = 1; i <= 3; i++) {
+                document.querySelectorAll(`#act1q${i} .quiz-option`).forEach(opt => {
+                    opt.classList.remove('correct', 'incorrect');
+                });
+            }
+            
+            for (const [name, correctAnswer] of Object.entries(answers)) {
+                const selected = document.querySelector(`input[name="${name}"]:checked`);
+                if (!selected) {
+                    allAnswered = false;
+                    continue;
+                }
+                
+                if (selected.value === correctAnswer) {
+                    correct++;
+                    selected.parentElement.classList.add('correct');
+                } else {
+                    selected.parentElement.classList.add('incorrect');
+                    document.querySelector(`input[name="${name}"][value="${correctAnswer}"]`).parentElement.classList.add('correct');
+                }
+            }
+            
+            const feedback = document.getElementById('act1Feedback');
+            
+            if (!allAnswered) {
+                feedback.className = 'feedback incorrect show';
+                feedback.textContent = 'Please answer all questions before checking.';
+                return;
+            }
+            
+            let explanation = '';
+            if (correct < total) {
+                explanation = '<br><br><strong>Explanations:</strong><br>' +
+                    '• Q1: Parity (even/odd) is the natural choice for proving something is even.<br>' +
+                    '• Q2: For real numbers and inequalities, sign cases (≥0, <0) work with absolute value definitions.<br>' +
+                    '• Q3: For divisibility by 6, checking all 6 remainders (mod 6) is systematic, though you could also prove divisibility by 2 and 3 separately.';
+            }
+            
+            if (correct === total) {
+                feedback.className = 'feedback correct show';
+                feedback.innerHTML = `<strong>Excellent!</strong> ${correct}/${total} correct. You can identify appropriate cases!`;
+            } else {
+                feedback.className = 'feedback incorrect show';
+                feedback.innerHTML = `<strong>${correct}/${total} correct.</strong>${explanation}`;
+            }
+        }
+        
+        // ==================== ACTIVITY 2 CHECKER ====================
+        function checkActivity2() {
+            const answers = {
+                'blank1': ['even'],
+                'blank2': ['2(2k² + k)', '2(2k^2 + k)', '2(2k²+k)'],
+                'blank3': ['2k² + k', '2k^2 + k', '2k²+k'],
+                'blank4': ['odd'],
+                'blank5': ['2(2k² + 3k + 1)', '2(2k^2 + 3k + 1)', '2(2k²+3k+1)'],
+                'blank6': ['even']
+            };
+            
+            let correct = 0;
+            let total = 6;
+            let results = [];
+            
+            for (let i = 1; i <= 6; i++) {
+                const input = document.getElementById(`blank${i}`);
+                const userAnswer = input.value.toLowerCase().trim().replace(/\s+/g, '');
+                const correctAnswers = answers[`blank${i}`].map(a => a.toLowerCase().replace(/\s+/g, ''));
+                
+                let isCorrect = correctAnswers.some(ca => userAnswer === ca || userAnswer.includes(ca));
+                
+                if (isCorrect) {
+                    correct++;
+                    input.style.borderColor = '#4CAF50';
+                    input.style.backgroundColor = '#e8f5e9';
+                } else if (input.value === '') {
+                    input.style.borderColor = '#f44336';
+                    input.style.backgroundColor = '#ffebee';
+                    results.push(`Blank ${i}: Please enter an answer`);
+                } else {
+                    input.style.borderColor = '#f44336';
+                    input.style.backgroundColor = '#ffebee';
+                    results.push(`Blank ${i}: Expected "${answers[`blank${i}`][0]}"`);
+                }
+            }
+            
+            const feedback = document.getElementById('act2Feedback');
+            
+            if (correct === total) {
+                feedback.className = 'feedback correct show';
+                feedback.innerHTML = `<strong>Excellent!</strong> ${correct}/${total} correct. You can complete a proof by cases!`;
+            } else {
+                feedback.className = 'feedback incorrect show';
+                feedback.innerHTML = `<strong>${correct}/${total} correct.</strong><br>` + results.join('<br>');
+            }
+        }
+        
+        // ==================== ACTIVITY 3 CHECKER ====================
+        function checkActivity3() {
+            const answers = {
+                'act3q1': 'a',
+                'act3q2': 'b',
+                'act3q3': 'b'
+            };
+            
+            let correct = 0;
+            let total = 3;
+            let allAnswered = true;
+            
+            // Clear previous styling
+            for (let i = 1; i <= 3; i++) {
+                document.querySelectorAll(`#act3q${i} .quiz-option`).forEach(opt => {
+                    opt.classList.remove('correct', 'incorrect');
+                });
+            }
+            
+            for (const [name, correctAnswer] of Object.entries(answers)) {
+                const selected = document.querySelector(`input[name="${name}"]:checked`);
+                if (!selected) {
+                    allAnswered = false;
+                    continue;
+                }
+                
+                if (selected.value === correctAnswer) {
+                    correct++;
+                    selected.parentElement.classList.add('correct');
+                } else {
+                    selected.parentElement.classList.add('incorrect');
+                    document.querySelector(`input[name="${name}"][value="${correctAnswer}"]`).parentElement.classList.add('correct');
+                }
+            }
+            
+            const feedback = document.getElementById('act3Feedback');
+            
+            if (!allAnswered) {
+                feedback.className = 'feedback incorrect show';
+                feedback.textContent = 'Please answer all questions before checking.';
+                return;
+            }
+            
+            let explanation = '';
+            if (correct < total) {
+                explanation = '<br><br><strong>Explanations:</strong><br>' +
+                    '• Q1: Yes, WLOG works because multiplication is commutative (m·n = n·m).<br>' +
+                    '• Q2: No, the absolute value definition differs for positive and negative x, so both cases must be checked.<br>' +
+                    '• Q3: This algebraic identity doesn\'t require cases at all—it\'s true for all a, b by expansion.';
+            }
+            
+            if (correct === total) {
+                feedback.className = 'feedback correct show';
+                feedback.innerHTML = `<strong>Perfect!</strong> ${correct}/${total} correct. You understand when WLOG is appropriate!`;
+            } else {
+                feedback.className = 'feedback incorrect show';
+                feedback.innerHTML = `<strong>${correct}/${total} correct.</strong>${explanation}`;
+            }
+        }
+        
+        // ==================== KNOWLEDGE CHECK ====================
+        function checkKnowledgeCheck() {
+            const answers = {
+                'kc1': 'b',
+                'kc2': 'c',
+                'kc3': 'b',
+                'kc4': 'b',
+                'kc5': 'c'
+            };
+            
+            let correct = 0;
+            let total = 5;
+            let allAnswered = true;
+            
+            // Clear previous styling
+            for (let i = 1; i <= 5; i++) {
+                document.querySelectorAll(`#kcq${i} .quiz-option`).forEach(opt => {
+                    opt.classList.remove('correct', 'incorrect');
+                });
+            }
+            
+            for (const [name, correctAnswer] of Object.entries(answers)) {
+                const selected = document.querySelector(`input[name="${name}"]:checked`);
+                if (!selected) {
+                    allAnswered = false;
+                    continue;
+                }
+                
+                if (selected.value === correctAnswer) {
+                    correct++;
+                    selected.parentElement.classList.add('correct');
+                } else {
+                    selected.parentElement.classList.add('incorrect');
+                    document.querySelector(`input[name="${name}"][value="${correctAnswer}"]`).parentElement.classList.add('correct');
+                }
+            }
+            
+            const feedback = document.getElementById('kcFeedback');
+            
+            if (!allAnswered) {
+                feedback.className = 'feedback incorrect show';
+                feedback.textContent = 'Please answer all questions before submitting.';
+                return;
+            }
+            
+            const percentage = Math.round((correct / total) * 100);
+            
+            if (percentage >= 80) {
+                feedback.className = 'feedback correct show';
+                feedback.innerHTML = `<strong>Great job!</strong> You scored ${correct}/${total} (${percentage}%). You're ready to move on to Module 5.4!`;
+            } else if (percentage >= 60) {
+                feedback.className = 'feedback info show';
+                feedback.innerHTML = `<strong>Good effort!</strong> You scored ${correct}/${total} (${percentage}%). Review the sections you missed before moving on.`;
+            } else {
+                feedback.className = 'feedback incorrect show';
+                feedback.innerHTML = `<strong>Keep studying!</strong> You scored ${correct}/${total} (${percentage}%). Please review this module before proceeding.`;
+            }
+            
+            sessionStorage.setItem('module5_3_quiz_score', percentage);
+        }
+        
+        // ==================== INITIALIZE ON PAGE LOAD ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProgress();
+            
+            // Add keyboard navigation for collapsibles
+            document.querySelectorAll('.collapsible').forEach(button => {
+                button.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        toggleCollapsible(this);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
