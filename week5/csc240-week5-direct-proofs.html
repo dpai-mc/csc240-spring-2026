@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WA-05: Direct Proofs Practice | CSC 240 Week 5</title>
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.7;
+            color: #1a1a2e;
+            background: linear-gradient(135deg, #faf3e0 0%, #f0e6d3 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.12);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #6b5b95 0%, #8e7cc3 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        
+        .header .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .badge-row {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .badge {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .progress-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .progress-title {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .progress-percent {
+            font-weight: 700;
+            color: #6b5b95;
+        }
+        
+        .progress-bar {
+            height: 12px;
+            background: #e0e0e0;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #6b5b95, #a084ca);
+            border-radius: 6px;
+            transition: width 0.5s ease;
+        }
+        
+        .info-box {
+            background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+            border-left: 4px solid #6b5b95;
+            padding: 20px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 25px;
+        }
+        
+        .info-box h3 {
+            margin: 0 0 10px 0;
+            color: #4c3d6e;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+        }
+        
+        .section h2 {
+            color: #4c3d6e;
+            font-size: 1.4rem;
+            border-bottom: 3px solid #6b5b95;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .cslo-box {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+        }
+        
+        .cslo-box strong {
+            color: #856404;
+        }
+        
+        .problem-card {
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .problem-card:hover {
+            border-color: #6b5b95;
+            box-shadow: 0 5px 20px rgba(107, 91, 149, 0.15);
+        }
+        
+        .problem-header {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .problem-number {
+            background: #6b5b95;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+        
+        .problem-points {
+            background: #28a745;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .problem-body {
+            padding: 20px;
+        }
+        
+        .problem-statement {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #6b5b95;
+        }
+        
+        .problem-statement h4 {
+            margin: 0 0 10px 0;
+            color: #4c3d6e;
+        }
+        
+        .theorem-box {
+            background: linear-gradient(135deg, #fff 0%, #f8f5ff 100%);
+            border: 2px solid #6b5b95;
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin: 15px 0;
+            font-size: 1.1rem;
+        }
+        
+        .hint-toggle {
+            background: #e8f4f8;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            color: #2980b9;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+        }
+        
+        .hint-toggle:hover {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .hint-toggle:focus {
+            outline: 3px solid #6b5b95;
+            outline-offset: 2px;
+        }
+        
+        .hint-content {
+            background: #e8f5e9;
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            display: none;
+            border-left: 4px solid #28a745;
+        }
+        
+        .hint-content.visible {
+            display: block;
+        }
+        
+        .hint-content h5 {
+            margin: 0 0 10px 0;
+            color: #155724;
+        }
+        
+        .proof-workspace {
+            margin-top: 20px;
+        }
+        
+        .workspace-label {
+            display: block;
+            font-weight: 600;
+            color: #4c3d6e;
+            margin-bottom: 10px;
+        }
+        
+        .proof-textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.95rem;
+            line-height: 1.8;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+        
+        .proof-textarea:focus {
+            outline: none;
+            border-color: #6b5b95;
+            box-shadow: 0 0 0 3px rgba(107, 91, 149, 0.2);
+        }
+        
+        .completion-check {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+            padding: 10px 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .completion-check:hover {
+            background: #e8f4f8;
+        }
+        
+        .completion-check.completed {
+            background: #d4edda;
+        }
+        
+        .check-box {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #6b5b95;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .completion-check.completed .check-box {
+            background: #28a745;
+            border-color: #28a745;
+        }
+        
+        .completion-check.completed .check-box::after {
+            content: '✓';
+            color: white;
+            font-weight: bold;
+        }
+        
+        .example-box {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+        
+        .example-box h3 {
+            color: #1565c0;
+            margin: 0 0 15px 0;
+        }
+        
+        .proof-example {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            font-family: 'Georgia', serif;
+            line-height: 1.9;
+        }
+        
+        .proof-example .proof-line {
+            margin: 8px 0;
+            padding-left: 20px;
+        }
+        
+        .proof-example .proof-header {
+            font-weight: bold;
+            color: #1565c0;
+            padding-left: 0;
+        }
+        
+        .proof-example .proof-end {
+            font-style: italic;
+            color: #666;
+        }
+        
+        .rubric-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        .rubric-table th,
+        .rubric-table td {
+            border: 1px solid #e0e0e0;
+            padding: 12px 15px;
+            text-align: left;
+        }
+        
+        .rubric-table th {
+            background: #6b5b95;
+            color: white;
+        }
+        
+        .rubric-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        .rubric-table tr:hover {
+            background: #f3e8ff;
+        }
+        
+        .tip-box {
+            background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .tip-box h4 {
+            margin: 0 0 10px 0;
+            color: #f57c00;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .tip-box ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        
+        .tip-box li {
+            margin-bottom: 8px;
+            color: #e65100;
+        }
+        
+        .warning-box {
+            background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+            border-left: 4px solid #c62828;
+            border-radius: 0 12px 12px 0;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .warning-box h4 {
+            margin: 0 0 10px 0;
+            color: #c62828;
+        }
+        
+        .submission-box {
+            background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+            border: 2px solid #6b5b95;
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 25px;
+        }
+        
+        .submission-box h3 {
+            margin: 0 0 15px 0;
+            color: #4c3d6e;
+        }
+        
+        .submission-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .submission-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #d4b8ff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .submission-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .footer {
+            background: #4c3d6e;
+            color: white;
+            padding: 20px 30px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        
+        .footer a {
+            color: #a084ca;
+            text-decoration: none;
+        }
+        
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .footer a:focus {
+            outline: 2px solid #a084ca;
+            outline-offset: 2px;
+        }
+        
+        .save-indicator {
+            font-size: 0.85rem;
+            color: #28a745;
+            margin-top: 8px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .save-indicator.visible {
+            opacity: 1;
+        }
+        
+        /* Math display */
+        .math-block {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-radius: 8px;
+            font-family: 'Times New Roman', serif;
+            font-size: 1.1rem;
+            text-align: center;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+        
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: #4c3d6e;
+            color: white;
+            padding: 8px 16px;
+            text-decoration: none;
+            z-index: 100;
+        }
+        
+        .skip-link:focus {
+            top: 0;
+        }
+        
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.4rem;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .problem-header {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+            
+            .rubric-table {
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <div class="container">
+        <header class="header">
+            <h1>✍️ WA-05: Direct Proofs Practice</h1>
+            <p class="subtitle">CSC 240 - Discrete Structures | Week 5</p>
+            <div class="badge-row">
+                <span class="badge">📝 Written Assignment</span>
+                <span class="badge">⏱️ 2-3 hours</span>
+                <span class="badge">🎯 CSLO 1</span>
+                <span class="badge">💯 50 points</span>
+            </div>
+        </header>
+        
+        <main id="main-content" class="content">
+            <section class="progress-section" aria-label="Assignment progress">
+                <div class="progress-header">
+                    <span class="progress-title">📊 Problems Completed</span>
+                    <span class="progress-percent" id="progress-text">0 / 5</span>
+                </div>
+                <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                    <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+                </div>
+            </section>
+            
+            <div class="info-box">
+                <h3>🎯 Assignment Overview</h3>
+                <p>In this assignment, you will practice writing direct proofs for mathematical statements. Each proof must be clearly structured, with explicit justifications for each step. Focus on logical clarity and mathematical precision. Your proofs will be graded on correctness, completeness, and clarity of presentation.</p>
+            </div>
+            
+            <div class="cslo-box">
+                <strong>📋 Course Student Learning Outcome Addressed:</strong><br>
+                <strong>CSLO 1:</strong> Apply symbolic logic and proof methods to model and analyze program/algorithm correctness.
+            </div>
+            
+            <section class="section">
+                <h2>📖 Example: Model Direct Proof</h2>
+                
+                <div class="example-box">
+                    <h3>Example Proof Structure</h3>
+                    <p><strong>Theorem:</strong> If $$n$$ is an even integer, then $$n^2$$ is an even integer.</p>
+                    
+                    <div class="proof-example">
+                        <p class="proof-line proof-header">Proof:</p>
+                        <p class="proof-line">Let $$n$$ be an even integer. (Premise)</p>
+                        <p class="proof-line">By definition of even, there exists an integer $$k$$ such that $$n = 2k$$. (Definition of even)</p>
+                        <p class="proof-line">Then $$n^2 = (2k)^2 = 4k^2 = 2(2k^2)$$. (Algebra)</p>
+                        <p class="proof-line">Let $$m = 2k^2$$. Since $$k$$ is an integer, $$m$$ is also an integer. (Closure of integers under multiplication)</p>
+                        <p class="proof-line">Therefore, $$n^2 = 2m$$ where $$m$$ is an integer.</p>
+                        <p class="proof-line">By definition of even, $$n^2$$ is even.</p>
+                        <p class="proof-line proof-end">∎ (QED)</p>
+                    </div>
+                    
+                    <div class="tip-box" style="margin-top: 20px; margin-bottom: 0;">
+                        <h4>📝 Key Elements to Notice:</h4>
+                        <ul>
+                            <li><strong>Clear statement</strong> of what we're assuming (premise)</li>
+                            <li><strong>Explicit definitions</strong> cited when used</li>
+                            <li><strong>Step-by-step algebra</strong> showing the transformation</li>
+                            <li><strong>Justification</strong> for why intermediate values are integers</li>
+                            <li><strong>Conclusion</strong> ties back to the definition</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="section">
+                <h2>📋 Problems (50 points total)</h2>
+                
+                <!-- Problem 1 -->
+                <div class="problem-card" id="problem-1">
+                    <div class="problem-header">
+                        <span class="problem-number">Problem 1</span>
+                        <span class="problem-points">8 points</span>
+                    </div>
+                    <div class="problem-body">
+                        <div class="problem-statement">
+                            <h4>Prove the following theorem using a direct proof:</h4>
+                            <div class="theorem-box">
+                                <strong>Theorem:</strong> The sum of two even integers is even.
+                            </div>
+                            <p><em>Formally: If $$a$$ and $$b$$ are even integers, then $$a + b$$ is an even integer.</em></p>
+                        </div>
+                        
+                        <button class="hint-toggle" onclick="toggleHint(1)" aria-expanded="false" aria-controls="hint-1">
+                            💡 Show Hint
+                        </button>
+                        <div class="hint-content" id="hint-1" role="region" aria-label="Hint for problem 1">
+                            <h5>Hint:</h5>
+                            <p>Start by writing $$a = 2k$$ and $$b = 2m$$ for some integers $$k$$ and $$m$$. Then find what $$a + b$$ equals and show it fits the definition of even.</p>
+                        </div>
+                        
+                        <div class="proof-workspace">
+                            <label class="workspace-label" for="proof-1">Your Proof:</label>
+                            <textarea class="proof-textarea" id="proof-1" placeholder="Proof:&#10;Let a and b be even integers. (Premise)&#10;By definition of even...&#10;&#10;Therefore...&#10;∎"></textarea>
+                            <div class="save-indicator" id="save-1">✓ Auto-saved to session</div>
+                        </div>
+                        
+                        <div class="completion-check" onclick="toggleComplete(1)" tabindex="0" role="checkbox" aria-checked="false" aria-label="Mark problem 1 as complete">
+                            <span class="check-box"></span>
+                            <span>Mark as complete</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Problem 2 -->
+                <div class="problem-card" id="problem-2">
+                    <div class="problem-header">
+                        <span class="problem-number">Problem 2</span>
+                        <span class="problem-points">8 points</span>
+                    </div>
+                    <div class="problem-body">
+                        <div class="problem-statement">
+                            <h4>Prove the following theorem using a direct proof:</h4>
+                            <div class="theorem-box">
+                                <strong>Theorem:</strong> The product of two odd integers is odd.
+                            </div>
+                            <p><em>Formally: If $$a$$ and $$b$$ are odd integers, then $$a \cdot b$$ is an odd integer.</em></p>
+                        </div>
+                        
+                        <button class="hint-toggle" onclick="toggleHint(2)" aria-expanded="false" aria-controls="hint-2">
+                            💡 Show Hint
+                        </button>
+                        <div class="hint-content" id="hint-2" role="region" aria-label="Hint for problem 2">
+                            <h5>Hint:</h5>
+                            <p>An odd integer can be written as $$2k + 1$$ for some integer $$k$$. Write both $$a$$ and $$b$$ in this form, multiply them, and simplify to show the result is of the form $$2m + 1$$.</p>
+                        </div>
+                        
+                        <div class="proof-workspace">
+                            <label class="workspace-label" for="proof-2">Your Proof:</label>
+                            <textarea class="proof-textarea" id="proof-2" placeholder="Proof:&#10;Let a and b be odd integers. (Premise)&#10;By definition of odd...&#10;&#10;Therefore...&#10;∎"></textarea>
+                            <div class="save-indicator" id="save-2">✓ Auto-saved to session</div>
+                        </div>
+                        
+                        <div class="completion-check" onclick="toggleComplete(2)" tabindex="0" role="checkbox" aria-checked="false" aria-label="Mark problem 2 as complete">
+                            <span class="check-box"></span>
+                            <span>Mark as complete</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Problem 3 -->
+                <div class="problem-card" id="problem-3">
+                    <div class="problem-header">
+                        <span class="problem-number">Problem 3</span>
+                        <span class="problem-points">10 points</span>
+                    </div>
+                    <div class="problem-body">
+                        <div class="problem-statement">
+                            <h4>Prove the following theorem using a direct proof:</h4>
+                            <div class="theorem-box">
+                                <strong>Theorem:</strong> For any integer $$n$$, if $$n$$ is odd, then $$n^2 - 1$$ is divisible by 8.
+                            </div>
+                        </div>
+                        
+                        <button class="hint-toggle" onclick="toggleHint(3)" aria-expanded="false" aria-controls="hint-3">
+                            💡 Show Hint
+                        </button>
+                        <div class="hint-content" id="hint-3" role="region" aria-label="Hint for problem 3">
+                            <h5>Hint:</h5>
+                            <p>Write $$n = 2k + 1$$, then compute $$n^2 - 1$$. Factor the result as $$(n-1)(n+1)$$ and observe that these are two consecutive even integers. What can you say about the product of two consecutive even integers?</p>
+                        </div>
+                        
+                        <div class="proof-workspace">
+                            <label class="workspace-label" for="proof-3">Your Proof:</label>
+                            <textarea class="proof-textarea" id="proof-3" placeholder="Proof:&#10;Let n be an odd integer. (Premise)&#10;...&#10;&#10;Therefore, n² - 1 is divisible by 8.&#10;∎"></textarea>
+                            <div class="save-indicator" id="save-3">✓ Auto-saved to session</div>
+                        </div>
+                        
+                        <div class="completion-check" onclick="toggleComplete(3)" tabindex="0" role="checkbox" aria-checked="false" aria-label="Mark problem 3 as complete">
+                            <span class="check-box"></span>
+                            <span>Mark as complete</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Problem 4 -->
+                <div class="problem-card" id="problem-4">
+                    <div class="problem-header">
+                        <span class="problem-number">Problem 4</span>
+                        <span class="problem-points">12 points</span>
+                    </div>
+                    <div class="problem-body">
+                        <div class="problem-statement">
+                            <h4>Prove the following theorem using a direct proof:</h4>
+                            <div class="theorem-box">
+                                <strong>Theorem:</strong> For all integers $$a$$, $$b$$, and $$c$$, if $$a \mid b$$ and $$b \mid c$$, then $$a \mid c$$.
+                            </div>
+                            <p><em>Note: $$a \mid b$$ means "$$a$$ divides $$b$$" or equivalently "$$b$$ is divisible by $$a$$" or "$$b = ak$$ for some integer $$k$$".</em></p>
+                        </div>
+                        
+                        <button class="hint-toggle" onclick="toggleHint(4)" aria-expanded="false" aria-controls="hint-4">
+                            💡 Show Hint
+                        </button>
+                        <div class="hint-content" id="hint-4" role="region" aria-label="Hint for problem 4">
+                            <h5>Hint:</h5>
+                            <p>Use the definition of divisibility: $$a \mid b$$ means $$b = ak$$ for some integer $$k$$. Write out what $$a \mid b$$ and $$b \mid c$$ mean, then substitute to express $$c$$ in terms of $$a$$.</p>
+                        </div>
+                        
+                        <div class="proof-workspace">
+                            <label class="workspace-label" for="proof-4">Your Proof:</label>
+                            <textarea class="proof-textarea" id="proof-4" placeholder="Proof:&#10;Let a, b, and c be integers such that a | b and b | c. (Premise)&#10;By definition of divisibility...&#10;&#10;Therefore, a | c.&#10;∎"></textarea>
+                            <div class="save-indicator" id="save-4">✓ Auto-saved to session</div>
+                        </div>
+                        
+                        <div class="completion-check" onclick="toggleComplete(4)" tabindex="0" role="checkbox" aria-checked="false" aria-label="Mark problem 4 as complete">
+                            <span class="check-box"></span>
+                            <span>Mark as complete</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Problem 5 -->
+                <div class="problem-card" id="problem-5">
+                    <div class="problem-header">
+                        <span class="problem-number">Problem 5</span>
+                        <span class="problem-points">12 points</span>
+                    </div>
+                    <div class="problem-body">
+                        <div class="problem-statement">
+                            <h4>Prove the following theorem using a direct proof:</h4>
+                            <div class="theorem-box">
+                                <strong>Theorem:</strong> For all real numbers $$x$$ and $$y$$, if $$x$$ is rational and $$y$$ is rational, then $$x + y$$ is rational.
+                            </div>
+                            <p><em>Recall: A number $$r$$ is rational if $$r = \frac{p}{q}$$ where $$p$$ and $$q$$ are integers and $$q \neq 0$$.</em></p>
+                        </div>
+                        
+                        <button class="hint-toggle" onclick="toggleHint(5)" aria-expanded="false" aria-controls="hint-5">
+                            💡 Show Hint
+                        </button>
+                        <div class="hint-content" id="hint-5" role="region" aria-label="Hint for problem 5">
+                            <h5>Hint:</h5>
+                            <p>Write $$x = \frac{a}{b}$$ and $$y = \frac{c}{d}$$ where $$a, b, c, d$$ are integers with $$b \neq 0$$ and $$d \neq 0$$. Add these fractions using a common denominator and show the result is rational.</p>
+                        </div>
+                        
+                        <div class="proof-workspace">
+                            <label class="workspace-label" for="proof-5">Your Proof:</label>
+                            <textarea class="proof-textarea" id="proof-5" placeholder="Proof:&#10;Let x and y be rational numbers. (Premise)&#10;By definition of rational...&#10;&#10;Therefore, x + y is rational.&#10;∎"></textarea>
+                            <div class="save-indicator" id="save-5">✓ Auto-saved to session</div>
+                        </div>
+                        
+                        <div class="completion-check" onclick="toggleComplete(5)" tabindex="0" role="checkbox" aria-checked="false" aria-label="Mark problem 5 as complete">
+                            <span class="check-box"></span>
+                            <span>Mark as complete</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="section">
+                <h2>📊 Grading Rubric</h2>
+                <table class="rubric-table" role="table" aria-label="Grading rubric">
+                    <thead>
+                        <tr>
+                            <th scope="col">Criterion</th>
+                            <th scope="col">Points</th>
+                            <th scope="col">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Logical Correctness</strong></td>
+                            <td>40%</td>
+                            <td>Each step follows logically from previous steps; no logical gaps</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Use of Definitions</strong></td>
+                            <td>25%</td>
+                            <td>Definitions are stated explicitly and used correctly</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Completeness</strong></td>
+                            <td>20%</td>
+                            <td>All necessary steps are included; nothing is skipped</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Clarity & Presentation</strong></td>
+                            <td>15%</td>
+                            <td>Proof is well-organized, readable, and professionally presented</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+            
+            <div class="warning-box">
+                <h4>⚠️ Common Mistakes to Avoid</h4>
+                <ul>
+                    <li><strong>Assuming what you're trying to prove</strong> - Don't use the conclusion as a premise</li>
+                    <li><strong>Skipping steps</strong> - Include all algebraic manipulations</li>
+                    <li><strong>Not citing definitions</strong> - Always state the definition you're using</li>
+                    <li><strong>Using specific examples</strong> - Proofs must work for ALL cases, not just examples</li>
+                    <li><strong>Forgetting to conclude</strong> - Explicitly state that you've proven the theorem</li>
+                </ul>
+            </div>
+            
+            <div class="tip-box">
+                <h4>💡 Tips for Success</h4>
+                <ul>
+                    <li><strong>Start with definitions:</strong> Write out the formal definition of each term in the theorem</li>
+                    <li><strong>Work forward from premises:</strong> What can you derive from your assumptions?</li>
+                    <li><strong>Keep the goal in mind:</strong> What form does your conclusion need to take?</li>
+                    <li><strong>Justify every step:</strong> Ask yourself "why is this step valid?"</li>
+                    <li><strong>Read your proof aloud:</strong> Does it make logical sense when spoken?</li>
+                </ul>
+            </div>
+            
+            <div class="submission-box">
+                <h3>📤 Submission Requirements</h3>
+                <ul class="submission-list">
+                    <li>📄 All 5 proofs written clearly (handwritten or typed)</li>
+                    <li>✍️ Each proof must include explicit justifications for each step</li>
+                    <li>📝 Use proper mathematical notation</li>
+                    <li>📁 Submit as PDF via Canvas</li>
+                    <li>⏰ Due: End of Week 5 (check Canvas for exact date/time)</li>
+                </ul>
+            </div>
+        </main>
+        
+        <footer class="footer">
+            <p><strong>CSC 240 - Discrete Structures</strong> | Week 5: Proof Techniques I</p>
+            <p>Mendocino College Computer Science Department</p>
+            <p>Questions? Contact your instructor through <a href="#">Canvas</a> or during office hours.</p>
+        </footer>
+    </div>
+    
+    <script>
+        const STORAGE_KEY = 'csc240_wa05_progress';
+        const NUM_PROBLEMS = 5;
+        
+        function loadState() {
+            const saved = sessionStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                const state = JSON.parse(saved);
+                
+                // Restore proofs
+                for (let i = 1; i <= NUM_PROBLEMS; i++) {
+                    const textarea = document.getElementById(`proof-${i}`);
+                    if (textarea && state.proofs && state.proofs[i]) {
+                        textarea.value = state.proofs[i];
+                    }
+                }
+                
+                // Restore completion states
+                if (state.completed) {
+                    state.completed.forEach((isComplete, index) => {
+                        if (isComplete) {
+                            const check = document.querySelector(`#problem-${index + 1} .completion-check`);
+                            if (check) {
+                                check.classList.add('completed');
+                                check.setAttribute('aria-checked', 'true');
+                            }
+                        }
+                    });
+                }
+                
+                // Restore hint states
+                if (state.hints) {
+                    state.hints.forEach((isVisible, index) => {
+                        if (isVisible) {
+                            const hint = document.getElementById(`hint-${index + 1}`);
+                            const btn = hint?.previousElementSibling;
+                            if (hint && btn) {
+                                hint.classList.add('visible');
+                                btn.setAttribute('aria-expanded', 'true');
+                                btn.textContent = '💡 Hide Hint';
+                            }
+                        }
+                    });
+                }
+                
+                updateProgress();
+            }
+        }
+        
+        function saveState() {
+            const state = {
+                proofs: {},
+                completed: [],
+                hints: []
+            };
+            
+            for (let i = 1; i <= NUM_PROBLEMS; i++) {
+                const textarea = document.getElementById(`proof-${i}`);
+                if (textarea) {
+                    state.proofs[i] = textarea.value;
+                }
+                
+                const check = document.querySelector(`#problem-${i} .completion-check`);
+                state.completed.push(check ? check.classList.contains('completed') : false);
+                
+                const hint = document.getElementById(`hint-${i}`);
+                state.hints.push(hint ? hint.classList.contains('visible') : false);
+            }
+            
+            sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        }
+        
+        function updateProgress() {
+            const completed = document.querySelectorAll('.completion-check.completed').length;
+            document.getElementById('progress-text').textContent = `${completed} / ${NUM_PROBLEMS}`;
+            document.getElementById('progress-fill').style.width = `${(completed / NUM_PROBLEMS) * 100}%`;
+        }
+        
+        function toggleHint(num) {
+            const hint = document.getElementById(`hint-${num}`);
+            const btn = hint.previousElementSibling;
+            const isVisible = hint.classList.toggle('visible');
+            btn.setAttribute('aria-expanded', isVisible);
+            btn.textContent = isVisible ? '💡 Hide Hint' : '💡 Show Hint';
+            saveState();
+        }
+        
+        function toggleComplete(num) {
+            const check = document.querySelector(`#problem-${num} .completion-check`);
+            const isCompleted = check.classList.toggle('completed');
+            check.setAttribute('aria-checked', isCompleted);
+            updateProgress();
+            saveState();
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            loadState();
+            
+            // Auto-save for textareas
+            for (let i = 1; i <= NUM_PROBLEMS; i++) {
+                const textarea = document.getElementById(`proof-${i}`);
+                if (textarea) {
+                    textarea.addEventListener('input', function() {
+                        saveState();
+                        const indicator = document.getElementById(`save-${i}`);
+                        if (indicator) {
+                            indicator.classList.add('visible');
+                            setTimeout(() => indicator.classList.remove('visible'), 2000);
+                        }
+                    });
+                }
+            }
+            
+            // Keyboard support for completion checks
+            document.querySelectorAll('.completion-check').forEach((check, index) => {
+                check.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        toggleComplete(index + 1);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

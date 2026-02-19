@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PE-05: Proof Validator | CSC 240 Week 5</title>
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.7;
+            color: #1a1a2e;
+            background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.12);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #00695c 0%, #00897b 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        
+        .header .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .badge-row {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .badge {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+        
+        .badge.project {
+            background: #ff9800;
+            color: #000;
+            font-weight: 600;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .progress-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .progress-title {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .progress-percent {
+            font-weight: 700;
+            color: #00695c;
+        }
+        
+        .progress-bar {
+            height: 12px;
+            background: #e0e0e0;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00695c, #26a69a);
+            border-radius: 6px;
+            transition: width 0.5s ease;
+        }
+        
+        .info-box {
+            background: linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 100%);
+            border-left: 4px solid #00695c;
+            padding: 20px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 25px;
+        }
+        
+        .info-box h3 {
+            margin: 0 0 10px 0;
+            color: #004d40;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+        }
+        
+        .section h2 {
+            color: #004d40;
+            font-size: 1.4rem;
+            border-bottom: 3px solid #00695c;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .section h3 {
+            color: #00695c;
+            font-size: 1.15rem;
+            margin: 20px 0 15px 0;
+        }
+        
+        .cslo-box {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+        }
+        
+        .cslo-box strong {
+            color: #856404;
+        }
+        
+        .project-context {
+            background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+            border: 2px solid #ff9800;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .project-context h4 {
+            color: #e65100;
+            margin: 0 0 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .requirement-card {
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .requirement-card h4 {
+            color: #00695c;
+            margin: 0 0 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .requirement-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .requirement-list li {
+            padding: 10px 0 10px 30px;
+            position: relative;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .requirement-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .requirement-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #00695c;
+            font-weight: bold;
+        }
+        
+        .code-block {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin: 15px 0;
+            white-space: pre;
+        }
+        
+        .code-block .keyword {
+            color: #569cd6;
+        }
+        
+        .code-block .string {
+            color: #ce9178;
+        }
+        
+        .code-block .comment {
+            color: #6a9955;
+        }
+        
+        .code-block .function {
+            color: #dcdcaa;
+        }
+        
+        .code-block .class {
+            color: #4ec9b0;
+        }
+        
+        .code-block .number {
+            color: #b5cea8;
+        }
+        
+        .example-box {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border-radius: 12px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+        
+        .example-box h4 {
+            color: #2e7d32;
+            margin: 0 0 15px 0;
+        }
+        
+        .test-case {
+            background: white;
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #00695c;
+        }
+        
+        .test-case h5 {
+            color: #00695c;
+            margin: 0 0 10px 0;
+        }
+        
+        .test-case .input,
+        .test-case .output {
+            background: #f5f5f5;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.9rem;
+            margin: 10px 0;
+            white-space: pre-wrap;
+        }
+        
+        .test-case .label {
+            font-weight: 600;
+            color: #666;
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+        }
+        
+        .checklist {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .checklist li {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 15px;
+            background: #f8f9fa;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .checklist li:hover {
+            background: #e0f2f1;
+            border-color: #00695c;
+        }
+        
+        .checklist li.completed {
+            background: #c8e6c9;
+            border-color: #2e7d32;
+        }
+        
+        .checklist li.completed .checkbox {
+            background: #2e7d32;
+            border-color: #2e7d32;
+        }
+        
+        .checklist li.completed .checkbox::after {
+            content: '✓';
+            color: white;
+            font-size: 14px;
+        }
+        
+        .checkbox {
+            width: 24px;
+            height: 24px;
+            min-width: 24px;
+            border: 2px solid #ccc;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .task-content {
+            flex: 1;
+        }
+        
+        .task-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 4px;
+        }
+        
+        .task-desc {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .rubric-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        .rubric-table th,
+        .rubric-table td {
+            border: 1px solid #e0e0e0;
+            padding: 12px 15px;
+            text-align: left;
+        }
+        
+        .rubric-table th {
+            background: #00695c;
+            color: white;
+        }
+        
+        .rubric-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        .rubric-table tr:hover {
+            background: #e0f2f1;
+        }
+        
+        .tip-box {
+            background: linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 100%);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .tip-box h4 {
+            margin: 0 0 10px 0;
+            color: #00695c;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .tip-box ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        
+        .tip-box li {
+            margin-bottom: 8px;
+            color: #004d40;
+        }
+        
+        .warning-box {
+            background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+            border-left: 4px solid #c62828;
+            border-radius: 0 12px 12px 0;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .warning-box h4 {
+            margin: 0 0 10px 0;
+            color: #c62828;
+        }
+        
+        .submission-box {
+            background: linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 100%);
+            border: 2px solid #00695c;
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 25px;
+        }
+        
+        .submission-box h3 {
+            margin: 0 0 15px 0;
+            color: #004d40;
+        }
+        
+        .submission-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .submission-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #80cbc4;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .submission-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .file-structure {
+            background: #263238;
+            color: #eceff1;
+            border-radius: 10px;
+            padding: 20px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.9rem;
+            margin: 15px 0;
+            white-space: pre;
+        }
+        
+        .footer {
+            background: #004d40;
+            color: white;
+            padding: 20px 30px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        
+        .footer a {
+            color: #80cbc4;
+            text-decoration: none;
+        }
+        
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .footer a:focus {
+            outline: 2px solid #80cbc4;
+            outline-offset: 2px;
+        }
+        
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: #004d40;
+            color: white;
+            padding: 8px 16px;
+            text-decoration: none;
+            z-index: 100;
+        }
+        
+        .skip-link:focus {
+            top: 0;
+        }
+        
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.4rem;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .code-block {
+                font-size: 0.8rem;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <div class="container">
+        <header class="header">
+            <h1>💻 PE-05: Proof Validator</h1>
+            <p class="subtitle">CSC 240 - Discrete Structures | Week 5</p>
+            <div class="badge-row">
+                <span class="badge">🖥️ Programming Exercise</span>
+                <span class="badge">⏱️ 3-4 hours</span>
+                <span class="badge">🎯 CSLO 1</span>
+                <span class="badge project">📦 Project 1 Component</span>
+            </div>
+        </header>
+        
+        <main id="main-content" class="content">
+            <section class="progress-section" aria-label="Development progress">
+                <div class="progress-header">
+                    <span class="progress-title">📊 Development Progress</span>
+                    <span class="progress-percent" id="progress-text">0%</span>
+                </div>
+                <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                    <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+                </div>
+            </section>
+            
+            <div class="info-box">
+                <h3>🎯 Assignment Overview</h3>
+                <p>In this programming exercise, you will implement a <strong>Proof Step Validator</strong> that checks whether logical conclusions follow from given premises. This component will be integrated into your <strong>Programming Project 1: Logic and Proof Systems</strong> toolkit. Your validator will use the truth table generation skills from Week 3 to verify logical arguments.</p>
+            </div>
+            
+            <div class="cslo-box">
+                <strong>📋 Course Student Learning Outcome Addressed:</strong><br>
+                <strong>CSLO 1:</strong> Apply symbolic logic and proof methods to model and analyze program/algorithm correctness.
+            </div>
+            
+            <div class="project-context">
+                <h4>📦 Project 1 Context</h4>
+                <p>This exercise is part of <strong>Programming Project 1: Logic and Proof Systems</strong>, which includes:</p>
+                <ul>
+                    <li>✅ Truth Table Generator (PE-03, Week 3)</li>
+                    <li>✅ Logical Equivalence Checker (PE-04, Week 4)</li>
+                    <li>🔄 <strong>Proof Step Validator (This assignment)</strong></li>
+                    <li>⬜ CNF/DNF Converter (PE-05b, Week 5)</li>
+                    <li>⬜ Integrated Logic Toolkit (Due end of Week 6)</li>
+                </ul>
+                <p><em>Build on your existing code from Weeks 3-4 to create this component.</em></p>
+            </div>
+            
+            <section class="section">
+                <h2>📋 Requirements</h2>
+                
+                <div class="requirement-card">
+                    <h4>🎯 Core Functionality</h4>
+                    <ul class="requirement-list">
+                        <li>Accept a set of premises (logical expressions)</li>
+                        <li>Accept a conclusion (logical expression)</li>
+                        <li>Determine if the conclusion logically follows from the premises</li>
+                        <li>Display a truth table showing all cases</li>
+                        <li>Identify any counterexample rows (where premises are true but conclusion is false)</li>
+                    </ul>
+                </div>
+                
+                <div class="requirement-card">
+                    <h4>🔧 Technical Requirements</h4>
+                    <ul class="requirement-list">
+                        <li>Support operators: NOT (!), AND (&amp;&amp;), OR (||), IMPLIES (-&gt;), IFF (&lt;-&gt;)</li>
+                        <li>Handle up to 4 propositional variables (A, B, C, D)</li>
+                        <li>Integrate with your existing expression parser from PE-03</li>
+                        <li>Provide clear output indicating VALID or INVALID argument</li>
+                        <li>Use Java or C++ (consistent with your previous work)</li>
+                    </ul>
+                </div>
+                
+                <div class="requirement-card">
+                    <h4>📊 Output Format</h4>
+                    <ul class="requirement-list">
+                        <li>Display formatted truth table with all premises and conclusion</li>
+                        <li>Highlight critical rows (where all premises are true)</li>
+                        <li>Show VALID if conclusion is true in all critical rows</li>
+                        <li>Show INVALID with counterexample if any critical row has false conclusion</li>
+                    </ul>
+                </div>
+            </section>
+            
+            <section class="section">
+                <h2>📖 Background: Argument Validity</h2>
+                
+                <p>A logical argument consists of <strong>premises</strong> (assumptions) and a <strong>conclusion</strong>. An argument is <strong>valid</strong> if and only if:</p>
+                
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; text-align: center; margin: 20px 0; font-size: 1.1rem;">
+                    Whenever <strong>all premises are true</strong>, the <strong>conclusion must also be true</strong>.
+                </div>
+                
+                <p>Equivalently, the argument $$P_1, P_2, \ldots, P_n \therefore C$$ is valid if and only if:</p>
+                
+                <div style="background: #e0f2f1; padding: 15px 20px; border-radius: 10px; text-align: center; margin: 20px 0;">
+                    $$(P_1 \land P_2 \land \ldots \land P_n) \rightarrow C$$ is a <strong>tautology</strong>
+                </div>
+                
+                <h3>Example: Modus Ponens</h3>
+                <p>The classic valid argument form:</p>
+                <ul>
+                    <li>Premise 1: $$P \rightarrow Q$$</li>
+                    <li>Premise 2: $$P$$</li>
+                    <li>Conclusion: $$Q$$</li>
+                </ul>
+                <p>This is valid because whenever both premises are true, Q must be true.</p>
+            </section>
+            
+            <section class="section">
+                <h2>💻 Sample Code Structure</h2>
+                
+                <h3>Java Implementation Skeleton</h3>
+                <div class="code-block"><span class="keyword">public class</span> <span class="class">ProofValidator</span> {
+    <span class="keyword">private</span> <span class="class">ExpressionParser</span> parser;  <span class="comment">// Reuse from PE-03</span>
+    <span class="keyword">private</span> <span class="class">List</span>&lt;<span class="class">String</span>&gt; premises;
+    <span class="keyword">private</span> <span class="class">String</span> conclusion;
+    
+    <span class="keyword">public</span> <span class="class">ProofValidator</span>() {
+        <span class="keyword">this</span>.parser = <span class="keyword">new</span> <span class="class">ExpressionParser</span>();
+        <span class="keyword">this</span>.premises = <span class="keyword">new</span> <span class="class">ArrayList</span>&lt;&gt;();
+    }
+    
+    <span class="keyword">public void</span> <span class="function">addPremise</span>(<span class="class">String</span> premise) {
+        premises.<span class="function">add</span>(premise);
+    }
+    
+    <span class="keyword">public void</span> <span class="function">setConclusion</span>(<span class="class">String</span> conclusion) {
+        <span class="keyword">this</span>.conclusion = conclusion;
+    }
+    
+    <span class="keyword">public</span> <span class="class">ValidationResult</span> <span class="function">validate</span>() {
+        <span class="comment">// 1. Extract all variables from premises and conclusion</span>
+        <span class="class">Set</span>&lt;<span class="class">Character</span>&gt; variables = <span class="function">extractVariables</span>();
+        
+        <span class="comment">// 2. Generate all truth assignments</span>
+        <span class="class">List</span>&lt;<span class="class">Map</span>&lt;<span class="class">Character</span>, <span class="class">Boolean</span>&gt;&gt; assignments = 
+            <span class="function">generateAssignments</span>(variables);
+        
+        <span class="comment">// 3. For each assignment, evaluate premises and conclusion</span>
+        <span class="class">List</span>&lt;<span class="class">Row</span>&gt; criticalRows = <span class="keyword">new</span> <span class="class">ArrayList</span>&lt;&gt;();
+        
+        <span class="keyword">for</span> (<span class="class">Map</span>&lt;<span class="class">Character</span>, <span class="class">Boolean</span>&gt; assignment : assignments) {
+            <span class="keyword">boolean</span> allPremisesTrue = <span class="function">evaluateAllPremises</span>(assignment);
+            <span class="keyword">boolean</span> conclusionTrue = <span class="function">evaluateConclusion</span>(assignment);
+            
+            <span class="keyword">if</span> (allPremisesTrue) {
+                criticalRows.<span class="function">add</span>(<span class="keyword">new</span> <span class="class">Row</span>(assignment, conclusionTrue));
+            }
+        }
+        
+        <span class="comment">// 4. Check if conclusion is true in ALL critical rows</span>
+        <span class="keyword">boolean</span> isValid = criticalRows.<span class="function">stream</span>()
+            .<span class="function">allMatch</span>(row -&gt; row.conclusionTrue);
+        
+        <span class="keyword">return new</span> <span class="class">ValidationResult</span>(isValid, criticalRows);
+    }
+    
+    <span class="comment">// Additional helper methods...</span>
+}</div>
+                
+                <h3>C++ Implementation Skeleton</h3>
+                <div class="code-block"><span class="keyword">class</span> <span class="class">ProofValidator</span> {
+<span class="keyword">private</span>:
+    <span class="class">ExpressionParser</span> parser;  <span class="comment">// Reuse from PE-03</span>
+    <span class="class">vector</span>&lt;<span class="class">string</span>&gt; premises;
+    <span class="class">string</span> conclusion;
+    
+<span class="keyword">public</span>:
+    <span class="keyword">void</span> <span class="function">addPremise</span>(<span class="keyword">const</span> <span class="class">string</span>&amp; premise) {
+        premises.<span class="function">push_back</span>(premise);
+    }
+    
+    <span class="keyword">void</span> <span class="function">setConclusion</span>(<span class="keyword">const</span> <span class="class">string</span>&amp; conc) {
+        conclusion = conc;
+    }
+    
+    <span class="class">ValidationResult</span> <span class="function">validate</span>() {
+        <span class="comment">// 1. Extract all variables</span>
+        <span class="class">set</span>&lt;<span class="keyword">char</span>&gt; variables = <span class="function">extractVariables</span>();
+        
+        <span class="comment">// 2. Generate all truth assignments</span>
+        <span class="class">vector</span>&lt;<span class="class">map</span>&lt;<span class="keyword">char</span>, <span class="keyword">bool</span>&gt;&gt; assignments = 
+            <span class="function">generateAssignments</span>(variables);
+        
+        <span class="comment">// 3. Find critical rows and check validity</span>
+        <span class="class">vector</span>&lt;<span class="class">CriticalRow</span>&gt; criticalRows;
+        <span class="keyword">bool</span> isValid = <span class="keyword">true</span>;
+        
+        <span class="keyword">for</span> (<span class="keyword">const auto</span>&amp; assignment : assignments) {
+            <span class="keyword">bool</span> allPremisesTrue = <span class="function">evaluateAllPremises</span>(assignment);
+            <span class="keyword">bool</span> conclusionTrue = <span class="function">evaluateConclusion</span>(assignment);
+            
+            <span class="keyword">if</span> (allPremisesTrue) {
+                criticalRows.<span class="function">push_back</span>({assignment, conclusionTrue});
+                <span class="keyword">if</span> (!conclusionTrue) {
+                    isValid = <span class="keyword">false</span>;
+                }
+            }
+        }
+        
+        <span class="keyword">return</span> <span class="class">ValidationResult</span>{isValid, criticalRows};
+    }
+};</div>
+            </section>
+            
+            <section class="section">
+                <h2>🧪 Test Cases</h2>
+                
+                <div class="test-case">
+                    <h5>Test 1: Modus Ponens (VALID)</h5>
+                    <div class="label">Input:</div>
+                    <div class="input">Premises: P -> Q, P
+Conclusion: Q</div>
+                    <div class="label">Expected Output:</div>
+                    <div class="output">ARGUMENT IS VALID
+
+Truth Table:
+P | Q | P->Q | P | Q
+--+---+------+---+---
+T | T |  T   | T | T  ← Critical row (all premises true)
+T | F |  F   | T | F
+F | T |  T   | F | T
+F | F |  T   | F | F
+
+Critical rows: 1
+All critical rows have TRUE conclusion.
+Therefore, the argument is VALID.</div>
+                </div>
+                
+                <div class="test-case">
+                    <h5>Test 2: Affirming the Consequent (INVALID)</h5>
+                    <div class="label">Input:</div>
+                    <div class="input">Premises: P -> Q, Q
+Conclusion: P</div>
+                    <div class="label">Expected Output:</div>
+                    <div class="output">ARGUMENT IS INVALID
+
+Truth Table:
+P | Q | P->Q | Q | P
+--+---+------+---+---
+T | T |  T   | T | T  ← Critical row (conclusion TRUE)
+T | F |  F   | F | T
+F | T |  T   | T | F  ← Critical row (conclusion FALSE) **COUNTEREXAMPLE**
+F | F |  T   | F | F
+
+Critical rows: 2
+COUNTEREXAMPLE FOUND at row 3: P=F, Q=T
+All premises are TRUE, but conclusion is FALSE.
+Therefore, the argument is INVALID.</div>
+                </div>
+                
+                <div class="test-case">
+                    <h5>Test 3: Hypothetical Syllogism (VALID)</h5>
+                    <div class="label">Input:</div>
+                    <div class="input">Premises: P -> Q, Q -> R
+Conclusion: P -> R</div>
+                    <div class="label">Expected Output:</div>
+                    <div class="output">ARGUMENT IS VALID
+
+[Full truth table with 8 rows]
+
+Critical rows: 4 (where both P->Q and Q->R are true)
+All critical rows have TRUE conclusion.
+Therefore, the argument is VALID.</div>
+                </div>
+                
+                <div class="test-case">
+                    <h5>Test 4: Disjunctive Syllogism (VALID)</h5>
+                    <div class="label">Input:</div>
+                    <div class="input">Premises: P || Q, !P
+Conclusion: Q</div>
+                    <div class="label">Expected Output:</div>
+                    <div class="output">ARGUMENT IS VALID
+
+[Truth table showing validity]</div>
+                </div>
+            </section>
+            
+            <section class="section">
+                <h2>✅ Development Checklist</h2>
+                <p>Click each item as you complete it:</p>
+                
+                <ul class="checklist" id="checklist" role="list">
+                    <li role="listitem" tabindex="0">
+                        <span class="checkbox" aria-hidden="true"></span>
+                        <div class="task-content">
+                            <div class="task-title">Review PE-03 code (Truth Table Generator)</div>
+                            <div class="task-desc">Ensure your parser and evaluator are working correctly</div>
+                        </div>
+                    </li>
+                    <li role="listitem" tabindex="0">
+                        <span class="checkbox" aria-hidden="true"></span>
+                        <div class="task-content">
+                            <div class="task-title">Create ProofValidator class structure</div>
+                            <div class="task-desc">Set up class with premises list and conclusion</div>
+                        </div>
+                    </li>
+                    <li role="listitem" tabindex="0">
+                        <span class="checkbox" aria-hidden="true"></span>
+                        <div class="task-content">
+                            <div class="task-title">Implement variable extraction</div>
+                            <div class="task-desc">Extract all unique variables from premises and conclusion</div>
+                        </div>
+                    </li>
+                    <li role="listitem" tabindex="0">
+                        <span class="checkbox" aria-hidden="true"></span>
+                        <div class="task-content">
+                            <div class="task-title">Implement premise evaluation</div>
+                            <div class="task-desc">Check if all premises are true for a given assignment</div>
+                        </div>
+                    </li>
+                    <li role="listitem" tabindex="0">
+                        <span class="checkbox" aria-hidden="true"></span>
+                        <div class="task-content">
+                            <div class="task-title">Implement critical row identification</div>
+                            <div class="task-desc">Find rows where all premises are true</div>
+                        </div>
+                    </li>
+                    <li role="listitem" tabindex="0">
+                        <span class="checkbox" aria-hidden="true"></span>
+                        <div class="task-content">
+                            <div class="task-title">Implement validity check</div>
+                            <div class="task-desc">Verify conclusion is true in all critical rows</div>
+                        </div>
+                    </li>
+                    <li role="listitem" tabindex="0">
+                        <span class="checkbox" aria-hidden="true"></span>
+                        <div class="task-content">
+                            <div class="task-title">Implement counterexample reporting</div>
+                            <div class="task-desc">Display counterexample when argument is invalid</div>
+                        </div>
+                    </li>
+                    <li role="listitem" tabindex="0">
+                        <span class="checkbox" aria-hidden="true"></span>
+                        <div class="task-content">
+                            <div class="task-title">Format output display</div>
+                            <div class="task-desc">Create clear, readable truth table output</div>
+                        </div>
+                    </li>
+                    <li role="listitem" tabindex="0">
+                        <span class="checkbox" aria-hidden="true"></span>
+                        <div class="task-content">
+                            <div class="task-title">Test all provided test cases</div>
+                            <div class="task-desc">Verify correct output for all 4 test cases</div>
+                        </div>
+                    </li>
+                    <li role="listitem" tabindex="0">
+                        <span class="checkbox" aria-hidden="true"></span>
+                        <div class="task-content">
+                            <div class="task-title">Write README documentation</div>
+                            <div class="task-desc">Document compilation, usage, and features</div>
+                        </div>
+                    </li>
+                </ul>
+            </section>
+            
+            <section class="section">
+                <h2>📊 Grading Rubric</h2>
+                
+                <table class="rubric-table" role="table" aria-label="Grading rubric">
+                    <thead>
+                        <tr>
+                            <th scope="col">Criterion</th>
+                            <th scope="col">Points</th>
+                            <th scope="col">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Correctness</strong></td>
+                            <td>50</td>
+                            <td>Correctly identifies valid/invalid arguments for all test cases</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Output Quality</strong></td>
+                            <td>20</td>
+                            <td>Clear, well-formatted truth tables and results</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Code Quality</strong></td>
+                            <td>15</td>
+                            <td>Clean code structure, meaningful names, proper organization</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Documentation</strong></td>
+                            <td>10</td>
+                            <td>Complete README with compilation and usage instructions</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Error Handling</strong></td>
+                            <td>5</td>
+                            <td>Graceful handling of invalid input</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+            
+            <div class="tip-box">
+                <h4>💡 Implementation Tips</h4>
+                <ul>
+                    <li><strong>Reuse your code:</strong> Your PE-03 expression parser and evaluator should work directly</li>
+                    <li><strong>Test incrementally:</strong> Verify each component before integrating</li>
+                    <li><strong>Start simple:</strong> Get Modus Ponens working before testing complex arguments</li>
+                    <li><strong>Debug with print statements:</strong> Output intermediate values to trace logic</li>
+                    <li><strong>Consider edge cases:</strong> What if there are no critical rows? (Argument is vacuously valid)</li>
+                </ul>
+            </div>
+            
+            <div class="warning-box">
+                <h4>⚠️ Common Pitfalls</h4>
+                <ul>
+                    <li><strong>Operator precedence:</strong> Ensure your parser handles precedence correctly</li>
+                    <li><strong>Variable extraction:</strong> Don't miss variables that appear only in conclusion</li>
+                    <li><strong>Empty critical rows:</strong> If premises are never all true, argument is vacuously valid</li>
+                    <li><strong>Output formatting:</strong> Align columns properly for readability</li>
+                </ul>
+            </div>
+            
+            <section class="section">
+                <h2>📁 Submission Structure</h2>
+                
+                <div class="file-structure">PE-05_LastName_FirstName/
+├── src/
+│   ├── ProofValidator.java (or .cpp)
+│   ├── ExpressionParser.java (or .cpp)  [from PE-03]
+│   └── Main.java (or main.cpp)
+├── test/
+│   └── test_cases.txt
+├── README.txt
+└── sample_output.txt</div>
+            </section>
+            
+            <div class="submission-box">
+                <h3>📤 Submission Requirements</h3>
+                <ul class="submission-list">
+                    <li>📁 ZIP file named PE-05_LastName_FirstName.zip</li>
+                    <li>💻 All source code files (.java or .cpp/.h)</li>
+                    <li>📄 README.txt with compilation and running instructions</li>
+                    <li>📝 Sample output showing all 4 test cases</li>
+                    <li>⏰ Submit via Canvas by end of Week 5</li>
+                </ul>
+            </div>
+        </main>
+        
+        <footer class="footer">
+            <p><strong>CSC 240 - Discrete Structures</strong> | Week 5: Proof Techniques I</p>
+            <p>Mendocino College Computer Science Department</p>
+            <p>Questions? Contact your instructor through <a href="#">Canvas</a> or during office hours.</p>
+        </footer>
+    </div>
+    
+    <script>
+        const STORAGE_KEY = 'csc240_pe05_progress';
+        
+        function loadState() {
+            const saved = sessionStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                const state = JSON.parse(saved);
+                const items = document.querySelectorAll('.checklist li');
+                items.forEach((item, index) => {
+                    if (state.checklist && state.checklist[index]) {
+                        item.classList.add('completed');
+                    }
+                });
+                updateProgress();
+            }
+        }
+        
+        function saveState() {
+            const state = { checklist: [] };
+            const items = document.querySelectorAll('.checklist li');
+            items.forEach(item => {
+                state.checklist.push(item.classList.contains('completed'));
+            });
+            sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        }
+        
+        function updateProgress() {
+            const items = document.querySelectorAll('.checklist li');
+            const completed = document.querySelectorAll('.checklist li.completed').length;
+            const percent = Math.round((completed / items.length) * 100);
+            
+            document.getElementById('progress-fill').style.width = percent + '%';
+            document.getElementById('progress-text').textContent = percent + '%';
+        }
+        
+        function toggleChecklistItem(item) {
+            item.classList.toggle('completed');
+            updateProgress();
+            saveState();
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            loadState();
+            
+            const checklistItems = document.querySelectorAll('.checklist li');
+            checklistItems.forEach(item => {
+                item.addEventListener('click', () => toggleChecklistItem(item));
+                item.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        toggleChecklistItem(item);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

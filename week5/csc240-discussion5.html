@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D-05: Proofs in Computer Science | CSC 240 Week 5</title>
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.7;
+            color: #1a1a2e;
+            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.12);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #ad1457 0%, #d81b60 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        
+        .header .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .badge-row {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .badge {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .info-box {
+            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%);
+            border-left: 4px solid #ad1457;
+            padding: 20px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 25px;
+        }
+        
+        .info-box h3 {
+            margin: 0 0 10px 0;
+            color: #880e4f;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+        }
+        
+        .section h2 {
+            color: #880e4f;
+            font-size: 1.4rem;
+            border-bottom: 3px solid #ad1457;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .section h3 {
+            color: #ad1457;
+            font-size: 1.15rem;
+            margin: 20px 0 15px 0;
+        }
+        
+        .cslo-box {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+        }
+        
+        .cslo-box strong {
+            color: #856404;
+        }
+        
+        .discussion-prompt {
+            background: linear-gradient(135deg, #fff 0%, #fce4ec 100%);
+            border: 2px solid #ad1457;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+        
+        .discussion-prompt h4 {
+            color: #880e4f;
+            margin: 0 0 15px 0;
+            font-size: 1.1rem;
+        }
+        
+        .prompt-questions {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            counter-reset: question;
+        }
+        
+        .prompt-questions li {
+            counter-increment: question;
+            padding: 15px 15px 15px 50px;
+            background: #f8f9fa;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            position: relative;
+        }
+        
+        .prompt-questions li::before {
+            content: counter(question);
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #ad1457;
+            color: white;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        
+        .requirements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .requirement-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .requirement-card .icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .requirement-card .label {
+            font-weight: 600;
+            color: #880e4f;
+            margin-bottom: 5px;
+        }
+        
+        .requirement-card .value {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .example-response {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border-radius: 12px;
+            padding: 25px;
+            margin: 25px 0;
+        }
+        
+        .example-response h4 {
+            color: #2e7d32;
+            margin: 0 0 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .example-response .response-text {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            font-style: italic;
+            line-height: 1.8;
+            border-left: 4px solid #4caf50;
+        }
+        
+        .example-response .analysis {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255,255,255,0.7);
+            border-radius: 8px;
+        }
+        
+        .analysis h5 {
+            color: #2e7d32;
+            margin: 0 0 10px 0;
+        }
+        
+        .analysis ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        
+        .analysis li {
+            margin-bottom: 5px;
+        }
+        
+        .peer-response-example {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-radius: 12px;
+            padding: 25px;
+            margin: 25px 0;
+        }
+        
+        .peer-response-example h4 {
+            color: #1565c0;
+            margin: 0 0 15px 0;
+        }
+        
+        .peer-response-example .response-text {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            line-height: 1.8;
+            border-left: 4px solid #2196f3;
+        }
+        
+        .workspace-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 25px 0;
+        }
+        
+        .workspace-section h4 {
+            color: #880e4f;
+            margin: 0 0 15px 0;
+        }
+        
+        .workspace-label {
+            display: block;
+            font-weight: 600;
+            color: #880e4f;
+            margin-bottom: 10px;
+        }
+        
+        .discussion-textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 1rem;
+            line-height: 1.7;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+        
+        .discussion-textarea:focus {
+            outline: none;
+            border-color: #ad1457;
+            box-shadow: 0 0 0 3px rgba(173, 20, 87, 0.2);
+        }
+        
+        .word-counter {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .word-count {
+            color: #666;
+        }
+        
+        .word-count.warning {
+            color: #f57c00;
+        }
+        
+        .word-count.good {
+            color: #2e7d32;
+        }
+        
+        .word-count.over {
+            color: #c62828;
+        }
+        
+        .save-indicator {
+            color: #2e7d32;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .save-indicator.visible {
+            opacity: 1;
+        }
+        
+        .rubric-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        .rubric-table th,
+        .rubric-table td {
+            border: 1px solid #e0e0e0;
+            padding: 12px 15px;
+            text-align: left;
+        }
+        
+        .rubric-table th {
+            background: #ad1457;
+            color: white;
+        }
+        
+        .rubric-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        .rubric-table tr:hover {
+            background: #fce4ec;
+        }
+        
+        .tip-box {
+            background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .tip-box h4 {
+            margin: 0 0 10px 0;
+            color: #f57c00;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .tip-box ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        
+        .tip-box li {
+            margin-bottom: 8px;
+            color: #e65100;
+        }
+        
+        .deadline-box {
+            background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+            border: 2px solid #c62828;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .deadline-box h4 {
+            color: #c62828;
+            margin: 0 0 10px 0;
+        }
+        
+        .deadline-box .dates {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .deadline-item {
+            text-align: center;
+        }
+        
+        .deadline-item .label {
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        .deadline-item .date {
+            font-weight: 700;
+            color: #c62828;
+            font-size: 1.1rem;
+        }
+        
+        .submission-box {
+            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%);
+            border: 2px solid #ad1457;
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 25px;
+        }
+        
+        .submission-box h3 {
+            margin: 0 0 15px 0;
+            color: #880e4f;
+        }
+        
+        .submission-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .submission-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #f48fb1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .submission-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .footer {
+            background: #880e4f;
+            color: white;
+            padding: 20px 30px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        
+        .footer a {
+            color: #f48fb1;
+            text-decoration: none;
+        }
+        
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .footer a:focus {
+            outline: 2px solid #f48fb1;
+            outline-offset: 2px;
+        }
+        
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: #880e4f;
+            color: white;
+            padding: 8px 16px;
+            text-decoration: none;
+            z-index: 100;
+        }
+        
+        .skip-link:focus {
+            top: 0;
+        }
+        
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.4rem;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .requirements-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .deadline-box .dates {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <div class="container">
+        <header class="header">
+            <h1>💬 D-05: Proofs in Computer Science</h1>
+            <p class="subtitle">CSC 240 - Discrete Structures | Week 5</p>
+            <div class="badge-row">
+                <span class="badge">🗣️ Discussion</span>
+                <span class="badge">⏱️ 45 minutes</span>
+                <span class="badge">🎯 CSLO 1, CSLO 4</span>
+                <span class="badge">💯 20 points</span>
+            </div>
+        </header>
+        
+        <main id="main-content" class="content">
+            <div class="info-box">
+                <h3>🎯 Discussion Overview</h3>
+                <p>This discussion explores the practical applications of mathematical proofs in computer science. You'll reflect on how proof techniques connect to programming, algorithm design, and software verification. Engage thoughtfully with your classmates to deepen your understanding of why proofs matter for programmers.</p>
+            </div>
+            
+            <div class="cslo-box">
+                <strong>📋 Course Student Learning Outcomes Addressed:</strong><br>
+                <strong>CSLO 1:</strong> Apply symbolic logic and proof methods to model and analyze program/algorithm correctness.<br>
+                <strong>CSLO 4:</strong> Explain the relationship between mathematical induction and recursion/recurrence equations, and their relationship to computing systems.
+            </div>
+            
+            <section class="section">
+                <h2>📝 Discussion Prompt</h2>
+                
+                <div class="discussion-prompt">
+                    <h4>Respond to the following questions in a single, cohesive post:</h4>
+                    <ol class="prompt-questions">
+                        <li><strong>Algorithm Correctness:</strong> Choose a simple algorithm you've implemented (e.g., binary search, sorting, finding maximum). How would you convince someone that your algorithm <em>always</em> produces the correct result? What would a "proof" of correctness look like?</li>
+                        <li><strong>Proof Techniques in Code:</strong> The proof techniques we're learning (direct proof, contrapositive, counterexample) have parallels in programming. Describe how one of these techniques relates to something you do when writing or debugging code.</li>
+                        <li><strong>Real-World Impact:</strong> Research one example where a mathematical proof was crucial in computer science (e.g., cryptography, compiler correctness, safety-critical systems). Briefly describe the example and explain why informal testing wasn't sufficient.</li>
+                    </ol>
+                </div>
+                
+                <div class="requirements-grid">
+                    <div class="requirement-card">
+                        <div class="icon">📏</div>
+                        <div class="label">Word Count</div>
+                        <div class="value">200-300 words</div>
+                    </div>
+                    <div class="requirement-card">
+                        <div class="icon">💡</div>
+                        <div class="label">Original Post</div>
+                        <div class="value">Due by Thursday</div>
+                    </div>
+                    <div class="requirement-card">
+                        <div class="icon">💬</div>
+                        <div class="label">Peer Responses</div>
+                        <div class="value">2 required (75+ words each)</div>
+                    </div>
+                    <div class="requirement-card">
+                        <div class="icon">📅</div>
+                        <div class="label">Responses Due</div>
+                        <div class="value">By Sunday</div>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="section">
+                <h2>✅ Example: Strong Initial Post</h2>
+                
+                <div class="example-response">
+                    <h4>✅ Excellent Response (267 words)</h4>
+                    <div class="response-text">
+                        <p><strong>Algorithm Correctness:</strong> In CSC 221, I implemented binary search to find elements in a sorted array. To prove it always works, I'd need to show three things: (1) if the element exists, we'll find it, (2) if it doesn't exist, we'll correctly return "not found," and (3) the algorithm terminates. The key insight is that each iteration cuts the search space in half while maintaining the invariant that if the target exists, it's within our current bounds. A formal proof would use mathematical induction on the number of iterations.</p>
+                        
+                        <p><strong>Proof Techniques in Code:</strong> Finding counterexamples directly parallels debugging! When my code fails a test case, that test case is essentially a "counterexample" disproving my implicit claim that "my code works for all inputs." Just as one counterexample disproves a mathematical statement, one failing test case proves my implementation is incorrect. This is why we write edge case tests—we're actively searching for counterexamples to our code's correctness.</p>
+                        
+                        <p><strong>Real-World Impact:</strong> The CompCert verified C compiler is a fascinating example. Developed by Xavier Leroy's team, it's a C compiler that has been mathematically proven to preserve program semantics—meaning the compiled code does exactly what the source code specifies. This matters because compiler bugs can introduce security vulnerabilities that no amount of source-code testing would catch. In safety-critical domains like aviation and medical devices, where lives depend on software correctness, testing alone isn't sufficient because you can't test every possible input. Mathematical proof provides the certainty that testing cannot.</p>
+                    </div>
+                    
+                    <div class="analysis">
+                        <h5>Why This is Excellent:</h5>
+                        <ul>
+                            <li>✓ <strong>Word count:</strong> 267 words (within 200-300 range)</li>
+                            <li>✓ <strong>Addresses all three questions</strong> with clear paragraph structure</li>
+                            <li>✓ <strong>Specific examples:</strong> Binary search, CompCert compiler</li>
+                            <li>✓ <strong>Personal experience:</strong> References CSC 221 coursework</li>
+                            <li>✓ <strong>Technical accuracy:</strong> Correctly explains loop invariants and induction</li>
+                            <li>✓ <strong>Insightful connection:</strong> Links counterexamples to debugging</li>
+                            <li>✓ <strong>Research component:</strong> Mentions specific project and researcher</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="section">
+                <h2>💬 Example: Strong Peer Response</h2>
+                
+                <div class="peer-response-example">
+                    <h4>✅ Excellent Peer Response (89 words)</h4>
+                    <div class="response-text">
+                        <p>Great connection between counterexamples and debugging, Maria! Your insight made me realize that test-driven development (TDD) is essentially a systematic search for counterexamples. When we write tests before code, we're hypothesizing potential ways our implementation could fail.</p>
+                        
+                        <p>I'd add that the contrapositive also appears in debugging: instead of asking "what input causes this bug?" we sometimes ask "what conditions guarantee no bug?"—which is the contrapositive approach. Have you encountered situations where thinking about the contrapositive helped you debug?</p>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="section">
+                <h2>✍️ Draft Your Response</h2>
+                
+                <div class="workspace-section">
+                    <h4>📝 Initial Post Workspace</h4>
+                    <p>Use this space to draft your discussion post. Your work is auto-saved to your browser session.</p>
+                    
+                    <label class="workspace-label" for="initial-post">Your Initial Post:</label>
+                    <textarea class="discussion-textarea" id="initial-post" placeholder="Start drafting your response here...&#10;&#10;Question 1 (Algorithm Correctness):&#10;&#10;Question 2 (Proof Techniques in Code):&#10;&#10;Question 3 (Real-World Impact):"></textarea>
+                    
+                    <div class="word-counter">
+                        <span class="word-count" id="word-count">0 words</span>
+                        <span class="save-indicator" id="save-indicator">✓ Auto-saved</span>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="section">
+                <h2>📊 Grading Rubric</h2>
+                
+                <table class="rubric-table" role="table" aria-label="Discussion grading rubric">
+                    <thead>
+                        <tr>
+                            <th scope="col">Criterion</th>
+                            <th scope="col">Points</th>
+                            <th scope="col">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Content & Depth</strong></td>
+                            <td>8 pts</td>
+                            <td>Addresses all three questions with specific examples and technical accuracy</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Critical Thinking</strong></td>
+                            <td>4 pts</td>
+                            <td>Shows original insight and meaningful connections between concepts</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Peer Engagement</strong></td>
+                            <td>6 pts</td>
+                            <td>Two substantive responses (75+ words) that advance the discussion</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Writing Quality</strong></td>
+                            <td>2 pts</td>
+                            <td>Clear organization, proper grammar, meets word count requirements</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+            
+            <div class="tip-box">
+                <h4>💡 Tips for a Strong Discussion Post</h4>
+                <ul>
+                    <li><strong>Be specific:</strong> Name actual algorithms, tools, or systems—avoid vague generalities</li>
+                    <li><strong>Connect to experience:</strong> Reference your own programming projects or coursework</li>
+                    <li><strong>Show your research:</strong> For question 3, cite your source or provide enough detail to verify</li>
+                    <li><strong>Engage thoughtfully:</strong> In peer responses, build on ideas rather than just agreeing</li>
+                    <li><strong>Ask questions:</strong> Ending with a question encourages continued discussion</li>
+                </ul>
+            </div>
+            
+            <div class="deadline-box">
+                <h4>⏰ Important Deadlines</h4>
+                <div class="dates">
+                    <div class="deadline-item">
+                        <div class="label">Initial Post Due</div>
+                        <div class="date">Thursday, 11:59 PM</div>
+                    </div>
+                    <div class="deadline-item">
+                        <div class="label">Peer Responses Due</div>
+                        <div class="date">Sunday, 11:59 PM</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="submission-box">
+                <h3>📤 Submission Instructions</h3>
+                <ul class="submission-list">
+                    <li>📝 Post your initial response in the Canvas discussion forum</li>
+                    <li>💬 Respond to at least 2 classmates' posts</li>
+                    <li>📏 Initial post: 200-300 words | Peer responses: 75+ words each</li>
+                    <li>⏰ Check Canvas for exact due dates and times</li>
+                    <li>🔄 Return to the discussion throughout the week to continue conversations</li>
+                </ul>
+            </div>
+        </main>
+        
+        <footer class="footer">
+            <p><strong>CSC 240 - Discrete Structures</strong> | Week 5: Proof Techniques I</p>
+            <p>Mendocino College Computer Science Department</p>
+            <p>Questions? Contact your instructor through <a href="#">Canvas</a> or during office hours.</p>
+        </footer>
+    </div>
+    
+    <script>
+        const STORAGE_KEY = 'csc240_d05_draft';
+        
+        function loadState() {
+            const saved = sessionStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                const state = JSON.parse(saved);
+                const textarea = document.getElementById('initial-post');
+                if (textarea && state.post) {
+                    textarea.value = state.post;
+                    updateWordCount();
+                }
+            }
+        }
+        
+        function saveState() {
+            const textarea = document.getElementById('initial-post');
+            const state = {
+                post: textarea ? textarea.value : ''
+            };
+            sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+            
+            const indicator = document.getElementById('save-indicator');
+            if (indicator) {
+                indicator.classList.add('visible');
+                setTimeout(() => indicator.classList.remove('visible'), 2000);
+            }
+        }
+        
+        function updateWordCount() {
+            const textarea = document.getElementById('initial-post');
+            const countDisplay = document.getElementById('word-count');
+            
+            if (textarea && countDisplay) {
+                const text = textarea.value.trim();
+                const words = text ? text.split(/\s+/).length : 0;
+                
+                countDisplay.textContent = `${words} words`;
+                countDisplay.className = 'word-count';
+                
+                if (words < 200) {
+                    countDisplay.classList.add('warning');
+                    countDisplay.textContent += ' (minimum 200)';
+                } else if (words <= 300) {
+                    countDisplay.classList.add('good');
+                    countDisplay.textContent += ' ✓';
+                } else {
+                    countDisplay.classList.add('over');
+                    countDisplay.textContent += ' (maximum 300)';
+                }
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            loadState();
+            
+            const textarea = document.getElementById('initial-post');
+            if (textarea) {
+                textarea.addEventListener('input', function() {
+                    updateWordCount();
+                    saveState();
+                });
+            }
+        });
+    </script>
+</body>
+</html>

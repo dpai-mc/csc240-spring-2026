@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RA-05: Introduction to Mathematical Proofs | CSC 240 Week 5</title>
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.7;
+            color: #1a1a2e;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        
+        .header .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .badge-row {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .badge {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .progress-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .progress-title {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .progress-percent {
+            font-weight: 700;
+            color: #3498db;
+        }
+        
+        .progress-bar {
+            height: 12px;
+            background: #e0e0e0;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            border-radius: 6px;
+            transition: width 0.5s ease;
+        }
+        
+        .info-box {
+            background: linear-gradient(135deg, #e8f4f8 0%, #d4edda 100%);
+            border-left: 4px solid #3498db;
+            padding: 20px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 25px;
+        }
+        
+        .info-box h3 {
+            margin: 0 0 10px 0;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+        }
+        
+        .section h2 {
+            color: #2c3e50;
+            font-size: 1.4rem;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .section h3 {
+            color: #34495e;
+            font-size: 1.15rem;
+            margin: 20px 0 15px 0;
+        }
+        
+        .cslo-box {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+        }
+        
+        .cslo-box strong {
+            color: #856404;
+        }
+        
+        .checklist {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .checklist li {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 15px;
+            background: #f8f9fa;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .checklist li:hover {
+            background: #e8f4f8;
+            border-color: #3498db;
+        }
+        
+        .checklist li.completed {
+            background: #d4edda;
+            border-color: #28a745;
+        }
+        
+        .checklist li.completed .checkbox {
+            background: #28a745;
+            border-color: #28a745;
+        }
+        
+        .checklist li.completed .checkbox::after {
+            content: '✓';
+            color: white;
+            font-size: 14px;
+        }
+        
+        .checkbox {
+            width: 24px;
+            height: 24px;
+            min-width: 24px;
+            border: 2px solid #ccc;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .task-content {
+            flex: 1;
+        }
+        
+        .task-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 4px;
+        }
+        
+        .task-desc {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .time-badge {
+            background: #e9ecef;
+            color: #495057;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+        
+        .reading-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .reading-card:hover {
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        
+        .reading-card h4 {
+            margin: 0 0 10px 0;
+            color: #2c3e50;
+        }
+        
+        .reading-card p {
+            margin: 0 0 15px 0;
+            color: #666;
+            font-size: 0.95rem;
+        }
+        
+        .reading-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+        
+        .reading-link:hover {
+            color: #2980b9;
+        }
+        
+        .reading-link:focus {
+            outline: 3px solid #3498db;
+            outline-offset: 2px;
+        }
+        
+        .objectives-grid {
+            display: grid;
+            gap: 15px;
+        }
+        
+        .objective-item {
+            background: linear-gradient(135deg, #f8f9fa 0%, #fff 100%);
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+        
+        .objective-num {
+            background: #3498db;
+            color: white;
+            width: 30px;
+            height: 30px;
+            min-width: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+        
+        .note-area {
+            width: 100%;
+            min-height: 150px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 1rem;
+            line-height: 1.6;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+        
+        .note-area:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        
+        .note-label {
+            display: block;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .save-indicator {
+            font-size: 0.85rem;
+            color: #28a745;
+            margin-top: 8px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .save-indicator.visible {
+            opacity: 1;
+        }
+        
+        .tip-box {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .tip-box h4 {
+            margin: 0 0 10px 0;
+            color: #1565c0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .tip-box ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        
+        .tip-box li {
+            margin-bottom: 8px;
+            color: #1976d2;
+        }
+        
+        .collapsible {
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+        
+        .collapsible-header {
+            padding: 15px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            color: #2c3e50;
+            transition: background 0.3s ease;
+        }
+        
+        .collapsible-header:hover {
+            background: #e9ecef;
+        }
+        
+        .collapsible-header:focus {
+            outline: 3px solid #3498db;
+            outline-offset: -3px;
+        }
+        
+        .collapsible-icon {
+            transition: transform 0.3s ease;
+        }
+        
+        .collapsible.open .collapsible-icon {
+            transform: rotate(180deg);
+        }
+        
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+        }
+        
+        .collapsible.open .collapsible-content {
+            max-height: 2000px;
+        }
+        
+        .collapsible-inner {
+            padding: 0 20px 20px 20px;
+        }
+        
+        .submission-box {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border: 2px solid #0288d1;
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 25px;
+        }
+        
+        .submission-box h3 {
+            margin: 0 0 15px 0;
+            color: #01579b;
+        }
+        
+        .submission-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .submission-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #b3e5fc;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .submission-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .footer {
+            background: #2c3e50;
+            color: white;
+            padding: 20px 30px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        
+        .footer a {
+            color: #3498db;
+            text-decoration: none;
+        }
+        
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .footer a:focus {
+            outline: 2px solid #3498db;
+            outline-offset: 2px;
+        }
+        
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.4rem;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .badge-row {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+        
+        /* Skip link for accessibility */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: #2c3e50;
+            color: white;
+            padding: 8px 16px;
+            text-decoration: none;
+            z-index: 100;
+        }
+        
+        .skip-link:focus {
+            top: 0;
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <div class="container">
+        <header class="header">
+            <h1>📖 RA-05: Introduction to Mathematical Proofs</h1>
+            <p class="subtitle">CSC 240 - Discrete Structures | Week 5</p>
+            <div class="badge-row">
+                <span class="badge">📚 Reading Assignment</span>
+                <span class="badge">⏱️ 90 minutes</span>
+                <span class="badge">🎯 CSLO 1, CSLO 4</span>
+            </div>
+        </header>
+        
+        <main id="main-content" class="content">
+            <section class="progress-section" aria-label="Reading progress">
+                <div class="progress-header">
+                    <span class="progress-title">📊 Your Reading Progress</span>
+                    <span class="progress-percent" id="progress-text">0%</span>
+                </div>
+                <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Reading completion progress">
+                    <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+                </div>
+            </section>
+            
+            <div class="info-box">
+                <h3>🎯 Assignment Overview</h3>
+                <p>This reading assignment introduces you to the foundations of mathematical proof writing. You'll learn why proofs matter in computer science and explore the basic structure and vocabulary used in mathematical arguments. Complete all readings and reflection questions to prepare for the week's proof-writing exercises.</p>
+            </div>
+            
+            <div class="cslo-box">
+                <strong>📋 Course Student Learning Outcomes Addressed:</strong><br>
+                <strong>CSLO 1:</strong> Apply symbolic logic and proof methods to model and analyze program/algorithm correctness.<br>
+                <strong>CSLO 4:</strong> Explain the relationship between mathematical induction and recursion/recurrence equations, and their relationship to computing systems.
+            </div>
+            
+            <section class="section">
+                <h2>📚 Required Readings</h2>
+                
+                <div class="reading-card">
+                    <h4>1. Saylor.org CS202 - Unit 4: Mathematical Induction and Proofs</h4>
+                    <p>Read Sections 4.1-4.2 covering introduction to proofs, proof structure, and direct proof techniques. Focus on understanding the logical flow from premises to conclusions.</p>
+                    <a href="https://learn.saylor.org/course/view.php?id=67" target="_blank" rel="noopener noreferrer" class="reading-link">
+                        Access Reading →
+                    </a>
+                </div>
+                
+                <div class="reading-card">
+                    <h4>2. Book of Proof - Chapter 4: Direct Proof</h4>
+                    <p>Supplementary reading from Richard Hammack's "Book of Proof" providing additional examples and explanations of direct proof techniques.</p>
+                    <a href="https://www.people.vcu.edu/~rhammack/BookOfProof/" target="_blank" rel="noopener noreferrer" class="reading-link">
+                        Access Reading →
+                    </a>
+                </div>
+                
+                <div class="reading-card">
+                    <h4>3. Brilliant.org - Proof Writing Guide</h4>
+                    <p>Interactive guide covering proof structure, common mistakes, and tips for writing clear mathematical arguments.</p>
+                    <a href="https://brilliant.org/wiki/proof-writing/" target="_blank" rel="noopener noreferrer" class="reading-link">
+                        Access Reading →
+                    </a>
+                </div>
+            </section>
+            
+            <section class="section">
+                <h2>🎯 Learning Objectives</h2>
+                <div class="objectives-grid">
+                    <div class="objective-item">
+                        <span class="objective-num">1</span>
+                        <span>Understand the role of mathematical proofs in computer science and algorithm verification</span>
+                    </div>
+                    <div class="objective-item">
+                        <span class="objective-num">2</span>
+                        <span>Identify the basic structure of a mathematical proof (premises, logical steps, conclusion)</span>
+                    </div>
+                    <div class="objective-item">
+                        <span class="objective-num">3</span>
+                        <span>Recognize and define key proof terminology (theorem, lemma, corollary, axiom)</span>
+                    </div>
+                    <div class="objective-item">
+                        <span class="objective-num">4</span>
+                        <span>Distinguish between different proof techniques and when to apply them</span>
+                    </div>
+                    <div class="objective-item">
+                        <span class="objective-num">5</span>
+                        <span>Read and follow the logical flow of simple direct proofs</span>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="section">
+                <h2>✅ Reading Checklist</h2>
+                <p>Click each item as you complete it to track your progress:</p>
+                
+                <ul class="checklist" id="checklist" role="list">
+                    <li role="listitem" tabindex="0" aria-label="Read Saylor Unit 4.1: Introduction to Proofs - click to mark complete">
+                        <span class="checkbox" aria-hidden="true"></span>
+                        <div class="task-content">
+                            <div class="task-title">Read Saylor Unit 4.1: Introduction to Proofs</div>
+                            <div class="task-desc">Why proofs matter, proof structure basics</div>
+                        </div>
+                        <span class="time-badge">25 min</span>
+                    </li>
+                    <li role="listitem" tabindex="0" aria-label="Read Saylor Unit 4.2: Direct Proof Techniques - click to mark complete">
+                        <span class="checkbox" aria-hidden="true"></span>
+                        <div class="task-content">
+                            <div class="task-title">Read Saylor Unit 4.2: Direct Proof Techniques</div>
+                            <div class="task-desc">Step-by-step direct proof methodology</div>
+                        </div>
+                        <span class="time-badge">25 min</span>
+                    </li>
+                    <li role="listitem" tabindex="0" aria-label="Review Book of Proof examples - click to mark complete">
+                        <span class="checkbox" aria-hidden="true"></span>
+                        <div class="task-content">
+                            <div class="task-title">Review Book of Proof Examples</div>
+                            <div class="task-desc">Work through at least 5 example proofs</div>
+                        </div>
+                        <span class="time-badge">20 min</span>
+                    </li>
+                    <li role="listitem" tabindex="0" aria-label="Complete Brilliant.org interactive exercises - click to mark complete">
+                        <span class="checkbox" aria-hidden="true"></span>
+                        <div class="task-content">
+                            <div class="task-title">Complete Brilliant.org Interactive Exercises</div>
+                            <div class="task-desc">Practice identifying proof components</div>
+                        </div>
+                        <span class="time-badge">15 min</span>
+                    </li>
+                    <li role="listitem" tabindex="0" aria-label="Complete reflection questions below - click to mark complete">
+                        <span class="checkbox" aria-hidden="true"></span>
+                        <div class="task-content">
+                            <div class="task-title">Complete Reflection Questions</div>
+                            <div class="task-desc">Answer all questions in the section below</div>
+                        </div>
+                        <span class="time-badge">15 min</span>
+                    </li>
+                </ul>
+            </section>
+            
+            <section class="section">
+                <h2>📝 Key Concepts to Master</h2>
+                
+                <div class="collapsible" id="collapse-1">
+                    <div class="collapsible-header" tabindex="0" role="button" aria-expanded="false" aria-controls="content-1" onclick="toggleCollapsible(this.parentElement)" onkeydown="handleKeydown(event, this.parentElement)">
+                        <span>🔤 Proof Vocabulary</span>
+                        <span class="collapsible-icon" aria-hidden="true">▼</span>
+                    </div>
+                    <div class="collapsible-content" id="content-1">
+                        <div class="collapsible-inner">
+                            <ul>
+                                <li><strong>Theorem:</strong> A mathematical statement that has been proven to be true</li>
+                                <li><strong>Lemma:</strong> A "helper" theorem used to prove a larger theorem</li>
+                                <li><strong>Corollary:</strong> A result that follows directly from a theorem</li>
+                                <li><strong>Axiom/Postulate:</strong> A statement accepted as true without proof</li>
+                                <li><strong>Conjecture:</strong> A statement believed to be true but not yet proven</li>
+                                <li><strong>Proposition:</strong> A statement that is either true or false</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="collapsible" id="collapse-2">
+                    <div class="collapsible-header" tabindex="0" role="button" aria-expanded="false" aria-controls="content-2" onclick="toggleCollapsible(this.parentElement)" onkeydown="handleKeydown(event, this.parentElement)">
+                        <span>🏗️ Proof Structure</span>
+                        <span class="collapsible-icon" aria-hidden="true">▼</span>
+                    </div>
+                    <div class="collapsible-content" id="content-2">
+                        <div class="collapsible-inner">
+                            <p>Every valid proof contains these components:</p>
+                            <ol>
+                                <li><strong>Statement:</strong> Clearly state what you're proving</li>
+                                <li><strong>Assumptions:</strong> List what you're assuming (premises, hypotheses)</li>
+                                <li><strong>Logical Steps:</strong> Each step must follow logically from previous steps</li>
+                                <li><strong>Justifications:</strong> Explain why each step is valid</li>
+                                <li><strong>Conclusion:</strong> State that you've proven what you set out to prove</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="collapsible" id="collapse-3">
+                    <div class="collapsible-header" tabindex="0" role="button" aria-expanded="false" aria-controls="content-3" onclick="toggleCollapsible(this.parentElement)" onkeydown="handleKeydown(event, this.parentElement)">
+                        <span>🎯 Direct Proof Pattern</span>
+                        <span class="collapsible-icon" aria-hidden="true">▼</span>
+                    </div>
+                    <div class="collapsible-content" id="content-3">
+                        <div class="collapsible-inner">
+                            <p>To prove $$P \rightarrow Q$$ directly:</p>
+                            <ol>
+                                <li>Assume $$P$$ is true</li>
+                                <li>Use definitions, axioms, and previously proven theorems</li>
+                                <li>Through logical deduction, arrive at $$Q$$</li>
+                                <li>Conclude that $$P \rightarrow Q$$ is true</li>
+                            </ol>
+                            <p><strong>Example:</strong> Prove "If $$n$$ is even, then $$n^2$$ is even."</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="collapsible" id="collapse-4">
+                    <div class="collapsible-header" tabindex="0" role="button" aria-expanded="false" aria-controls="content-4" onclick="toggleCollapsible(this.parentElement)" onkeydown="handleKeydown(event, this.parentElement)">
+                        <span>💻 Proofs in Computer Science</span>
+                        <span class="collapsible-icon" aria-hidden="true">▼</span>
+                    </div>
+                    <div class="collapsible-content" id="content-4">
+                        <div class="collapsible-inner">
+                            <p>Proofs are essential in CS for:</p>
+                            <ul>
+                                <li><strong>Algorithm Correctness:</strong> Proving algorithms produce correct output</li>
+                                <li><strong>Complexity Analysis:</strong> Proving time/space bounds</li>
+                                <li><strong>Security:</strong> Proving cryptographic protocols are secure</li>
+                                <li><strong>Program Verification:</strong> Proving code meets specifications</li>
+                                <li><strong>Data Structure Properties:</strong> Proving invariants are maintained</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="section">
+                <h2>✍️ Reflection Questions</h2>
+                <p>Answer these questions in your reading notes. Save your work frequently!</p>
+                
+                <div style="margin-bottom: 25px;">
+                    <label class="note-label" for="reflection-1">1. In your own words, explain why mathematical proofs are important in computer science. Give at least two specific examples.</label>
+                    <textarea class="note-area" id="reflection-1" placeholder="Type your response here..." aria-describedby="save-1"></textarea>
+                    <div class="save-indicator" id="save-1">✓ Auto-saved to session</div>
+                </div>
+                
+                <div style="margin-bottom: 25px;">
+                    <label class="note-label" for="reflection-2">2. What is the difference between a theorem, a lemma, and a corollary? Why do mathematicians use these different terms?</label>
+                    <textarea class="note-area" id="reflection-2" placeholder="Type your response here..." aria-describedby="save-2"></textarea>
+                    <div class="save-indicator" id="save-2">✓ Auto-saved to session</div>
+                </div>
+                
+                <div style="margin-bottom: 25px;">
+                    <label class="note-label" for="reflection-3">3. Describe the basic structure of a direct proof. What are the key steps you must include?</label>
+                    <textarea class="note-area" id="reflection-3" placeholder="Type your response here..." aria-describedby="save-3"></textarea>
+                    <div class="save-indicator" id="save-3">✓ Auto-saved to session</div>
+                </div>
+                
+                <div style="margin-bottom: 25px;">
+                    <label class="note-label" for="reflection-4">4. Choose one example proof from the readings. Identify its premises, logical steps, and conclusion. What made this proof convincing?</label>
+                    <textarea class="note-area" id="reflection-4" placeholder="Type your response here..." aria-describedby="save-4"></textarea>
+                    <div class="save-indicator" id="save-4">✓ Auto-saved to session</div>
+                </div>
+            </section>
+            
+            <div class="tip-box">
+                <h4>💡 Reading Tips for Success</h4>
+                <ul>
+                    <li><strong>Active Reading:</strong> Don't just read passively—work through examples with pencil and paper</li>
+                    <li><strong>Take Notes:</strong> Write down definitions and key concepts in your own words</li>
+                    <li><strong>Pause and Reflect:</strong> After each section, ask yourself "Could I explain this to someone else?"</li>
+                    <li><strong>Mark Confusion:</strong> Note any concepts that are unclear—bring questions to class or office hours</li>
+                    <li><strong>Connect to Code:</strong> Think about how proof concepts relate to programming you've done</li>
+                </ul>
+            </div>
+            
+            <div class="submission-box">
+                <h3>📤 Submission Requirements</h3>
+                <ul class="submission-list">
+                    <li>📄 Reading notes (handwritten or typed) covering all three sources</li>
+                    <li>✍️ Completed reflection questions (all 4 questions answered)</li>
+                    <li>📝 At least one question or observation to discuss in class</li>
+                    <li>⏰ Submit via Canvas before the start of Week 5 lecture</li>
+                </ul>
+            </div>
+        </main>
+        
+        <footer class="footer">
+            <p><strong>CSC 240 - Discrete Structures</strong> | Week 5: Proof Techniques I</p>
+            <p>Mendocino College Computer Science Department</p>
+            <p>Questions? Contact your instructor through <a href="#">Canvas</a> or during office hours.</p>
+        </footer>
+    </div>
+    
+    <script>
+        // Session storage for progress and notes
+        const STORAGE_KEY = 'csc240_ra05_progress';
+        
+        // Load saved state
+        function loadState() {
+            const saved = sessionStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                const state = JSON.parse(saved);
+                
+                // Restore checklist
+                const items = document.querySelectorAll('.checklist li');
+                items.forEach((item, index) => {
+                    if (state.checklist && state.checklist[index]) {
+                        item.classList.add('completed');
+                    }
+                });
+                
+                // Restore notes
+                for (let i = 1; i <= 4; i++) {
+                    const textarea = document.getElementById(`reflection-${i}`);
+                    if (textarea && state.notes && state.notes[i]) {
+                        textarea.value = state.notes[i];
+                    }
+                }
+                
+                // Restore collapsible states
+                if (state.collapsibles) {
+                    state.collapsibles.forEach((isOpen, index) => {
+                        const collapsible = document.getElementById(`collapse-${index + 1}`);
+                        if (collapsible && isOpen) {
+                            collapsible.classList.add('open');
+                            const header = collapsible.querySelector('.collapsible-header');
+                            if (header) header.setAttribute('aria-expanded', 'true');
+                        }
+                    });
+                }
+                
+                updateProgress();
+            }
+        }
+        
+        // Save state
+        function saveState() {
+            const state = {
+                checklist: [],
+                notes: {},
+                collapsibles: []
+            };
+            
+            // Save checklist
+            const items = document.querySelectorAll('.checklist li');
+            items.forEach(item => {
+                state.checklist.push(item.classList.contains('completed'));
+            });
+            
+            // Save notes
+            for (let i = 1; i <= 4; i++) {
+                const textarea = document.getElementById(`reflection-${i}`);
+                if (textarea) {
+                    state.notes[i] = textarea.value;
+                }
+            }
+            
+            // Save collapsible states
+            for (let i = 1; i <= 4; i++) {
+                const collapsible = document.getElementById(`collapse-${i}`);
+                state.collapsibles.push(collapsible ? collapsible.classList.contains('open') : false);
+            }
+            
+            sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        }
+        
+        // Update progress bar
+        function updateProgress() {
+            const items = document.querySelectorAll('.checklist li');
+            const completed = document.querySelectorAll('.checklist li.completed').length;
+            const percent = Math.round((completed / items.length) * 100);
+            
+            document.getElementById('progress-fill').style.width = percent + '%';
+            document.getElementById('progress-text').textContent = percent + '%';
+            
+            const progressBar = document.querySelector('.progress-bar');
+            progressBar.setAttribute('aria-valuenow', percent);
+        }
+        
+        // Toggle checklist item
+        function toggleChecklistItem(item) {
+            item.classList.toggle('completed');
+            updateProgress();
+            saveState();
+        }
+        
+        // Toggle collapsible
+        function toggleCollapsible(element) {
+            element.classList.toggle('open');
+            const header = element.querySelector('.collapsible-header');
+            const isOpen = element.classList.contains('open');
+            header.setAttribute('aria-expanded', isOpen);
+            saveState();
+        }
+        
+        // Handle keyboard navigation for collapsibles
+        function handleKeydown(event, element) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                toggleCollapsible(element);
+            }
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadState();
+            
+            // Checklist click handlers
+            const checklistItems = document.querySelectorAll('.checklist li');
+            checklistItems.forEach(item => {
+                item.addEventListener('click', () => toggleChecklistItem(item));
+                item.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        toggleChecklistItem(item);
+                    }
+                });
+            });
+            
+            // Auto-save notes
+            const textareas = document.querySelectorAll('.note-area');
+            textareas.forEach((textarea, index) => {
+                textarea.addEventListener('input', function() {
+                    saveState();
+                    const indicator = document.getElementById(`save-${index + 1}`);
+                    if (indicator) {
+                        indicator.classList.add('visible');
+                        setTimeout(() => indicator.classList.remove('visible'), 2000);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
