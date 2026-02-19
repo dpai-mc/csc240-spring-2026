@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 5 Overview: Proof Techniques I | CSC 240</title>
+    <style>
+        /* ==================== CSS RESET AND BASE ==================== */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #1a1a2e;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        /* ==================== HEADER STYLES ==================== */
+        header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        
+        header h1 {
+            margin: 0 0 10px 0;
+            font-size: 2.2rem;
+        }
+        
+        .week-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+        
+        .week-info span {
+            background: rgba(255,255,255,0.1);
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+        
+        /* ==================== PROGRESS TRACKING ==================== */
+        .progress-container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: #e0e0e0;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            border-radius: 6px;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+        
+        .progress-text {
+            text-align: center;
+            margin-top: 10px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        /* ==================== MAIN SECTIONS ==================== */
+        section {
+            background: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        
+        section h2 {
+            color: #1a1a2e;
+            border-bottom: 3px solid #4CAF50;
+            padding-bottom: 10px;
+            margin-top: 0;
+            font-size: 1.5rem;
+        }
+        
+        section h3 {
+            color: #16213e;
+            margin-top: 25px;
+            font-size: 1.25rem;
+        }
+        
+        section h4 {
+            color: #333;
+            margin-top: 20px;
+            font-size: 1.1rem;
+        }
+        
+        /* ==================== CONTENT BOXES ==================== */
+        .info-box {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-left: 5px solid #2196F3;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 10px 10px 0;
+        }
+        
+        .info-box h4 {
+            color: #1565c0;
+            margin-top: 0;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .objectives-box {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border-left: 5px solid #4CAF50;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 10px 10px 0;
+        }
+        
+        .objectives-box h3 {
+            color: #2e7d32;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        
+        .prereq-box {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            border-left: 5px solid #FF9800;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 10px 10px 0;
+        }
+        
+        .prereq-box h4 {
+            color: #e65100;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        
+        .module-summary-box {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-left: 5px solid #6c757d;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .module-summary-box h4 {
+            color: #495057;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        
+        .module-summary-box .time-estimate {
+            font-size: 0.9em;
+            color: #6c757d;
+            font-weight: 600;
+        }
+        
+        .assignment-box {
+            background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+            border-left: 5px solid #9c27b0;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 10px 10px 0;
+        }
+        
+        .assignment-box h4 {
+            color: #7b1fa2;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        
+        .schedule-entry {
+            background: #f8f9fa;
+            padding: 15px;
+            border-left: 4px solid #00bcd4;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .schedule-entry h5 {
+            margin-top: 0;
+            color: #00838f;
+        }
+        
+        .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .checklist-item:last-child {
+            border-bottom: none;
+        }
+        
+        .checklist-item .check-icon {
+            color: #4CAF50;
+            font-weight: bold;
+            min-width: 20px;
+        }
+        
+        /* ==================== TABLES ==================== */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        th {
+            background: #1a1a2e;
+            color: #fff;
+            font-weight: 600;
+        }
+        
+        tr:hover {
+            background: #f5f5f5;
+        }
+        
+        tr:last-child td {
+            border-bottom: none;
+        }
+        
+        /* ==================== INTERACTIVE ELEMENTS ==================== */
+        .collapsible {
+            background: #f5f5f5;
+            border: none;
+            padding: 15px 20px;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            margin: 10px 0;
+            color: #333;
+        }
+        
+        .collapsible:hover {
+            background: #e0e0e0;
+        }
+        
+        .collapsible::after {
+            content: '▼';
+            font-size: 0.8rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .collapsible.active::after {
+            transform: rotate(180deg);
+        }
+        
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            background: #fff;
+            border-radius: 0 0 10px 10px;
+        }
+        
+        .collapsible-content.show {
+            max-height: 5000px; /* Large enough to accommodate content */
+        }
+        
+        .collapsible-content-inner {
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-top: none;
+            border-radius: 0 0 10px 10px;
+        }
+        
+        /* ==================== SECTION CHECKBOXES ==================== */
+        .section-check {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 15px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            margin: 10px 0;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .section-check:hover {
+            background: #e8f5e9;
+        }
+        
+        .section-check input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            margin: 0;
+        }
+        
+        .section-check.completed {
+            background: #e8f5e9;
+            border-left: 3px solid #4CAF50;
+        }
+        
+        .section-check span {
+            font-weight: 500;
+        }
+        
+        /* ==================== CODE FORMATTING ==================== */
+        code {
+            background: #f5f5f5;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.95em;
+            color: #c7254e;
+        }
+        
+        pre {
+            background: #1a1a2e;
+            color: #a8e6cf;
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            line-height: 1.6;
+            white-space: pre;
+            margin: 15px 0;
+        }
+        
+        /* ==================== NAVIGATION ==================== */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .nav-buttons a {
+            text-decoration: none;
+        }
+        
+        .nav-button {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            padding: 12px 25px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }
+        
+        .nav-button:focus {
+            outline: 3px solid #4CAF50;
+            outline-offset: 2px;
+        }
+        
+        /* ==================== FOOTER ==================== */
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+            border-top: 1px solid #ddd;
+            margin-top: 40px;
+            background: #fff;
+            border-radius: 15px;
+        }
+        
+        footer a {
+            color: #1a1a2e;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        footer a:hover {
+            text-decoration: underline;
+        }
+        
+        /* ==================== LISTS ==================== */
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 25px;
+        }
+        
+        li {
+            margin: 8px 0;
+        }
+        
+        /* ==================== ACCESSIBILITY ==================== */
+        :focus {
+            outline: 3px solid #4CAF50;
+            outline-offset: 2px;
+        }
+        
+        :focus:not(:focus-visible) {
+            outline: none;
+        }
+        
+        :focus-visible {
+            outline: 3px solid #4CAF50;
+            outline-offset: 2px;
+        }
+        
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+        
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: #1a1a2e;
+            color: #fff;
+            padding: 8px 16px;
+            z-index: 100;
+            transition: top 0.3s ease;
+        }
+        
+        .skip-link:focus {
+            top: 0;
+        }
+        
+        /* ==================== MATH DISPLAY ==================== */
+        .math-display {
+            overflow-x: auto;
+            padding: 10px 0;
+        }
+        
+        .math-block {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+            font-size: 1.1em;
+        }
+        
+        /* ==================== RESPONSIVE DESIGN ==================== */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            
+            header {
+                padding: 20px;
+            }
+            
+            header h1 {
+                font-size: 1.8rem;
+            }
+            
+            section {
+                padding: 20px;
+            }
+            
+            .week-info {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .nav-buttons {
+                flex-direction: column;
+            }
+            
+            .nav-button {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            table {
+                font-size: 0.9rem;
+            }
+            
+            th, td {
+                padding: 10px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            header h1 {
+                font-size: 1.5rem;
+            }
+            
+            section h2 {
+                font-size: 1.3rem;
+            }
+            
+            .info-box, .objectives-box, .prereq-box, 
+            .module-summary-box, .assignment-box {
+                padding: 15px;
+            }
+        }
+        
+        /* ==================== UTILITY CLASSES ==================== */
+        .text-center {
+            text-align: center;
+        }
+        
+        .mt-20 {
+            margin-top: 20px;
+        }
+        
+        .mb-20 {
+            margin-bottom: 20px;
+        }
+        
+        .highlight {
+            background: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        
+        .emoji-icon {
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <!-- Skip link for accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <header>
+        <h1>✨ Week 5 Overview: Proof Techniques I</h1>
+        <div class="week-info">
+            <span>📚 CSC 240 - Discrete Structures</span>
+            <span>📅 February 18, 2026 - February 24, 2026</span>
+            <span>⏱️ Total Student Hours: 9 hours</span>
+        </div>
+    </header>
+    
+    <div class="progress-container" role="region" aria-label="Week progress tracker">
+        <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="progress-text" id="progressText" aria-live="polite">0% Complete</div>
+    </div>
+    
+    <main id="main-content">
+        <!-- Week Overview -->
+        <section id="week-overview">
+            <h2>1. Week Overview</h2>
+            
+            <label class="section-check" id="check1">
+                <input type="checkbox" onchange="updateProgress()" aria-label="Mark week overview as complete">
+                <span>Mark this section as complete</span>
+            </label>
+            
+            <div class="info-box">
+                <h4><span class="emoji-icon">📖</span> Module Title</h4>
+                <p><strong>Proof Techniques I - Direct Proofs and Counterexamples</strong></p>
+            </div>
+            
+            <div class="info-box">
+                <h4><span class="emoji-icon">⏰</span> Duration</h4>
+                <ul>
+                    <li><strong>Lecture:</strong> 3 hours</li>
+                    <li><strong>Out-of-Class:</strong> 6 hours</li>
+                    <li><strong>Total Student Hours:</strong> 9 hours</li>
+                </ul>
+            </div>
+            
+            <div class="info-box">
+                <h4><span class="emoji-icon">🎯</span> CSLO Alignment</h4>
+                <ul>
+                    <li><strong>CSLO 1:</strong> Apply symbolic logic and proof methods to model and analyze program/algorithm correctness.</li>
+                    <li><strong>CSLO 4:</strong> Explain the relationship between mathematical induction and recursion/recurrence equations.</li>
+                </ul>
+            </div>
+            
+            <div class="info-box">
+                <h4><span class="emoji-icon">📚</span> Primary Textbook</h4>
+                <p>Saylor.org CS202 - Unit 4: Mathematical Induction and Proofs (Sections 4.1-4.2)</p>
+                <p>Note: The "Book of Proof, 3rd Edition (Hammack)" is also heavily referenced in individual modules.</p>
+            </div>
+            
+            <p>This week, you will transition from pure logical reasoning to formal mathematical proof writing. You'll learn fundamental proof techniques that are crucial for understanding and verifying algorithms in computer science.</p>
+        </section>
+        
+        <!-- Learning Objectives -->
+        <section id="learning-objectives">
+            <h2>2. Week 5 Learning Objectives</h2>
+            
+            <label class="section-check" id="check2">
+                <input type="checkbox" onchange="updateProgress()" aria-label="Mark learning objectives as complete">
+                <span>Mark this section as complete</span>
+            </label>
+            
+            <div class="objectives-box">
+                <h3><span class="emoji-icon">🎓</span> By the end of this week, you will be able to:</h3>
+                <ul>
+                    <li>Explain the purpose and importance of mathematical proofs in computer science</li>
+                    <li>Identify the components of a well-structured proof</li>
+                    <li>Recognize common theorem forms and their logical structures</li>
+                    <li>Distinguish between a theorem, its converse, inverse, and contrapositive</li>
+                    <li>Apply the direct proof technique to prove conditional statements</li>
+                    <li>Use formal definitions to translate assumptions into mathematical expressions</li>
+                    <li>Construct logical chains of reasoning from hypothesis to conclusion</li>
+                    <li>Recognize when proof by cases is the appropriate technique</li>
+                    <li>Partition a domain into exhaustive, mutually exclusive cases</li>
+                    <li>Explain why a statement and its contrapositive are logically equivalent</li>
+                    <li>Recognize when proof by contrapositive is advantageous over direct proof</li>
+                    <li>Construct effective counterexamples to disprove false universal statements</li>
+                    <li>Distinguish between proving and disproving statements</li>
+                    <li>Write clear, well-organized mathematical proofs</li>
+                    <li>Use proper notation, terminology, and conventions</li>
+                    <li>Identify and correct common proof writing errors</li>
+                    <li>Connect proof techniques to algorithm correctness arguments</li>
+                </ul>
+            </div>
+        </section>
+        
+        <!-- Prerequisites -->
+        <section id="prerequisites">
+            <h2>3. Prerequisites from Weeks 3-4</h2>
+            
+            <label class="section-check" id="check3">
+                <input type="checkbox" onchange="updateProgress()" aria-label="Mark prerequisites as complete">
+                <span>Mark this section as complete</span>
+            </label>
+            
+            <div class="prereq-box">
+                <h4><span class="emoji-icon">🧠</span> Essential Concepts to Review</h4>
+                <p>Before diving into Week 5, ensure you have a solid understanding of these topics from previous weeks:</p>
+                <ul>
+                    <li><strong>Propositional logic</strong> and logical connectives (∧, ∨, ¬, →, ↔)</li>
+                    <li><strong>Truth tables</strong> and logical equivalences</li>
+                    <li><strong>Predicate logic</strong> with quantifiers (∀, ∃)</li>
+                    <li><strong>Contrapositive equivalence:</strong> $$(P \rightarrow Q) \equiv (\neg Q \rightarrow \neg P)$$</li>
+                    <li><strong>Negation of quantified statements</strong></li>
+                </ul>
+            </div>
+            <p>These logical foundations are crucial for understanding and constructing formal proofs.</p>
+        </section>
+        
+        <!-- Week 5 Modules at a Glance -->
+        <section id="modules-at-glance">
+            <h2>4. Week 5 Modules at a Glance</h2>
+            
+            <label class="section-check" id="check4">
+                <input type="checkbox" onchange="updateProgress()" aria-label="Mark modules at a glance as complete">
+                <span>Mark this section as complete</span>
+            </label>
+            
+            <p>This week's content is divided into 6 cohesive learning modules. Each module includes readings, examples, interactive activities, and practice problems.</p>
+            
+            <div class="module-summary-box">
+                <h4>Module 5.1: Introduction to Mathematical Proofs</h4>
+                <span class="time-estimate">⏱️ Estimated Time: 1.5 hours</span>
+                <p>This module sets the stage by defining what a mathematical proof is, why it's important in computer science, and outlining the essential components of any well-structured proof. You'll also review common theorem forms and their related logical structures (converse, inverse, contrapositive).</p>
+                <button class="collapsible" onclick="toggleCollapsible(this)" aria-expanded="false">
+                    <span>View Key Objectives</span>
+                </button>
+                <div class="collapsible-content">
+                    <div class="collapsible-content-inner">
+                        <ul>
+                            <li>Explain the purpose and importance of mathematical proofs in computer science</li>
+                            <li>Identify the components of a well-structured proof</li>
+                            <li>Recognize common theorem forms and their logical structures</li>
+                            <li>Distinguish between a theorem, its converse, inverse, and contrapositive</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="module-summary-box">
+                <h4>Module 5.2: Direct Proofs</h4>
+                <span class="time-estimate">⏱️ Estimated Time: 2 hours</span>
+                <p>You'll learn the most fundamental proof technique: direct proof. This involves assuming the hypothesis of a conditional statement and logically deriving its conclusion using definitions, axioms, and previously established theorems. Examples will focus on parity, divisibility, and rational numbers.</p>
+                <button class="collapsible" onclick="toggleCollapsible(this)" aria-expanded="false">
+                    <span>View Key Objectives</span>
+                </button>
+                <div class="collapsible-content">
+                    <div class="collapsible-content-inner">
+                        <ul>
+                            <li>Apply the direct proof technique to prove conditional statements</li>
+                            <li>Use formal definitions to translate assumptions into mathematical expressions</li>
+                            <li>Construct logical chains of reasoning from hypothesis to conclusion</li>
+                            <li>Write clear, well-structured direct proofs for statements involving parity, divisibility, and rational numbers</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="module-summary-box">
+                <h4>Module 5.3: Proof by Cases</h4>
+                <span class="time-estimate">⏱️ Estimated Time: 1.5 hours</span>
+                <p>This module introduces a technique for when your argument naturally splits into several distinct scenarios. You'll learn how to divide a problem into exhaustive and mutually exclusive cases, proving the conclusion holds for each case separately. This is particularly useful for problems involving absolute values or modular arithmetic.</p>
+                <button class="collapsible" onclick="toggleCollapsible(this)" aria-expanded="false">
+                    <span>View Key Objectives</span>
+                </button>
+                <div class="collapsible-content">
+                    <div class="collapsible-content-inner">
+                        <ul>
+                            <li>Recognize when proof by cases is the appropriate technique</li>
+                            <li>Partition a domain into exhaustive, mutually exclusive cases</li>
+                            <li>Construct complete proofs by cases with proper structure</li>
+                            <li>Apply proof by cases to problems involving parity, absolute values, and inequalities</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="module-summary-box">
+                <h4>Module 5.4: Proof by Contrapositive</h4>
+                <span class="time-estimate">⏱️ Estimated Time: 1.5 hours</span>
+                <p>Building on logical equivalences, this module explores proving a conditional statement $$P \rightarrow Q$$ by instead proving its contrapositive $$\neg Q \rightarrow \neg P$$. This technique is often more straightforward when directly proving P implies Q is difficult, especially when the conclusion is easier to negate.</p>
+                <button class="collapsible" onclick="toggleCollapsible(this)" aria-expanded="false">
+                    <span>View Key Objectives</span>
+                </button>
+                <div class="collapsible-content">
+                    <div class="collapsible-content-inner">
+                        <ul>
+                            <li>Explain why a statement and its contrapositive are logically equivalent</li>
+                            <li>Recognize when proof by contrapositive is advantageous over direct proof</li>
+                            <li>Correctly form the contrapositive of a given conditional statement</li>
+                            <li>Apply the contrapositive technique to prove mathematical theorems</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="module-summary-box">
+                <h4>Module 5.5: Proof by Counterexample</h4>
+                <span class="time-estimate">⏱️ Estimated Time: 1.5 hours</span>
+                <p>Not all statements are true! This module teaches you how to disprove a universal statement ($$\forall x, P(x)$$) by finding a single, specific instance (a counterexample) where the statement fails. This technique is analogous to finding bugs through testing in computer science.</p>
+                <button class="collapsible" onclick="toggleCollapsible(this)" aria-expanded="false">
+                    <span>View Key Objectives</span>
+                </button>
+                <div class="collapsible-content">
+                    <div class="collapsible-content-inner">
+                        <ul>
+                            <li>Explain when counterexamples are appropriate for disproving statements</li>
+                            <li>Construct effective counterexamples to disprove false universal statements</li>
+                            <li>Apply systematic strategies for finding counterexamples</li>
+                            <li>Distinguish between proving and disproving statements</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="module-summary-box">
+                <h4>Module 5.6: Mathematical Writing and Proof Style</h4>
+                <span class="time-estimate">⏱️ Estimated Time: 1 hour</span>
+                <p>The final module focuses on the craft of writing proofs. You'll learn the "4 C's" (Clarity, Completeness, Correctness, Conciseness), standard conventions, common errors to avoid, and how to effectively revise your proofs to ensure they are convincing and easy to understand.</p>
+                <button class="collapsible" onclick="toggleCollapsible(this)" aria-expanded="false">
+                    <span>View Key Objectives</span>
+                </button>
+                <div class="collapsible-content">
+                    <div class="collapsible-content-inner">
+                        <ul>
+                            <li>Write clear, well-organized mathematical proofs</li>
+                            <li>Use proper notation, terminology, and conventions</li>
+                            <li>Identify and correct common proof writing errors</li>
+                            <li>Connect proof techniques to algorithm correctness arguments</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Assignments & Deliverables -->
+        <section id="assignments">
+            <h2>5. Assignments & Deliverables</h2>
+            
+            <label class="section-check" id="check5">
+                <input type="checkbox" onchange="updateProgress()" aria-label="Mark assignments as complete">
+                <span>Mark this section as complete</span>
+            </label>
+            
+            <div class="assignment-box">
+                <h4><span class="emoji-icon">📝</span> Problem Set PS-05: Proof Writing Fundamentals</h4>
+                <p><strong>Due:</strong> End of Week 5</p>
+                <p>This problem set is a compilation of worksheets from each of this week's learning modules, designed to reinforce your understanding of proof techniques. It is crucial for developing your proof writing skills.</p>
+                <ul>
+                    <li><strong>Theorem Structure Worksheet (5.1):</strong> Analyze theorem forms and components.</li>
+                    <li><strong>Definitions Worksheet (5.2):</strong> Apply definitions to statements.</li>
+                    <li><strong>Direct Proof Worksheet (5.3):</strong> Write 6 complete direct proofs.</li>
+                    <li><strong>Contrapositive Worksheet (5.4):</strong> Write 4 contrapositive proofs.</li>
+                    <li><strong>Counterexample Worksheet (5.5):</strong> Disprove 6 false claims.</li>
+                    <li><strong>Proof Style Worksheet (5.6):</strong> Edit and improve proofs.</li>
+                </ul>
+            </div>
+            
+            <div class="assignment-box">
+                <h4><span class="emoji-icon">💻</span> Programming Project 1: Proof Step Validator</h4>
+                <p><strong>Begin:</strong> This week (continues into Week 6)</p>
+                <p>This project will challenge you to apply your understanding of logic to implement a system that can validate basic proof steps. You will be implementing a tool that can check if a conclusion follows from premises, validating rules like modus ponens and modus tollens.</p>
+                <ul>
+                    <li><strong>Implementation:</strong> Java or C++</li>
+                    <li><strong>Interface:</strong> User-friendly (console or GUI)</li>
+                    <li><strong>Testing:</strong> Comprehensive test suite</li>
+                    <li><strong>Documentation:</strong> Explain your approach</li>
+                </ul>
+            </div>
+        </section>
+        
+        <!-- Suggested Study Schedule -->
+        <section id="study-schedule">
+            <h2>6. Suggested Study Schedule</h2>
+            
+            <label class="section-check" id="check6">
+                <input type="checkbox" onchange="updateProgress()" aria-label="Mark study schedule as complete">
+                <span>Mark this section as complete</span>
+            </label>
+            
+            <p>This schedule is designed to help you navigate Week 5 content systematically. Follow the modules in order, complete all assignments, and don't hesitate to seek help when needed.</p>
+            
+            <div class="schedule-entry">
+                <h5>Day 1 (Monday) - 1.5 hours</h5>
+                <ul>
+                    <li>Complete Module 5.1: Introduction to Proofs</li>
+                    <li>Complete Module 5.2: Essential Definitions</li>
+                    <li>Submit structure and definitions worksheets (part of PS-05)</li>
+                </ul>
+            </div>
+            
+            <div class="schedule-entry">
+                <h5>Day 2 (Tuesday) - 2.5 hours</h5>
+                <ul>
+                    <li>Complete Module 5.3: Direct Proofs</li>
+                    <li>Practice writing direct proofs</li>
+                    <li>Submit direct proof worksheet (part of PS-05)</li>
+                </ul>
+            </div>
+            
+            <div class="schedule-entry">
+                <h5>Day 3 (Wednesday) - 3 hours (In-Class Lecture)</h5>
+                <ul>
+                    <li>Attend lecture covering proof techniques</li>
+                    <li>In-class proof writing practice</li>
+                    <li>Q&amp;A on direct and contrapositive proofs</li>
+                </ul>
+            </div>
+            
+            <div class="schedule-entry">
+                <h5>Day 4 (Thursday) - 1.5 hours</h5>
+                <ul>
+                    <li>Complete Module 5.4: Contrapositive Proofs</li>
+                    <li>Submit contrapositive worksheet (part of PS-05)</li>
+                    <li>Begin Module 5.5: Counterexamples</li>
+                </ul>
+            </div>
+            
+            <div class="schedule-entry">
+                <h5>Day 5 (Friday) - 1.5 hours</h5>
+                <ul>
+                    <li>Complete Module 5.5: Counterexamples</li>
+                    <li>Submit counterexample worksheet (part of PS-05)</li>
+                    <li>Begin Module 5.6: Proof Style</li>
+                </ul>
+            </div>
+            
+            <div class="schedule-entry">
+                <h5>Weekend - 2 hours</h5>
+                <ul>
+                    <li>Complete Module 5.6: Mathematical Writing</li>
+                    <li>Submit proof style worksheet (part of PS-05)</li>
+                    <li>Compile and submit PS-05</li>
+                    <li>Begin Programming Project 1</li>
+                </ul>
+            </div>
+        </section>
+        
+        <!-- Week 5 Checklist -->
+        <section id="checklist">
+            <h2>7. Week 5 Checklist</h2>
+            
+            <label class="section-check" id="check7">
+                <input type="checkbox" onchange="updateProgress()" aria-label="Mark checklist as complete">
+                <span>Mark this section as complete</span>
+            </label>
+            
+            <h3>Before Starting:</h3>
+            <div class="checklist-item">
+                <span class="check-icon">☐</span>
+                <span>Completed Week 4 assignments (PE-04, PS-04, Discussion)</span>
+            </div>
+            <div class="checklist-item">
+                <span class="check-icon">☐</span>
+                <span>Reviewed logical equivalences from Week 4</span>
+            </div>
+            <div class="checklist-item">
+                <span class="check-icon">☐</span>
+                <span>Reviewed contrapositive equivalence: $$(P \rightarrow Q) \equiv (\neg Q \rightarrow \neg P)$$</span>
+            </div>
+            <div class="checklist-item">
+                <span class="check-icon">☐</span>
+                <span>Reviewed quantifier negation rules</span>
+            </div>
+            <div class="checklist-item">
+                <span class="check-icon">☐</span>
+                <span>Read Saylor.org Unit 4, Sections 4.1-4.2</span>
+            </div>
+            
+            <h3>During the Week:</h3>
+            <div class="checklist-item">
+                <span class="check-icon">☐</span>
+                <span>Completed Module 5.1: Introduction to Proofs</span>
+            </div>
+            <div class="checklist-item">
+                <span class="check-icon">☐</span>
+                <span>Completed Module 5.2: Essential Definitions</span>
+            </div>
+            <div class="checklist-item">
+                <span class="check-icon">☐</span>
+                <span>Completed Module 5.3: Direct Proofs</span>
+            </div>
+            <div class="checklist-item">
+                <span class="check-icon">☐</span>
+                <span>Completed Module 5.4: Contrapositive Proofs</span>
+            </div>
+            <div class="checklist-item">
+                <span class="check-icon">☐</span>
+                <span>Completed Module 5.5: Counterexamples</span>
+            </div>
+            <div class="checklist-item">
+                <span class="check-icon">☐</span>
+                <span>Completed Module 5.6: Mathematical Writing</span>
+            </div>
+            <div class="checklist-item">
+                <span class="check-icon">☐</span>
+                <span>Attended Week 5 lecture</span>
+            </div>
+            <div class="checklist-item">
+                <span class="check-icon">☐</span>
+                <span>Started Programming Project 1</span>
+            </div>
+            
+            <h3>By End of Week:</h3>
+            <div class="checklist-item">
+                <span class="check-icon">☐</span>
+                <span>Submitted PS-05: Proof Writing Fundamentals</span>
+            </div>
+            <div class="checklist-item">
+                <span class="check-icon">☐</span>
+                <span>Made progress on Programming Project 1</span>
+            </div>
+            <div class="checklist-item">
+                <span class="check-icon">☐</span>
+                <span>Created personal proof strategy reference sheet</span>
+            </div>
+            <div class="checklist-item">
+                <span class="check-icon">☐</span>
+                <span>Prepared for Week 6 (Contradiction and Induction)</span>
+            </div>
+        </section>
+        
+        <!-- CSLO Alignment Summary -->
+        <section id="cslo-summary">
+            <h2>8. Connection to Course Outcomes</h2>
+            
+            <label class="section-check" id="check8">
+                <input type="checkbox" onchange="updateProgress()" aria-label="Mark CSLO summary as complete">
+                <span>Mark this section as complete</span>
+            </label>
+            
+            <div class="info-box">
+                <h4><span class="emoji-icon">🔗</span> CSLO 1: Apply symbolic logic and proof methods to model and analyze program/algorithm correctness.</h4>
+                <ul>
+                    <li>All modules directly support this outcome by teaching foundational proof techniques.</li>
+                    <li>Proof techniques are fundamental to algorithm verification and validating program behavior.</li>
+                    <li>Counterexamples directly connect to identifying and reporting bugs in software testing.</li>
+                </ul>
+            </div>
+            
+            <div class="info-box">
+                <h4><span class="emoji-icon">🔗</span> CSLO 4: Explain the relationship between mathematical induction and recursion/recurrence equations.</h4>
+                <ul>
+                    <li>While mathematical induction is a Week 6 topic, the rigorous proof writing skills developed this week are a direct prerequisite.</li>
+                    <li>Understanding the structure and logical flow of proofs from this week will be essential for mastering inductive proofs, which are critical for analyzing recursive algorithms.</li>
+                </ul>
+            </div>
+        </section>
+        
+        <!-- Next Steps -->
+        <section id="next-steps">
+            <h2>9. Looking Ahead to Week 6</h2>
+            
+            <label class="section-check" id="check9">
+                <input type="checkbox" onchange="updateProgress()" aria-label="Mark next steps as complete">
+                <span>Mark this section as complete</span>
+            </label>
+            
+            <div class="prereq-box">
+                <h4><span class="emoji-icon">🚀</span> Week 6: Proof Techniques II</h4>
+                <p>Next week, you'll delve into more advanced and powerful proof techniques:</p>
+                <ul>
+                    <li><strong>Proof by Contradiction:</strong> A method where you assume the negation of what you want to prove and show it leads to a logical inconsistency.</li>
+                    <li><strong>Mathematical Induction:</strong> A crucial technique for proving statements about natural numbers, especially relevant for analyzing recursive algorithms and data structures in computer science.</li>
+                    <li><strong>Strong Induction:</strong> A variation of induction that provides a broader assumption in the inductive step.</li>
+                </ul>
+                <p>The strong foundation in proof writing you've built this week will be invaluable for these new topics!</p>
+            </div>
+        </section>
+        
+        <!-- Resources -->
+        <section id="resources">
+            <h2>10. Additional Resources</h2>
+            
+            <label class="section-check" id="check10">
+                <input type="checkbox" onchange="updateProgress()" aria-label="Mark resources as complete">
+                <span>Mark this section as complete</span>
+            </label>
+            
+            <h3>Required Reading</h3>
+            <ul>
+                <li><a href="hammack-book-of-proof-3rd-ed.pdf" target="_blank">Book of Proof, 3rd Edition (Hammack)</a> - Relevant chapters for each proof technique (e.g., Chapter 4 for Direct, Chapter 5 for Contrapositive, Chapter 9 for Disproof, Chapter 3 for Writing Proofs)</li>
+                <li>Saylor.org CS202 - Unit 4: Mathematical Induction and Proofs (Sections 4.1-4.2)</li>
+            </ul>
+            
+            <h3>Supplementary Materials</h3>
+            <ul>
+                <li><a href="https://www.people.vcu.edu/~rhammack/BookOfProof/" target="_blank" rel="noopener noreferrer">Book of Proof - Free Online Version</a> (online version of Hammack's text)</li>
+                <li>Brilliant.org - Various articles on proof techniques (linked within individual modules)</li>
+                <li>Khan Academy - Introduction to Proofs (linked in Module 5.1)</li>
+            </ul>
+        </section>
+    </main>
+    
+    <!-- Navigation -->
+    <nav class="nav-buttons" aria-label="Week navigation">
+        <a href="csc240-week4-overview.html" class="nav-button">
+            ← Previous: Week 4 Overview
+        </a>
+        <a href="csc240-week6-overview.html" class="nav-button">
+            Next: Week 6 Overview →
+        </a>
+    </nav>
+    
+    <footer>
+        <p><strong>Week 5 Overview: Proof Techniques I - Direct Proofs and Counterexamples</strong></p>
+        <p>CSC 240 - Discrete Structures | Mendocino College</p>
+        <p>© 2026 Mendocino College | All Rights Reserved</p>
+        <p><a href="mailto:instructor@mendocino.edu">Contact Instructor</a> | <a href="https://www.mendocino.edu">College Website</a></p>
+    </footer>
+    
+    <script>
+        // ==================== PROGRESS TRACKING ====================
+        function updateProgress() {
+            const checkboxes = document.querySelectorAll('.section-check input[type="checkbox"]');
+            let completed = 0;
+            
+            checkboxes.forEach((checkbox, index) => {
+                const key = `week5_overview_section${index + 1}`;
+                if (checkbox.checked) {
+                    completed++;
+                    checkbox.parentElement.classList.add('completed');
+                    sessionStorage.setItem(key, 'true');
+                } else {
+                    checkbox.parentElement.classList.remove('completed');
+                    sessionStorage.setItem(key, 'false');
+                }
+            });
+            
+            const percentage = Math.round((completed / checkboxes.length) * 100);
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            const progressBar = progressFill.parentElement;
+            
+            progressFill.style.width = percentage + '%';
+            progressText.textContent = percentage + '% Complete';
+            progressBar.setAttribute('aria-valuenow', percentage);
+            
+            sessionStorage.setItem('week5_overview_progress', percentage);
+        }
+        
+        function loadProgress() {
+            const checkboxes = document.querySelectorAll('.section-check input[type="checkbox"]');
+            
+            checkboxes.forEach((checkbox, index) => {
+                const key = `week5_overview_section${index + 1}`;
+                const saved = sessionStorage.getItem(key);
+                if (saved === 'true') {
+                    checkbox.checked = true;
+                    checkbox.parentElement.classList.add('completed');
+                }
+            });
+            
+            updateProgress();
+        }
+        
+        // ==================== COLLAPSIBLE SECTIONS ====================
+        function toggleCollapsible(button) {
+            const isExpanded = button.classList.contains('active');
+            button.classList.toggle('active');
+            const content = button.nextElementSibling;
+            content.classList.toggle('show');
+            button.setAttribute('aria-expanded', !isExpanded);
+        }
+        
+        // ==================== INITIALIZE ON PAGE LOAD ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProgress();
+            
+            // Add keyboard navigation for collapsibles
+            document.querySelectorAll('.collapsible').forEach(button => {
+                button.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        toggleCollapsible(this);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
