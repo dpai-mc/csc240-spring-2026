@@ -1,0 +1,2643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 6.1: Proof by Contradiction - Foundations | CSC 240</title>
+    <style>
+        /* CSS Reset and Base Styles */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #1a5f7a;
+            --primary-dark: #134b61;
+            --primary-light: #2d7d9a;
+            --secondary-color: #57837b;
+            --accent-color: #c38e70;
+            --accent-hover: #a67656;
+            --success-color: #2e7d32;
+            --success-light: #e8f5e9;
+            --error-color: #c62828;
+            --error-light: #ffebee;
+            --warning-color: #f57c00;
+            --warning-light: #fff3e0;
+            --info-color: #1565c0;
+            --info-light: #e3f2fd;
+            --background-color: #fafafa;
+            --surface-color: #ffffff;
+            --text-primary: #212121;
+            --text-secondary: #555555;
+            --text-muted: #757575;
+            --border-color: #e0e0e0;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 20px rgba(0,0,0,0.15);
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --font-mono: 'Consolas', 'Monaco', 'Courier New', monospace;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-main);
+            font-size: 16px;
+            line-height: 1.7;
+            color: var(--text-primary);
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Skip Link for Accessibility */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: var(--primary-color);
+            color: #ffffff;
+            padding: 8px 16px;
+            z-index: 1000;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .skip-link:focus {
+            top: 0;
+        }
+
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: #ffffff;
+            padding: 2rem 1rem;
+            text-align: center;
+            position: relative;
+        }
+
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-color), var(--secondary-color), var(--accent-color));
+        }
+
+        .course-tag {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 0.25rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.5px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin: 0.5rem 0;
+            font-weight: 700;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .module-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            margin-top: 0.5rem;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            background: var(--surface-color);
+            padding: 1rem 1.5rem;
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-label {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+
+        .progress-percentage {
+            font-weight: 700;
+            color: var(--primary-color);
+            font-size: 1rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: var(--border-color);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
+            border-radius: 5px;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+
+        /* Main Content */
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        /* Section Styles */
+        section {
+            background: var(--surface-color);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: 1.6rem;
+            margin: 0 0 1.5rem 0;
+            padding-bottom: 0.75rem;
+            border-bottom: 3px solid var(--accent-color);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        h2 .icon {
+            font-size: 1.4rem;
+        }
+
+        h3 {
+            color: var(--primary-dark);
+            font-size: 1.25rem;
+            margin: 1.75rem 0 1rem 0;
+        }
+
+        h4 {
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            margin: 1.5rem 0 0.75rem 0;
+        }
+
+        p {
+            margin: 0 0 1rem 0;
+            color: var(--text-secondary);
+        }
+
+        /* Learning Objectives Box */
+        .objectives-box {
+            background: linear-gradient(135deg, var(--info-light) 0%, #f5f9ff 100%);
+            border: 1px solid #90caf9;
+            border-left: 5px solid var(--info-color);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .objectives-box h3 {
+            color: var(--info-color);
+            margin: 0 0 1rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .objectives-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .objectives-list li {
+            padding: 0.5rem 0 0.5rem 2rem;
+            position: relative;
+            color: var(--text-primary);
+        }
+
+        .objectives-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--success-color);
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        /* Definition Box */
+        .definition-box {
+            background: linear-gradient(135deg, #f3e5f5 0%, #faf5fc 100%);
+            border: 1px solid #ce93d8;
+            border-left: 5px solid #8e24aa;
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .definition-box h4 {
+            color: #8e24aa;
+            margin: 0 0 0.75rem 0;
+            font-size: 1.1rem;
+        }
+
+        .definition-box p {
+            margin: 0;
+            color: var(--text-primary);
+        }
+
+        /* Key Concept Box */
+        .concept-box {
+            background: linear-gradient(135deg, #e8f5e9 0%, #f5faf5 100%);
+            border: 1px solid #a5d6a7;
+            border-left: 5px solid var(--success-color);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .concept-box h4 {
+            color: var(--success-color);
+            margin: 0 0 0.75rem 0;
+        }
+
+        /* Warning Box */
+        .warning-box {
+            background: linear-gradient(135deg, var(--warning-light) 0%, #fffaf5 100%);
+            border: 1px solid #ffcc80;
+            border-left: 5px solid var(--warning-color);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .warning-box h4 {
+            color: #e65100;
+            margin: 0 0 0.75rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Example Box */
+        .example-box {
+            background: var(--surface-color);
+            border: 2px solid var(--primary-light);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .example-box h4 {
+            color: var(--primary-color);
+            margin: 0 0 1rem 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px dashed var(--primary-light);
+        }
+
+        /* Proof Structure */
+        .proof-box {
+            background: #fffde7;
+            border: 2px solid #ffd54f;
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .proof-box h4 {
+            color: #f57f17;
+            margin: 0 0 1rem 0;
+        }
+
+        .proof-steps {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            counter-reset: proof-step;
+        }
+
+        .proof-steps li {
+            padding: 0.75rem 0 0.75rem 3rem;
+            position: relative;
+            border-left: 2px solid #ffd54f;
+            margin-left: 1rem;
+        }
+
+        .proof-steps li::before {
+            counter-increment: proof-step;
+            content: counter(proof-step);
+            position: absolute;
+            left: -1rem;
+            top: 0.75rem;
+            width: 2rem;
+            height: 2rem;
+            background: #ffd54f;
+            color: #5d4037;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        /* Code Blocks */
+        pre {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 1.25rem;
+            border-radius: var(--radius-md);
+            overflow-x: auto;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin: 1rem 0;
+            white-space: pre;
+            word-wrap: normal;
+        }
+
+        code {
+            font-family: var(--font-mono);
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: inherit;
+        }
+
+        :not(pre) > code {
+            background: #f5f5f5;
+            padding: 0.2rem 0.4rem;
+            border-radius: var(--radius-sm);
+            color: #c7254e;
+            font-size: 0.9em;
+        }
+
+        .code-keyword { color: #569cd6; }
+        .code-string { color: #ce9178; }
+        .code-comment { color: #6a9955; }
+        .code-number { color: #b5cea8; }
+        .code-function { color: #dcdcaa; }
+        .code-type { color: #4ec9b0; }
+
+        /* Interactive Elements */
+        .interactive-section {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f5faff 100%);
+            border: 2px solid #64b5f6;
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .interactive-section h3 {
+            color: var(--info-color);
+            margin: 0 0 1rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Buttons */
+        button {
+            font-family: var(--font-main);
+            font-size: 1rem;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: #ffffff;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary:focus {
+            outline: 3px solid var(--primary-light);
+            outline-offset: 2px;
+        }
+
+        .btn-secondary {
+            background: var(--secondary-color);
+            color: #ffffff;
+        }
+
+        .btn-secondary:hover {
+            background: #456b64;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary:focus {
+            outline: 3px solid var(--secondary-color);
+            outline-offset: 2px;
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: #ffffff;
+        }
+
+        .btn-success:hover {
+            background: #1b5e20;
+        }
+
+        .btn-success:focus {
+            outline: 3px solid var(--success-color);
+            outline-offset: 2px;
+        }
+
+        .btn-reset {
+            background: #757575;
+            color: #ffffff;
+        }
+
+        .btn-reset:hover {
+            background: #616161;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        input[type="text"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-family: var(--font-main);
+            font-size: 1rem;
+            transition: border-color 0.2s ease;
+        }
+
+        input[type="text"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(26, 95, 122, 0.1);
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        /* Radio and Checkbox Styles */
+        .option-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .option-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .option-item:hover {
+            background: #f0f4f8;
+            border-color: var(--primary-light);
+        }
+
+        .option-item input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            margin-top: 2px;
+            cursor: pointer;
+        }
+
+        .option-item label {
+            margin: 0;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .option-item.correct {
+            background: var(--success-light);
+            border-color: var(--success-color);
+        }
+
+        .option-item.incorrect {
+            background: var(--error-light);
+            border-color: var(--error-color);
+        }
+
+        /* Feedback Messages */
+        .feedback {
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .feedback.show {
+            display: block;
+        }
+
+        .feedback.success {
+            background: var(--success-light);
+            border: 1px solid var(--success-color);
+            color: #1b5e20;
+        }
+
+        .feedback.error {
+            background: var(--error-light);
+            border: 1px solid var(--error-color);
+            color: #b71c1c;
+        }
+
+        .feedback.info {
+            background: var(--info-light);
+            border: 1px solid var(--info-color);
+            color: #0d47a1;
+        }
+
+        /* Collapsible Sections */
+        .collapsible {
+            background: var(--surface-color);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .collapsible-header {
+            padding: 1rem 1.25rem;
+            background: #f8f9fa;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            color: var(--text-primary);
+            transition: background 0.2s ease;
+        }
+
+        .collapsible-header:hover {
+            background: #f0f4f8;
+        }
+
+        .collapsible-header:focus {
+            outline: 3px solid var(--primary-color);
+            outline-offset: -3px;
+        }
+
+        .collapsible-icon {
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
+        }
+
+        .collapsible.open .collapsible-icon {
+            transform: rotate(180deg);
+        }
+
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .collapsible.open .collapsible-content {
+            max-height: 2000px;
+        }
+
+        .collapsible-body {
+            padding: 1.25rem;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border: 1px solid var(--border-color);
+        }
+
+        th {
+            background: var(--primary-color);
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        tr:hover {
+            background: #f0f4f8;
+        }
+
+        /* Math Display */
+        .math-display {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            text-align: center;
+            font-size: 1.1rem;
+            margin: 1rem 0;
+            border: 1px solid var(--border-color);
+            overflow-x: auto;
+        }
+
+        .math-inline {
+            font-style: italic;
+            white-space: nowrap;
+        }
+
+        /* Symbol Reference */
+        .symbol-table {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 0.75rem;
+            margin: 1rem 0;
+        }
+
+        .symbol-item {
+            background: #f8f9fa;
+            padding: 0.75rem;
+            border-radius: var(--radius-sm);
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .symbol-char {
+            font-size: 1.5rem;
+            display: block;
+            color: var(--primary-color);
+            margin-bottom: 0.25rem;
+        }
+
+        .symbol-name {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* Quiz Container */
+        .quiz-container {
+            background: var(--surface-color);
+            border: 2px solid var(--primary-light);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .quiz-question {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            font-size: 1.05rem;
+        }
+
+        .quiz-score {
+            text-align: center;
+            padding: 1rem;
+            background: var(--info-light);
+            border-radius: var(--radius-md);
+            margin-top: 1rem;
+        }
+
+        .quiz-score .score-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        /* Drag and Drop */
+        .drag-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .drag-item {
+            background: var(--primary-color);
+            color: #ffffff;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-md);
+            cursor: grab;
+            user-select: none;
+            transition: all 0.2s ease;
+        }
+
+        .drag-item:active {
+            cursor: grabbing;
+            transform: scale(1.05);
+        }
+
+        .drag-item.dragging {
+            opacity: 0.5;
+        }
+
+        .drop-zone {
+            min-height: 60px;
+            border: 2px dashed var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .drop-zone.drag-over {
+            border-color: var(--primary-color);
+            background: rgba(26, 95, 122, 0.05);
+        }
+
+        .drop-zone-label {
+            color: var(--text-muted);
+            font-style: italic;
+            width: 100%;
+        }
+
+        .drop-zone .drag-item {
+            cursor: pointer;
+        }
+
+        /* Step-by-Step Reveal */
+        .step-reveal {
+            margin: 1.5rem 0;
+        }
+
+        .step-item {
+            background: #f8f9fa;
+            border-left: 4px solid var(--border-color);
+            padding: 1rem 1.25rem;
+            margin: 0.5rem 0;
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+            opacity: 0.5;
+            transition: all 0.3s ease;
+        }
+
+        .step-item.revealed {
+            opacity: 1;
+            border-left-color: var(--primary-color);
+            background: #ffffff;
+        }
+
+        .step-number {
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-right: 0.5rem;
+        }
+
+        /* Completion Checkboxes */
+        .completion-tracker {
+            background: #f8f9fa;
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .completion-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .completion-item:last-child {
+            border-bottom: none;
+        }
+
+        .completion-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .completion-item label {
+            margin: 0;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .completion-item.completed label {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--primary-dark);
+            color: #ffffff;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        footer p {
+            color: rgba(255,255,255,0.9);
+            margin: 0.5rem 0;
+        }
+
+        footer a {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Navigation */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 2px solid var(--border-color);
+        }
+
+        .nav-buttons a {
+            text-decoration: none;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.6rem;
+            }
+
+            h2 {
+                font-size: 1.4rem;
+            }
+
+            section {
+                padding: 1.25rem;
+            }
+
+            main {
+                padding: 1rem;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .btn-group button {
+                width: 100%;
+            }
+
+            .nav-buttons {
+                flex-direction: column;
+            }
+
+            .symbol-table {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            .progress-container,
+            .interactive-section,
+            .btn-group,
+            .nav-buttons,
+            .skip-link {
+                display: none;
+            }
+
+            section {
+                break-inside: avoid;
+                box-shadow: none;
+                border: 1px solid #ccc;
+            }
+        }
+
+        /* Focus Visible for Keyboard Navigation */
+        *:focus-visible {
+            outline: 3px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        /* High Contrast Mode Support */
+        @media (prefers-contrast: high) {
+            :root {
+                --border-color: #000000;
+            }
+
+            .option-item,
+            .collapsible-header {
+                border-width: 2px;
+            }
+        }
+
+        /* Reduced Motion */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+
+            html {
+                scroll-behavior: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <header>
+        <div class="course-tag">CSC 240 - Discrete Structures</div>
+        <h1>Module 6.1: Proof by Contradiction</h1>
+        <p class="module-subtitle">Foundations - Logic and Structure of Contradiction Proofs</p>
+    </header>
+
+    <div class="progress-container" role="region" aria-label="Module progress">
+        <div class="progress-header">
+            <span class="progress-label">Module Progress</span>
+            <span class="progress-percentage" id="progress-text">0%</span>
+        </div>
+        <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+            <div class="progress-fill" id="progress-fill"></div>
+        </div>
+    </div>
+
+    <main id="main-content">
+        <!-- Section 1: Introduction and Objectives -->
+        <section id="section-intro">
+            <h2><span class="icon">📚</span> Introduction</h2>
+
+            <p>Welcome to Module 6.1! In Week 5, you learned about direct proofs and proof by contrapositive. This week, we introduce two powerful new proof techniques: <strong>proof by contradiction</strong> and <strong>mathematical induction</strong>. This module focuses on the foundations of proof by contradiction.</p>
+
+            <p>Proof by contradiction is one of the most elegant and powerful tools in a mathematician's arsenal. Rather than directly proving a statement is true, we assume it's false and show that this assumption leads to an impossibility—a contradiction. When we reach this logical dead end, we know our assumption must have been wrong, confirming the original statement is true.</p>
+
+            <div class="objectives-box">
+                <h3><span>🎯</span> Learning Objectives</h3>
+                <ul class="objectives-list">
+                    <li>Understand the logical foundation of proof by contradiction</li>
+                    <li>Identify when proof by contradiction is the appropriate technique</li>
+                    <li>Recognize the structure and components of a contradiction proof</li>
+                    <li>Distinguish between contradiction and contrapositive proofs</li>
+                    <li>Apply the proof by contradiction technique to basic examples</li>
+                </ul>
+            </div>
+
+            <div class="completion-tracker">
+                <strong>Section Checklist:</strong>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-intro" onchange="updateProgress()">
+                    <label for="check-intro">I have read and understood the introduction</label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: The Logical Foundation -->
+        <section id="section-logic">
+            <h2><span class="icon">🔬</span> The Logical Foundation</h2>
+
+            <h3>Why Does Proof by Contradiction Work?</h3>
+
+            <p>The validity of proof by contradiction rests on a fundamental principle of classical logic: the <strong>Law of Excluded Middle</strong>. This law states that for any proposition P, either P is true or ¬P (not P) is true—there is no middle ground.</p>
+
+            <div class="definition-box">
+                <h4>📖 Law of Excluded Middle</h4>
+                <p>For any proposition P: <strong>P ∨ ¬P</strong> is always true (a tautology).</p>
+                <p>A statement is either true or false; there is no third option.</p>
+            </div>
+
+            <p>Combined with another principle—the <strong>Law of Non-Contradiction</strong>—we have the logical basis for our proof technique:</p>
+
+            <div class="definition-box">
+                <h4>📖 Law of Non-Contradiction</h4>
+                <p>For any proposition P: <strong>¬(P ∧ ¬P)</strong> is always true.</p>
+                <p>A statement cannot be both true and false simultaneously.</p>
+            </div>
+
+            <h3>The Core Argument</h3>
+
+            <p>Here's how these laws combine to make proof by contradiction valid:</p>
+
+            <div class="math-display">
+                If assuming ¬P leads to a contradiction (Q ∧ ¬Q), then ¬P must be false, so P must be true.
+            </div>
+
+            <p>In symbolic logic, we're using this valid argument form:</p>
+
+            <div class="math-display">
+                (¬P → (Q ∧ ¬Q)) → P
+            </div>
+
+            <p>This reads: "If not-P implies a contradiction, then P is true."</p>
+
+            <div class="concept-box">
+                <h4>💡 Key Insight</h4>
+                <p>A contradiction is an impossible statement—something that is always false. Since valid logical reasoning cannot lead from a true premise to a false conclusion, if our assumption leads to a contradiction, the assumption itself must be false.</p>
+            </div>
+
+            <!-- Interactive: Truth Table Verification -->
+            <div class="interactive-section">
+                <h3><span>🔄</span> Interactive: Verify the Logic</h3>
+                <p>Let's verify that the logical foundation is sound. Consider the argument form: (¬P → F) → P, where F represents a contradiction (always false).</p>
+
+                <div class="quiz-container">
+                    <p class="quiz-question">Complete the truth table to verify this is a tautology:</p>
+
+                    <table id="truth-table-exercise">
+                        <thead>
+                            <tr>
+                                <th>P</th>
+                                <th>¬P</th>
+                                <th>F (contradiction)</th>
+                                <th>¬P → F</th>
+                                <th>(¬P → F) → P</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>T</td>
+                                <td>F</td>
+                                <td>F</td>
+                                <td>
+                                    <select id="tt-row1-col4" aria-label="Select value for row 1, column 4">
+                                        <option value="">?</option>
+                                        <option value="T">T</option>
+                                        <option value="F">F</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <select id="tt-row1-col5" aria-label="Select value for row 1, column 5">
+                                        <option value="">?</option>
+                                        <option value="T">T</option>
+                                        <option value="F">F</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>F</td>
+                                <td>T</td>
+                                <td>F</td>
+                                <td>
+                                    <select id="tt-row2-col4" aria-label="Select value for row 2, column 4">
+                                        <option value="">?</option>
+                                        <option value="T">T</option>
+                                        <option value="F">F</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <select id="tt-row2-col5" aria-label="Select value for row 2, column 5">
+                                        <option value="">?</option>
+                                        <option value="T">T</option>
+                                        <option value="F">F</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="btn-group">
+                        <button class="btn-primary" onclick="checkTruthTable()">Check Answers</button>
+                        <button class="btn-reset" onclick="resetTruthTable()">Reset</button>
+                    </div>
+
+                    <div id="truth-table-feedback" class="feedback"></div>
+                </div>
+            </div>
+
+            <div class="completion-tracker">
+                <strong>Section Checklist:</strong>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-logic-1" onchange="updateProgress()">
+                    <label for="check-logic-1">I understand the Law of Excluded Middle</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-logic-2" onchange="updateProgress()">
+                    <label for="check-logic-2">I understand the Law of Non-Contradiction</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-logic-3" onchange="updateProgress()">
+                    <label for="check-logic-3">I completed the truth table exercise</label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Structure of a Contradiction Proof -->
+        <section id="section-structure">
+            <h2><span class="icon">🏗️</span> Structure of a Contradiction Proof</h2>
+
+            <p>Every proof by contradiction follows a specific template. Understanding this structure is crucial for both writing and reading these proofs.</p>
+
+            <div class="proof-box">
+                <h4>📋 Standard Structure Template</h4>
+                <ol class="proof-steps">
+                    <li><strong>State what you want to prove:</strong> "We will prove that P is true."</li>
+                    <li><strong>Assume the negation:</strong> "Suppose, for the sake of contradiction, that ¬P."</li>
+                    <li><strong>Derive logical consequences:</strong> Use the assumption along with known facts, definitions, and previously proven theorems.</li>
+                    <li><strong>Arrive at a contradiction:</strong> Show that the consequences lead to something impossible (Q ∧ ¬Q).</li>
+                    <li><strong>Conclude:</strong> "This is a contradiction. Therefore, our assumption ¬P must be false, so P is true. ∎"</li>
+                </ol>
+            </div>
+
+            <h3>Identifying the Contradiction</h3>
+
+            <p>The "contradiction" in step 4 can take several forms:</p>
+
+            <div class="concept-box">
+                <h4>Common Types of Contradictions</h4>
+                <ul>
+                    <li><strong>Direct logical contradiction:</strong> Deriving both Q and ¬Q for some statement Q</li>
+                    <li><strong>Contradicting a known fact:</strong> Deriving something false (like 1 = 0 or 2 is odd)</li>
+                    <li><strong>Contradicting a premise:</strong> Deriving something that contradicts a given condition</li>
+                    <li><strong>Contradicting the assumption:</strong> Deriving P from the assumption ¬P</li>
+                </ul>
+            </div>
+
+            <h3>Key Phrases to Recognize</h3>
+
+            <p>When reading proofs, these phrases signal a proof by contradiction:</p>
+
+            <div class="example-box">
+                <h4>Signal Phrases</h4>
+                <ul>
+                    <li>"Suppose, for the sake of contradiction, that..."</li>
+                    <li>"Assume, to the contrary, that..."</li>
+                    <li>"We proceed by contradiction. Suppose..."</li>
+                    <li>"Assume not. Then..."</li>
+                    <li>"By way of contradiction, assume..."</li>
+                </ul>
+            </div>
+
+            <!-- Interactive: Identify Proof Parts -->
+            <div class="interactive-section">
+                <h3><span>🔄</span> Interactive: Identify Proof Components</h3>
+                <p>Read the following proof and identify which part corresponds to each step of the contradiction proof structure.</p>
+
+                <div class="example-box">
+                    <h4>Sample Proof: There is no largest integer</h4>
+                    <p><strong>[A]</strong> We will prove that there is no largest integer.</p>
+                    <p><strong>[B]</strong> Suppose, for the sake of contradiction, that there exists a largest integer. Call it N.</p>
+                    <p><strong>[C]</strong> Since N is an integer, N + 1 is also an integer (integers are closed under addition).</p>
+                    <p><strong>[D]</strong> But N + 1 > N, which means N is not the largest integer.</p>
+                    <p><strong>[E]</strong> This contradicts our assumption that N is the largest integer. Therefore, there is no largest integer. ∎</p>
+                </div>
+
+                <div class="quiz-container">
+                    <p class="quiz-question">Match each label [A]-[E] to the correct proof step:</p>
+
+                    <div class="form-group">
+                        <label for="match-1">Step 1 (State what to prove):</label>
+                        <select id="match-1" aria-label="Match for step 1">
+                            <option value="">Select...</option>
+                            <option value="A">[A]</option>
+                            <option value="B">[B]</option>
+                            <option value="C">[C]</option>
+                            <option value="D">[D]</option>
+                            <option value="E">[E]</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="match-2">Step 2 (Assume the negation):</label>
+                        <select id="match-2" aria-label="Match for step 2">
+                            <option value="">Select...</option>
+                            <option value="A">[A]</option>
+                            <option value="B">[B]</option>
+                            <option value="C">[C]</option>
+                            <option value="D">[D]</option>
+                            <option value="E">[E]</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="match-3">Step 3 (Derive consequences):</label>
+                        <select id="match-3" aria-label="Match for step 3">
+                            <option value="">Select...</option>
+                            <option value="A">[A]</option>
+                            <option value="B">[B]</option>
+                            <option value="C">[C]</option>
+                            <option value="D">[D]</option>
+                            <option value="E">[E]</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="match-4">Step 4 (Arrive at contradiction):</label>
+                        <select id="match-4" aria-label="Match for step 4">
+                            <option value="">Select...</option>
+                            <option value="A">[A]</option>
+                            <option value="B">[B]</option>
+                            <option value="C">[C]</option>
+                            <option value="D">[D]</option>
+                            <option value="E">[E]</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="match-5">Step 5 (Conclude):</label>
+                        <select id="match-5" aria-label="Match for step 5">
+                            <option value="">Select...</option>
+                            <option value="A">[A]</option>
+                            <option value="B">[B]</option>
+                            <option value="C">[C]</option>
+                            <option value="D">[D]</option>
+                            <option value="E">[E]</option>
+                        </select>
+                    </div>
+
+                    <div class="btn-group">
+                        <button class="btn-primary" onclick="checkMatching()">Check Answers</button>
+                        <button class="btn-reset" onclick="resetMatching()">Reset</button>
+                    </div>
+
+                    <div id="matching-feedback" class="feedback"></div>
+                </div>
+            </div>
+
+            <div class="completion-tracker">
+                <strong>Section Checklist:</strong>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-struct-1" onchange="updateProgress()">
+                    <label for="check-struct-1">I understand the 5-step structure</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-struct-2" onchange="updateProgress()">
+                    <label for="check-struct-2">I can identify different types of contradictions</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-struct-3" onchange="updateProgress()">
+                    <label for="check-struct-3">I completed the matching exercise</label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: When to Use Contradiction -->
+        <section id="section-when">
+            <h2><span class="icon">🎯</span> When to Use Proof by Contradiction</h2>
+
+            <p>While proof by contradiction is powerful, it's not always the best choice. Understanding when to apply this technique is as important as knowing how to use it.</p>
+
+            <h3>Ideal Scenarios for Contradiction</h3>
+
+            <div class="concept-box">
+                <h4>✅ Use Contradiction When:</h4>
+                <ul>
+                    <li><strong>Proving impossibility or non-existence:</strong> "There is no X such that..." or "It is impossible for..."</li>
+                    <li><strong>The negation gives you something concrete to work with:</strong> Negating "there is no largest integer" gives you "there exists a largest integer N"</li>
+                    <li><strong>Direct proof seems difficult:</strong> When you can't see a clear path forward</li>
+                    <li><strong>Proving uniqueness:</strong> "There is exactly one X" (assume two exist)</li>
+                    <li><strong>Dealing with irrational numbers:</strong> Classic application area</li>
+                </ul>
+            </div>
+
+            <div class="warning-box">
+                <h4>⚠️ Consider Other Methods When:</h4>
+                <ul>
+                    <li><strong>A direct proof is straightforward:</strong> Don't overcomplicate things</li>
+                    <li><strong>The statement is an implication (P → Q):</strong> Contrapositive might be cleaner</li>
+                    <li><strong>You need to construct something:</strong> Contradiction proves existence but doesn't build</li>
+                </ul>
+            </div>
+
+            <h3>Contradiction vs. Contrapositive</h3>
+
+            <p>Students often confuse these two techniques. Here's a clear comparison:</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Aspect</th>
+                        <th>Contrapositive</th>
+                        <th>Contradiction</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Statement type</strong></td>
+                        <td>Implications (P → Q)</td>
+                        <td>Any statement</td>
+                    </tr>
+                    <tr>
+                        <td><strong>What you assume</strong></td>
+                        <td>¬Q (negation of conclusion)</td>
+                        <td>¬(whole statement)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>What you prove</strong></td>
+                        <td>¬P (negation of hypothesis)</td>
+                        <td>A contradiction</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Logical basis</strong></td>
+                        <td>(P → Q) ≡ (¬Q → ¬P)</td>
+                        <td>(¬P → F) → P</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="example-box">
+                <h4>Example Comparison</h4>
+                <p><strong>Statement:</strong> If n² is even, then n is even.</p>
+
+                <p><strong>Contrapositive approach:</strong></p>
+                <ul>
+                    <li>Assume n is odd</li>
+                    <li>Prove n² is odd</li>
+                </ul>
+
+                <p><strong>Contradiction approach:</strong></p>
+                <ul>
+                    <li>Assume n² is even AND n is odd</li>
+                    <li>Derive a contradiction</li>
+                </ul>
+
+                <p>For this statement, contrapositive is cleaner because we just need to show odd × odd = odd.</p>
+            </div>
+
+            <!-- Interactive: Choose the Right Technique -->
+            <div class="interactive-section">
+                <h3><span>🔄</span> Interactive: Choose the Best Proof Technique</h3>
+                <p>For each statement, decide whether contradiction, contrapositive, or direct proof would be most appropriate.</p>
+
+                <div class="quiz-container" id="technique-quiz">
+                    <div class="quiz-item" data-question="1">
+                        <p class="quiz-question">1. "There is no smallest positive rational number."</p>
+                        <div class="option-group">
+                            <div class="option-item">
+                                <input type="radio" name="tech-q1" id="tech-q1-a" value="direct">
+                                <label for="tech-q1-a">Direct Proof</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="radio" name="tech-q1" id="tech-q1-b" value="contrapositive">
+                                <label for="tech-q1-b">Contrapositive</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="radio" name="tech-q1" id="tech-q1-c" value="contradiction">
+                                <label for="tech-q1-c">Contradiction</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="quiz-item" data-question="2">
+                        <p class="quiz-question">2. "If n is odd, then n² is odd."</p>
+                        <div class="option-group">
+                            <div class="option-item">
+                                <input type="radio" name="tech-q2" id="tech-q2-a" value="direct">
+                                <label for="tech-q2-a">Direct Proof</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="radio" name="tech-q2" id="tech-q2-b" value="contrapositive">
+                                <label for="tech-q2-b">Contrapositive</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="radio" name="tech-q2" id="tech-q2-c" value="contradiction">
+                                <label for="tech-q2-c">Contradiction</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="quiz-item" data-question="3">
+                        <p class="quiz-question">3. "√2 is irrational."</p>
+                        <div class="option-group">
+                            <div class="option-item">
+                                <input type="radio" name="tech-q3" id="tech-q3-a" value="direct">
+                                <label for="tech-q3-a">Direct Proof</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="radio" name="tech-q3" id="tech-q3-b" value="contrapositive">
+                                <label for="tech-q3-b">Contrapositive</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="radio" name="tech-q3" id="tech-q3-c" value="contradiction">
+                                <label for="tech-q3-c">Contradiction</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="quiz-item" data-question="4">
+                        <p class="quiz-question">4. "If 3n + 2 is odd, then n is odd."</p>
+                        <div class="option-group">
+                            <div class="option-item">
+                                <input type="radio" name="tech-q4" id="tech-q4-a" value="direct">
+                                <label for="tech-q4-a">Direct Proof</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="radio" name="tech-q4" id="tech-q4-b" value="contrapositive">
+                                <label for="tech-q4-b">Contrapositive</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="radio" name="tech-q4" id="tech-q4-c" value="contradiction">
+                                <label for="tech-q4-c">Contradiction</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button class="btn-primary" onclick="checkTechniqueQuiz()">Check Answers</button>
+                        <button class="btn-reset" onclick="resetTechniqueQuiz()">Reset</button>
+                    </div>
+
+                    <div id="technique-feedback" class="feedback"></div>
+                </div>
+            </div>
+
+            <div class="completion-tracker">
+                <strong>Section Checklist:</strong>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-when-1" onchange="updateProgress()">
+                    <label for="check-when-1">I know when contradiction is the best choice</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-when-2" onchange="updateProgress()">
+                    <label for="check-when-2">I can distinguish contradiction from contrapositive</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-when-3" onchange="updateProgress()">
+                    <label for="check-when-3">I completed the technique selection quiz</label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5: First Example - No Largest Integer -->
+        <section id="section-example1">
+            <h2><span class="icon">📝</span> Worked Example: No Largest Integer</h2>
+
+            <p>Let's work through our first complete proof by contradiction in detail, examining each step carefully.</p>
+
+            <div class="definition-box">
+                <h4>📖 Theorem</h4>
+                <p>There is no largest integer.</p>
+            </div>
+
+            <h3>Step-by-Step Analysis</h3>
+
+            <div class="step-reveal" id="example1-steps">
+                <div class="step-item revealed">
+                    <span class="step-number">Step 1:</span>
+                    <strong>Understand the statement.</strong>
+                    <p>We need to prove that no integer can be the largest. In other words, for every integer, there exists a larger one.</p>
+                </div>
+
+                <div class="step-item">
+                    <span class="step-number">Step 2:</span>
+                    <strong>Form the negation.</strong>
+                    <p>The negation of "there is no largest integer" is "there exists a largest integer."</p>
+                    <p>This gives us something concrete: we can name this supposed largest integer and call it N.</p>
+                </div>
+
+                <div class="step-item">
+                    <span class="step-number">Step 3:</span>
+                    <strong>Set up the assumption.</strong>
+                    <p><em>Suppose, for the sake of contradiction, that there exists a largest integer N.</em></p>
+                    <p>This means: for all integers m, we have m ≤ N.</p>
+                </div>
+
+                <div class="step-item">
+                    <span class="step-number">Step 4:</span>
+                    <strong>Derive consequences.</strong>
+                    <p>Consider the number N + 1.</p>
+                    <ul>
+                        <li>Since N is an integer, N + 1 is also an integer (closure property)</li>
+                        <li>By basic arithmetic, N + 1 > N</li>
+                    </ul>
+                </div>
+
+                <div class="step-item">
+                    <span class="step-number">Step 5:</span>
+                    <strong>Identify the contradiction.</strong>
+                    <p>We have:</p>
+                    <ul>
+                        <li>N is the largest integer (our assumption)</li>
+                        <li>N + 1 is an integer larger than N (what we derived)</li>
+                    </ul>
+                    <p>These cannot both be true. This is a contradiction!</p>
+                </div>
+
+                <div class="step-item">
+                    <span class="step-number">Step 6:</span>
+                    <strong>State the conclusion.</strong>
+                    <p>Since our assumption led to a contradiction, the assumption must be false. Therefore, there is no largest integer. ∎</p>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn-primary" onclick="revealNextStep('example1-steps')">Reveal Next Step</button>
+                <button class="btn-secondary" onclick="revealAllSteps('example1-steps')">Show All Steps</button>
+                <button class="btn-reset" onclick="resetSteps('example1-steps')">Reset</button>
+            </div>
+
+            <h3>The Complete Proof (Written Form)</h3>
+
+            <div class="proof-box">
+                <h4>Proof</h4>
+                <p>Suppose, for the sake of contradiction, that there exists a largest integer N. Then for all integers m, we have m ≤ N.</p>
+                <p>Consider N + 1. Since the integers are closed under addition, N + 1 is an integer. Moreover, N + 1 > N.</p>
+                <p>This contradicts our assumption that N is the largest integer.</p>
+                <p>Therefore, there is no largest integer. ∎</p>
+            </div>
+
+            <div class="concept-box">
+                <h4>💡 Why This Works</h4>
+                <p>The key insight is that assuming a largest integer exists gives us a specific object (N) to work with. We can then use properties of integers to construct something that violates what N is supposed to be.</p>
+            </div>
+
+            <div class="completion-tracker">
+                <strong>Section Checklist:</strong>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-ex1-1" onchange="updateProgress()">
+                    <label for="check-ex1-1">I followed the step-by-step analysis</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-ex1-2" onchange="updateProgress()">
+                    <label for="check-ex1-2">I understand why the contradiction arises</label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 6: Second Example - Sum of Rational and Irrational -->
+        <section id="section-example2">
+            <h2><span class="icon">📝</span> Worked Example: Rational + Irrational = Irrational</h2>
+
+            <p>This example shows how contradiction proofs work with number properties.</p>
+
+            <div class="definition-box">
+                <h4>📖 Theorem</h4>
+                <p>The sum of a rational number and an irrational number is irrational.</p>
+            </div>
+
+            <h3>Background: Rational Numbers</h3>
+
+            <p>Before we begin, let's recall the definition:</p>
+
+            <div class="definition-box">
+                <h4>📖 Definition: Rational Number</h4>
+                <p>A number r is <strong>rational</strong> if it can be written as r = a/b where a and b are integers and b ≠ 0.</p>
+                <p>A number is <strong>irrational</strong> if it is not rational—it cannot be expressed as a ratio of integers.</p>
+            </div>
+
+            <div class="concept-box">
+                <h4>Key Property of Rationals</h4>
+                <p>Rational numbers are closed under addition and subtraction: if r and s are rational, then r + s and r − s are also rational.</p>
+            </div>
+
+            <h3>The Proof</h3>
+
+            <div class="proof-box">
+                <h4>Proof</h4>
+                <p>Let r be a rational number and let x be an irrational number. We will prove that r + x is irrational.</p>
+
+                <p><strong>Suppose, for the sake of contradiction, that r + x is rational.</strong></p>
+
+                <p>Then r + x = a/b for some integers a, b with b ≠ 0.</p>
+
+                <p>Since r is rational, we can write r = c/d for some integers c, d with d ≠ 0.</p>
+
+                <p>Now, solving for x:</p>
+                <div class="math-display">
+                    x = (r + x) − r = a/b − c/d = (ad − bc)/(bd)
+                </div>
+
+                <p>Since a, b, c, d are integers with b ≠ 0 and d ≠ 0:</p>
+                <ul>
+                    <li>ad − bc is an integer</li>
+                    <li>bd is an integer and bd ≠ 0</li>
+                </ul>
+
+                <p>Therefore, x is the ratio of two integers with nonzero denominator, which means x is rational.</p>
+
+                <p><strong>But this contradicts our premise that x is irrational!</strong></p>
+
+                <p>Therefore, our assumption must be false, and r + x is irrational. ∎</p>
+            </div>
+
+            <h3>Analyzing the Proof Structure</h3>
+
+            <div class="collapsible">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)" tabindex="0" role="button" aria-expanded="false">
+                    <span>What did we assume?</span>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <p>We assumed the negation of what we wanted to prove. We wanted to prove "r + x is irrational," so we assumed "r + x is rational."</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="collapsible">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)" tabindex="0" role="button" aria-expanded="false">
+                    <span>What was the contradiction?</span>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <p>We derived that x is rational, but x was given to be irrational. This is a direct contradiction of a premise.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="collapsible">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)" tabindex="0" role="button" aria-expanded="false">
+                    <span>What was the key insight?</span>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <p>The key insight was using the closure property: if r + x were rational, then (r + x) − r would also be rational. But (r + x) − r = x, so x would be rational—contradiction!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interactive: Fill in the Blank Proof -->
+            <div class="interactive-section">
+                <h3><span>🔄</span> Interactive: Complete the Proof</h3>
+                <p>Fill in the blanks to complete a similar proof.</p>
+
+                <div class="quiz-container">
+                    <p class="quiz-question">Prove: The product of a nonzero rational number and an irrational number is irrational.</p>
+
+                    <div class="proof-box">
+                        <p>Let r be a nonzero rational number and let x be an irrational number.</p>
+
+                        <p>Suppose, for the sake of contradiction, that rx is
+                            <select id="blank-1" aria-label="Fill in blank 1">
+                                <option value="">[ select ]</option>
+                                <option value="rational">rational</option>
+                                <option value="irrational">irrational</option>
+                                <option value="zero">zero</option>
+                            </select>.
+                        </p>
+
+                        <p>Since r is a nonzero rational, we can write r = a/b where a, b are integers with
+                            <select id="blank-2" aria-label="Fill in blank 2">
+                                <option value="">[ select ]</option>
+                                <option value="a=0">a = 0</option>
+                                <option value="both-nonzero">a ≠ 0 and b ≠ 0</option>
+                                <option value="b=0">b = 0</option>
+                            </select>.
+                        </p>
+
+                        <p>If rx is rational, then rx = c/d for some integers c, d with d ≠ 0.</p>
+
+                        <p>Solving for x: x = (rx)/r = (c/d)/(a/b) = (c/d) × (b/a) =
+                            <select id="blank-3" aria-label="Fill in blank 3">
+                                <option value="">[ select ]</option>
+                                <option value="cb/da">cb/(da)</option>
+                                <option value="cd/ab">cd/(ab)</option>
+                                <option value="ca/db">ca/(db)</option>
+                            </select>
+                        </p>
+
+                        <p>Since cb and da are integers with da ≠ 0, this means x is
+                            <select id="blank-4" aria-label="Fill in blank 4">
+                                <option value="">[ select ]</option>
+                                <option value="rational">rational</option>
+                                <option value="irrational">irrational</option>
+                                <option value="undefined">undefined</option>
+                            </select>.
+                        </p>
+
+                        <p>This contradicts the fact that x is
+                            <select id="blank-5" aria-label="Fill in blank 5">
+                                <option value="">[ select ]</option>
+                                <option value="rational">rational</option>
+                                <option value="irrational">irrational</option>
+                                <option value="positive">positive</option>
+                            </select>.
+                        </p>
+
+                        <p>Therefore, rx is irrational. ∎</p>
+                    </div>
+
+                    <div class="btn-group">
+                        <button class="btn-primary" onclick="checkBlanks()">Check Answers</button>
+                        <button class="btn-reset" onclick="resetBlanks()">Reset</button>
+                    </div>
+
+                    <div id="blanks-feedback" class="feedback"></div>
+                </div>
+            </div>
+
+            <div class="completion-tracker">
+                <strong>Section Checklist:</strong>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-ex2-1" onchange="updateProgress()">
+                    <label for="check-ex2-1">I understand the rational/irrational proof</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-ex2-2" onchange="updateProgress()">
+                    <label for="check-ex2-2">I completed the fill-in-the-blank exercise</label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 7: Connection to Computer Science -->
+        <section id="section-cs">
+            <h2><span class="icon">💻</span> Connection to Computer Science</h2>
+
+            <p>Proof by contradiction isn't just theoretical—it has direct applications in computer science, particularly in proving algorithm impossibility and establishing lower bounds.</p>
+
+            <h3>Application 1: Proving Algorithm Limitations</h3>
+
+            <p>Contradiction proofs are essential for showing that certain problems <em>cannot</em> be solved efficiently or at all.</p>
+
+            <div class="example-box">
+                <h4>Example: Halting Problem (Preview)</h4>
+                <p>One of the most famous results in computer science—that no program can determine whether an arbitrary program will halt—is proved by contradiction. The proof assumes such a program exists and derives a logical paradox.</p>
+            </div>
+
+            <h3>Application 2: Loop Invariant Verification</h3>
+
+            <p>When proving program correctness, we sometimes use contradiction to show that certain states are impossible.</p>
+
+            <div class="example-box">
+                <h4>Example: Array Bounds</h4>
+                <p>To prove an array access is always valid, we might assume (for contradiction) that an out-of-bounds access occurs, then show this contradicts our loop invariant.</p>
+            </div>
+
+            <h3>Java Code Example: Defensive Programming</h3>
+
+            <p>Consider this method that relies on a contradiction-based argument:</p>
+
+            <pre><code><span class="code-comment">/**
+ * Returns the index of the minimum element in a non-empty array.
+ * 
+ * We can prove this method is correct: if no minimum existed,
+ * that would contradict the well-ordering of integers.
+ */</span>
+<span class="code-keyword">public static int</span> <span class="code-function">findMinIndex</span>(<span class="code-type">int</span>[] arr) {
+    <span class="code-comment">// Precondition: array must be non-empty</span>
+    <span class="code-keyword">if</span> (arr == <span class="code-keyword">null</span> || arr.length == <span class="code-number">0</span>) {
+        <span class="code-keyword">throw new</span> <span class="code-type">IllegalArgumentException</span>(<span class="code-string">"Array must be non-empty"</span>);
+    }
+    
+    <span class="code-type">int</span> minIndex = <span class="code-number">0</span>;
+    
+    <span class="code-comment">// Loop invariant: arr[minIndex] ≤ arr[i] for all i &lt; current index</span>
+    <span class="code-keyword">for</span> (<span class="code-type">int</span> i = <span class="code-number">1</span>; i &lt; arr.length; i++) {
+        <span class="code-keyword">if</span> (arr[i] &lt; arr[minIndex]) {
+            minIndex = i;
+        }
+    }
+    
+    <span class="code-comment">// Postcondition: arr[minIndex] is the minimum</span>
+    <span class="code-comment">// Proof sketch (by contradiction):</span>
+    <span class="code-comment">// Suppose arr[minIndex] is NOT the minimum.</span>
+    <span class="code-comment">// Then there exists j where arr[j] &lt; arr[minIndex].</span>
+    <span class="code-comment">// But our loop checked all indices, so this is impossible.</span>
+    <span class="code-comment">// Contradiction! Therefore arr[minIndex] IS the minimum.</span>
+    
+    <span class="code-keyword">return</span> minIndex;
+}</code></pre>
+
+            <h3>Application 3: Proving Uniqueness</h3>
+
+            <p>Contradiction is perfect for proving something is unique:</p>
+
+            <pre><code><span class="code-comment">/**
+ * Binary search returns the unique index where key would be inserted
+ * to maintain sorted order (if key is not found).
+ * 
+ * Uniqueness proof (by contradiction):
+ * Suppose there are two valid insertion points i and j where i &lt; j.
+ * Then arr[i-1] &lt; key &lt; arr[i] and arr[j-1] &lt; key &lt; arr[j].
+ * But arr[i] ≤ arr[j-1] (array is sorted), so key &lt; arr[i] ≤ arr[j-1] &lt; key.
+ * This means key &lt; key, a contradiction!
+ */</span>
+<span class="code-keyword">public static int</span> <span class="code-function">binarySearchInsertionPoint</span>(<span class="code-type">int</span>[] arr, <span class="code-type">int</span> key) {
+    <span class="code-type">int</span> low = <span class="code-number">0</span>;
+    <span class="code-type">int</span> high = arr.length;
+    
+    <span class="code-keyword">while</span> (low &lt; high) {
+        <span class="code-type">int</span> mid = low + (high - low) / <span class="code-number">2</span>;
+        <span class="code-keyword">if</span> (arr[mid] &lt; key) {
+            low = mid + <span class="code-number">1</span>;
+        } <span class="code-keyword">else</span> {
+            high = mid;
+        }
+    }
+    
+    <span class="code-keyword">return</span> low;
+}</code></pre>
+
+            <div class="concept-box">
+                <h4>💡 Key Takeaway</h4>
+                <p>In computer science, contradiction proofs help us:</p>
+                <ul>
+                    <li>Prove that algorithms are correct for all inputs</li>
+                    <li>Show that certain problems have no solution</li>
+                    <li>Establish that solutions are unique</li>
+                    <li>Verify that error states are unreachable</li>
+                </ul>
+            </div>
+
+            <div class="completion-tracker">
+                <strong>Section Checklist:</strong>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-cs-1" onchange="updateProgress()">
+                    <label for="check-cs-1">I understand how contradiction applies to CS</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-cs-2" onchange="updateProgress()">
+                    <label for="check-cs-2">I reviewed the code examples</label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 8: Practice Problems -->
+        <section id="section-practice">
+            <h2><span class="icon">✏️</span> Practice Problems</h2>
+
+            <p>Test your understanding with these practice problems. Try to solve them on your own before revealing the solutions.</p>
+
+            <h3>Problem 1: No Smallest Positive Rational</h3>
+
+            <div class="collapsible">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)" tabindex="0" role="button" aria-expanded="false">
+                    <span>Problem Statement</span>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <p><strong>Prove:</strong> There is no smallest positive rational number.</p>
+                        <p><em>Hint:</em> This is similar to the "no largest integer" proof. What can you do to any positive rational to get a smaller one?</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="collapsible">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)" tabindex="0" role="button" aria-expanded="false">
+                    <span>Solution</span>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <div class="proof-box">
+                            <h4>Proof</h4>
+                            <p>Suppose, for the sake of contradiction, that there exists a smallest positive rational number r.</p>
+                            <p>Consider r/2. Since r is rational, r = a/b for integers a, b with b ≠ 0 and a > 0 (since r is positive).</p>
+                            <p>Then r/2 = a/(2b), which is also rational (ratio of integers with nonzero denominator).</p>
+                            <p>Since r > 0, we have r/2 > 0, so r/2 is a positive rational.</p>
+                            <p>But r/2 < r, which contradicts our assumption that r is the smallest positive rational.</p>
+                            <p>Therefore, there is no smallest positive rational number. ∎</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Problem 2: Odd Sum Implies Odd Addend</h3>
+
+            <div class="collapsible">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)" tabindex="0" role="button" aria-expanded="false">
+                    <span>Problem Statement</span>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <p><strong>Prove:</strong> If the sum of two integers is odd, then at least one of them is odd.</p>
+                        <p><em>Hint:</em> What happens if you assume both are even?</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="collapsible">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)" tabindex="0" role="button" aria-expanded="false">
+                    <span>Solution</span>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <div class="proof-box">
+                            <h4>Proof</h4>
+                            <p>Let a and b be integers such that a + b is odd.</p>
+                            <p>Suppose, for the sake of contradiction, that neither a nor b is odd—that is, both a and b are even.</p>
+                            <p>Then a = 2m and b = 2n for some integers m and n.</p>
+                            <p>Therefore, a + b = 2m + 2n = 2(m + n).</p>
+                            <p>Since m + n is an integer, a + b is even.</p>
+                            <p>But this contradicts our premise that a + b is odd.</p>
+                            <p>Therefore, at least one of a or b must be odd. ∎</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Problem 3: Unique Zero</h3>
+
+            <div class="collapsible">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)" tabindex="0" role="button" aria-expanded="false">
+                    <span>Problem Statement</span>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <p><strong>Prove:</strong> There is exactly one real number x such that x + x = x.</p>
+                        <p><em>Hint:</em> First find what x must be, then prove it's unique by contradiction.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="collapsible">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)" tabindex="0" role="button" aria-expanded="false">
+                    <span>Solution</span>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <div class="proof-box">
+                            <h4>Proof</h4>
+                            <p><strong>Existence:</strong> x = 0 satisfies x + x = x since 0 + 0 = 0. ✓</p>
+
+                            <p><strong>Uniqueness (by contradiction):</strong></p>
+                            <p>Suppose there exist two distinct real numbers a and b such that a + a = a and b + b = b.</p>
+                            <p>From a + a = a, we get 2a = a, so a = 0.</p>
+                            <p>From b + b = b, we get 2b = b, so b = 0.</p>
+                            <p>But then a = b = 0, contradicting our assumption that a and b are distinct.</p>
+                            <p>Therefore, x = 0 is the unique solution. ∎</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="completion-tracker">
+                <strong>Section Checklist:</strong>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-prac-1" onchange="updateProgress()">
+                    <label for="check-prac-1">I attempted Problem 1</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-prac-2" onchange="updateProgress()">
+                    <label for="check-prac-2">I attempted Problem 2</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-prac-3" onchange="updateProgress()">
+                    <label for="check-prac-3">I attempted Problem 3</label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 9: Knowledge Check Quiz -->
+        <section id="section-quiz">
+            <h2><span class="icon">📋</span> Knowledge Check</h2>
+
+            <p>Complete this quiz to test your understanding of proof by contradiction foundations.</p>
+
+            <div class="quiz-container" id="final-quiz">
+                <div class="quiz-item" data-question="1">
+                    <p class="quiz-question">1. What is the first step in a proof by contradiction?</p>
+                    <div class="option-group" id="fq1-options">
+                        <div class="option-item">
+                            <input type="radio" name="fq1" id="fq1-a" value="a">
+                            <label for="fq1-a">Derive a contradiction immediately</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq1" id="fq1-b" value="b">
+                            <label for="fq1-b">Assume the negation of what you want to prove</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq1" id="fq1-c" value="c">
+                            <label for="fq1-c">State the contrapositive</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq1" id="fq1-d" value="d">
+                            <label for="fq1-d">Find a counterexample</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quiz-item" data-question="2">
+                    <p class="quiz-question">2. Which logical law states that a proposition cannot be both true and false?</p>
+                    <div class="option-group" id="fq2-options">
+                        <div class="option-item">
+                            <input type="radio" name="fq2" id="fq2-a" value="a">
+                            <label for="fq2-a">Law of Excluded Middle</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq2" id="fq2-b" value="b">
+                            <label for="fq2-b">Law of Non-Contradiction</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq2" id="fq2-c" value="c">
+                            <label for="fq2-c">De Morgan's Law</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq2" id="fq2-d" value="d">
+                            <label for="fq2-d">Modus Ponens</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quiz-item" data-question="3">
+                    <p class="quiz-question">3. When proving "There is no largest prime" by contradiction, what would you assume?</p>
+                    <div class="option-group" id="fq3-options">
+                        <div class="option-item">
+                            <input type="radio" name="fq3" id="fq3-a" value="a">
+                            <label for="fq3-a">There are infinitely many primes</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq3" id="fq3-b" value="b">
+                            <label for="fq3-b">There exists a largest prime</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq3" id="fq3-c" value="c">
+                            <label for="fq3-c">All primes are odd</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq3" id="fq3-d" value="d">
+                            <label for="fq3-d">Some composite number is prime</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quiz-item" data-question="4">
+                    <p class="quiz-question">4. What distinguishes proof by contradiction from proof by contrapositive?</p>
+                    <div class="option-group" id="fq4-options">
+                        <div class="option-item">
+                            <input type="radio" name="fq4" id="fq4-a" value="a">
+                            <label for="fq4-a">Contradiction works only for implications; contrapositive works for any statement</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq4" id="fq4-b" value="b">
+                            <label for="fq4-b">Contrapositive proves ¬Q → ¬P; contradiction derives an impossibility from ¬P</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq4" id="fq4-c" value="c">
+                            <label for="fq4-c">They are the same technique with different names</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq4" id="fq4-d" value="d">
+                            <label for="fq4-d">Contradiction uses examples; contrapositive uses counterexamples</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quiz-item" data-question="5">
+                    <p class="quiz-question">5. In the proof that "rational + irrational = irrational," what type of contradiction arose?</p>
+                    <div class="option-group" id="fq5-options">
+                        <div class="option-item">
+                            <input type="radio" name="fq5" id="fq5-a" value="a">
+                            <label for="fq5-a">We derived that 1 = 0</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq5" id="fq5-b" value="b">
+                            <label for="fq5-b">We derived that the irrational number was actually rational</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq5" id="fq5-c" value="c">
+                            <label for="fq5-c">We derived that the sum was both positive and negative</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq5" id="fq5-d" value="d">
+                            <label for="fq5-d">We derived that the rational number was irrational</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn-primary" onclick="checkFinalQuiz()">Submit Quiz</button>
+                    <button class="btn-reset" onclick="resetFinalQuiz()">Reset Quiz</button>
+                </div>
+
+                <div id="final-quiz-feedback" class="feedback"></div>
+
+                <div class="quiz-score" id="quiz-score" style="display: none;">
+                    <p>Your Score:</p>
+                    <div class="score-value" id="score-value">0/5</div>
+                    <p id="score-message"></p>
+                </div>
+            </div>
+
+            <div class="completion-tracker">
+                <strong>Section Checklist:</strong>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-quiz-1" onchange="updateProgress()">
+                    <label for="check-quiz-1">I completed the knowledge check quiz</label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 10: Summary and Next Steps -->
+        <section id="section-summary">
+            <h2><span class="icon">🎓</span> Summary and Next Steps</h2>
+
+            <h3>Key Takeaways</h3>
+
+            <div class="concept-box">
+                <h4>What You Learned in Module 6.1</h4>
+                <ul>
+                    <li><strong>Logical Foundation:</strong> Proof by contradiction relies on the Laws of Excluded Middle and Non-Contradiction</li>
+                    <li><strong>Core Technique:</strong> Assume ¬P, derive a contradiction, conclude P is true</li>
+                    <li><strong>Structure:</strong> Every contradiction proof follows a 5-step template</li>
+                    <li><strong>When to Use:</strong> Best for impossibility, non-existence, and uniqueness proofs</li>
+                    <li><strong>vs. Contrapositive:</strong> Contrapositive is for implications (proves ¬Q → ¬P); contradiction works for any statement</li>
+                </ul>
+            </div>
+
+            <h3>Symbol Reference</h3>
+
+            <div class="symbol-table">
+                <div class="symbol-item">
+                    <span class="symbol-char">¬</span>
+                    <span class="symbol-name">Negation (NOT)</span>
+                </div>
+                <div class="symbol-item">
+                    <span class="symbol-char">∧</span>
+                    <span class="symbol-name">Conjunction (AND)</span>
+                </div>
+                <div class="symbol-item">
+                    <span class="symbol-char">∨</span>
+                    <span class="symbol-name">Disjunction (OR)</span>
+                </div>
+                <div class="symbol-item">
+                    <span class="symbol-char">→</span>
+                    <span class="symbol-name">Implication</span>
+                </div>
+                <div class="symbol-item">
+                    <span class="symbol-char">↔</span>
+                    <span class="symbol-name">Biconditional</span>
+                </div>
+                <div class="symbol-item">
+                    <span class="symbol-char">∎</span>
+                    <span class="symbol-name">End of Proof (QED)</span>
+                </div>
+            </div>
+
+            <h3>Preparing for Module 6.2</h3>
+
+            <p>In the next module, you'll see proof by contradiction applied to classic mathematical results:</p>
+            <ul>
+                <li>The irrationality of √2</li>
+                <li>The infinitude of primes (Euclid's proof)</li>
+                <li>More applications to number theory</li>
+            </ul>
+
+            <div class="warning-box">
+                <h4>⚠️ Before Moving On</h4>
+                <p>Make sure you can:</p>
+                <ul>
+                    <li>Explain why proof by contradiction is logically valid</li>
+                    <li>Identify the five steps in a contradiction proof</li>
+                    <li>Recognize when contradiction is the appropriate technique</li>
+                    <li>Write a basic contradiction proof (like "no largest integer")</li>
+                </ul>
+            </div>
+
+            <div class="completion-tracker">
+                <strong>Final Checklist:</strong>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-final-1" onchange="updateProgress()">
+                    <label for="check-final-1">I reviewed the key takeaways</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-final-2" onchange="updateProgress()">
+                    <label for="check-final-2">I am ready for Module 6.2</label>
+                </div>
+            </div>
+
+            <div class="nav-buttons">
+                <span></span>
+                <a href="#" onclick="alert('Module 6.2 coming soon!'); return false;">
+                    <button class="btn-primary">Next: Module 6.2 - Classic Examples →</button>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p><strong>CSC 240 - Discrete Structures</strong></p>
+        <p>Module 6.1: Proof by Contradiction - Foundations</p>
+        <p>Mendocino College | Spring 2026</p>
+        <p>Questions? Contact your instructor through Canvas or during office hours.</p>
+    </footer>
+
+    <script>
+        // ==================== Progress Tracking ====================
+        function updateProgress() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            const checked = document.querySelectorAll('input[type="checkbox"]:checked');
+            const percentage = Math.round((checked.length / checkboxes.length) * 100);
+
+            document.getElementById('progress-fill').style.width = percentage + '%';
+            document.getElementById('progress-text').textContent = percentage + '%';
+
+            const progressBar = document.querySelector('.progress-bar');
+            progressBar.setAttribute('aria-valuenow', percentage);
+
+            // Save to session storage
+            const checkboxStates = {};
+            checkboxes.forEach(cb => {
+                checkboxStates[cb.id] = cb.checked;
+            });
+            sessionStorage.setItem('module61Progress', JSON.stringify(checkboxStates));
+        }
+
+        function loadProgress() {
+            const saved = sessionStorage.getItem('module61Progress');
+            if (saved) {
+                const checkboxStates = JSON.parse(saved);
+                Object.keys(checkboxStates).forEach(id => {
+                    const checkbox = document.getElementById(id);
+                    if (checkbox) {
+                        checkbox.checked = checkboxStates[id];
+                        // Update completion item styling
+                        const parent = checkbox.closest('.completion-item');
+                        if (parent) {
+                            parent.classList.toggle('completed', checkboxStates[id]);
+                        }
+                    }
+                });
+                updateProgress();
+            }
+        }
+
+        // ==================== Truth Table Exercise ====================
+        function checkTruthTable() {
+            const answers = {
+                'tt-row1-col4': 'T',
+                'tt-row1-col5': 'T',
+                'tt-row2-col4': 'F',
+                'tt-row2-col5': 'T'
+            };
+
+            let correct = 0;
+            let total = 4;
+
+            Object.keys(answers).forEach(id => {
+                const select = document.getElementById(id);
+                if (select.value === answers[id]) {
+                    correct++;
+                    select.style.backgroundColor = '#e8f5e9';
+                    select.style.borderColor = '#4caf50';
+                } else if (select.value !== '') {
+                    select.style.backgroundColor = '#ffebee';
+                    select.style.borderColor = '#f44336';
+                }
+            });
+
+            const feedback = document.getElementById('truth-table-feedback');
+            if (correct === total) {
+                feedback.className = 'feedback success show';
+                feedback.innerHTML = '<strong>Excellent!</strong> All answers correct! Notice that the final column is all T\'s, confirming this is a tautology. The logic of proof by contradiction is sound.';
+            } else {
+                feedback.className = 'feedback error show';
+                feedback.innerHTML = `<strong>Not quite.</strong> You got ${correct}/${total} correct. Remember: P → Q is false only when P is true and Q is false. Try again!`;
+            }
+        }
+
+        function resetTruthTable() {
+            ['tt-row1-col4', 'tt-row1-col5', 'tt-row2-col4', 'tt-row2-col5'].forEach(id => {
+                const select = document.getElementById(id);
+                select.value = '';
+                select.style.backgroundColor = '';
+                select.style.borderColor = '';
+            });
+            document.getElementById('truth-table-feedback').className = 'feedback';
+        }
+
+        // ==================== Matching Exercise ====================
+        function checkMatching() {
+            const answers = {
+                'match-1': 'A',
+                'match-2': 'B',
+                'match-3': 'C',
+                'match-4': 'D',
+                'match-5': 'E'
+            };
+
+            let correct = 0;
+            let total = 5;
+
+            Object.keys(answers).forEach(id => {
+                const select = document.getElementById(id);
+                if (select.value === answers[id]) {
+                    correct++;
+                    select.style.backgroundColor = '#e8f5e9';
+                    select.style.borderColor = '#4caf50';
+                } else if (select.value !== '') {
+                    select.style.backgroundColor = '#ffebee';
+                    select.style.borderColor = '#f44336';
+                }
+            });
+
+            const feedback = document.getElementById('matching-feedback');
+            if (correct === total) {
+                feedback.className = 'feedback success show';
+                feedback.innerHTML = '<strong>Perfect!</strong> You correctly identified all five components of the contradiction proof structure.';
+            } else {
+                feedback.className = 'feedback error show';
+                feedback.innerHTML = `<strong>Keep trying!</strong> You matched ${correct}/${total} correctly. Review the proof structure template above.`;
+            }
+        }
+
+        function resetMatching() {
+            ['match-1', 'match-2', 'match-3', 'match-4', 'match-5'].forEach(id => {
+                const select = document.getElementById(id);
+                select.value = '';
+                select.style.backgroundColor = '';
+                select.style.borderColor = '';
+            });
+            document.getElementById('matching-feedback').className = 'feedback';
+        }
+
+        // ==================== Technique Selection Quiz ====================
+        function checkTechniqueQuiz() {
+            const answers = {
+                'tech-q1': 'contradiction',
+                'tech-q2': 'direct',
+                'tech-q3': 'contradiction',
+                'tech-q4': 'contrapositive'
+            };
+
+            const explanations = {
+                'tech-q1': 'Contradiction is ideal for "no X exists" statements. Assuming a smallest exists lets us construct a smaller one.',
+                'tech-q2': 'Direct proof works well: if n = 2k+1, then n² = 4k² + 4k + 1 = 2(2k² + 2k) + 1, which is odd.',
+                'tech-q3': 'This is the classic contradiction proof! Assuming √2 is rational leads to a contradiction about lowest terms.',
+                'tech-q4': 'Contrapositive: If n is even, then 3n + 2 is even. This is straightforward to prove directly.'
+            };
+
+            let correct = 0;
+            let total = 4;
+            let feedbackHTML = '';
+
+            for (let i = 1; i <= 4; i++) {
+                const selected = document.querySelector(`input[name="tech-q${i}"]:checked`);
+                const options = document.querySelectorAll(`input[name="tech-q${i}"]`);
+
+                options.forEach(opt => {
+                    const parent = opt.closest('.option-item');
+                    parent.classList.remove('correct', 'incorrect');
+
+                    if (opt.value === answers[`tech-q${i}`]) {
+                        parent.classList.add('correct');
+                    } else if (selected && opt === selected && opt.value !== answers[`tech-q${i}`]) {
+                        parent.classList.add('incorrect');
+                    }
+                });
+
+                if (selected && selected.value === answers[`tech-q${i}`]) {
+                    correct++;
+                }
+
+                feedbackHTML += `<p><strong>Q${i}:</strong> ${explanations[`tech-q${i}`]}</p>`;
+            }
+
+            const feedback = document.getElementById('technique-feedback');
+            if (correct === total) {
+                feedback.className = 'feedback success show';
+                feedback.innerHTML = `<strong>Excellent!</strong> You correctly identified the best technique for all ${total} statements!<br><br>${feedbackHTML}`;
+            } else {
+                feedback.className = 'feedback info show';
+                feedback.innerHTML = `<strong>Score: ${correct}/${total}</strong><br><br>${feedbackHTML}`;
+            }
+        }
+
+        function resetTechniqueQuiz() {
+            for (let i = 1; i <= 4; i++) {
+                const options = document.querySelectorAll(`input[name="tech-q${i}"]`);
+                options.forEach(opt => {
+                    opt.checked = false;
+                    opt.closest('.option-item').classList.remove('correct', 'incorrect');
+                });
+            }
+            document.getElementById('technique-feedback').className = 'feedback';
+        }
+
+        // ==================== Fill in the Blanks ====================
+        function checkBlanks() {
+            const answers = {
+                'blank-1': 'rational',
+                'blank-2': 'both-nonzero',
+                'blank-3': 'cb/da',
+                'blank-4': 'rational',
+                'blank-5': 'irrational'
+            };
+
+            let correct = 0;
+            let total = 5;
+
+            Object.keys(answers).forEach(id => {
+                const select = document.getElementById(id);
+                if (select.value === answers[id]) {
+                    correct++;
+                    select.style.backgroundColor = '#e8f5e9';
+                    select.style.borderColor = '#4caf50';
+                } else if (select.value !== '') {
+                    select.style.backgroundColor = '#ffebee';
+                    select.style.borderColor = '#f44336';
+                }
+            });
+
+            const feedback = document.getElementById('blanks-feedback');
+            if (correct === total) {
+                feedback.className = 'feedback success show';
+                feedback.innerHTML = '<strong>Excellent!</strong> You correctly completed the proof! Notice how the structure mirrors the addition proof.';
+            } else {
+                feedback.className = 'feedback error show';
+                feedback.innerHTML = `<strong>Keep trying!</strong> You got ${correct}/${total} correct. Review the rational + irrational proof for guidance.`;
+            }
+        }
+
+        function resetBlanks() {
+            ['blank-1', 'blank-2', 'blank-3', 'blank-4', 'blank-5'].forEach(id => {
+                const select = document.getElementById(id);
+                select.value = '';
+                select.style.backgroundColor = '';
+                select.style.borderColor = '';
+            });
+            document.getElementById('blanks-feedback').className = 'feedback';
+        }
+
+        // ==================== Step Reveal ====================
+        function revealNextStep(containerId) {
+            const container = document.getElementById(containerId);
+            const steps = container.querySelectorAll('.step-item:not(.revealed)');
+            if (steps.length > 0) {
+                steps[0].classList.add('revealed');
+            }
+        }
+
+        function revealAllSteps(containerId) {
+            const container = document.getElementById(containerId);
+            const steps = container.querySelectorAll('.step-item');
+            steps.forEach(step => step.classList.add('revealed'));
+        }
+
+        function resetSteps(containerId) {
+            const container = document.getElementById(containerId);
+            const steps = container.querySelectorAll('.step-item');
+            steps.forEach((step, index) => {
+                if (index === 0) {
+                    step.classList.add('revealed');
+                } else {
+                    step.classList.remove('revealed');
+                }
+            });
+        }
+
+        // ==================== Collapsible Sections ====================
+        function toggleCollapsible(header) {
+            const collapsible = header.closest('.collapsible');
+            collapsible.classList.toggle('open');
+
+            const isOpen = collapsible.classList.contains('open');
+            header.setAttribute('aria-expanded', isOpen);
+        }
+
+        // Keyboard support for collapsibles
+        document.addEventListener('keydown', function(e) {
+            if (e.target.classList.contains('collapsible-header')) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    toggleCollapsible(e.target);
+                }
+            }
+        });
+
+        // ==================== Final Quiz ====================
+        function checkFinalQuiz() {
+            const answers = {
+                'fq1': 'b',
+                'fq2': 'b',
+                'fq3': 'b',
+                'fq4': 'b',
+                'fq5': 'b'
+            };
+
+            let correct = 0;
+            let total = 5;
+
+            for (let i = 1; i <= 5; i++) {
+                const selected = document.querySelector(`input[name="fq${i}"]:checked`);
+                const options = document.querySelectorAll(`input[name="fq${i}"]`);
+
+                options.forEach(opt => {
+                    const parent = opt.closest('.option-item');
+                    parent.classList.remove('correct', 'incorrect');
+
+                    if (opt.value === answers[`fq${i}`]) {
+                        parent.classList.add('correct');
+                    } else if (selected && opt === selected && opt.value !== answers[`fq${i}`]) {
+                        parent.classList.add('incorrect');
+                    }
+                });
+
+                if (selected && selected.value === answers[`fq${i}`]) {
+                    correct++;
+                }
+            }
+
+            const scoreDiv = document.getElementById('quiz-score');
+            const scoreValue = document.getElementById('score-value');
+            const scoreMessage = document.getElementById('score-message');
+
+            scoreDiv.style.display = 'block';
+            scoreValue.textContent = `${correct}/${total}`;
+
+            if (correct === total) {
+                scoreMessage.textContent = 'Perfect score! You have mastered the foundations of proof by contradiction.';
+                scoreDiv.style.backgroundColor = '#e8f5e9';
+            } else if (correct >= 3) {
+                scoreMessage.textContent = 'Good job! Review the sections for any questions you missed.';
+                scoreDiv.style.backgroundColor = '#fff3e0';
+            } else {
+                scoreMessage.textContent = 'Consider reviewing the module before proceeding to Module 6.2.';
+                scoreDiv.style.backgroundColor = '#ffebee';
+            }
+
+            const feedback = document.getElementById('final-quiz-feedback');
+            feedback.className = 'feedback info show';
+            feedback.innerHTML = `<strong>Quiz submitted!</strong> Scroll down to see your score and review the correct answers highlighted in green.`;
+        }
+
+        function resetFinalQuiz() {
+            for (let i = 1; i <= 5; i++) {
+                const options = document.querySelectorAll(`input[name="fq${i}"]`);
+                options.forEach(opt => {
+                    opt.checked = false;
+                    opt.closest('.option-item').classList.remove('correct', 'incorrect');
+                });
+            }
+            document.getElementById('final-quiz-feedback').className = 'feedback';
+            document.getElementById('quiz-score').style.display = 'none';
+        }
+
+        // ==================== Completion Item Styling ====================
+        document.querySelectorAll('.completion-item input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                this.closest('.completion-item').classList.toggle('completed', this.checked);
+            });
+        });
+
+        // ==================== Initialize ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProgress();
+
+            // Initialize first step as revealed
+            document.querySelectorAll('.step-reveal').forEach(container => {
+                const firstStep = container.querySelector('.step-item');
+                if (firstStep) {
+                    firstStep.classList.add('revealed');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
