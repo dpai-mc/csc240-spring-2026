@@ -1,0 +1,2899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 6.2: Proof by Contradiction - Classic Examples | CSC 240</title>
+    <style>
+        /* CSS Reset and Base Styles */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #1a5f7a;
+            --primary-dark: #134b61;
+            --primary-light: #2d7d9a;
+            --secondary-color: #57837b;
+            --accent-color: #c38e70;
+            --accent-hover: #a67656;
+            --success-color: #2e7d32;
+            --success-light: #e8f5e9;
+            --error-color: #c62828;
+            --error-light: #ffebee;
+            --warning-color: #f57c00;
+            --warning-light: #fff3e0;
+            --info-color: #1565c0;
+            --info-light: #e3f2fd;
+            --background-color: #fafafa;
+            --surface-color: #ffffff;
+            --text-primary: #212121;
+            --text-secondary: #555555;
+            --text-muted: #757575;
+            --border-color: #e0e0e0;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 20px rgba(0,0,0,0.15);
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --font-mono: 'Consolas', 'Monaco', 'Courier New', monospace;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-main);
+            font-size: 16px;
+            line-height: 1.7;
+            color: var(--text-primary);
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Skip Link for Accessibility */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: var(--primary-color);
+            color: #ffffff;
+            padding: 8px 16px;
+            z-index: 1000;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .skip-link:focus {
+            top: 0;
+        }
+
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: #ffffff;
+            padding: 2rem 1rem;
+            text-align: center;
+            position: relative;
+        }
+
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-color), var(--secondary-color), var(--accent-color));
+        }
+
+        .course-tag {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 0.25rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.5px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin: 0.5rem 0;
+            font-weight: 700;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .module-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            margin-top: 0.5rem;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            background: var(--surface-color);
+            padding: 1rem 1.5rem;
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-label {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+
+        .progress-percentage {
+            font-weight: 700;
+            color: var(--primary-color);
+            font-size: 1rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: var(--border-color);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
+            border-radius: 5px;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+
+        /* Main Content */
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        /* Section Styles */
+        section {
+            background: var(--surface-color);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: 1.6rem;
+            margin: 0 0 1.5rem 0;
+            padding-bottom: 0.75rem;
+            border-bottom: 3px solid var(--accent-color);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        h2 .icon {
+            font-size: 1.4rem;
+        }
+
+        h3 {
+            color: var(--primary-dark);
+            font-size: 1.25rem;
+            margin: 1.75rem 0 1rem 0;
+        }
+
+        h4 {
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            margin: 1.5rem 0 0.75rem 0;
+        }
+
+        p {
+            margin: 0 0 1rem 0;
+            color: var(--text-secondary);
+        }
+
+        /* Learning Objectives Box */
+        .objectives-box {
+            background: linear-gradient(135deg, var(--info-light) 0%, #f5f9ff 100%);
+            border: 1px solid #90caf9;
+            border-left: 5px solid var(--info-color);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .objectives-box h3 {
+            color: var(--info-color);
+            margin: 0 0 1rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .objectives-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .objectives-list li {
+            padding: 0.5rem 0 0.5rem 2rem;
+            position: relative;
+            color: var(--text-primary);
+        }
+
+        .objectives-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--success-color);
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        /* Definition Box */
+        .definition-box {
+            background: linear-gradient(135deg, #f3e5f5 0%, #faf5fc 100%);
+            border: 1px solid #ce93d8;
+            border-left: 5px solid #8e24aa;
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .definition-box h4 {
+            color: #8e24aa;
+            margin: 0 0 0.75rem 0;
+            font-size: 1.1rem;
+        }
+
+        .definition-box p {
+            margin: 0;
+            color: var(--text-primary);
+        }
+
+        /* Theorem Box */
+        .theorem-box {
+            background: linear-gradient(135deg, #e8eaf6 0%, #f5f6fc 100%);
+            border: 1px solid #9fa8da;
+            border-left: 5px solid #3f51b5;
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .theorem-box h4 {
+            color: #3f51b5;
+            margin: 0 0 0.75rem 0;
+            font-size: 1.1rem;
+        }
+
+        .theorem-box p {
+            margin: 0;
+            color: var(--text-primary);
+        }
+
+        /* Key Concept Box */
+        .concept-box {
+            background: linear-gradient(135deg, #e8f5e9 0%, #f5faf5 100%);
+            border: 1px solid #a5d6a7;
+            border-left: 5px solid var(--success-color);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .concept-box h4 {
+            color: var(--success-color);
+            margin: 0 0 0.75rem 0;
+        }
+
+        /* Warning Box */
+        .warning-box {
+            background: linear-gradient(135deg, var(--warning-light) 0%, #fffaf5 100%);
+            border: 1px solid #ffcc80;
+            border-left: 5px solid var(--warning-color);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .warning-box h4 {
+            color: #e65100;
+            margin: 0 0 0.75rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Example Box */
+        .example-box {
+            background: var(--surface-color);
+            border: 2px solid var(--primary-light);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .example-box h4 {
+            color: var(--primary-color);
+            margin: 0 0 1rem 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px dashed var(--primary-light);
+        }
+
+        /* Proof Structure */
+        .proof-box {
+            background: #fffde7;
+            border: 2px solid #ffd54f;
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .proof-box h4 {
+            color: #f57f17;
+            margin: 0 0 1rem 0;
+        }
+
+        .proof-steps {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            counter-reset: proof-step;
+        }
+
+        .proof-steps li {
+            padding: 0.75rem 0 0.75rem 3rem;
+            position: relative;
+            border-left: 2px solid #ffd54f;
+            margin-left: 1rem;
+        }
+
+        .proof-steps li::before {
+            counter-increment: proof-step;
+            content: counter(proof-step);
+            position: absolute;
+            left: -1rem;
+            top: 0.75rem;
+            width: 2rem;
+            height: 2rem;
+            background: #ffd54f;
+            color: #5d4037;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        /* Historical Box */
+        .history-box {
+            background: linear-gradient(135deg, #efebe9 0%, #faf8f7 100%);
+            border: 1px solid #bcaaa4;
+            border-left: 5px solid #795548;
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .history-box h4 {
+            color: #5d4037;
+            margin: 0 0 0.75rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Code Blocks */
+        pre {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 1.25rem;
+            border-radius: var(--radius-md);
+            overflow-x: auto;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin: 1rem 0;
+            white-space: pre;
+            word-wrap: normal;
+        }
+
+        code {
+            font-family: var(--font-mono);
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: inherit;
+        }
+
+        :not(pre) > code {
+            background: #f5f5f5;
+            padding: 0.2rem 0.4rem;
+            border-radius: var(--radius-sm);
+            color: #c7254e;
+            font-size: 0.9em;
+        }
+
+        .code-keyword { color: #569cd6; }
+        .code-string { color: #ce9178; }
+        .code-comment { color: #6a9955; }
+        .code-number { color: #b5cea8; }
+        .code-function { color: #dcdcaa; }
+        .code-type { color: #4ec9b0; }
+
+        /* Interactive Elements */
+        .interactive-section {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f5faff 100%);
+            border: 2px solid #64b5f6;
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .interactive-section h3 {
+            color: var(--info-color);
+            margin: 0 0 1rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Buttons */
+        button {
+            font-family: var(--font-main);
+            font-size: 1rem;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: #ffffff;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary:focus {
+            outline: 3px solid var(--primary-light);
+            outline-offset: 2px;
+        }
+
+        .btn-secondary {
+            background: var(--secondary-color);
+            color: #ffffff;
+        }
+
+        .btn-secondary:hover {
+            background: #456b64;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary:focus {
+            outline: 3px solid var(--secondary-color);
+            outline-offset: 2px;
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: #ffffff;
+        }
+
+        .btn-success:hover {
+            background: #1b5e20;
+        }
+
+        .btn-success:focus {
+            outline: 3px solid var(--success-color);
+            outline-offset: 2px;
+        }
+
+        .btn-reset {
+            background: #757575;
+            color: #ffffff;
+        }
+
+        .btn-reset:hover {
+            background: #616161;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        input[type="text"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-family: var(--font-main);
+            font-size: 1rem;
+            transition: border-color 0.2s ease;
+        }
+
+        input[type="text"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(26, 95, 122, 0.1);
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        /* Radio and Checkbox Styles */
+        .option-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .option-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .option-item:hover {
+            background: #f0f4f8;
+            border-color: var(--primary-light);
+        }
+
+        .option-item input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            margin-top: 2px;
+            cursor: pointer;
+        }
+
+        .option-item label {
+            margin: 0;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .option-item.correct {
+            background: var(--success-light);
+            border-color: var(--success-color);
+        }
+
+        .option-item.incorrect {
+            background: var(--error-light);
+            border-color: var(--error-color);
+        }
+
+        /* Feedback Messages */
+        .feedback {
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .feedback.show {
+            display: block;
+        }
+
+        .feedback.success {
+            background: var(--success-light);
+            border: 1px solid var(--success-color);
+            color: #1b5e20;
+        }
+
+        .feedback.error {
+            background: var(--error-light);
+            border: 1px solid var(--error-color);
+            color: #b71c1c;
+        }
+
+        .feedback.info {
+            background: var(--info-light);
+            border: 1px solid var(--info-color);
+            color: #0d47a1;
+        }
+
+        /* Collapsible Sections */
+        .collapsible {
+            background: var(--surface-color);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .collapsible-header {
+            padding: 1rem 1.25rem;
+            background: #f8f9fa;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            color: var(--text-primary);
+            transition: background 0.2s ease;
+        }
+
+        .collapsible-header:hover {
+            background: #f0f4f8;
+        }
+
+        .collapsible-header:focus {
+            outline: 3px solid var(--primary-color);
+            outline-offset: -3px;
+        }
+
+        .collapsible-icon {
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
+        }
+
+        .collapsible.open .collapsible-icon {
+            transform: rotate(180deg);
+        }
+
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .collapsible.open .collapsible-content {
+            max-height: 3000px;
+        }
+
+        .collapsible-body {
+            padding: 1.25rem;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border: 1px solid var(--border-color);
+        }
+
+        th {
+            background: var(--primary-color);
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        tr:hover {
+            background: #f0f4f8;
+        }
+
+        /* Math Display */
+        .math-display {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            text-align: center;
+            font-size: 1.1rem;
+            margin: 1rem 0;
+            border: 1px solid var(--border-color);
+            overflow-x: auto;
+        }
+
+        .math-inline {
+            font-style: italic;
+            white-space: nowrap;
+        }
+
+        /* Proof Line-by-Line */
+        .proof-line {
+            display: flex;
+            gap: 1rem;
+            padding: 0.5rem 0;
+            border-bottom: 1px dotted var(--border-color);
+        }
+
+        .proof-line:last-child {
+            border-bottom: none;
+        }
+
+        .proof-line-number {
+            min-width: 2rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .proof-line-content {
+            flex: 1;
+        }
+
+        .proof-line-reason {
+            color: var(--text-muted);
+            font-style: italic;
+            min-width: 150px;
+            text-align: right;
+        }
+
+        /* Quiz Container */
+        .quiz-container {
+            background: var(--surface-color);
+            border: 2px solid var(--primary-light);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .quiz-question {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            font-size: 1.05rem;
+        }
+
+        .quiz-score {
+            text-align: center;
+            padding: 1rem;
+            background: var(--info-light);
+            border-radius: var(--radius-md);
+            margin-top: 1rem;
+        }
+
+        .quiz-score .score-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        /* Step-by-Step Reveal */
+        .step-reveal {
+            margin: 1.5rem 0;
+        }
+
+        .step-item {
+            background: #f8f9fa;
+            border-left: 4px solid var(--border-color);
+            padding: 1rem 1.25rem;
+            margin: 0.5rem 0;
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+            opacity: 0.5;
+            transition: all 0.3s ease;
+        }
+
+        .step-item.revealed {
+            opacity: 1;
+            border-left-color: var(--primary-color);
+            background: #ffffff;
+        }
+
+        .step-number {
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-right: 0.5rem;
+        }
+
+        /* Completion Checkboxes */
+        .completion-tracker {
+            background: #f8f9fa;
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .completion-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .completion-item:last-child {
+            border-bottom: none;
+        }
+
+        .completion-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .completion-item label {
+            margin: 0;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .completion-item.completed label {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+
+        /* Drag and Drop for Proof Ordering */
+        .sortable-container {
+            min-height: 100px;
+            border: 2px dashed var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .sortable-item {
+            background: var(--surface-color);
+            border: 2px solid var(--primary-light);
+            border-radius: var(--radius-md);
+            padding: 0.75rem 1rem;
+            margin: 0.5rem 0;
+            cursor: grab;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: all 0.2s ease;
+        }
+
+        .sortable-item:active {
+            cursor: grabbing;
+        }
+
+        .sortable-item.dragging {
+            opacity: 0.5;
+            background: var(--info-light);
+        }
+
+        .sortable-handle {
+            color: var(--text-muted);
+            font-size: 1.2rem;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--primary-dark);
+            color: #ffffff;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        footer p {
+            color: rgba(255,255,255,0.9);
+            margin: 0.5rem 0;
+        }
+
+        footer a {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Navigation */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 2px solid var(--border-color);
+        }
+
+        .nav-buttons a {
+            text-decoration: none;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.6rem;
+            }
+
+            h2 {
+                font-size: 1.4rem;
+            }
+
+            section {
+                padding: 1.25rem;
+            }
+
+            main {
+                padding: 1rem;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .btn-group button {
+                width: 100%;
+            }
+
+            .nav-buttons {
+                flex-direction: column;
+            }
+
+            .proof-line {
+                flex-direction: column;
+                gap: 0.25rem;
+            }
+
+            .proof-line-reason {
+                text-align: left;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            .progress-container,
+            .interactive-section,
+            .btn-group,
+            .nav-buttons,
+            .skip-link {
+                display: none;
+            }
+
+            section {
+                break-inside: avoid;
+                box-shadow: none;
+                border: 1px solid #ccc;
+            }
+        }
+
+        /* Focus Visible for Keyboard Navigation */
+        *:focus-visible {
+            outline: 3px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        /* High Contrast Mode Support */
+        @media (prefers-contrast: high) {
+            :root {
+                --border-color: #000000;
+            }
+
+            .option-item,
+            .collapsible-header {
+                border-width: 2px;
+            }
+        }
+
+        /* Reduced Motion */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+
+            html {
+                scroll-behavior: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <header>
+        <div class="course-tag">CSC 240 - Discrete Structures</div>
+        <h1>Module 6.2: Proof by Contradiction</h1>
+        <p class="module-subtitle">Classic Examples - Irrationality, Infinitude, and Applications</p>
+    </header>
+
+    <div class="progress-container" role="region" aria-label="Module progress">
+        <div class="progress-header">
+            <span class="progress-label">Module Progress</span>
+            <span class="progress-percentage" id="progress-text">0%</span>
+        </div>
+        <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+            <div class="progress-fill" id="progress-fill"></div>
+        </div>
+    </div>
+
+    <main id="main-content">
+        <!-- Section 1: Introduction and Objectives -->
+        <section id="section-intro">
+            <h2><span class="icon">📚</span> Introduction</h2>
+
+            <p>Welcome to Module 6.2! In Module 6.1, you learned the logical foundations and structure of proof by contradiction. Now we'll apply this powerful technique to some of the most famous proofs in mathematics—proofs that have stood for over two thousand years and remain elegant examples of mathematical reasoning.</p>
+
+            <p>These classic proofs are not just historical curiosities. They demonstrate patterns you'll use throughout your career in computer science: proving that certain algorithms are impossible, establishing lower bounds, and showing that specific problems have no solution.</p>
+
+            <div class="objectives-box">
+                <h3><span>🎯</span> Learning Objectives</h3>
+                <ul class="objectives-list">
+                    <li>Apply proof by contradiction to prove √2 is irrational</li>
+                    <li>Prove the infinitude of primes using Euclid's classic argument</li>
+                    <li>Extend irrationality proofs to other square roots</li>
+                    <li>Construct original contradiction proofs for non-existence claims</li>
+                    <li>Analyze the structure of classic contradiction proofs</li>
+                    <li>Connect these proofs to computer science applications</li>
+                </ul>
+            </div>
+
+            <div class="concept-box">
+                <h4>📋 Prerequisites from Module 6.1</h4>
+                <p>Before proceeding, make sure you understand:</p>
+                <ul>
+                    <li>The 5-step structure of contradiction proofs</li>
+                    <li>Why contradiction proofs are logically valid</li>
+                    <li>When to choose contradiction over other techniques</li>
+                    <li>How to identify the contradiction in a proof</li>
+                </ul>
+            </div>
+
+            <div class="completion-tracker">
+                <strong>Section Checklist:</strong>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-intro" onchange="updateProgress()">
+                    <label for="check-intro">I have read the introduction and reviewed Module 6.1</label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: The Irrationality of √2 -->
+        <section id="section-sqrt2">
+            <h2><span class="icon">🔢</span> Classic Example 1: The Irrationality of √2</h2>
+
+            <p>The proof that √2 is irrational is perhaps the most famous proof by contradiction in all of mathematics. It dates back to ancient Greece and is attributed to the Pythagoreans (around 500 BCE).</p>
+
+            <div class="history-box">
+                <h4><span>📜</span> Historical Note</h4>
+                <p>According to legend, the discovery that √2 is irrational was so disturbing to the Pythagoreans—who believed all numbers could be expressed as ratios of integers—that they allegedly drowned the mathematician Hippasus for revealing this truth. While the story is likely apocryphal, it illustrates how revolutionary this discovery was.</p>
+            </div>
+
+            <h3>Background: Rational Numbers and Lowest Terms</h3>
+
+            <div class="definition-box">
+                <h4>📖 Definition: Rational Number</h4>
+                <p>A real number r is <strong>rational</strong> if it can be expressed as r = a/b where a and b are integers with b ≠ 0.</p>
+            </div>
+
+            <div class="definition-box">
+                <h4>📖 Definition: Lowest Terms</h4>
+                <p>A fraction a/b is in <strong>lowest terms</strong> (or <strong>reduced form</strong>) if gcd(a, b) = 1, meaning a and b share no common factors other than 1.</p>
+            </div>
+
+            <div class="concept-box">
+                <h4>💡 Key Fact</h4>
+                <p>Every rational number can be expressed as a fraction in lowest terms. If a/b is not in lowest terms, we can divide both a and b by their greatest common divisor to reduce it.</p>
+            </div>
+
+            <h3>The Theorem and Its Proof</h3>
+
+            <div class="theorem-box">
+                <h4>📐 Theorem</h4>
+                <p>√2 is irrational.</p>
+            </div>
+
+            <p>Let's work through this proof step by step, with detailed explanations at each stage.</p>
+
+            <div class="step-reveal" id="sqrt2-proof-steps">
+                <div class="step-item revealed">
+                    <span class="step-number">Step 1: Setup</span>
+                    <strong>Assume, for the sake of contradiction, that √2 is rational.</strong>
+                    <p>This means √2 can be written as a fraction of two integers.</p>
+                </div>
+
+                <div class="step-item">
+                    <span class="step-number">Step 2: Express in lowest terms</span>
+                    <strong>Write √2 = a/b where a, b ∈ ℤ, b ≠ 0, and gcd(a, b) = 1.</strong>
+                    <p>We can always reduce a fraction to lowest terms, so this assumption is valid. The condition gcd(a, b) = 1 means a and b share no common factors.</p>
+                </div>
+
+                <div class="step-item">
+                    <span class="step-number">Step 3: Square both sides</span>
+                    <strong>From √2 = a/b, we get 2 = a²/b², so 2b² = a².</strong>
+                    <p>This algebraic manipulation is straightforward: square both sides, then multiply by b².</p>
+                </div>
+
+                <div class="step-item">
+                    <span class="step-number">Step 4: Conclude a² is even</span>
+                    <strong>Since 2b² = a², we have a² = 2b², which means a² is even.</strong>
+                    <p>Any number equal to 2 times something is even by definition.</p>
+                </div>
+
+                <div class="step-item">
+                    <span class="step-number">Step 5: Conclude a is even</span>
+                    <strong>Since a² is even, a must be even.</strong>
+                    <p>This uses the fact that the square of an odd number is odd. (If a were odd, a² would be odd.) Therefore a = 2k for some integer k.</p>
+                </div>
+
+                <div class="step-item">
+                    <span class="step-number">Step 6: Substitute and simplify</span>
+                    <strong>Substituting a = 2k into 2b² = a²:</strong>
+                    <div class="math-display">
+                        2b² = (2k)² = 4k²<br>
+                        b² = 2k²
+                    </div>
+                    <p>Dividing both sides by 2 gives us b² = 2k².</p>
+                </div>
+
+                <div class="step-item">
+                    <span class="step-number">Step 7: Conclude b is even</span>
+                    <strong>Since b² = 2k², we have b² is even, so b must be even.</strong>
+                    <p>The same reasoning as Step 5 applies here.</p>
+                </div>
+
+                <div class="step-item">
+                    <span class="step-number">Step 8: Identify the contradiction</span>
+                    <strong>Both a and b are even, so they share a common factor of 2.</strong>
+                    <p>But we assumed gcd(a, b) = 1, meaning they share NO common factors!</p>
+                    <p><strong>This is a contradiction!</strong></p>
+                </div>
+
+                <div class="step-item">
+                    <span class="step-number">Step 9: Conclusion</span>
+                    <strong>Our assumption that √2 is rational must be false. Therefore, √2 is irrational. ∎</strong>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn-primary" onclick="revealNextStep('sqrt2-proof-steps')">Reveal Next Step</button>
+                <button class="btn-secondary" onclick="revealAllSteps('sqrt2-proof-steps')">Show All Steps</button>
+                <button class="btn-reset" onclick="resetSteps('sqrt2-proof-steps')">Reset</button>
+            </div>
+
+            <h3>The Complete Proof (Written Form)</h3>
+
+            <div class="proof-box">
+                <h4>Proof that √2 is irrational</h4>
+                <p>Suppose, for the sake of contradiction, that √2 is rational. Then √2 = a/b for some integers a and b with b ≠ 0 and gcd(a, b) = 1 (the fraction is in lowest terms).</p>
+                <p>Squaring both sides: 2 = a²/b², so 2b² = a².</p>
+                <p>This means a² is even, so a is even. Write a = 2k for some integer k.</p>
+                <p>Substituting: 2b² = (2k)² = 4k², so b² = 2k².</p>
+                <p>This means b² is even, so b is even.</p>
+                <p>Since both a and b are even, they share a common factor of 2, contradicting gcd(a, b) = 1.</p>
+                <p>Therefore, √2 is irrational. ∎</p>
+            </div>
+
+            <h3>Key Lemma: Even Squares</h3>
+
+            <p>The proof relies on a crucial fact that we should verify:</p>
+
+            <div class="theorem-box">
+                <h4>📐 Lemma</h4>
+                <p>For any integer n: n² is even if and only if n is even.</p>
+            </div>
+
+            <div class="collapsible">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)" tabindex="0" role="button" aria-expanded="false">
+                    <span>Proof of the Lemma</span>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <p><strong>(→) If n is even, then n² is even:</strong></p>
+                        <p>If n is even, then n = 2k for some integer k. Thus n² = (2k)² = 4k² = 2(2k²), which is even.</p>
+
+                        <p><strong>(←) If n² is even, then n is even:</strong></p>
+                        <p>We prove the contrapositive: if n is odd, then n² is odd.</p>
+                        <p>If n is odd, then n = 2k + 1 for some integer k. Thus:</p>
+                        <div class="math-display">
+                            n² = (2k + 1)² = 4k² + 4k + 1 = 2(2k² + 2k) + 1
+                        </div>
+                        <p>This is of the form 2m + 1, so n² is odd. ∎</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interactive: Proof Analysis -->
+            <div class="interactive-section">
+                <h3><span>🔄</span> Interactive: Analyze the Proof</h3>
+                <p>Answer these questions about the √2 irrationality proof.</p>
+
+                <div class="quiz-container">
+                    <div class="quiz-item">
+                        <p class="quiz-question">1. What is the assumption made at the start of the proof?</p>
+                        <div class="option-group" id="sqrt2-q1">
+                            <div class="option-item">
+                                <input type="radio" name="sqrt2q1" id="sqrt2q1-a" value="a">
+                                <label for="sqrt2q1-a">√2 is irrational</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="radio" name="sqrt2q1" id="sqrt2q1-b" value="b">
+                                <label for="sqrt2q1-b">√2 is rational (can be written as a/b in lowest terms)</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="radio" name="sqrt2q1" id="sqrt2q1-c" value="c">
+                                <label for="sqrt2q1-c">√2 = 2</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="quiz-item">
+                        <p class="quiz-question">2. What specific contradiction is derived?</p>
+                        <div class="option-group" id="sqrt2-q2">
+                            <div class="option-item">
+                                <input type="radio" name="sqrt2q2" id="sqrt2q2-a" value="a">
+                                <label for="sqrt2q2-a">a and b are both zero</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="radio" name="sqrt2q2" id="sqrt2q2-b" value="b">
+                                <label for="sqrt2q2-b">gcd(a,b) = 1 AND gcd(a,b) ≥ 2 (a,b share factor 2)</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="radio" name="sqrt2q2" id="sqrt2q2-c" value="c">
+                                <label for="sqrt2q2-c">2 is odd</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="quiz-item">
+                        <p class="quiz-question">3. Why is the "lowest terms" requirement essential?</p>
+                        <div class="option-group" id="sqrt2-q3">
+                            <div class="option-item">
+                                <input type="radio" name="sqrt2q3" id="sqrt2q3-a" value="a">
+                                <label for="sqrt2q3-a">It makes the arithmetic easier</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="radio" name="sqrt2q3" id="sqrt2q3-b" value="b">
+                                <label for="sqrt2q3-b">Without it, we couldn't derive any contradiction</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="radio" name="sqrt2q3" id="sqrt2q3-c" value="c">
+                                <label for="sqrt2q3-c">It ensures √2 is positive</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button class="btn-primary" onclick="checkSqrt2Quiz()">Check Answers</button>
+                        <button class="btn-reset" onclick="resetSqrt2Quiz()">Reset</button>
+                    </div>
+
+                    <div id="sqrt2-quiz-feedback" class="feedback"></div>
+                </div>
+            </div>
+
+            <div class="completion-tracker">
+                <strong>Section Checklist:</strong>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-sqrt2-1" onchange="updateProgress()">
+                    <label for="check-sqrt2-1">I worked through the step-by-step proof</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-sqrt2-2" onchange="updateProgress()">
+                    <label for="check-sqrt2-2">I understand the role of "lowest terms"</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-sqrt2-3" onchange="updateProgress()">
+                    <label for="check-sqrt2-3">I completed the proof analysis quiz</label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Extending to Other Square Roots -->
+        <section id="section-other-roots">
+            <h2><span class="icon">🔢</span> Extending to Other Square Roots</h2>
+
+            <p>The technique used for √2 can be extended to prove the irrationality of other square roots. Let's see how the pattern generalizes.</p>
+
+            <h3>The Irrationality of √3</h3>
+
+            <div class="theorem-box">
+                <h4>📐 Theorem</h4>
+                <p>√3 is irrational.</p>
+            </div>
+
+            <p>The proof follows the same structure, but we need a different lemma about divisibility by 3.</p>
+
+            <div class="theorem-box">
+                <h4>📐 Lemma</h4>
+                <p>For any integer n: if 3 | n² (3 divides n²), then 3 | n.</p>
+            </div>
+
+            <div class="collapsible">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)" tabindex="0" role="button" aria-expanded="false">
+                    <span>Proof of the Lemma (using contrapositive)</span>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <p>We prove the contrapositive: if 3 ∤ n, then 3 ∤ n².</p>
+                        <p>If 3 does not divide n, then n ≡ 1 (mod 3) or n ≡ 2 (mod 3).</p>
+                        <p><strong>Case 1:</strong> If n ≡ 1 (mod 3), then n² ≡ 1 (mod 3), so 3 ∤ n².</p>
+                        <p><strong>Case 2:</strong> If n ≡ 2 (mod 3), then n² ≡ 4 ≡ 1 (mod 3), so 3 ∤ n².</p>
+                        <p>In both cases, 3 ∤ n². ∎</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="proof-box">
+                <h4>Proof that √3 is irrational</h4>
+                <p>Suppose, for contradiction, that √3 is rational. Then √3 = a/b where a, b ∈ ℤ, b ≠ 0, and gcd(a, b) = 1.</p>
+                <p>Squaring: 3 = a²/b², so 3b² = a².</p>
+                <p>Thus 3 | a², which by our lemma means 3 | a. Write a = 3k.</p>
+                <p>Substituting: 3b² = 9k², so b² = 3k².</p>
+                <p>Thus 3 | b², which means 3 | b.</p>
+                <p>Both a and b are divisible by 3, contradicting gcd(a, b) = 1.</p>
+                <p>Therefore, √3 is irrational. ∎</p>
+            </div>
+
+            <h3>General Pattern: √p for Prime p</h3>
+
+            <div class="theorem-box">
+                <h4>📐 Theorem</h4>
+                <p>For any prime number p, √p is irrational.</p>
+            </div>
+
+            <div class="concept-box">
+                <h4>💡 The Key Insight</h4>
+                <p>The proof works because of a special property of primes: if p | ab, then p | a or p | b. This is called <strong>Euclid's Lemma</strong>. In particular, if p | n², then p | n · n, so p | n.</p>
+            </div>
+
+            <div class="collapsible">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)" tabindex="0" role="button" aria-expanded="false">
+                    <span>Proof that √p is irrational for any prime p</span>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <p>Let p be prime. Suppose, for contradiction, that √p is rational.</p>
+                        <p>Then √p = a/b where gcd(a, b) = 1.</p>
+                        <p>Squaring: p = a²/b², so pb² = a².</p>
+                        <p>Thus p | a². Since p is prime, p | a (by Euclid's Lemma).</p>
+                        <p>Write a = pk. Then pb² = p²k², so b² = pk².</p>
+                        <p>Thus p | b², so p | b.</p>
+                        <p>Both a and b are divisible by p, contradicting gcd(a, b) = 1.</p>
+                        <p>Therefore, √p is irrational. ∎</p>
+                    </div>
+                </div>
+            </div>
+
+            <h3>What About Non-Primes?</h3>
+
+            <div class="warning-box">
+                <h4>⚠️ Important Distinction</h4>
+                <p>Not all square roots are irrational! For example:</p>
+                <ul>
+                    <li>√4 = 2 (rational)</li>
+                    <li>√9 = 3 (rational)</li>
+                    <li>√16 = 4 (rational)</li>
+                </ul>
+                <p>√n is rational if and only if n is a perfect square.</p>
+            </div>
+
+            <!-- Interactive: Determine Rationality -->
+            <div class="interactive-section">
+                <h3><span>🔄</span> Interactive: Rational or Irrational?</h3>
+                <p>For each number, determine whether it is rational or irrational.</p>
+
+                <div class="quiz-container" id="rationality-quiz">
+                    <div class="quiz-item">
+                        <p class="quiz-question">Classify each number:</p>
+
+                        <table id="rationality-table">
+                            <thead>
+                                <tr>
+                                    <th>Number</th>
+                                    <th>Classification</th>
+                                    <th>Reason</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>√5</td>
+                                    <td>
+                                        <select id="rat-1" aria-label="Classify √5">
+                                            <option value="">Select...</option>
+                                            <option value="rational">Rational</option>
+                                            <option value="irrational">Irrational</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select id="reason-1" aria-label="Reason for √5">
+                                            <option value="">Select...</option>
+                                            <option value="prime">5 is prime</option>
+                                            <option value="perfect">5 is a perfect square</option>
+                                            <option value="composite">5 is composite</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>√25</td>
+                                    <td>
+                                        <select id="rat-2" aria-label="Classify √25">
+                                            <option value="">Select...</option>
+                                            <option value="rational">Rational</option>
+                                            <option value="irrational">Irrational</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select id="reason-2" aria-label="Reason for √25">
+                                            <option value="">Select...</option>
+                                            <option value="prime">25 is prime</option>
+                                            <option value="perfect">25 is a perfect square (5²)</option>
+                                            <option value="odd">25 is odd</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>√7</td>
+                                    <td>
+                                        <select id="rat-3" aria-label="Classify √7">
+                                            <option value="">Select...</option>
+                                            <option value="rational">Rational</option>
+                                            <option value="irrational">Irrational</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select id="reason-3" aria-label="Reason for √7">
+                                            <option value="">Select...</option>
+                                            <option value="prime">7 is prime</option>
+                                            <option value="perfect">7 is a perfect square</option>
+                                            <option value="even">7 is even</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>√12</td>
+                                    <td>
+                                        <select id="rat-4" aria-label="Classify √12">
+                                            <option value="">Select...</option>
+                                            <option value="rational">Rational</option>
+                                            <option value="irrational">Irrational</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select id="reason-4" aria-label="Reason for √12">
+                                            <option value="">Select...</option>
+                                            <option value="not-perfect">12 is not a perfect square</option>
+                                            <option value="perfect">12 is a perfect square</option>
+                                            <option value="even">12 is even</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="btn-group">
+                            <button class="btn-primary" onclick="checkRationalityQuiz()">Check Answers</button>
+                            <button class="btn-reset" onclick="resetRationalityQuiz()">Reset</button>
+                        </div>
+
+                        <div id="rationality-feedback" class="feedback"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="completion-tracker">
+                <strong>Section Checklist:</strong>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-other-1" onchange="updateProgress()">
+                    <label for="check-other-1">I understand the √3 proof</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-other-2" onchange="updateProgress()">
+                    <label for="check-other-2">I understand why √p is irrational for prime p</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-other-3" onchange="updateProgress()">
+                    <label for="check-other-3">I completed the rationality classification exercise</label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Infinitude of Primes -->
+        <section id="section-primes">
+            <h2><span class="icon">∞</span> Classic Example 2: The Infinitude of Primes</h2>
+
+            <p>Our second classic proof demonstrates that there are infinitely many prime numbers. This proof, attributed to Euclid (circa 300 BCE), is considered one of the most elegant proofs in all of mathematics.</p>
+
+            <div class="history-box">
+                <h4><span>📜</span> Historical Note</h4>
+                <p>This proof appears in Euclid's <em>Elements</em> (Book IX, Proposition 20). It has been called "the most beautiful proof in mathematics" and remains unchanged after more than 2,300 years.</p>
+            </div>
+
+            <h3>Background: Prime Numbers</h3>
+
+            <div class="definition-box">
+                <h4>📖 Definition: Prime Number</h4>
+                <p>An integer p > 1 is <strong>prime</strong> if its only positive divisors are 1 and p itself.</p>
+                <p>An integer n > 1 that is not prime is called <strong>composite</strong>.</p>
+            </div>
+
+            <div class="concept-box">
+                <h4>💡 Fundamental Theorem of Arithmetic</h4>
+                <p>Every integer greater than 1 can be expressed as a product of primes in exactly one way (up to ordering). In particular, <strong>every integer greater than 1 has at least one prime divisor</strong>.</p>
+            </div>
+
+            <h3>The Theorem and Its Proof</h3>
+
+            <div class="theorem-box">
+                <h4>📐 Theorem (Euclid)</h4>
+                <p>There are infinitely many prime numbers.</p>
+            </div>
+
+            <div class="step-reveal" id="primes-proof-steps">
+                <div class="step-item revealed">
+                    <span class="step-number">Step 1: Setup</span>
+                    <strong>Suppose, for the sake of contradiction, that there are only finitely many primes.</strong>
+                    <p>Let's call them p₁, p₂, p₃, ..., pₙ. This is the complete list of all primes.</p>
+                </div>
+
+                <div class="step-item">
+                    <span class="step-number">Step 2: Construct a special number</span>
+                    <strong>Consider the number N = p₁ · p₂ · p₃ · ... · pₙ + 1</strong>
+                    <p>N is the product of all primes, plus 1. This is a specific, well-defined integer greater than 1.</p>
+                </div>
+
+                <div class="step-item">
+                    <span class="step-number">Step 3: N has a prime divisor</span>
+                    <strong>By the Fundamental Theorem of Arithmetic, N has at least one prime divisor.</strong>
+                    <p>Call this prime divisor q. Then q | N.</p>
+                </div>
+
+                <div class="step-item">
+                    <span class="step-number">Step 4: Analyze q</span>
+                    <strong>Since our list contains ALL primes, q must be one of p₁, p₂, ..., pₙ.</strong>
+                    <p>Let's say q = pᵢ for some i.</p>
+                </div>
+
+                <div class="step-item">
+                    <span class="step-number">Step 5: Derive a property of q</span>
+                    <strong>Since q = pᵢ, we know q divides the product p₁ · p₂ · ... · pₙ.</strong>
+                    <p>So q | (p₁ · p₂ · ... · pₙ).</p>
+                </div>
+
+                <div class="step-item">
+                    <span class="step-number">Step 6: Apply divisibility</span>
+                    <strong>Since q | N and q | (p₁ · p₂ · ... · pₙ), we have:</strong>
+                    <div class="math-display">
+                        q | (N − p₁ · p₂ · ... · pₙ) = 1
+                    </div>
+                    <p>If a number divides two quantities, it divides their difference.</p>
+                </div>
+
+                <div class="step-item">
+                    <span class="step-number">Step 7: Identify the contradiction</span>
+                    <strong>So q | 1. But q is prime, so q ≥ 2.</strong>
+                    <p>No integer ≥ 2 can divide 1. This is a contradiction!</p>
+                </div>
+
+                <div class="step-item">
+                    <span class="step-number">Step 8: Conclusion</span>
+                    <strong>Our assumption that there are finitely many primes must be false.</strong>
+                    <p>Therefore, there are infinitely many primes. ∎</p>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn-primary" onclick="revealNextStep('primes-proof-steps')">Reveal Next Step</button>
+                <button class="btn-secondary" onclick="revealAllSteps('primes-proof-steps')">Show All Steps</button>
+                <button class="btn-reset" onclick="resetSteps('primes-proof-steps')">Reset</button>
+            </div>
+
+            <h3>The Complete Proof (Written Form)</h3>
+
+            <div class="proof-box">
+                <h4>Proof of the Infinitude of Primes</h4>
+                <p>Suppose, for the sake of contradiction, that there are only finitely many primes: p₁, p₂, ..., pₙ.</p>
+                <p>Consider N = p₁ · p₂ · ... · pₙ + 1.</p>
+                <p>Since N > 1, N has a prime divisor q. Since our list contains all primes, q = pᵢ for some i.</p>
+                <p>Now, q | N and q | (p₁ · p₂ · ... · pₙ), so q | (N − p₁ · p₂ · ... · pₙ) = 1.</p>
+                <p>But q ≥ 2, so q cannot divide 1. Contradiction!</p>
+                <p>Therefore, there are infinitely many primes. ∎</p>
+            </div>
+
+            <h3>Common Misconceptions</h3>
+
+            <div class="warning-box">
+                <h4>⚠️ What the Proof Does NOT Say</h4>
+                <p>A common mistake is thinking the proof shows that N itself is prime. This is NOT what we prove!</p>
+                <ul>
+                    <li>N might be prime (like 2 · 3 + 1 = 7)</li>
+                    <li>N might be composite (like 2 · 3 · 5 · 7 · 11 · 13 + 1 = 30031 = 59 × 509)</li>
+                </ul>
+                <p>The proof shows that N has a prime factor NOT in our original list—it doesn't claim N is prime.</p>
+            </div>
+
+            <!-- Interactive: Trace the Construction -->
+            <div class="interactive-section">
+                <h3><span>🔄</span> Interactive: Trace Euclid's Construction</h3>
+                <p>Let's trace through the construction with a small example.</p>
+
+                <div class="quiz-container">
+                    <p><strong>Suppose someone claims the only primes are {2, 3, 5}.</strong></p>
+
+                    <div class="form-group">
+                        <label for="euclid-n">What is N = 2 · 3 · 5 + 1?</label>
+                        <input type="text" id="euclid-n" placeholder="Enter the value of N">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="euclid-factor">What is the smallest prime factor of N?</label>
+                        <input type="text" id="euclid-factor" placeholder="Enter the smallest prime factor">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="euclid-conclusion">Is this prime factor in the list {2, 3, 5}?</label>
+                        <select id="euclid-conclusion">
+                            <option value="">Select...</option>
+                            <option value="yes">Yes</option>
+                            <option value="no">No</option>
+                        </select>
+                    </div>
+
+                    <div class="btn-group">
+                        <button class="btn-primary" onclick="checkEuclidTrace()">Check Answers</button>
+                        <button class="btn-reset" onclick="resetEuclidTrace()">Reset</button>
+                    </div>
+
+                    <div id="euclid-feedback" class="feedback"></div>
+                </div>
+            </div>
+
+            <div class="completion-tracker">
+                <strong>Section Checklist:</strong>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-primes-1" onchange="updateProgress()">
+                    <label for="check-primes-1">I worked through Euclid's proof step by step</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-primes-2" onchange="updateProgress()">
+                    <label for="check-primes-2">I understand the construction N = p₁·p₂·...·pₙ + 1</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-primes-3" onchange="updateProgress()">
+                    <label for="check-primes-3">I completed the trace exercise</label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5: More Contradiction Examples -->
+        <section id="section-more-examples">
+            <h2><span class="icon">📝</span> Additional Contradiction Proofs</h2>
+
+            <p>Let's examine a few more examples that demonstrate the versatility of proof by contradiction.</p>
+
+            <h3>Example: No Integer Solutions</h3>
+
+            <div class="theorem-box">
+                <h4>📐 Theorem</h4>
+                <p>There are no integers a and b such that 18a + 6b = 1.</p>
+            </div>
+
+            <div class="collapsible">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)" tabindex="0" role="button" aria-expanded="false">
+                    <span>View Proof</span>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <div class="proof-box">
+                            <h4>Proof</h4>
+                            <p>Suppose, for contradiction, that there exist integers a and b with 18a + 6b = 1.</p>
+                            <p>Factor the left side: 6(3a + b) = 1.</p>
+                            <p>This means 6 | 1 (6 divides 1).</p>
+                            <p>But 6 > 1, so 6 cannot divide 1. Contradiction!</p>
+                            <p>Therefore, no such integers exist. ∎</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Example: Uniqueness of Additive Identity</h3>
+
+            <div class="theorem-box">
+                <h4>📐 Theorem</h4>
+                <p>Zero is the unique additive identity for real numbers.</p>
+            </div>
+
+            <div class="collapsible">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)" tabindex="0" role="button" aria-expanded="false">
+                    <span>View Proof</span>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <div class="proof-box">
+                            <h4>Proof</h4>
+                            <p><strong>Existence:</strong> 0 is an additive identity since x + 0 = x for all real x. ✓</p>
+                            <p><strong>Uniqueness (by contradiction):</strong></p>
+                            <p>Suppose there are two additive identities, 0 and z, where z ≠ 0.</p>
+                            <p>Since 0 is an identity: z + 0 = z</p>
+                            <p>Since z is an identity: z + 0 = 0</p>
+                            <p>Therefore z = 0, contradicting z ≠ 0.</p>
+                            <p>So 0 is the unique additive identity. ∎</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Example: Between Any Two Rationals</h3>
+
+            <div class="theorem-box">
+                <h4>📐 Theorem</h4>
+                <p>Between any two distinct rational numbers, there exists another rational number.</p>
+            </div>
+
+            <div class="collapsible">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)" tabindex="0" role="button" aria-expanded="false">
+                    <span>View Proof (Direct, but instructive)</span>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <div class="proof-box">
+                            <h4>Proof (Constructive)</h4>
+                            <p>Let r and s be rational numbers with r < s.</p>
+                            <p>Consider m = (r + s)/2, the midpoint.</p>
+                            <p>Since r and s are rational, r + s is rational, and (r + s)/2 is rational.</p>
+                            <p>Also, r < (r + s)/2 < s (the midpoint lies strictly between).</p>
+                            <p>Therefore, m is a rational number between r and s. ∎</p>
+                        </div>
+                        <p><em>Note: This is a direct/constructive proof. We could also prove it by contradiction: assume no rational exists between r and s, then derive a contradiction.</em></p>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Computer Science Application: Impossibility Results</h3>
+
+            <div class="example-box">
+                <h4>Preview: The Halting Problem</h4>
+                <p>One of the most important results in computer science—that no program can determine whether an arbitrary program halts—is proved by contradiction.</p>
+
+                <p><strong>Sketch of the argument:</strong></p>
+                <ol>
+                    <li>Assume a program H(P, I) exists that returns TRUE if program P halts on input I, and FALSE otherwise.</li>
+                    <li>Construct a new program D that:
+                        <ul>
+                            <li>Takes a program P as input</li>
+                            <li>Runs H(P, P)</li>
+                            <li>If H returns TRUE, D loops forever</li>
+                            <li>If H returns FALSE, D halts</li>
+                        </ul>
+                    </li>
+                    <li>Ask: Does D(D) halt?</li>
+                    <li>If D(D) halts, then H(D, D) = FALSE, so D should loop. Contradiction!</li>
+                    <li>If D(D) loops, then H(D, D) = TRUE, so D should halt. Contradiction!</li>
+                    <li>Therefore, H cannot exist.</li>
+                </ol>
+                <p><em>You'll study this in more detail in Theory of Computation courses.</em></p>
+            </div>
+
+            <div class="completion-tracker">
+                <strong>Section Checklist:</strong>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-more-1" onchange="updateProgress()">
+                    <label for="check-more-1">I reviewed the additional examples</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-more-2" onchange="updateProgress()">
+                    <label for="check-more-2">I understand how contradiction proves impossibility</label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 6: Java Implementation -->
+        <section id="section-java">
+            <h2><span class="icon">💻</span> Java Implementation: Exploring the Proofs</h2>
+
+            <p>While we can't "implement" a proof in code, we can write programs that explore the concepts and verify specific cases.</p>
+
+            <h3>Exploring √2 Approximations</h3>
+
+            <pre><code><span class="code-comment">/**
+ * Demonstrates that √2 cannot be exactly represented as a ratio of integers.
+ * We search for a/b where (a/b)² = 2, but never find an exact match.
+ */</span>
+<span class="code-keyword">public class</span> <span class="code-type">IrrationalityExplorer</span> {
+    
+    <span class="code-keyword">public static void</span> <span class="code-function">main</span>(<span class="code-type">String</span>[] args) {
+        <span class="code-function">exploreSquareRootTwo</span>(<span class="code-number">1000</span>);
+        <span class="code-function">verifyLowestTermsContradiction</span>();
+    }
+    
+    <span class="code-comment">/**
+     * Searches for rational approximations to √2.
+     * Shows that we get close but never exact.
+     */</span>
+    <span class="code-keyword">public static void</span> <span class="code-function">exploreSquareRootTwo</span>(<span class="code-type">int</span> maxDenom) {
+        <span class="code-type">System</span>.out.println(<span class="code-string">"Searching for a/b where (a/b)² = 2..."</span>);
+        <span class="code-type">System</span>.out.println(<span class="code-string">"Best approximations found:\n"</span>);
+        
+        <span class="code-type">double</span> sqrt2 = <span class="code-type">Math</span>.sqrt(<span class="code-number">2</span>);
+        <span class="code-type">double</span> bestError = <span class="code-type">Double</span>.MAX_VALUE;
+        
+        <span class="code-keyword">for</span> (<span class="code-type">int</span> b = <span class="code-number">1</span>; b <= maxDenom; b++) {
+            <span class="code-comment">// Find the a that makes a/b closest to √2</span>
+            <span class="code-type">int</span> a = (<span class="code-type">int</span>) <span class="code-type">Math</span>.round(b * sqrt2);
+            
+            <span class="code-type">double</span> ratio = (<span class="code-type">double</span>) a / b;
+            <span class="code-type">double</span> squared = ratio * ratio;
+            <span class="code-type">double</span> error = <span class="code-type">Math</span>.abs(squared - <span class="code-number">2.0</span>);
+            
+            <span class="code-keyword">if</span> (error < bestError) {
+                bestError = error;
+                <span class="code-type">System</span>.out.printf(<span class="code-string">"  %d/%d = %.10f, squared = %.10f, error = %.2e%n"</span>,
+                    a, b, ratio, squared, error);
+            }
+            
+            <span class="code-comment">// Check if we found exact equality (we won't!)</span>
+            <span class="code-keyword">if</span> (a * a == <span class="code-number">2</span> * b * b) {
+                <span class="code-type">System</span>.out.println(<span class="code-string">"FOUND EXACT: "</span> + a + <span class="code-string">"/"</span> + b);
+                <span class="code-keyword">return</span>;
+            }
+        }
+        
+        <span class="code-type">System</span>.out.println(<span class="code-string">"\nNo exact rational representation found!"</span>);
+        <span class="code-type">System</span>.out.println(<span class="code-string">"This is consistent with √2 being irrational."</span>);
+    }
+    
+    <span class="code-comment">/**
+     * Demonstrates the contradiction in the √2 proof.
+     * If √2 = a/b in lowest terms, then both a and b must be even.
+     */</span>
+    <span class="code-keyword">public static void</span> <span class="code-function">verifyLowestTermsContradiction</span>() {
+        <span class="code-type">System</span>.out.println(<span class="code-string">"\n--- Demonstrating the Contradiction ---"</span>);
+        
+        <span class="code-comment">// Suppose √2 = a/b with small values</span>
+        <span class="code-comment">// If 2b² = a², what happens?</span>
+        
+        <span class="code-keyword">for</span> (<span class="code-type">int</span> b = <span class="code-number">1</span>; b <= <span class="code-number">20</span>; b++) {
+            <span class="code-type">int</span> aSquared = <span class="code-number">2</span> * b * b;
+            <span class="code-type">int</span> a = (<span class="code-type">int</span>) <span class="code-type">Math</span>.sqrt(aSquared);
+            
+            <span class="code-comment">// Check if a² = 2b² exactly</span>
+            <span class="code-keyword">if</span> (a * a == aSquared) {
+                <span class="code-type">int</span> gcd = <span class="code-function">gcd</span>(a, b);
+                <span class="code-type">System</span>.out.printf(<span class="code-string">"If √2 = %d/%d: gcd(%d,%d) = %d"</span>, a, b, a, b, gcd);
+                
+                <span class="code-keyword">if</span> (gcd > <span class="code-number">1</span>) {
+                    <span class="code-type">System</span>.out.println(<span class="code-string">" → NOT in lowest terms!"</span>);
+                } <span class="code-keyword">else</span> {
+                    <span class="code-type">System</span>.out.println(<span class="code-string">" → In lowest terms"</span>);
+                }
+            }
+        }
+        
+        <span class="code-type">System</span>.out.println(<span class="code-string">"\nNotice: Any 'solution' is never in lowest terms!"</span>);
+    }
+    
+    <span class="code-comment">/**
+     * Computes the greatest common divisor using Euclidean algorithm.
+     */</span>
+    <span class="code-keyword">public static int</span> <span class="code-function">gcd</span>(<span class="code-type">int</span> a, <span class="code-type">int</span> b) {
+        <span class="code-keyword">while</span> (b != <span class="code-number">0</span>) {
+            <span class="code-type">int</span> temp = b;
+            b = a % b;
+            a = temp;
+        }
+        <span class="code-keyword">return</span> a;
+    }
+}</code></pre>
+
+            <h3>Exploring Euclid's Prime Construction</h3>
+
+            <pre><code><span class="code-keyword">import</span> java.util.*;
+
+<span class="code-comment">/**
+ * Explores Euclid's construction for finding new primes.
+ * Given a list of primes, constructs N = p₁·p₂·...·pₙ + 1
+ * and finds its prime factors.
+ */</span>
+<span class="code-keyword">public class</span> <span class="code-type">EuclidsConstruction</span> {
+    
+    <span class="code-keyword">public static void</span> <span class="code-function">main</span>(<span class="code-type">String</span>[] args) {
+        <span class="code-comment">// Start with first few primes</span>
+        <span class="code-type">List</span>&lt;<span class="code-type">Long</span>&gt; primes = <span class="code-keyword">new</span> <span class="code-type">ArrayList</span>&lt;&gt;();
+        primes.add(<span class="code-number">2L</span>);
+        
+        <span class="code-type">System</span>.out.println(<span class="code-string">"Exploring Euclid's Construction:\n"</span>);
+        
+        <span class="code-keyword">for</span> (<span class="code-type">int</span> i = <span class="code-number">0</span>; i < <span class="code-number">8</span>; i++) {
+            <span class="code-function">analyzeConstruction</span>(primes);
+            
+            <span class="code-comment">// Add next prime for next iteration</span>
+            <span class="code-type">long</span> nextPrime = <span class="code-function">nextPrimeAfter</span>(primes.get(primes.size() - <span class="code-number">1</span>));
+            primes.add(nextPrime);
+        }
+    }
+    
+    <span class="code-comment">/**
+     * Given a list of primes, computes N = product + 1
+     * and analyzes its factors.
+     */</span>
+    <span class="code-keyword">public static void</span> <span class="code-function">analyzeConstruction</span>(<span class="code-type">List</span>&lt;<span class="code-type">Long</span>&gt; primes) {
+        <span class="code-comment">// Compute product of all primes in list</span>
+        <span class="code-type">long</span> product = <span class="code-number">1</span>;
+        <span class="code-keyword">for</span> (<span class="code-type">long</span> p : primes) {
+            product *= p;
+        }
+        
+        <span class="code-type">long</span> N = product + <span class="code-number">1</span>;
+        
+        <span class="code-type">System</span>.out.print(<span class="code-string">"Primes: "</span> + primes);
+        <span class="code-type">System</span>.out.println(<span class="code-string">", Product = "</span> + product + <span class="code-string">", N = "</span> + N);
+        
+        <span class="code-comment">// Find prime factors of N</span>
+        <span class="code-type">List</span>&lt;<span class="code-type">Long</span>&gt; factors = <span class="code-function">primeFactors</span>(N);
+        <span class="code-type">System</span>.out.println(<span class="code-string">"  Prime factors of N: "</span> + factors);
+        
+        <span class="code-comment">// Check if any factor is in original list</span>
+        <span class="code-type">boolean</span> foundInList = <span class="code-keyword">false</span>;
+        <span class="code-keyword">for</span> (<span class="code-type">long</span> factor : factors) {
+            <span class="code-keyword">if</span> (primes.contains(factor)) {
+                foundInList = <span class="code-keyword">true</span>;
+                <span class="code-keyword">break</span>;
+            }
+        }
+        
+        <span class="code-keyword">if</span> (foundInList) {
+            <span class="code-type">System</span>.out.println(<span class="code-string">"  ERROR: Factor found in original list!"</span>);
+        } <span class="code-keyword">else</span> {
+            <span class="code-type">System</span>.out.println(<span class="code-string">"  ✓ All factors are NEW primes (not in list)"</span>);
+        }
+        
+        <span class="code-keyword">if</span> (<span class="code-function">isPrime</span>(N)) {
+            <span class="code-type">System</span>.out.println(<span class="code-string">"  Note: N itself is prime!"</span>);
+        } <span class="code-keyword">else</span> {
+            <span class="code-type">System</span>.out.println(<span class="code-string">"  Note: N is composite"</span>);
+        }
+        
+        <span class="code-type">System</span>.out.println();
+    }
+    
+    <span class="code-comment">/**
+     * Returns list of prime factors of n.
+     */</span>
+    <span class="code-keyword">public static</span> <span class="code-type">List</span>&lt;<span class="code-type">Long</span>&gt; <span class="code-function">primeFactors</span>(<span class="code-type">long</span> n) {
+        <span class="code-type">List</span>&lt;<span class="code-type">Long</span>&gt; factors = <span class="code-keyword">new</span> <span class="code-type">ArrayList</span>&lt;&gt;();
+        
+        <span class="code-keyword">for</span> (<span class="code-type">long</span> p = <span class="code-number">2</span>; p * p <= n; p++) {
+            <span class="code-keyword">while</span> (n % p == <span class="code-number">0</span>) {
+                <span class="code-keyword">if</span> (!factors.contains(p)) {
+                    factors.add(p);
+                }
+                n /= p;
+            }
+        }
+        
+        <span class="code-keyword">if</span> (n > <span class="code-number">1</span>) {
+            factors.add(n);
+        }
+        
+        <span class="code-keyword">return</span> factors;
+    }
+    
+    <span class="code-comment">/**
+     * Checks if n is prime.
+     */</span>
+    <span class="code-keyword">public static boolean</span> <span class="code-function">isPrime</span>(<span class="code-type">long</span> n) {
+        <span class="code-keyword">if</span> (n < <span class="code-number">2</span>) <span class="code-keyword">return false</span>;
+        <span class="code-keyword">if</span> (n == <span class="code-number">2</span>) <span class="code-keyword">return true</span>;
+        <span class="code-keyword">if</span> (n % <span class="code-number">2</span> == <span class="code-number">0</span>) <span class="code-keyword">return false</span>;
+        
+        <span class="code-keyword">for</span> (<span class="code-type">long</span> i = <span class="code-number">3</span>; i * i <= n; i += <span class="code-number">2</span>) {
+            <span class="code-keyword">if</span> (n % i == <span class="code-number">0</span>) <span class="code-keyword">return false</span>;
+        }
+        <span class="code-keyword">return true</span>;
+    }
+    
+    <span class="code-comment">/**
+     * Returns the next prime after n.
+     */</span>
+    <span class="code-keyword">public static long</span> <span class="code-function">nextPrimeAfter</span>(<span class="code-type">long</span> n) {
+        <span class="code-type">long</span> candidate = n + <span class="code-number">1</span>;
+        <span class="code-keyword">while</span> (!<span class="code-function">isPrime</span>(candidate)) {
+            candidate++;
+        }
+        <span class="code-keyword">return</span> candidate;
+    }
+}</code></pre>
+
+            <div class="concept-box">
+                <h4>💡 What the Code Demonstrates</h4>
+                <ul>
+                    <li>The √2 explorer shows we can get arbitrarily close rational approximations but never exact</li>
+                    <li>Any "solution" to 2b² = a² never has gcd(a,b) = 1</li>
+                    <li>Euclid's construction always produces N with prime factors NOT in the original list</li>
+                    <li>Sometimes N is prime, sometimes composite—but its factors are always "new"</li>
+                </ul>
+            </div>
+
+            <div class="completion-tracker">
+                <strong>Section Checklist:</strong>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-java-1" onchange="updateProgress()">
+                    <label for="check-java-1">I reviewed the Java code examples</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-java-2" onchange="updateProgress()">
+                    <label for="check-java-2">I understand how the code relates to the proofs</label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 7: Practice Problems -->
+        <section id="section-practice">
+            <h2><span class="icon">✏️</span> Practice Problems</h2>
+
+            <p>Apply what you've learned by working through these practice problems.</p>
+
+            <h3>Problem 1: Irrationality of √5</h3>
+
+            <div class="collapsible">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)" tabindex="0" role="button" aria-expanded="false">
+                    <span>Problem Statement</span>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <p><strong>Prove:</strong> √5 is irrational.</p>
+                        <p><em>Hint:</em> Follow the same structure as the √2 proof. You'll need to show that if 5 | n², then 5 | n.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="collapsible">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)" tabindex="0" role="button" aria-expanded="false">
+                    <span>Solution</span>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <div class="proof-box">
+                            <h4>Proof</h4>
+                            <p>Suppose, for contradiction, that √5 is rational. Then √5 = a/b where a, b ∈ ℤ, b ≠ 0, and gcd(a, b) = 1.</p>
+                            <p>Squaring: 5 = a²/b², so 5b² = a².</p>
+                            <p>Thus 5 | a². Since 5 is prime, 5 | a. Write a = 5k.</p>
+                            <p>Substituting: 5b² = 25k², so b² = 5k².</p>
+                            <p>Thus 5 | b², so 5 | b.</p>
+                            <p>Both a and b are divisible by 5, contradicting gcd(a, b) = 1.</p>
+                            <p>Therefore, √5 is irrational. ∎</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Problem 2: log₂(3) is Irrational</h3>
+
+            <div class="collapsible">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)" tabindex="0" role="button" aria-expanded="false">
+                    <span>Problem Statement</span>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <p><strong>Prove:</strong> log₂(3) is irrational.</p>
+                        <p><em>Hint:</em> If log₂(3) = a/b, then 2^(a/b) = 3, so 2^a = 3^b. Consider the prime factorizations.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="collapsible">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)" tabindex="0" role="button" aria-expanded="false">
+                    <span>Solution</span>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <div class="proof-box">
+                            <h4>Proof</h4>
+                            <p>Suppose, for contradiction, that log₂(3) is rational.</p>
+                            <p>Then log₂(3) = a/b for some positive integers a and b.</p>
+                            <p>This means 2^(a/b) = 3, so (2^(a/b))^b = 3^b, giving 2^a = 3^b.</p>
+                            <p>But 2^a is a power of 2 (even for a ≥ 1), and 3^b is a power of 3 (odd).</p>
+                            <p>By the Fundamental Theorem of Arithmetic, 2^a and 3^b have different prime factorizations, so they cannot be equal.</p>
+                            <p>This is a contradiction!</p>
+                            <p>Therefore, log₂(3) is irrational. ∎</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Problem 3: No Three Consecutive Integers Multiply to a Power of 2</h3>
+
+            <div class="collapsible">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)" tabindex="0" role="button" aria-expanded="false">
+                    <span>Problem Statement</span>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <p><strong>Prove:</strong> There are no three consecutive positive integers whose product is a power of 2.</p>
+                        <p><em>Hint:</em> Consider what happens with odd numbers in any three consecutive integers.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="collapsible">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)" tabindex="0" role="button" aria-expanded="false">
+                    <span>Solution</span>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <div class="proof-box">
+                            <h4>Proof</h4>
+                            <p>Suppose, for contradiction, that n(n+1)(n+2) = 2^k for some positive integers n and k.</p>
+                            <p>Among any three consecutive integers, at least one is odd (in fact, exactly one or two are odd).</p>
+                            <p>If n is odd, then n is an odd factor of the product.</p>
+                            <p>If n is even, then n+1 is odd, so n+1 is an odd factor.</p>
+                            <p>In either case, the product n(n+1)(n+2) has an odd factor greater than 1.</p>
+                            <p>But 2^k has no odd factors greater than 1.</p>
+                            <p>This is a contradiction!</p>
+                            <p>Therefore, no three consecutive positive integers have a product that is a power of 2. ∎</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interactive: Build Your Own Proof -->
+            <div class="interactive-section">
+                <h3><span>🔄</span> Interactive: Order the Proof Steps</h3>
+                <p>Arrange the following steps in the correct order to prove that √6 is irrational.</p>
+
+                <div id="proof-ordering" class="sortable-container">
+                    <div class="sortable-item" draggable="true" data-order="5">
+                        <span class="sortable-handle">☰</span>
+                        <span>Substituting a = 6k: 6b² = 36k², so b² = 6k², meaning 6 | b²</span>
+                    </div>
+                    <div class="sortable-item" draggable="true" data-order="3">
+                        <span class="sortable-handle">☰</span>
+                        <span>Squaring: 6 = a²/b², so 6b² = a²</span>
+                    </div>
+                    <div class="sortable-item" draggable="true" data-order="1">
+                        <span class="sortable-handle">☰</span>
+                        <span>Suppose, for contradiction, that √6 is rational</span>
+                    </div>
+                    <div class="sortable-item" draggable="true" data-order="7">
+                        <span class="sortable-handle">☰</span>
+                        <span>Both a and b divisible by 6 contradicts gcd(a,b) = 1. Therefore √6 is irrational. ∎</span>
+                    </div>
+                    <div class="sortable-item" draggable="true" data-order="4">
+                        <span class="sortable-handle">☰</span>
+                        <span>Thus 6 | a², so 6 | a (since if 2|a² then 2|a, and if 3|a² then 3|a). Write a = 6k.</span>
+                    </div>
+                    <div class="sortable-item" draggable="true" data-order="2">
+                        <span class="sortable-handle">☰</span>
+                        <span>Then √6 = a/b where gcd(a,b) = 1</span>
+                    </div>
+                    <div class="sortable-item" draggable="true" data-order="6">
+                        <span class="sortable-handle">☰</span>
+                        <span>Thus 6 | b</span>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn-primary" onclick="checkProofOrder()">Check Order</button>
+                    <button class="btn-reset" onclick="resetProofOrder()">Reset</button>
+                </div>
+
+                <div id="proof-order-feedback" class="feedback"></div>
+            </div>
+
+            <div class="completion-tracker">
+                <strong>Section Checklist:</strong>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-prac-1" onchange="updateProgress()">
+                    <label for="check-prac-1">I attempted the √5 proof</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-prac-2" onchange="updateProgress()">
+                    <label for="check-prac-2">I attempted the log₂(3) proof</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-prac-3" onchange="updateProgress()">
+                    <label for="check-prac-3">I completed the proof ordering exercise</label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 8: Knowledge Check Quiz -->
+        <section id="section-quiz">
+            <h2><span class="icon">📋</span> Knowledge Check</h2>
+
+            <p>Test your understanding of the classic contradiction proofs.</p>
+
+            <div class="quiz-container" id="final-quiz">
+                <div class="quiz-item">
+                    <p class="quiz-question">1. In the proof that √2 is irrational, what assumption leads to the contradiction?</p>
+                    <div class="option-group" id="fq1-options">
+                        <div class="option-item">
+                            <input type="radio" name="fq1" id="fq1-a" value="a">
+                            <label for="fq1-a">√2 is negative</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq1" id="fq1-b" value="b">
+                            <label for="fq1-b">√2 can be written as a/b in lowest terms</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq1" id="fq1-c" value="c">
+                            <label for="fq1-c">√2 is an integer</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq1" id="fq1-d" value="d">
+                            <label for="fq1-d">2 is not prime</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quiz-item">
+                    <p class="quiz-question">2. In Euclid's proof of infinite primes, what is special about N = p₁·p₂·...·pₙ + 1?</p>
+                    <div class="option-group" id="fq2-options">
+                        <div class="option-item">
+                            <input type="radio" name="fq2" id="fq2-a" value="a">
+                            <label for="fq2-a">N is always prime</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq2" id="fq2-b" value="b">
+                            <label for="fq2-b">N is not divisible by any of p₁, p₂, ..., pₙ</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq2" id="fq2-c" value="c">
+                            <label for="fq2-c">N equals 1</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq2" id="fq2-d" value="d">
+                            <label for="fq2-d">N is always even</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quiz-item">
+                    <p class="quiz-question">3. Which of the following is rational?</p>
+                    <div class="option-group" id="fq3-options">
+                        <div class="option-item">
+                            <input type="radio" name="fq3" id="fq3-a" value="a">
+                            <label for="fq3-a">√2</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq3" id="fq3-b" value="b">
+                            <label for="fq3-b">√3</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq3" id="fq3-c" value="c">
+                            <label for="fq3-c">√49</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq3" id="fq3-d" value="d">
+                            <label for="fq3-d">√7</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quiz-item">
+                    <p class="quiz-question">4. What key property of primes is used in proving √p is irrational?</p>
+                    <div class="option-group" id="fq4-options">
+                        <div class="option-item">
+                            <input type="radio" name="fq4" id="fq4-a" value="a">
+                            <label for="fq4-a">Primes are always odd</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq4" id="fq4-b" value="b">
+                            <label for="fq4-b">If p | n², then p | n (Euclid's Lemma)</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq4" id="fq4-c" value="c">
+                            <label for="fq4-c">Primes cannot be squared</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq4" id="fq4-d" value="d">
+                            <label for="fq4-d">All primes are greater than 10</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quiz-item">
+                    <p class="quiz-question">5. If 2 · 3 · 5 + 1 = 31, what does this tell us about Euclid's construction?</p>
+                    <div class="option-group" id="fq5-options">
+                        <div class="option-item">
+                            <input type="radio" name="fq5" id="fq5-a" value="a">
+                            <label for="fq5-a">31 is divisible by 2, 3, or 5</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq5" id="fq5-b" value="b">
+                            <label for="fq5-b">31 is prime and not in {2, 3, 5}, confirming a new prime exists</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq5" id="fq5-c" value="c">
+                            <label for="fq5-c">The proof is invalid</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq5" id="fq5-d" value="d">
+                            <label for="fq5-d">There are exactly 4 primes</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn-primary" onclick="checkFinalQuiz()">Submit Quiz</button>
+                    <button class="btn-reset" onclick="resetFinalQuiz()">Reset Quiz</button>
+                </div>
+
+                <div id="final-quiz-feedback" class="feedback"></div>
+
+                <div class="quiz-score" id="quiz-score" style="display: none;">
+                    <p>Your Score:</p>
+                    <div class="score-value" id="score-value">0/5</div>
+                    <p id="score-message"></p>
+                </div>
+            </div>
+
+            <div class="completion-tracker">
+                <strong>Section Checklist:</strong>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-quiz-1" onchange="updateProgress()">
+                    <label for="check-quiz-1">I completed the knowledge check quiz</label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 9: Summary -->
+        <section id="section-summary">
+            <h2><span class="icon">🎓</span> Summary and Next Steps</h2>
+
+            <h3>Key Takeaways</h3>
+
+            <div class="concept-box">
+                <h4>What You Learned in Module 6.2</h4>
+                <ul>
+                    <li><strong>√2 Irrationality:</strong> Assuming √2 = a/b in lowest terms leads to both a and b being even—contradiction!</li>
+                    <li><strong>Generalizing:</strong> √p is irrational for any prime p, using Euclid's Lemma</li>
+                    <li><strong>Infinite Primes:</strong> Euclid's construction N = p₁·p₂·...·pₙ + 1 always yields a prime not in the list</li>
+                    <li><strong>Pattern Recognition:</strong> These proofs share a common structure—assume the opposite, derive impossibility</li>
+                    <li><strong>CS Connection:</strong> Same technique proves impossibility results like the Halting Problem</li>
+                </ul>
+            </div>
+
+            <h3>Classic Proofs Summary Table</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Theorem</th>
+                        <th>Assumption</th>
+                        <th>Contradiction</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>√2 is irrational</td>
+                        <td>√2 = a/b in lowest terms</td>
+                        <td>Both a, b divisible by 2</td>
+                    </tr>
+                    <tr>
+                        <td>Infinitely many primes</td>
+                        <td>Finitely many primes p₁...pₙ</td>
+                        <td>N = p₁·...·pₙ + 1 has prime factor not in list</td>
+                    </tr>
+                    <tr>
+                        <td>√p irrational (p prime)</td>
+                        <td>√p = a/b in lowest terms</td>
+                        <td>Both a, b divisible by p</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Preparing for Module 6.3</h3>
+
+            <p>In the next module, you'll learn about <strong>Mathematical Induction</strong>—another powerful proof technique. While contradiction proves something is impossible, induction proves something is true for ALL natural numbers.</p>
+
+            <div class="warning-box">
+                <h4>⚠️ Before Moving On</h4>
+                <p>Make sure you can:</p>
+                <ul>
+                    <li>Write the complete √2 irrationality proof from memory</li>
+                    <li>Explain Euclid's prime construction and why it works</li>
+                    <li>Extend the irrationality proof to √3, √5, and other primes</li>
+                    <li>Identify the contradiction in each classic proof</li>
+                </ul>
+            </div>
+
+            <div class="completion-tracker">
+                <strong>Final Checklist:</strong>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-final-1" onchange="updateProgress()">
+                    <label for="check-final-1">I can reproduce the √2 proof</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-final-2" onchange="updateProgress()">
+                    <label for="check-final-2">I understand Euclid's infinite primes proof</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-final-3" onchange="updateProgress()">
+                    <label for="check-final-3">I am ready for Module 6.3 (Mathematical Induction)</label>
+                </div>
+            </div>
+
+            <div class="nav-buttons">
+                <a href="#" onclick="alert('Module 6.1 link'); return false;">
+                    <button class="btn-secondary">← Previous: Module 6.1</button>
+                </a>
+                <a href="#" onclick="alert('Module 6.3 coming soon!'); return false;">
+                    <button class="btn-primary">Next: Module 6.3 - Mathematical Induction →</button>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p><strong>CSC 240 - Discrete Structures</strong></p>
+        <p>Module 6.2: Proof by Contradiction - Classic Examples</p>
+        <p>Mendocino College | Spring 2026</p>
+        <p>Questions? Contact your instructor through Canvas or during office hours.</p>
+    </footer>
+
+    <script>
+        // ==================== Progress Tracking ====================
+        function updateProgress() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            const checked = document.querySelectorAll('input[type="checkbox"]:checked');
+            const percentage = Math.round((checked.length / checkboxes.length) * 100);
+
+            document.getElementById('progress-fill').style.width = percentage + '%';
+            document.getElementById('progress-text').textContent = percentage + '%';
+
+            const progressBar = document.querySelector('.progress-bar');
+            progressBar.setAttribute('aria-valuenow', percentage);
+
+            // Save to session storage
+            const checkboxStates = {};
+            checkboxes.forEach(cb => {
+                checkboxStates[cb.id] = cb.checked;
+            });
+            sessionStorage.setItem('module62Progress', JSON.stringify(checkboxStates));
+        }
+
+        function loadProgress() {
+            const saved = sessionStorage.getItem('module62Progress');
+            if (saved) {
+                const checkboxStates = JSON.parse(saved);
+                Object.keys(checkboxStates).forEach(id => {
+                    const checkbox = document.getElementById(id);
+                    if (checkbox) {
+                        checkbox.checked = checkboxStates[id];
+                        const parent = checkbox.closest('.completion-item');
+                        if (parent) {
+                            parent.classList.toggle('completed', checkboxStates[id]);
+                        }
+                    }
+                });
+                updateProgress();
+            }
+        }
+
+        // ==================== Step Reveal ====================
+        function revealNextStep(containerId) {
+            const container = document.getElementById(containerId);
+            const steps = container.querySelectorAll('.step-item:not(.revealed)');
+            if (steps.length > 0) {
+                steps[0].classList.add('revealed');
+            }
+        }
+
+        function revealAllSteps(containerId) {
+            const container = document.getElementById(containerId);
+            const steps = container.querySelectorAll('.step-item');
+            steps.forEach(step => step.classList.add('revealed'));
+        }
+
+        function resetSteps(containerId) {
+            const container = document.getElementById(containerId);
+            const steps = container.querySelectorAll('.step-item');
+            steps.forEach((step, index) => {
+                if (index === 0) {
+                    step.classList.add('revealed');
+                } else {
+                    step.classList.remove('revealed');
+                }
+            });
+        }
+
+        // ==================== Collapsible Sections ====================
+        function toggleCollapsible(header) {
+            const collapsible = header.closest('.collapsible');
+            collapsible.classList.toggle('open');
+            const isOpen = collapsible.classList.contains('open');
+            header.setAttribute('aria-expanded', isOpen);
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.target.classList.contains('collapsible-header')) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    toggleCollapsible(e.target);
+                }
+            }
+        });
+
+        // ==================== √2 Quiz ====================
+        function checkSqrt2Quiz() {
+            const answers = {
+                'sqrt2q1': 'b',
+                'sqrt2q2': 'b',
+                'sqrt2q3': 'b'
+            };
+
+            let correct = 0;
+            let total = 3;
+
+            for (let i = 1; i <= 3; i++) {
+                const selected = document.querySelector(`input[name="sqrt2q${i}"]:checked`);
+                const options = document.querySelectorAll(`input[name="sqrt2q${i}"]`);
+
+                options.forEach(opt => {
+                    const parent = opt.closest('.option-item');
+                    parent.classList.remove('correct', 'incorrect');
+
+                    if (opt.value === answers[`sqrt2q${i}`]) {
+                        parent.classList.add('correct');
+                    } else if (selected && opt === selected && opt.value !== answers[`sqrt2q${i}`]) {
+                        parent.classList.add('incorrect');
+                    }
+                });
+
+                if (selected && selected.value === answers[`sqrt2q${i}`]) {
+                    correct++;
+                }
+            }
+
+            const feedback = document.getElementById('sqrt2-quiz-feedback');
+            if (correct === total) {
+                feedback.className = 'feedback success show';
+                feedback.innerHTML = '<strong>Excellent!</strong> You understand the √2 irrationality proof perfectly.';
+            } else {
+                feedback.className = 'feedback info show';
+                feedback.innerHTML = `<strong>Score: ${correct}/${total}</strong>. Review the proof steps and try again.`;
+            }
+        }
+
+        function resetSqrt2Quiz() {
+            for (let i = 1; i <= 3; i++) {
+                const options = document.querySelectorAll(`input[name="sqrt2q${i}"]`);
+                options.forEach(opt => {
+                    opt.checked = false;
+                    opt.closest('.option-item').classList.remove('correct', 'incorrect');
+                });
+            }
+            document.getElementById('sqrt2-quiz-feedback').className = 'feedback';
+        }
+
+        // ==================== Rationality Quiz ====================
+        function checkRationalityQuiz() {
+            const answers = {
+                'rat-1': 'irrational', 'reason-1': 'prime',
+                'rat-2': 'rational', 'reason-2': 'perfect',
+                'rat-3': 'irrational', 'reason-3': 'prime',
+                'rat-4': 'irrational', 'reason-4': 'not-perfect'
+            };
+
+            let correct = 0;
+            let total = 8;
+
+            Object.keys(answers).forEach(id => {
+                const select = document.getElementById(id);
+                if (select.value === answers[id]) {
+                    correct++;
+                    select.style.backgroundColor = '#e8f5e9';
+                    select.style.borderColor = '#4caf50';
+                } else if (select.value !== '') {
+                    select.style.backgroundColor = '#ffebee';
+                    select.style.borderColor = '#f44336';
+                }
+            });
+
+            const feedback = document.getElementById('rationality-feedback');
+            if (correct === total) {
+                feedback.className = 'feedback success show';
+                feedback.innerHTML = '<strong>Perfect!</strong> You correctly classified all numbers.';
+            } else {
+                feedback.className = 'feedback info show';
+                feedback.innerHTML = `<strong>Score: ${correct}/${total}</strong>. Remember: √n is rational only if n is a perfect square.`;
+            }
+        }
+
+        function resetRationalityQuiz() {
+            ['rat-1', 'reason-1', 'rat-2', 'reason-2', 'rat-3', 'reason-3', 'rat-4', 'reason-4'].forEach(id => {
+                const select = document.getElementById(id);
+                select.value = '';
+                select.style.backgroundColor = '';
+                select.style.borderColor = '';
+            });
+            document.getElementById('rationality-feedback').className = 'feedback';
+        }
+
+        // ==================== Euclid Trace ====================
+        function checkEuclidTrace() {
+            const nInput = document.getElementById('euclid-n').value.trim();
+            const factorInput = document.getElementById('euclid-factor').value.trim();
+            const conclusionInput = document.getElementById('euclid-conclusion').value;
+
+            let correct = 0;
+            let feedback = '';
+
+            // N = 2 * 3 * 5 + 1 = 31
+            if (nInput === '31') {
+                correct++;
+                document.getElementById('euclid-n').style.borderColor = '#4caf50';
+                feedback += '<p>✓ N = 2 · 3 · 5 + 1 = 31</p>';
+            } else {
+                document.getElementById('euclid-n').style.borderColor = '#f44336';
+                feedback += '<p>✗ N = 2 · 3 · 5 + 1 = 30 + 1 = 31</p>';
+            }
+
+            // 31 is prime, so its smallest prime factor is 31
+            if (factorInput === '31') {
+                correct++;
+                document.getElementById('euclid-factor').style.borderColor = '#4caf50';
+                feedback += '<p>✓ 31 is prime, so its smallest prime factor is 31 itself</p>';
+            } else {
+                document.getElementById('euclid-factor').style.borderColor = '#f44336';
+                feedback += '<p>✗ 31 is prime, so its smallest (and only) prime factor is 31</p>';
+            }
+
+            // 31 is not in {2, 3, 5}
+            if (conclusionInput === 'no') {
+                correct++;
+                document.getElementById('euclid-conclusion').style.borderColor = '#4caf50';
+                feedback += '<p>✓ 31 is NOT in the list {2, 3, 5}, confirming a "new" prime exists!</p>';
+            } else {
+                document.getElementById('euclid-conclusion').style.borderColor = '#f44336';
+                feedback += '<p>✗ 31 is NOT in {2, 3, 5}—this is the key insight of the proof</p>';
+            }
+
+            const feedbackDiv = document.getElementById('euclid-feedback');
+            feedbackDiv.className = correct === 3 ? 'feedback success show' : 'feedback info show';
+            feedbackDiv.innerHTML = `<strong>Score: ${correct}/3</strong><br>${feedback}`;
+        }
+
+        function resetEuclidTrace() {
+            document.getElementById('euclid-n').value = '';
+            document.getElementById('euclid-factor').value = '';
+            document.getElementById('euclid-conclusion').value = '';
+            
+            ['euclid-n', 'euclid-factor', 'euclid-conclusion'].forEach(id => {
+                document.getElementById(id).style.borderColor = '';
+            });
+            
+            document.getElementById('euclid-feedback').className = 'feedback';
+        }
+
+        // ==================== Proof Ordering ====================
+        let draggedItem = null;
+
+        function initSortable() {
+            const container = document.getElementById('proof-ordering');
+            const items = container.querySelectorAll('.sortable-item');
+
+            items.forEach(item => {
+                item.addEventListener('dragstart', handleDragStart);
+                item.addEventListener('dragend', handleDragEnd);
+                item.addEventListener('dragover', handleDragOver);
+                item.addEventListener('drop', handleDrop);
+            });
+        }
+
+        function handleDragStart(e) {
+            draggedItem = this;
+            this.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function handleDragEnd(e) {
+            this.classList.remove('dragging');
+            draggedItem = null;
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            if (draggedItem !== this) {
+                const container = document.getElementById('proof-ordering');
+                const items = Array.from(container.querySelectorAll('.sortable-item'));
+                const draggedIndex = items.indexOf(draggedItem);
+                const targetIndex = items.indexOf(this);
+
+                if (draggedIndex < targetIndex) {
+                    this.parentNode.insertBefore(draggedItem, this.nextSibling);
+                } else {
+                    this.parentNode.insertBefore(draggedItem, this);
+                }
+            }
+        }
+
+        function checkProofOrder() {
+            const container = document.getElementById('proof-ordering');
+            const items = container.querySelectorAll('.sortable-item');
+            let correct = true;
+
+            items.forEach((item, index) => {
+                const expectedOrder = index + 1;
+                const actualOrder = parseInt(item.dataset.order);
+                
+                if (actualOrder === expectedOrder) {
+                    item.style.borderColor = '#4caf50';
+                    item.style.backgroundColor = '#e8f5e9';
+                } else {
+                    item.style.borderColor = '#f44336';
+                    item.style.backgroundColor = '#ffebee';
+                    correct = false;
+                }
+            });
+
+            const feedback = document.getElementById('proof-order-feedback');
+            if (correct) {
+                feedback.className = 'feedback success show';
+                feedback.innerHTML = '<strong>Perfect!</strong> You correctly ordered all the proof steps.';
+            } else {
+                feedback.className = 'feedback error show';
+                feedback.innerHTML = '<strong>Not quite right.</strong> The steps should follow the standard contradiction proof structure. Try again!';
+            }
+        }
+
+        function resetProofOrder() {
+            const container = document.getElementById('proof-ordering');
+            const items = Array.from(container.querySelectorAll('.sortable-item'));
+            
+            // Shuffle the items
+            for (let i = items.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                container.appendChild(items[j]);
+            }
+
+            items.forEach(item => {
+                item.style.borderColor = '';
+                item.style.backgroundColor = '';
+            });
+
+            document.getElementById('proof-order-feedback').className = 'feedback';
+        }
+
+        // ==================== Final Quiz ====================
+        function checkFinalQuiz() {
+            const answers = {
+                'fq1': 'b',
+                'fq2': 'b',
+                'fq3': 'c',
+                'fq4': 'b',
+                'fq5': 'b'
+            };
+
+            let correct = 0;
+            let total = 5;
+
+            for (let i = 1; i <= 5; i++) {
+                const selected = document.querySelector(`input[name="fq${i}"]:checked`);
+                const options = document.querySelectorAll(`input[name="fq${i}"]`);
+
+                options.forEach(opt => {
+                    const parent = opt.closest('.option-item');
+                    parent.classList.remove('correct', 'incorrect');
+
+                    if (opt.value === answers[`fq${i}`]) {
+                        parent.classList.add('correct');
+                    } else if (selected && opt === selected && opt.value !== answers[`fq${i}`]) {
+                        parent.classList.add('incorrect');
+                    }
+                });
+
+                if (selected && selected.value === answers[`fq${i}`]) {
+                    correct++;
+                }
+            }
+
+            const scoreDiv = document.getElementById('quiz-score');
+            const scoreValue = document.getElementById('score-value');
+            const scoreMessage = document.getElementById('score-message');
+
+            scoreDiv.style.display = 'block';
+            scoreValue.textContent = `${correct}/${total}`;
+
+            if (correct === total) {
+                scoreMessage.textContent = 'Perfect! You have mastered the classic contradiction proofs.';
+                scoreDiv.style.backgroundColor = '#e8f5e9';
+            } else if (correct >= 3) {
+                scoreMessage.textContent = 'Good work! Review the proofs for any questions you missed.';
+                scoreDiv.style.backgroundColor = '#fff3e0';
+            } else {
+                scoreMessage.textContent = 'Consider reviewing Module 6.2 before continuing.';
+                scoreDiv.style.backgroundColor = '#ffebee';
+            }
+
+            const feedback = document.getElementById('final-quiz-feedback');
+            feedback.className = 'feedback info show';
+            feedback.innerHTML = '<strong>Quiz submitted!</strong> Scroll down to see your score.';
+        }
+
+        function resetFinalQuiz() {
+            for (let i = 1; i <= 5; i++) {
+                const options = document.querySelectorAll(`input[name="fq${i}"]`);
+                options.forEach(opt => {
+                    opt.checked = false;
+                    opt.closest('.option-item').classList.remove('correct', 'incorrect');
+                });
+            }
+            document.getElementById('final-quiz-feedback').className = 'feedback';
+            document.getElementById('quiz-score').style.display = 'none';
+        }
+
+        // ==================== Completion Item Styling ====================
+        document.querySelectorAll('.completion-item input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                this.closest('.completion-item').classList.toggle('completed', this.checked);
+            });
+        });
+
+        // ==================== Initialize ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProgress();
+            initSortable();
+
+            // Initialize first step as revealed
+            document.querySelectorAll('.step-reveal').forEach(container => {
+                const firstStep = container.querySelector('.step-item');
+                if (firstStep) {
+                    firstStep.classList.add('revealed');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
