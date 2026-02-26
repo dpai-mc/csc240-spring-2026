@@ -1,0 +1,2658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 6.4: Mathematical Induction - Summation Formulas | CSC 240</title>
+    <style>
+        /* CSS Reset and Base Styles */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #1a5f7a;
+            --primary-dark: #134b61;
+            --primary-light: #2d7d9a;
+            --secondary-color: #57837b;
+            --accent-color: #c38e70;
+            --accent-hover: #a67656;
+            --success-color: #2e7d32;
+            --success-light: #e8f5e9;
+            --error-color: #c62828;
+            --error-light: #ffebee;
+            --warning-color: #f57c00;
+            --warning-light: #fff3e0;
+            --info-color: #1565c0;
+            --info-light: #e3f2fd;
+            --background-color: #fafafa;
+            --surface-color: #ffffff;
+            --text-primary: #212121;
+            --text-secondary: #555555;
+            --text-muted: #757575;
+            --border-color: #e0e0e0;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 20px rgba(0,0,0,0.15);
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --font-mono: 'Consolas', 'Monaco', 'Courier New', monospace;
+            --nav-height: 50px;
+            --header-height: 140px;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-main);
+            font-size: 16px;
+            line-height: 1.7;
+            color: var(--text-primary);
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Skip Link for Accessibility */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: var(--primary-color);
+            color: #ffffff;
+            padding: 8px 16px;
+            z-index: 1001;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .skip-link:focus {
+            top: 0;
+        }
+
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: #ffffff;
+            padding: 2rem 1rem;
+            text-align: center;
+            position: relative;
+        }
+
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-color), var(--secondary-color), var(--accent-color));
+        }
+
+        .course-tag {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 0.25rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.5px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin: 0.5rem 0;
+            font-weight: 700;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .module-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            margin-top: 0.5rem;
+        }
+
+        /* Sticky Navigation Bar */
+        .sticky-nav {
+            position: sticky;
+            top: 0;
+            background: var(--surface-color);
+            border-bottom: 2px solid var(--border-color);
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1rem;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        .nav-links::-webkit-scrollbar {
+            display: none;
+        }
+
+        .nav-links li {
+            flex-shrink: 0;
+        }
+
+        .nav-links a {
+            display: block;
+            padding: 0.875rem 1rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+            background: rgba(26, 95, 122, 0.05);
+        }
+
+        .nav-links a.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .nav-links a:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: -2px;
+        }
+
+        .nav-progress {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0;
+            flex-shrink: 0;
+        }
+
+        .nav-progress-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            display: none;
+        }
+
+        .nav-progress-bar {
+            width: 100px;
+            height: 6px;
+            background: var(--border-color);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .nav-progress-fill {
+            height: 100%;
+            background: var(--primary-color);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .nav-progress-text {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            min-width: 36px;
+        }
+
+        /* Mobile Navigation */
+        .nav-toggle {
+            display: none;
+            background: none;
+            border: none;
+            padding: 0.5rem;
+            cursor: pointer;
+            color: var(--text-primary);
+        }
+
+        .nav-toggle svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        @media (max-width: 900px) {
+            .nav-progress-label {
+                display: none;
+            }
+
+            .nav-links a {
+                padding: 0.75rem 0.75rem;
+                font-size: 0.85rem;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .nav-container {
+                flex-wrap: wrap;
+            }
+
+            .nav-links {
+                width: 100%;
+                order: 2;
+                padding-bottom: 0.5rem;
+            }
+
+            .nav-progress {
+                order: 1;
+                margin-left: auto;
+            }
+        }
+
+        /* Main Content */
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        /* Section Styles */
+        section {
+            background: var(--surface-color);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            scroll-margin-top: calc(var(--nav-height) + 20px);
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: 1.6rem;
+            margin: 0 0 1.5rem 0;
+            padding-bottom: 0.75rem;
+            border-bottom: 3px solid var(--accent-color);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        h2 .icon {
+            font-size: 1.4rem;
+        }
+
+        h3 {
+            color: var(--primary-dark);
+            font-size: 1.25rem;
+            margin: 1.75rem 0 1rem 0;
+        }
+
+        h4 {
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            margin: 1.5rem 0 0.75rem 0;
+        }
+
+        p {
+            margin: 0 0 1rem 0;
+            color: var(--text-secondary);
+        }
+
+        /* Learning Objectives Box */
+        .objectives-box {
+            background: linear-gradient(135deg, var(--info-light) 0%, #f5f9ff 100%);
+            border: 1px solid #90caf9;
+            border-left: 5px solid var(--info-color);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .objectives-box h3 {
+            color: var(--info-color);
+            margin: 0 0 1rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .objectives-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .objectives-list li {
+            padding: 0.5rem 0 0.5rem 2rem;
+            position: relative;
+            color: var(--text-primary);
+        }
+
+        .objectives-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--success-color);
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        /* Definition Box */
+        .definition-box {
+            background: linear-gradient(135deg, #f3e5f5 0%, #faf5fc 100%);
+            border: 1px solid #ce93d8;
+            border-left: 5px solid #8e24aa;
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .definition-box h4 {
+            color: #8e24aa;
+            margin: 0 0 0.75rem 0;
+            font-size: 1.1rem;
+        }
+
+        .definition-box p {
+            margin: 0;
+            color: var(--text-primary);
+        }
+
+        /* Theorem Box */
+        .theorem-box {
+            background: linear-gradient(135deg, #e8eaf6 0%, #f5f6fc 100%);
+            border: 1px solid #9fa8da;
+            border-left: 5px solid #3f51b5;
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .theorem-box h4 {
+            color: #3f51b5;
+            margin: 0 0 0.75rem 0;
+            font-size: 1.1rem;
+        }
+
+        .theorem-box p {
+            margin: 0;
+            color: var(--text-primary);
+        }
+
+        /* Key Concept Box */
+        .concept-box {
+            background: linear-gradient(135deg, #e8f5e9 0%, #f5faf5 100%);
+            border: 1px solid #a5d6a7;
+            border-left: 5px solid var(--success-color);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .concept-box h4 {
+            color: var(--success-color);
+            margin: 0 0 0.75rem 0;
+        }
+
+        /* Warning Box */
+        .warning-box {
+            background: linear-gradient(135deg, var(--warning-light) 0%, #fffaf5 100%);
+            border: 1px solid #ffcc80;
+            border-left: 5px solid var(--warning-color);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .warning-box h4 {
+            color: #e65100;
+            margin: 0 0 0.75rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Example Box */
+        .example-box {
+            background: var(--surface-color);
+            border: 2px solid var(--primary-light);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .example-box h4 {
+            color: var(--primary-color);
+            margin: 0 0 1rem 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px dashed var(--primary-light);
+        }
+
+        /* Proof Structure */
+        .proof-box {
+            background: #fffde7;
+            border: 2px solid #ffd54f;
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .proof-box h4 {
+            color: #f57f17;
+            margin: 0 0 1rem 0;
+        }
+
+        /* Technique Box */
+        .technique-box {
+            background: linear-gradient(135deg, #e0f7fa 0%, #f5fcfd 100%);
+            border: 2px solid #4dd0e1;
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .technique-box h4 {
+            color: #00838f;
+            margin: 0 0 1rem 0;
+        }
+
+        /* Code Blocks */
+        pre {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 1.25rem;
+            border-radius: var(--radius-md);
+            overflow-x: auto;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin: 1rem 0;
+            white-space: pre;
+            word-wrap: normal;
+        }
+
+        code {
+            font-family: var(--font-mono);
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: inherit;
+        }
+
+        :not(pre) > code {
+            background: #f5f5f5;
+            padding: 0.2rem 0.4rem;
+            border-radius: var(--radius-sm);
+            color: #c7254e;
+            font-size: 0.9em;
+        }
+
+        .code-keyword { color: #569cd6; }
+        .code-string { color: #ce9178; }
+        .code-comment { color: #6a9955; }
+        .code-number { color: #b5cea8; }
+        .code-function { color: #dcdcaa; }
+        .code-type { color: #4ec9b0; }
+
+        /* Interactive Elements */
+        .interactive-section {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f5faff 100%);
+            border: 2px solid #64b5f6;
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .interactive-section h3 {
+            color: var(--info-color);
+            margin: 0 0 1rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Buttons */
+        button {
+            font-family: var(--font-main);
+            font-size: 1rem;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: #ffffff;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary:focus {
+            outline: 3px solid var(--primary-light);
+            outline-offset: 2px;
+        }
+
+        .btn-secondary {
+            background: var(--secondary-color);
+            color: #ffffff;
+        }
+
+        .btn-secondary:hover {
+            background: #456b64;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary:focus {
+            outline: 3px solid var(--secondary-color);
+            outline-offset: 2px;
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: #ffffff;
+        }
+
+        .btn-success:hover {
+            background: #1b5e20;
+        }
+
+        .btn-success:focus {
+            outline: 3px solid var(--success-color);
+            outline-offset: 2px;
+        }
+
+        .btn-reset {
+            background: #757575;
+            color: #ffffff;
+        }
+
+        .btn-reset:hover {
+            background: #616161;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        input[type="text"],
+        input[type="number"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-family: var(--font-main);
+            font-size: 1rem;
+            transition: border-color 0.2s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(26, 95, 122, 0.1);
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        /* Radio and Checkbox Styles */
+        .option-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .option-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .option-item:hover {
+            background: #f0f4f8;
+            border-color: var(--primary-light);
+        }
+
+        .option-item input[type="radio"],
+        .option-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-top: 2px;
+            cursor: pointer;
+        }
+
+        .option-item label {
+            margin: 0;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .option-item.correct {
+            background: var(--success-light);
+            border-color: var(--success-color);
+        }
+
+        .option-item.incorrect {
+            background: var(--error-light);
+            border-color: var(--error-color);
+        }
+
+        /* Feedback Messages */
+        .feedback {
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .feedback.show {
+            display: block;
+        }
+
+        .feedback.success {
+            background: var(--success-light);
+            border: 1px solid var(--success-color);
+            color: #1b5e20;
+        }
+
+        .feedback.error {
+            background: var(--error-light);
+            border: 1px solid var(--error-color);
+            color: #b71c1c;
+        }
+
+        .feedback.info {
+            background: var(--info-light);
+            border: 1px solid var(--info-color);
+            color: #0d47a1;
+        }
+
+        /* Collapsible Sections */
+        .collapsible {
+            background: var(--surface-color);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .collapsible-header {
+            padding: 1rem 1.25rem;
+            background: #f8f9fa;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            color: var(--text-primary);
+            transition: background 0.2s ease;
+        }
+
+        .collapsible-header:hover {
+            background: #f0f4f8;
+        }
+
+        .collapsible-header:focus {
+            outline: 3px solid var(--primary-color);
+            outline-offset: -3px;
+        }
+
+        .collapsible-icon {
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
+        }
+
+        .collapsible.open .collapsible-icon {
+            transform: rotate(180deg);
+        }
+
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .collapsible.open .collapsible-content {
+            max-height: 5000px;
+        }
+
+        .collapsible-body {
+            padding: 1.25rem;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border: 1px solid var(--border-color);
+        }
+
+        th {
+            background: var(--primary-color);
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        tr:hover {
+            background: #f0f4f8;
+        }
+
+        /* Math Display */
+        .math-display {
+            background: #f8f9fa;
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius-md);
+            text-align: center;
+            font-size: 1.1rem;
+            margin: 1rem 0;
+            border: 1px solid var(--border-color);
+            overflow-x: auto;
+            line-height: 1.8;
+        }
+
+        .math-inline {
+            font-style: italic;
+            white-space: nowrap;
+        }
+
+        /* Step-by-Step Proof Display */
+        .proof-step {
+            background: #ffffff;
+            border-left: 4px solid var(--primary-color);
+            padding: 0.75rem 1rem;
+            margin: 0.5rem 0;
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+        }
+
+        .proof-step-label {
+            font-weight: 700;
+            color: var(--primary-color);
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .proof-step-content {
+            color: var(--text-secondary);
+        }
+
+        .proof-step-math {
+            background: #f8f9fa;
+            padding: 0.5rem 1rem;
+            margin: 0.5rem 0;
+            border-radius: var(--radius-sm);
+            font-family: var(--font-mono);
+            overflow-x: auto;
+        }
+
+        /* Algebra Steps */
+        .algebra-steps {
+            background: #f8f9fa;
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: var(--font-mono);
+            font-size: 0.95rem;
+            line-height: 2;
+            overflow-x: auto;
+        }
+
+        .algebra-line {
+            display: flex;
+            align-items: baseline;
+            gap: 1rem;
+            padding: 0.25rem 0;
+        }
+
+        .algebra-equals {
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        .algebra-expression {
+            flex: 1;
+        }
+
+        .algebra-reason {
+            color: var(--text-muted);
+            font-style: italic;
+            font-size: 0.85rem;
+            min-width: 150px;
+            text-align: right;
+        }
+
+        /* Step Reveal */
+        .step-reveal {
+            margin: 1.5rem 0;
+        }
+
+        .step-item {
+            background: #f8f9fa;
+            border-left: 4px solid var(--border-color);
+            padding: 1rem 1.25rem;
+            margin: 0.5rem 0;
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+            opacity: 0.5;
+            transition: all 0.3s ease;
+        }
+
+        .step-item.revealed {
+            opacity: 1;
+            border-left-color: var(--primary-color);
+            background: #ffffff;
+        }
+
+        .step-number {
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-right: 0.5rem;
+        }
+
+        /* Completion Checkboxes */
+        .completion-tracker {
+            background: #f8f9fa;
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .completion-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .completion-item:last-child {
+            border-bottom: none;
+        }
+
+        .completion-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .completion-item label {
+            margin: 0;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .completion-item.completed label {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+
+        /* Quiz Container */
+        .quiz-container {
+            background: var(--surface-color);
+            border: 2px solid var(--primary-light);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .quiz-question {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            font-size: 1.05rem;
+        }
+
+        .quiz-score {
+            text-align: center;
+            padding: 1rem;
+            background: var(--info-light);
+            border-radius: var(--radius-md);
+            margin-top: 1rem;
+        }
+
+        .quiz-score .score-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        /* Formula Card */
+        .formula-card {
+            background: linear-gradient(135deg, #fff8e1 0%, #fffdf5 100%);
+            border: 2px solid #ffcc80;
+            border-radius: var(--radius-md);
+            padding: 1.25rem;
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        .formula-card h4 {
+            color: #e65100;
+            margin: 0 0 0.75rem 0;
+            font-size: 1rem;
+        }
+
+        .formula-card .formula {
+            font-size: 1.2rem;
+            font-family: var(--font-mono);
+            color: var(--text-primary);
+            padding: 0.5rem;
+            background: rgba(255,255,255,0.7);
+            border-radius: var(--radius-sm);
+        }
+
+        /* Summary Table */
+        .summary-table {
+            background: var(--surface-color);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            margin: 1.5rem 0;
+        }
+
+        .summary-table table {
+            margin: 0;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--primary-dark);
+            color: #ffffff;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        footer p {
+            color: rgba(255,255,255,0.9);
+            margin: 0.5rem 0;
+        }
+
+        footer a {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.6rem;
+            }
+
+            h2 {
+                font-size: 1.4rem;
+            }
+
+            section {
+                padding: 1.25rem;
+            }
+
+            main {
+                padding: 1rem;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .btn-group button {
+                width: 100%;
+            }
+
+            .algebra-line {
+                flex-direction: column;
+                gap: 0.25rem;
+            }
+
+            .algebra-reason {
+                text-align: left;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            .sticky-nav,
+            .interactive-section,
+            .btn-group,
+            .skip-link,
+            .completion-tracker {
+                display: none;
+            }
+
+            section {
+                break-inside: avoid;
+                box-shadow: none;
+                border: 1px solid #ccc;
+            }
+        }
+
+        /* Focus Visible for Keyboard Navigation */
+        *:focus-visible {
+            outline: 3px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        /* High Contrast Mode Support */
+        @media (prefers-contrast: high) {
+            :root {
+                --border-color: #000000;
+            }
+
+            .option-item,
+            .collapsible-header {
+                border-width: 2px;
+            }
+        }
+
+        /* Reduced Motion */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+
+            html {
+                scroll-behavior: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <header>
+        <div class="course-tag">CSC 240 - Discrete Structures</div>
+        <h1>Module 6.4: Mathematical Induction</h1>
+        <p class="module-subtitle">Summation Formulas - Proving Identities with Induction</p>
+    </header>
+
+    <!-- Sticky Navigation Bar -->
+    <nav class="sticky-nav" role="navigation" aria-label="Module sections">
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="#section-intro" class="active">Introduction</a></li>
+                <li><a href="#section-technique">Key Technique</a></li>
+                <li><a href="#section-sum-integers">Sum of Integers</a></li>
+                <li><a href="#section-sum-squares">Sum of Squares</a></li>
+                <li><a href="#section-geometric">Geometric Series</a></li>
+                <li><a href="#section-practice">Practice</a></li>
+                <li><a href="#section-quiz">Quiz</a></li>
+                <li><a href="#section-summary">Summary</a></li>
+            </ul>
+            <div class="nav-progress">
+                <span class="nav-progress-label">Progress:</span>
+                <div class="nav-progress-bar">
+                    <div class="nav-progress-fill" id="nav-progress-fill"></div>
+                </div>
+                <span class="nav-progress-text" id="nav-progress-text">0%</span>
+            </div>
+        </div>
+    </nav>
+
+    <main id="main-content">
+        <!-- Section 1: Introduction and Objectives -->
+        <section id="section-intro">
+            <h2><span class="icon">📚</span> Introduction</h2>
+
+            <p>Welcome to Module 6.4! In Module 6.3, you learned the <em>principle</em> of mathematical induction. Now it's time to put that principle to work. In this module, you'll master the art of proving <strong>summation formulas</strong>—equations that give closed-form expressions for sums like 1 + 2 + 3 + ... + n.</p>
+
+            <p>These formulas are incredibly useful in computer science for analyzing algorithm complexity. When you need to count operations in a nested loop or analyze recursive running times, summation formulas are essential tools.</p>
+
+            <div class="objectives-box">
+                <h3><span>🎯</span> Learning Objectives</h3>
+                <ul class="objectives-list">
+                    <li>Apply mathematical induction to prove summation formulas</li>
+                    <li>Master the "splitting the sum" algebraic technique</li>
+                    <li>Verify base cases for summation identities</li>
+                    <li>Use the inductive hypothesis effectively in algebraic manipulations</li>
+                    <li>Write complete, well-structured induction proofs for summations</li>
+                    <li>Connect summation formulas to algorithm analysis</li>
+                </ul>
+            </div>
+
+            <div class="concept-box">
+                <h4>📋 Prerequisites from Module 6.3</h4>
+                <p>Before proceeding, ensure you can:</p>
+                <ul>
+                    <li>State the Principle of Mathematical Induction</li>
+                    <li>Identify the base case, inductive hypothesis, and inductive step</li>
+                    <li>Explain why both base case and inductive step are necessary</li>
+                    <li>Write a basic induction proof using the standard template</li>
+                </ul>
+            </div>
+
+            <h3>Why Summation Formulas Matter</h3>
+
+            <div class="example-box">
+                <h4>Computer Science Application</h4>
+                <p>Consider this simple nested loop:</p>
+                <pre><code><span class="code-keyword">for</span> (<span class="code-type">int</span> i = <span class="code-number">1</span>; i <= n; i++) {
+    <span class="code-keyword">for</span> (<span class="code-type">int</span> j = <span class="code-number">1</span>; j <= i; j++) {
+        <span class="code-comment">// Some O(1) operation</span>
+    }
+}</code></pre>
+                <p>How many times does the inner operation execute?</p>
+                <ul>
+                    <li>When i = 1: 1 time</li>
+                    <li>When i = 2: 2 times</li>
+                    <li>When i = 3: 3 times</li>
+                    <li>...</li>
+                    <li>When i = n: n times</li>
+                </ul>
+                <p><strong>Total:</strong> 1 + 2 + 3 + ... + n = n(n+1)/2 = O(n²)</p>
+                <p>The summation formula tells us this algorithm is quadratic!</p>
+            </div>
+
+            <div class="completion-tracker">
+                <strong>Section Checklist:</strong>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-intro" onchange="updateProgress()">
+                    <label for="check-intro">I understand why summation formulas are important</label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: The Key Technique -->
+        <section id="section-technique">
+            <h2><span class="icon">🔧</span> The Key Technique: Splitting the Sum</h2>
+
+            <p>Every summation proof by induction uses the same fundamental technique: <strong>splitting the sum</strong>. This technique is so important that you should internalize it completely.</p>
+
+            <div class="technique-box">
+                <h4>📋 The Splitting Technique</h4>
+                <p>For any sum from i = 1 to k+1:</p>
+                <div class="math-display">
+                    ∑<sub>i=1</sub><sup>k+1</sup> f(i) = ∑<sub>i=1</sub><sup>k</sup> f(i) + f(k+1)
+                </div>
+                <p>In words: <strong>The sum up to k+1 equals the sum up to k, plus the (k+1)th term.</strong></p>
+            </div>
+
+            <h3>Why This Works</h3>
+
+            <p>This technique is the bridge between P(k) and P(k+1):</p>
+
+            <div class="algebra-steps">
+                <div class="algebra-line">
+                    <span class="algebra-expression">∑<sub>i=1</sub><sup>k+1</sup> f(i)</span>
+                    <span class="algebra-reason">[What we want to evaluate]</span>
+                </div>
+                <div class="algebra-line">
+                    <span class="algebra-equals">=</span>
+                    <span class="algebra-expression">∑<sub>i=1</sub><sup>k</sup> f(i) + f(k+1)</span>
+                    <span class="algebra-reason">[Split off last term]</span>
+                </div>
+                <div class="algebra-line">
+                    <span class="algebra-equals">=</span>
+                    <span class="algebra-expression">[closed form for sum to k] + f(k+1)</span>
+                    <span class="algebra-reason">[Apply Inductive Hypothesis!]</span>
+                </div>
+                <div class="algebra-line">
+                    <span class="algebra-equals">=</span>
+                    <span class="algebra-expression">[simplify algebraically]</span>
+                    <span class="algebra-reason">[Algebra]</span>
+                </div>
+                <div class="algebra-line">
+                    <span class="algebra-equals">=</span>
+                    <span class="algebra-expression">[closed form for sum to k+1]</span>
+                    <span class="algebra-reason">[This is P(k+1)!]</span>
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <h4>💡 The Pattern</h4>
+                <p>Every summation induction proof follows this pattern:</p>
+                <ol>
+                    <li><strong>Split:</strong> Write the sum to k+1 as (sum to k) + (last term)</li>
+                    <li><strong>Apply IH:</strong> Replace "sum to k" with its closed form (this is the inductive hypothesis!)</li>
+                    <li><strong>Simplify:</strong> Use algebra to combine and simplify</li>
+                    <li><strong>Match:</strong> Show the result equals the closed form for k+1</li>
+                </ol>
+            </div>
+
+            <h3>Common Algebraic Manipulations</h3>
+
+            <p>You'll frequently need these algebraic skills:</p>
+
+            <div class="example-box">
+                <h4>Essential Algebra for Summation Proofs</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Skill</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Finding common denominators</td>
+                            <td>k(k+1)/2 + (k+1) = k(k+1)/2 + 2(k+1)/2</td>
+                        </tr>
+                        <tr>
+                            <td>Factoring</td>
+                            <td>k(k+1) + 2(k+1) = (k+1)(k+2)</td>
+                        </tr>
+                        <tr>
+                            <td>Expanding</td>
+                            <td>(k+1)² = k² + 2k + 1</td>
+                        </tr>
+                        <tr>
+                            <td>Recognizing patterns</td>
+                            <td>k² + 2k + 1 = (k+1)²</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="warning-box">
+                <h4>⚠️ Common Mistake</h4>
+                <p>Don't forget to <strong>actually use</strong> the inductive hypothesis! The whole point of the splitting technique is to create a place where you can substitute the IH.</p>
+                <p>If you find yourself proving P(k+1) without ever using P(k), you're either doing a direct proof (not induction) or making an error.</p>
+            </div>
+
+            <!-- Interactive: Identify the Split -->
+            <div class="interactive-section">
+                <h3><span>🔄</span> Interactive: Practice Splitting</h3>
+                <p>For each sum, identify how to split it to isolate the last term.</p>
+
+                <div class="quiz-container">
+                    <div class="quiz-item">
+                        <p class="quiz-question">1. How do you split ∑<sub>i=1</sub><sup>k+1</sup> i² ?</p>
+                        <div class="option-group" id="split-q1">
+                            <div class="option-item">
+                                <input type="radio" name="sq1" id="sq1-a" value="a">
+                                <label for="sq1-a">∑<sub>i=1</sub><sup>k</sup> i² + k²</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="radio" name="sq1" id="sq1-b" value="b">
+                                <label for="sq1-b">∑<sub>i=1</sub><sup>k</sup> i² + (k+1)²</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="radio" name="sq1" id="sq1-c" value="c">
+                                <label for="sq1-c">∑<sub>i=1</sub><sup>k+1</sup> i + ∑<sub>i=1</sub><sup>k+1</sup> i</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="quiz-item">
+                        <p class="quiz-question">2. How do you split ∑<sub>i=1</sub><sup>k+1</sup> 2<sup>i</sup> ?</p>
+                        <div class="option-group" id="split-q2">
+                            <div class="option-item">
+                                <input type="radio" name="sq2" id="sq2-a" value="a">
+                                <label for="sq2-a">∑<sub>i=1</sub><sup>k</sup> 2<sup>i</sup> + 2<sup>k+1</sup></label>
+                            </div>
+                            <div class="option-item">
+                                <input type="radio" name="sq2" id="sq2-b" value="b">
+                                <label for="sq2-b">2 · ∑<sub>i=1</sub><sup>k</sup> 2<sup>i</sup></label>
+                            </div>
+                            <div class="option-item">
+                                <input type="radio" name="sq2" id="sq2-c" value="c">
+                                <label for="sq2-c">∑<sub>i=1</sub><sup>k</sup> 2<sup>i</sup> + 2<sup>k</sup></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="quiz-item">
+                        <p class="quiz-question">3. How do you split ∑<sub>i=1</sub><sup>k+1</sup> (2i-1) ?</p>
+                        <div class="option-group" id="split-q3">
+                            <div class="option-item">
+                                <input type="radio" name="sq3" id="sq3-a" value="a">
+                                <label for="sq3-a">∑<sub>i=1</sub><sup>k</sup> (2i-1) + (2k-1)</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="radio" name="sq3" id="sq3-b" value="b">
+                                <label for="sq3-b">∑<sub>i=1</sub><sup>k</sup> (2i-1) + (2(k+1)-1)</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="radio" name="sq3" id="sq3-c" value="c">
+                                <label for="sq3-c">∑<sub>i=1</sub><sup>k</sup> (2i-1) + (2k+1)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button class="btn-primary" onclick="checkSplitQuiz()">Check Answers</button>
+                        <button class="btn-reset" onclick="resetSplitQuiz()">Reset</button>
+                    </div>
+
+                    <div id="split-feedback" class="feedback"></div>
+                </div>
+            </div>
+
+            <div class="completion-tracker">
+                <strong>Section Checklist:</strong>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-tech-1" onchange="updateProgress()">
+                    <label for="check-tech-1">I understand the splitting technique</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-tech-2" onchange="updateProgress()">
+                    <label for="check-tech-2">I completed the splitting practice</label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Sum of First n Positive Integers -->
+        <section id="section-sum-integers">
+            <h2><span class="icon">➕</span> Example 1: Sum of First n Integers</h2>
+
+            <p>Let's prove the most famous summation formula using our induction template.</p>
+
+            <div class="formula-card">
+                <h4>The Formula</h4>
+                <div class="formula">1 + 2 + 3 + ... + n = n(n+1)/2</div>
+            </div>
+
+            <div class="theorem-box">
+                <h4>📐 Theorem</h4>
+                <p>For all positive integers n ≥ 1:</p>
+                <p style="text-align: center; font-family: var(--font-mono);">∑<sub>i=1</sub><sup>n</sup> i = n(n+1)/2</p>
+            </div>
+
+            <h3>The Complete Proof</h3>
+
+            <div class="proof-box">
+                <h4>Proof by Mathematical Induction</h4>
+
+                <div class="proof-step">
+                    <span class="proof-step-label">Claim:</span>
+                    <span class="proof-step-content">For all n ≥ 1, ∑<sub>i=1</sub><sup>n</sup> i = n(n+1)/2.</span>
+                </div>
+
+                <div class="proof-step">
+                    <span class="proof-step-label">Base Case (n = 1):</span>
+                    <span class="proof-step-content">
+                        <br>LHS: ∑<sub>i=1</sub><sup>1</sup> i = 1
+                        <br>RHS: 1(1+1)/2 = 1(2)/2 = 1
+                        <br>Since LHS = RHS = 1, the base case holds. ✓
+                    </span>
+                </div>
+
+                <div class="proof-step">
+                    <span class="proof-step-label">Inductive Hypothesis:</span>
+                    <span class="proof-step-content">
+                        Assume that for some k ≥ 1:
+                        <div class="proof-step-math">∑<sub>i=1</sub><sup>k</sup> i = k(k+1)/2</div>
+                    </span>
+                </div>
+
+                <div class="proof-step">
+                    <span class="proof-step-label">Inductive Step:</span>
+                    <span class="proof-step-content">
+                        We must show: ∑<sub>i=1</sub><sup>k+1</sup> i = (k+1)(k+2)/2
+                    </span>
+                </div>
+
+                <div class="proof-step">
+                    <span class="proof-step-label">Proof of Inductive Step:</span>
+                    <div class="algebra-steps">
+                        <div class="algebra-line">
+                            <span class="algebra-expression">∑<sub>i=1</sub><sup>k+1</sup> i</span>
+                            <span class="algebra-reason"></span>
+                        </div>
+                        <div class="algebra-line">
+                            <span class="algebra-equals">=</span>
+                            <span class="algebra-expression">∑<sub>i=1</sub><sup>k</sup> i + (k+1)</span>
+                            <span class="algebra-reason">[Split off last term]</span>
+                        </div>
+                        <div class="algebra-line">
+                            <span class="algebra-equals">=</span>
+                            <span class="algebra-expression">k(k+1)/2 + (k+1)</span>
+                            <span class="algebra-reason">[By Inductive Hypothesis]</span>
+                        </div>
+                        <div class="algebra-line">
+                            <span class="algebra-equals">=</span>
+                            <span class="algebra-expression">k(k+1)/2 + 2(k+1)/2</span>
+                            <span class="algebra-reason">[Common denominator]</span>
+                        </div>
+                        <div class="algebra-line">
+                            <span class="algebra-equals">=</span>
+                            <span class="algebra-expression">[k(k+1) + 2(k+1)]/2</span>
+                            <span class="algebra-reason">[Combine fractions]</span>
+                        </div>
+                        <div class="algebra-line">
+                            <span class="algebra-equals">=</span>
+                            <span class="algebra-expression">(k+1)(k+2)/2</span>
+                            <span class="algebra-reason">[Factor out (k+1)]</span>
+                        </div>
+                    </div>
+                    <span class="proof-step-content">This is exactly what we needed to show! ✓</span>
+                </div>
+
+                <div class="proof-step">
+                    <span class="proof-step-label">Conclusion:</span>
+                    <span class="proof-step-content">
+                        By the Principle of Mathematical Induction, ∑<sub>i=1</sub><sup>n</sup> i = n(n+1)/2 for all n ≥ 1. ∎
+                    </span>
+                </div>
+            </div>
+
+            <h3>Key Observations</h3>
+
+            <div class="concept-box">
+                <h4>💡 What Made This Work?</h4>
+                <ol>
+                    <li><strong>We used the IH:</strong> The step "= k(k+1)/2 + (k+1)" is where we applied the inductive hypothesis.</li>
+                    <li><strong>Algebra connected k to k+1:</strong> Factoring (k+1) from k(k+1) + 2(k+1) gave us (k+1)(k+2).</li>
+                    <li><strong>The formula "updated" correctly:</strong> Replacing k with k+1 in k(k+1)/2 gives (k+1)(k+2)/2.</li>
+                </ol>
+            </div>
+
+            <!-- Interactive: Verify Specific Cases -->
+            <div class="interactive-section">
+                <h3><span>🔄</span> Interactive: Verify the Formula</h3>
+                <p>Let's verify the formula works for specific values of n.</p>
+
+                <div class="quiz-container">
+                    <div class="form-group">
+                        <label for="verify-n">Enter a value for n (1-20):</label>
+                        <input type="number" id="verify-n" min="1" max="20" value="5" aria-label="Value of n">
+                    </div>
+
+                    <div class="btn-group">
+                        <button class="btn-primary" onclick="verifySum()">Verify Formula</button>
+                    </div>
+
+                    <div id="verify-result" class="feedback info show" style="display: none;"></div>
+                </div>
+            </div>
+
+            <div class="completion-tracker">
+                <strong>Section Checklist:</strong>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-int-1" onchange="updateProgress()">
+                    <label for="check-int-1">I followed the complete proof</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-int-2" onchange="updateProgress()">
+                    <label for="check-int-2">I understand where the IH was used</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-int-3" onchange="updateProgress()">
+                    <label for="check-int-3">I verified the formula interactively</label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Sum of First n Squares -->
+        <section id="section-sum-squares">
+            <h2><span class="icon">📐</span> Example 2: Sum of First n Squares</h2>
+
+            <p>Now let's tackle a more challenging formula: the sum of squares.</p>
+
+            <div class="formula-card">
+                <h4>The Formula</h4>
+                <div class="formula">1² + 2² + 3² + ... + n² = n(n+1)(2n+1)/6</div>
+            </div>
+
+            <div class="theorem-box">
+                <h4>📐 Theorem</h4>
+                <p>For all positive integers n ≥ 1:</p>
+                <p style="text-align: center; font-family: var(--font-mono);">∑<sub>i=1</sub><sup>n</sup> i² = n(n+1)(2n+1)/6</p>
+            </div>
+
+            <h3>Step-by-Step Proof</h3>
+
+            <div class="step-reveal" id="squares-proof">
+                <div class="step-item revealed">
+                    <span class="step-number">Base Case (n = 1):</span>
+                    <p>LHS: 1² = 1</p>
+                    <p>RHS: 1(1+1)(2·1+1)/6 = 1(2)(3)/6 = 6/6 = 1</p>
+                    <p>LHS = RHS ✓</p>
+                </div>
+
+                <div class="step-item">
+                    <span class="step-number">Inductive Hypothesis:</span>
+                    <p>Assume for some k ≥ 1:</p>
+                    <div class="math-display">∑<sub>i=1</sub><sup>k</sup> i² = k(k+1)(2k+1)/6</div>
+                </div>
+
+                <div class="step-item">
+                    <span class="step-number">Goal (What we need to show):</span>
+                    <div class="math-display">∑<sub>i=1</sub><sup>k+1</sup> i² = (k+1)(k+2)(2k+3)/6</div>
+                    <p>Note: We get this by replacing k with k+1 in the formula.</p>
+                </div>
+
+                <div class="step-item">
+                    <span class="step-number">Split the Sum:</span>
+                    <div class="math-display">∑<sub>i=1</sub><sup>k+1</sup> i² = ∑<sub>i=1</sub><sup>k</sup> i² + (k+1)²</div>
+                </div>
+
+                <div class="step-item">
+                    <span class="step-number">Apply the Inductive Hypothesis:</span>
+                    <div class="math-display">= k(k+1)(2k+1)/6 + (k+1)²</div>
+                </div>
+
+                <div class="step-item">
+                    <span class="step-number">Find Common Denominator:</span>
+                    <div class="math-display">= k(k+1)(2k+1)/6 + 6(k+1)²/6</div>
+                </div>
+
+                <div class="step-item">
+                    <span class="step-number">Combine and Factor:</span>
+                    <div class="algebra-steps">
+                        <div class="algebra-line">
+                            <span class="algebra-equals">=</span>
+                            <span class="algebra-expression">[k(k+1)(2k+1) + 6(k+1)²]/6</span>
+                        </div>
+                        <div class="algebra-line">
+                            <span class="algebra-equals">=</span>
+                            <span class="algebra-expression">(k+1)[k(2k+1) + 6(k+1)]/6</span>
+                            <span class="algebra-reason">[Factor out (k+1)]</span>
+                        </div>
+                        <div class="algebra-line">
+                            <span class="algebra-equals">=</span>
+                            <span class="algebra-expression">(k+1)[2k² + k + 6k + 6]/6</span>
+                            <span class="algebra-reason">[Expand]</span>
+                        </div>
+                        <div class="algebra-line">
+                            <span class="algebra-equals">=</span>
+                            <span class="algebra-expression">(k+1)[2k² + 7k + 6]/6</span>
+                            <span class="algebra-reason">[Combine like terms]</span>
+                        </div>
+                        <div class="algebra-line">
+                            <span class="algebra-equals">=</span>
+                            <span class="algebra-expression">(k+1)(k+2)(2k+3)/6</span>
+                            <span class="algebra-reason">[Factor quadratic]</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <span class="step-number">Conclusion:</span>
+                    <p>This is exactly (k+1)(k+2)(2k+3)/6, which is what we needed to prove!</p>
+                    <p>By induction, ∑<sub>i=1</sub><sup>n</sup> i² = n(n+1)(2n+1)/6 for all n ≥ 1. ∎</p>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn-primary" onclick="revealNextStep('squares-proof')">Reveal Next Step</button>
+                <button class="btn-secondary" onclick="revealAllSteps('squares-proof')">Show All Steps</button>
+                <button class="btn-reset" onclick="resetSteps('squares-proof')">Reset</button>
+            </div>
+
+            <h3>The Tricky Part: Factoring</h3>
+
+            <div class="collapsible">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)" tabindex="0" role="button" aria-expanded="false">
+                    <span>How to factor 2k² + 7k + 6</span>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <p>To factor 2k² + 7k + 6, we need two numbers that:</p>
+                        <ul>
+                            <li>Multiply to 2 × 6 = 12</li>
+                            <li>Add to 7</li>
+                        </ul>
+                        <p>Those numbers are 3 and 4.</p>
+                        <p>Rewrite: 2k² + 3k + 4k + 6</p>
+                        <p>Group: k(2k + 3) + 2(2k + 3)</p>
+                        <p>Factor: (k + 2)(2k + 3) ✓</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="completion-tracker">
+                <strong>Section Checklist:</strong>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-sq-1" onchange="updateProgress()">
+                    <label for="check-sq-1">I worked through the sum of squares proof</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-sq-2" onchange="updateProgress()">
+                    <label for="check-sq-2">I understand the factoring step</label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5: Geometric Series -->
+        <section id="section-geometric">
+            <h2><span class="icon">📈</span> Example 3: Geometric Series</h2>
+
+            <p>The geometric series is crucial for analyzing algorithms with exponential behavior and for understanding recurrence relations.</p>
+
+            <div class="formula-card">
+                <h4>The Formula (for r ≠ 1)</h4>
+                <div class="formula">1 + r + r² + ... + rⁿ = (r<sup>n+1</sup> - 1)/(r - 1)</div>
+            </div>
+
+            <div class="theorem-box">
+                <h4>📐 Theorem</h4>
+                <p>For all integers n ≥ 0 and any real number r ≠ 1:</p>
+                <p style="text-align: center; font-family: var(--font-mono);">∑<sub>i=0</sub><sup>n</sup> r<sup>i</sup> = (r<sup>n+1</sup> - 1)/(r - 1)</p>
+            </div>
+
+            <div class="warning-box">
+                <h4>⚠️ Note the Index</h4>
+                <p>This sum starts at i = 0, not i = 1. The base case will be n = 0.</p>
+            </div>
+
+            <h3>The Proof</h3>
+
+            <div class="proof-box">
+                <h4>Proof by Mathematical Induction</h4>
+
+                <div class="proof-step">
+                    <span class="proof-step-label">Base Case (n = 0):</span>
+                    <span class="proof-step-content">
+                        <br>LHS: ∑<sub>i=0</sub><sup>0</sup> r<sup>i</sup> = r⁰ = 1
+                        <br>RHS: (r<sup>0+1</sup> - 1)/(r - 1) = (r - 1)/(r - 1) = 1
+                        <br>LHS = RHS ✓
+                    </span>
+                </div>
+
+                <div class="proof-step">
+                    <span class="proof-step-label">Inductive Hypothesis:</span>
+                    <span class="proof-step-content">
+                        Assume for some k ≥ 0:
+                        <div class="proof-step-math">∑<sub>i=0</sub><sup>k</sup> r<sup>i</sup> = (r<sup>k+1</sup> - 1)/(r - 1)</div>
+                    </span>
+                </div>
+
+                <div class="proof-step">
+                    <span class="proof-step-label">Inductive Step:</span>
+                    <span class="proof-step-content">
+                        We must show: ∑<sub>i=0</sub><sup>k+1</sup> r<sup>i</sup> = (r<sup>k+2</sup> - 1)/(r - 1)
+                    </span>
+                </div>
+
+                <div class="proof-step">
+                    <span class="proof-step-label">Proof:</span>
+                    <div class="algebra-steps">
+                        <div class="algebra-line">
+                            <span class="algebra-expression">∑<sub>i=0</sub><sup>k+1</sup> r<sup>i</sup></span>
+                        </div>
+                        <div class="algebra-line">
+                            <span class="algebra-equals">=</span>
+                            <span class="algebra-expression">∑<sub>i=0</sub><sup>k</sup> r<sup>i</sup> + r<sup>k+1</sup></span>
+                            <span class="algebra-reason">[Split]</span>
+                        </div>
+                        <div class="algebra-line">
+                            <span class="algebra-equals">=</span>
+                            <span class="algebra-expression">(r<sup>k+1</sup> - 1)/(r - 1) + r<sup>k+1</sup></span>
+                            <span class="algebra-reason">[By IH]</span>
+                        </div>
+                        <div class="algebra-line">
+                            <span class="algebra-equals">=</span>
+                            <span class="algebra-expression">(r<sup>k+1</sup> - 1)/(r - 1) + r<sup>k+1</sup>(r - 1)/(r - 1)</span>
+                            <span class="algebra-reason">[Common denom]</span>
+                        </div>
+                        <div class="algebra-line">
+                            <span class="algebra-equals">=</span>
+                            <span class="algebra-expression">[r<sup>k+1</sup> - 1 + r<sup>k+2</sup> - r<sup>k+1</sup>]/(r - 1)</span>
+                            <span class="algebra-reason">[Combine]</span>
+                        </div>
+                        <div class="algebra-line">
+                            <span class="algebra-equals">=</span>
+                            <span class="algebra-expression">(r<sup>k+2</sup> - 1)/(r - 1)</span>
+                            <span class="algebra-reason">[Simplify: r<sup>k+1</sup> cancels!]</span>
+                        </div>
+                    </div>
+                    <span class="proof-step-content">This is exactly what we needed! ✓</span>
+                </div>
+
+                <div class="proof-step">
+                    <span class="proof-step-label">Conclusion:</span>
+                    <span class="proof-step-content">
+                        By induction, ∑<sub>i=0</sub><sup>n</sup> r<sup>i</sup> = (r<sup>n+1</sup> - 1)/(r - 1) for all n ≥ 0. ∎
+                    </span>
+                </div>
+            </div>
+
+            <h3>Special Cases</h3>
+
+            <div class="example-box">
+                <h4>Common Applications</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Value of r</th>
+                            <th>Formula</th>
+                            <th>Application</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>r = 2</td>
+                            <td>1 + 2 + 4 + ... + 2ⁿ = 2<sup>n+1</sup> - 1</td>
+                            <td>Binary tree nodes, merge sort analysis</td>
+                        </tr>
+                        <tr>
+                            <td>r = 1/2</td>
+                            <td>1 + 1/2 + 1/4 + ... → 2 (as n → ∞)</td>
+                            <td>Probability, expected values</td>
+                        </tr>
+                        <tr>
+                            <td>r = 10</td>
+                            <td>1 + 10 + 100 + ... + 10ⁿ</td>
+                            <td>Decimal place values</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="concept-box">
+                <h4>💡 CS Application: Total Nodes in a Complete Binary Tree</h4>
+                <p>A complete binary tree of height h has:</p>
+                <ul>
+                    <li>Level 0: 2⁰ = 1 node (root)</li>
+                    <li>Level 1: 2¹ = 2 nodes</li>
+                    <li>Level 2: 2² = 4 nodes</li>
+                    <li>...</li>
+                    <li>Level h: 2<sup>h</sup> nodes</li>
+                </ul>
+                <p><strong>Total:</strong> 1 + 2 + 4 + ... + 2<sup>h</sup> = 2<sup>h+1</sup> - 1 nodes</p>
+                <p>This is why a complete binary tree with n nodes has height Θ(log n)!</p>
+            </div>
+
+            <div class="completion-tracker">
+                <strong>Section Checklist:</strong>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-geo-1" onchange="updateProgress()">
+                    <label for="check-geo-1">I understand the geometric series proof</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-geo-2" onchange="updateProgress()">
+                    <label for="check-geo-2">I can apply the formula to r = 2</label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 6: Practice Problems -->
+        <section id="section-practice">
+            <h2><span class="icon">✏️</span> Practice Problems</h2>
+
+            <p>Apply what you've learned by working through these practice problems.</p>
+
+            <h3>Problem 1: Sum of Odd Numbers</h3>
+
+            <div class="formula-card">
+                <h4>Prove</h4>
+                <div class="formula">1 + 3 + 5 + ... + (2n-1) = n²</div>
+            </div>
+
+            <div class="collapsible">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)" tabindex="0" role="button" aria-expanded="false">
+                    <span>Hint</span>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <p>The (k+1)th odd number is 2(k+1) - 1 = 2k + 1.</p>
+                        <p>You'll need to show that k² + (2k+1) = (k+1)².</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="collapsible">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)" tabindex="0" role="button" aria-expanded="false">
+                    <span>Complete Solution</span>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <div class="proof-box">
+                            <h4>Proof</h4>
+                            <p><strong>Base Case (n = 1):</strong> LHS = 1, RHS = 1² = 1. ✓</p>
+                            <p><strong>IH:</strong> Assume 1 + 3 + 5 + ... + (2k-1) = k²</p>
+                            <p><strong>IS:</strong> Show 1 + 3 + 5 + ... + (2k-1) + (2k+1) = (k+1)²</p>
+                            <div class="algebra-steps">
+                                <div class="algebra-line">
+                                    <span class="algebra-expression">1 + 3 + ... + (2k-1) + (2k+1)</span>
+                                </div>
+                                <div class="algebra-line">
+                                    <span class="algebra-equals">=</span>
+                                    <span class="algebra-expression">k² + (2k+1)</span>
+                                    <span class="algebra-reason">[By IH]</span>
+                                </div>
+                                <div class="algebra-line">
+                                    <span class="algebra-equals">=</span>
+                                    <span class="algebra-expression">k² + 2k + 1</span>
+                                </div>
+                                <div class="algebra-line">
+                                    <span class="algebra-equals">=</span>
+                                    <span class="algebra-expression">(k+1)²</span>
+                                    <span class="algebra-reason">[Perfect square!]</span>
+                                </div>
+                            </div>
+                            <p>By induction, 1 + 3 + ... + (2n-1) = n² for all n ≥ 1. ∎</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Problem 2: Sum of Cubes</h3>
+
+            <div class="formula-card">
+                <h4>Prove</h4>
+                <div class="formula">1³ + 2³ + 3³ + ... + n³ = [n(n+1)/2]²</div>
+            </div>
+
+            <div class="collapsible">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)" tabindex="0" role="button" aria-expanded="false">
+                    <span>Hint</span>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <p>Notice that the RHS is the square of the sum of first n integers!</p>
+                        <p>For the inductive step, you need to show:</p>
+                        <p>[k(k+1)/2]² + (k+1)³ = [(k+1)(k+2)/2]²</p>
+                        <p>Factor out (k+1)² from the LHS.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="collapsible">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)" tabindex="0" role="button" aria-expanded="false">
+                    <span>Complete Solution</span>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <div class="proof-box">
+                            <h4>Proof</h4>
+                            <p><strong>Base Case (n = 1):</strong> LHS = 1³ = 1, RHS = [1(2)/2]² = 1² = 1. ✓</p>
+                            <p><strong>IH:</strong> Assume ∑<sub>i=1</sub><sup>k</sup> i³ = [k(k+1)/2]²</p>
+                            <p><strong>IS:</strong> Show ∑<sub>i=1</sub><sup>k+1</sup> i³ = [(k+1)(k+2)/2]²</p>
+                            <div class="algebra-steps">
+                                <div class="algebra-line">
+                                    <span class="algebra-expression">∑<sub>i=1</sub><sup>k+1</sup> i³ = [k(k+1)/2]² + (k+1)³</span>
+                                    <span class="algebra-reason">[Split + IH]</span>
+                                </div>
+                                <div class="algebra-line">
+                                    <span class="algebra-equals">=</span>
+                                    <span class="algebra-expression">k²(k+1)²/4 + (k+1)³</span>
+                                </div>
+                                <div class="algebra-line">
+                                    <span class="algebra-equals">=</span>
+                                    <span class="algebra-expression">(k+1)²[k²/4 + (k+1)]</span>
+                                    <span class="algebra-reason">[Factor (k+1)²]</span>
+                                </div>
+                                <div class="algebra-line">
+                                    <span class="algebra-equals">=</span>
+                                    <span class="algebra-expression">(k+1)²[k² + 4k + 4]/4</span>
+                                </div>
+                                <div class="algebra-line">
+                                    <span class="algebra-equals">=</span>
+                                    <span class="algebra-expression">(k+1)²(k+2)²/4</span>
+                                </div>
+                                <div class="algebra-line">
+                                    <span class="algebra-equals">=</span>
+                                    <span class="algebra-expression">[(k+1)(k+2)/2]²</span>
+                                    <span class="algebra-reason">✓</span>
+                                </div>
+                            </div>
+                            <p>By induction, the formula holds for all n ≥ 1. ∎</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interactive: Fill in the Proof -->
+            <div class="interactive-section">
+                <h3><span>🔄</span> Interactive: Complete the Proof</h3>
+                <p>Fill in the blanks to complete this induction proof.</p>
+
+                <div class="quiz-container">
+                    <p><strong>Prove:</strong> For all n ≥ 1, ∑<sub>i=1</sub><sup>n</sup> i(i+1) = n(n+1)(n+2)/3</p>
+
+                    <div class="proof-box">
+                        <p><strong>Base Case (n = 1):</strong></p>
+                        <p>LHS = 1(2) = 
+                            <select id="fill-1" aria-label="Base case LHS">
+                                <option value="">?</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                            </select>
+                        </p>
+                        <p>RHS = 1(2)(3)/3 = 
+                            <select id="fill-2" aria-label="Base case RHS">
+                                <option value="">?</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="6">6</option>
+                            </select>
+                        </p>
+
+                        <p><strong>Inductive Hypothesis:</strong></p>
+                        <p>Assume ∑<sub>i=1</sub><sup>k</sup> i(i+1) = 
+                            <select id="fill-3" aria-label="IH formula">
+                                <option value="">?</option>
+                                <option value="k(k+1)(k+2)/3">k(k+1)(k+2)/3</option>
+                                <option value="k(k+1)/2">k(k+1)/2</option>
+                                <option value="k²(k+1)/2">k²(k+1)/2</option>
+                            </select>
+                        </p>
+
+                        <p><strong>Inductive Step:</strong></p>
+                        <p>∑<sub>i=1</sub><sup>k+1</sup> i(i+1) = ∑<sub>i=1</sub><sup>k</sup> i(i+1) + 
+                            <select id="fill-4" aria-label="Last term">
+                                <option value="">?</option>
+                                <option value="k(k+1)">(k)(k+1)</option>
+                                <option value="(k+1)(k+2)">(k+1)(k+2)</option>
+                                <option value="(k+1)²">(k+1)²</option>
+                            </select>
+                        </p>
+
+                        <p>= k(k+1)(k+2)/3 + (k+1)(k+2) &nbsp;&nbsp;[by 
+                            <select id="fill-5" aria-label="Justification">
+                                <option value="">?</option>
+                                <option value="IH">IH</option>
+                                <option value="base case">base case</option>
+                                <option value="algebra">algebra</option>
+                            </select>]
+                        </p>
+                    </div>
+
+                    <div class="btn-group">
+                        <button class="btn-primary" onclick="checkFillProof()">Check Answers</button>
+                        <button class="btn-reset" onclick="resetFillProof()">Reset</button>
+                    </div>
+
+                    <div id="fill-feedback" class="feedback"></div>
+                </div>
+            </div>
+
+            <div class="completion-tracker">
+                <strong>Section Checklist:</strong>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-prac-1" onchange="updateProgress()">
+                    <label for="check-prac-1">I worked through the sum of odd numbers proof</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-prac-2" onchange="updateProgress()">
+                    <label for="check-prac-2">I studied the sum of cubes proof</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-prac-3" onchange="updateProgress()">
+                    <label for="check-prac-3">I completed the fill-in-the-blank exercise</label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 7: Knowledge Check Quiz -->
+        <section id="section-quiz">
+            <h2><span class="icon">📋</span> Knowledge Check</h2>
+
+            <p>Test your understanding of summation formula proofs by induction.</p>
+
+            <div class="quiz-container" id="final-quiz">
+                <div class="quiz-item">
+                    <p class="quiz-question">1. What is the first step in proving a summation formula by induction?</p>
+                    <div class="option-group" id="fq1-options">
+                        <div class="option-item">
+                            <input type="radio" name="fq1" id="fq1-a" value="a">
+                            <label for="fq1-a">Split the sum into two parts</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq1" id="fq1-b" value="b">
+                            <label for="fq1-b">Verify the base case (usually n = 1 or n = 0)</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq1" id="fq1-c" value="c">
+                            <label for="fq1-c">State the inductive hypothesis</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq1" id="fq1-d" value="d">
+                            <label for="fq1-d">Apply the formula to a specific example</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quiz-item">
+                    <p class="quiz-question">2. In the "splitting the sum" technique, we write ∑<sub>i=1</sub><sup>k+1</sup> f(i) as:</p>
+                    <div class="option-group" id="fq2-options">
+                        <div class="option-item">
+                            <input type="radio" name="fq2" id="fq2-a" value="a">
+                            <label for="fq2-a">∑<sub>i=1</sub><sup>k</sup> f(i) + f(k)</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq2" id="fq2-b" value="b">
+                            <label for="fq2-b">∑<sub>i=1</sub><sup>k</sup> f(i) + f(k+1)</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq2" id="fq2-c" value="c">
+                            <label for="fq2-c">2 · ∑<sub>i=1</sub><sup>k</sup> f(i)</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq2" id="fq2-d" value="d">
+                            <label for="fq2-d">∑<sub>i=1</sub><sup>k</sup> f(i+1)</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quiz-item">
+                    <p class="quiz-question">3. What is 1 + 2 + 4 + 8 + ... + 2ⁿ equal to?</p>
+                    <div class="option-group" id="fq3-options">
+                        <div class="option-item">
+                            <input type="radio" name="fq3" id="fq3-a" value="a">
+                            <label for="fq3-a">2ⁿ</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq3" id="fq3-b" value="b">
+                            <label for="fq3-b">2<sup>n+1</sup> - 1</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq3" id="fq3-c" value="c">
+                            <label for="fq3-c">2<sup>n+1</sup></label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq3" id="fq3-d" value="d">
+                            <label for="fq3-d">n · 2ⁿ</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quiz-item">
+                    <p class="quiz-question">4. Why must we use the inductive hypothesis in the inductive step?</p>
+                    <div class="option-group" id="fq4-options">
+                        <div class="option-item">
+                            <input type="radio" name="fq4" id="fq4-a" value="a">
+                            <label for="fq4-a">It's optional—we can prove P(k+1) directly if we want</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq4" id="fq4-b" value="b">
+                            <label for="fq4-b">It connects P(k) to P(k+1), which is the essence of induction</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq4" id="fq4-c" value="c">
+                            <label for="fq4-c">To make the algebra easier</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq4" id="fq4-d" value="d">
+                            <label for="fq4-d">To verify the base case is correct</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quiz-item">
+                    <p class="quiz-question">5. When proving ∑<sub>i=1</sub><sup>n</sup> i² = n(n+1)(2n+1)/6, what do we need to show equals (k+1)(k+2)(2k+3)/6?</p>
+                    <div class="option-group" id="fq5-options">
+                        <div class="option-item">
+                            <input type="radio" name="fq5" id="fq5-a" value="a">
+                            <label for="fq5-a">k(k+1)(2k+1)/6 + k²</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq5" id="fq5-b" value="b">
+                            <label for="fq5-b">k(k+1)(2k+1)/6 + (k+1)²</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq5" id="fq5-c" value="c">
+                            <label for="fq5-c">(k+1)(k+2)(2k+3)/6 + (k+1)²</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq5" id="fq5-d" value="d">
+                            <label for="fq5-d">k(k+1)(2k+1)/6 · (k+1)</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn-primary" onclick="checkFinalQuiz()">Submit Quiz</button>
+                    <button class="btn-reset" onclick="resetFinalQuiz()">Reset Quiz</button>
+                </div>
+
+                <div id="final-quiz-feedback" class="feedback"></div>
+
+                <div class="quiz-score" id="quiz-score" style="display: none;">
+                    <p>Your Score:</p>
+                    <div class="score-value" id="score-value">0/5</div>
+                    <p id="score-message"></p>
+                </div>
+            </div>
+
+            <div class="completion-tracker">
+                <strong>Section Checklist:</strong>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-quiz-1" onchange="updateProgress()">
+                    <label for="check-quiz-1">I completed the knowledge check quiz</label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 8: Summary -->
+        <section id="section-summary">
+            <h2><span class="icon">🎓</span> Summary</h2>
+
+            <h3>Key Formulas Reference</h3>
+
+            <div class="summary-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Sum</th>
+                            <th>Closed Form</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>∑<sub>i=1</sub><sup>n</sup> i</td>
+                            <td>n(n+1)/2</td>
+                        </tr>
+                        <tr>
+                            <td>∑<sub>i=1</sub><sup>n</sup> i²</td>
+                            <td>n(n+1)(2n+1)/6</td>
+                        </tr>
+                        <tr>
+                            <td>∑<sub>i=1</sub><sup>n</sup> i³</td>
+                            <td>[n(n+1)/2]²</td>
+                        </tr>
+                        <tr>
+                            <td>∑<sub>i=1</sub><sup>n</sup> (2i-1)</td>
+                            <td>n²</td>
+                        </tr>
+                        <tr>
+                            <td>∑<sub>i=0</sub><sup>n</sup> rⁱ (r ≠ 1)</td>
+                            <td>(r<sup>n+1</sup> - 1)/(r - 1)</td>
+                        </tr>
+                        <tr>
+                            <td>∑<sub>i=0</sub><sup>n</sup> 2ⁱ</td>
+                            <td>2<sup>n+1</sup> - 1</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Key Takeaways</h3>
+
+            <div class="concept-box">
+                <h4>What You Learned in Module 6.4</h4>
+                <ul>
+                    <li><strong>Splitting Technique:</strong> ∑<sub>i=1</sub><sup>k+1</sup> f(i) = ∑<sub>i=1</sub><sup>k</sup> f(i) + f(k+1)</li>
+                    <li><strong>IH Application:</strong> Replace the sum to k with its closed form</li>
+                    <li><strong>Algebra is Key:</strong> Finding common denominators, factoring, and simplifying</li>
+                    <li><strong>Verify the Goal:</strong> Always write out what P(k+1) looks like before starting</li>
+                    <li><strong>CS Connection:</strong> These formulas are essential for algorithm analysis</li>
+                </ul>
+            </div>
+
+            <h3>Proof Writing Checklist</h3>
+
+            <div class="technique-box">
+                <h4>✅ Before Submitting a Summation Proof:</h4>
+                <ul>
+                    <li>☐ Base case verified with explicit LHS and RHS calculations</li>
+                    <li>☐ Inductive hypothesis clearly stated</li>
+                    <li>☐ Goal (what P(k+1) says) written out explicitly</li>
+                    <li>☐ Sum split correctly: (sum to k) + (k+1)th term</li>
+                    <li>☐ IH applied and labeled</li>
+                    <li>☐ Algebra shows result equals the P(k+1) formula</li>
+                    <li>☐ Conclusion states the theorem and cites induction</li>
+                </ul>
+            </div>
+
+            <h3>Looking Ahead</h3>
+
+            <p>In Module 6.5, you'll apply induction to prove <strong>divisibility properties</strong> and <strong>inequalities</strong>—statements like "3 divides n³ - n for all n" and "2ⁿ > n for all n ≥ 1".</p>
+
+            <div class="warning-box">
+                <h4>⚠️ Before Moving On</h4>
+                <p>Make sure you can:</p>
+                <ul>
+                    <li>Write a complete induction proof for ∑<sub>i=1</sub><sup>n</sup> i = n(n+1)/2</li>
+                    <li>Apply the splitting technique correctly</li>
+                    <li>Identify where the IH is used in a summation proof</li>
+                    <li>Perform the necessary algebraic manipulations</li>
+                </ul>
+            </div>
+
+            <div class="completion-tracker">
+                <strong>Final Checklist:</strong>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-final-1" onchange="updateProgress()">
+                    <label for="check-final-1">I can prove summation formulas using induction</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-final-2" onchange="updateProgress()">
+                    <label for="check-final-2">I understand the splitting technique</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-final-3" onchange="updateProgress()">
+                    <label for="check-final-3">I am ready for Module 6.5</label>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p><strong>CSC 240 - Discrete Structures</strong></p>
+        <p>Module 6.4: Mathematical Induction - Summation Formulas</p>
+        <p>Mendocino College | Spring 2026</p>
+    </footer>
+
+    <script>
+        // ==================== Progress Tracking ====================
+        function updateProgress() {
+            const checkboxes = document.querySelectorAll('.completion-item input[type="checkbox"]');
+            const checked = document.querySelectorAll('.completion-item input[type="checkbox"]:checked');
+            const percentage = Math.round((checked.length / checkboxes.length) * 100);
+
+            // Update nav progress bar
+            document.getElementById('nav-progress-fill').style.width = percentage + '%';
+            document.getElementById('nav-progress-text').textContent = percentage + '%';
+
+            // Save to session storage
+            const checkboxStates = {};
+            checkboxes.forEach(cb => {
+                checkboxStates[cb.id] = cb.checked;
+            });
+            sessionStorage.setItem('module64Progress', JSON.stringify(checkboxStates));
+
+            // Update completion item styling
+            checkboxes.forEach(cb => {
+                const parent = cb.closest('.completion-item');
+                if (parent) {
+                    parent.classList.toggle('completed', cb.checked);
+                }
+            });
+        }
+
+        function loadProgress() {
+            const saved = sessionStorage.getItem('module64Progress');
+            if (saved) {
+                const checkboxStates = JSON.parse(saved);
+                Object.keys(checkboxStates).forEach(id => {
+                    const checkbox = document.getElementById(id);
+                    if (checkbox) {
+                        checkbox.checked = checkboxStates[id];
+                        const parent = checkbox.closest('.completion-item');
+                        if (parent) {
+                            parent.classList.toggle('completed', checkboxStates[id]);
+                        }
+                    }
+                });
+                updateProgress();
+            }
+        }
+
+        // ==================== Navigation Highlighting ====================
+        function updateNavHighlight() {
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('.nav-links a');
+            const navHeight = document.querySelector('.sticky-nav').offsetHeight;
+
+            let currentSection = '';
+
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - navHeight - 100;
+                const sectionBottom = sectionTop + section.offsetHeight;
+
+                if (window.scrollY >= sectionTop && window.scrollY < sectionBottom) {
+                    currentSection = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + currentSection) {
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        // Throttle scroll events
+        let scrollTimeout;
+        window.addEventListener('scroll', function() {
+            if (scrollTimeout) {
+                window.cancelAnimationFrame(scrollTimeout);
+            }
+            scrollTimeout = window.requestAnimationFrame(function() {
+                updateNavHighlight();
+            });
+        });
+
+        // ==================== Split Quiz ====================
+        function checkSplitQuiz() {
+            const answers = {
+                'sq1': 'b',
+                'sq2': 'a',
+                'sq3': 'b'  // Note: b and c are equivalent (2(k+1)-1 = 2k+1)
+            };
+
+            let correct = 0;
+            const explanations = {
+                'sq1': 'The last term when i = k+1 is (k+1)².',
+                'sq2': 'The last term when i = k+1 is 2^(k+1).',
+                'sq3': 'The last term when i = k+1 is 2(k+1)-1 = 2k+1.'
+            };
+
+            for (let i = 1; i <= 3; i++) {
+                const selected = document.querySelector(`input[name="sq${i}"]:checked`);
+                const options = document.querySelectorAll(`input[name="sq${i}"]`);
+
+                options.forEach(opt => {
+                    const parent = opt.closest('.option-item');
+                    parent.classList.remove('correct', 'incorrect');
+
+                    // For question 3, both b and c are correct
+                    let isCorrect = opt.value === answers[`sq${i}`];
+                    if (i === 3 && (opt.value === 'b' || opt.value === 'c')) {
+                        isCorrect = true;
+                    }
+
+                    if (isCorrect) {
+                        parent.classList.add('correct');
+                    } else if (selected && opt === selected && !isCorrect) {
+                        parent.classList.add('incorrect');
+                    }
+                });
+
+                if (selected) {
+                    let isCorrect = selected.value === answers[`sq${i}`];
+                    if (i === 3 && (selected.value === 'b' || selected.value === 'c')) {
+                        isCorrect = true;
+                    }
+                    if (isCorrect) correct++;
+                }
+            }
+
+            const feedback = document.getElementById('split-feedback');
+            if (correct === 3) {
+                feedback.className = 'feedback success show';
+                feedback.innerHTML = '<strong>Perfect!</strong> You understand how to split sums correctly.';
+            } else {
+                feedback.className = 'feedback info show';
+                feedback.innerHTML = `<strong>Score: ${correct}/3</strong><br>
+                    <p><strong>Q1:</strong> ${explanations['sq1']}</p>
+                    <p><strong>Q2:</strong> ${explanations['sq2']}</p>
+                    <p><strong>Q3:</strong> ${explanations['sq3']}</p>`;
+            }
+        }
+
+        function resetSplitQuiz() {
+            for (let i = 1; i <= 3; i++) {
+                const options = document.querySelectorAll(`input[name="sq${i}"]`);
+                options.forEach(opt => {
+                    opt.checked = false;
+                    opt.closest('.option-item').classList.remove('correct', 'incorrect');
+                });
+            }
+            document.getElementById('split-feedback').className = 'feedback';
+        }
+
+        // ==================== Verify Sum Interactive ====================
+        function verifySum() {
+            const n = parseInt(document.getElementById('verify-n').value);
+
+            if (isNaN(n) || n < 1 || n > 20) {
+                document.getElementById('verify-result').innerHTML = '<strong>Please enter a number between 1 and 20.</strong>';
+                document.getElementById('verify-result').style.display = 'block';
+                return;
+            }
+
+            // Calculate sum directly
+            let directSum = 0;
+            let terms = [];
+            for (let i = 1; i <= n; i++) {
+                directSum += i;
+                terms.push(i);
+            }
+
+            // Calculate using formula
+            const formulaResult = n * (n + 1) / 2;
+
+            const resultDiv = document.getElementById('verify-result');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'feedback success show';
+            resultDiv.innerHTML = `
+                <p><strong>For n = ${n}:</strong></p>
+                <p><strong>Direct calculation:</strong> ${terms.join(' + ')} = ${directSum}</p>
+                <p><strong>Formula:</strong> ${n}(${n}+1)/2 = ${n}(${n+1})/2 = ${n * (n+1)}/2 = ${formulaResult}</p>
+                <p><strong>Match:</strong> ${directSum === formulaResult ? '✓ Yes! Both equal ' + directSum : '✗ Error!'}</p>
+            `;
+        }
+
+        // ==================== Step Reveal ====================
+        function revealNextStep(containerId) {
+            const container = document.getElementById(containerId);
+            const steps = container.querySelectorAll('.step-item:not(.revealed)');
+            if (steps.length > 0) {
+                steps[0].classList.add('revealed');
+            }
+        }
+
+        function revealAllSteps(containerId) {
+            const container = document.getElementById(containerId);
+            const steps = container.querySelectorAll('.step-item');
+            steps.forEach(step => step.classList.add('revealed'));
+        }
+
+        function resetSteps(containerId) {
+            const container = document.getElementById(containerId);
+            const steps = container.querySelectorAll('.step-item');
+            steps.forEach((step, index) => {
+                if (index === 0) {
+                    step.classList.add('revealed');
+                } else {
+                    step.classList.remove('revealed');
+                }
+            });
+        }
+
+        // ==================== Collapsible Sections ====================
+        function toggleCollapsible(header) {
+            const collapsible = header.closest('.collapsible');
+            collapsible.classList.toggle('open');
+            const isOpen = collapsible.classList.contains('open');
+            header.setAttribute('aria-expanded', isOpen);
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.target.classList.contains('collapsible-header')) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    toggleCollapsible(e.target);
+                }
+            }
+        });
+
+        // ==================== Fill Proof ====================
+        function checkFillProof() {
+            const answers = {
+                'fill-1': '2',
+                'fill-2': '2',
+                'fill-3': 'k(k+1)(k+2)/3',
+                'fill-4': '(k+1)(k+2)',
+                'fill-5': 'IH'
+            };
+
+            let correct = 0;
+            let total = 5;
+
+            Object.keys(answers).forEach(id => {
+                const select = document.getElementById(id);
+                if (select.value === answers[id]) {
+                    correct++;
+                    select.style.backgroundColor = '#e8f5e9';
+                    select.style.borderColor = '#4caf50';
+                } else if (select.value !== '') {
+                    select.style.backgroundColor = '#ffebee';
+                    select.style.borderColor = '#f44336';
+                }
+            });
+
+            const feedback = document.getElementById('fill-feedback');
+            if (correct === total) {
+                feedback.className = 'feedback success show';
+                feedback.innerHTML = '<strong>Excellent!</strong> You correctly filled in all the blanks.';
+            } else {
+                feedback.className = 'feedback info show';
+                feedback.innerHTML = `<strong>Score: ${correct}/${total}</strong>. Review the proof structure and try again.`;
+            }
+        }
+
+        function resetFillProof() {
+            ['fill-1', 'fill-2', 'fill-3', 'fill-4', 'fill-5'].forEach(id => {
+                const select = document.getElementById(id);
+                select.value = '';
+                select.style.backgroundColor = '';
+                select.style.borderColor = '';
+            });
+            document.getElementById('fill-feedback').className = 'feedback';
+        }
+
+        // ==================== Final Quiz ====================
+        function checkFinalQuiz() {
+            const answers = {
+                'fq1': 'b',
+                'fq2': 'b',
+                'fq3': 'b',
+                'fq4': 'b',
+                'fq5': 'b'
+            };
+
+            let correct = 0;
+            let total = 5;
+
+            for (let i = 1; i <= 5; i++) {
+                const selected = document.querySelector(`input[name="fq${i}"]:checked`);
+                const options = document.querySelectorAll(`input[name="fq${i}"]`);
+
+                options.forEach(opt => {
+                    const parent = opt.closest('.option-item');
+                    parent.classList.remove('correct', 'incorrect');
+
+                    if (opt.value === answers[`fq${i}`]) {
+                        parent.classList.add('correct');
+                    } else if (selected && opt === selected && opt.value !== answers[`fq${i}`]) {
+                        parent.classList.add('incorrect');
+                    }
+                });
+
+                if (selected && selected.value === answers[`fq${i}`]) {
+                    correct++;
+                }
+            }
+
+            const scoreDiv = document.getElementById('quiz-score');
+            const scoreValue = document.getElementById('score-value');
+            const scoreMessage = document.getElementById('score-message');
+
+            scoreDiv.style.display = 'block';
+            scoreValue.textContent = `${correct}/${total}`;
+
+            if (correct === total) {
+                scoreMessage.textContent = 'Perfect! You have mastered summation formula proofs.';
+                scoreDiv.style.backgroundColor = '#e8f5e9';
+            } else if (correct >= 3) {
+                scoreMessage.textContent = 'Good work! Review any questions you missed.';
+                scoreDiv.style.backgroundColor = '#fff3e0';
+            } else {
+                scoreMessage.textContent = 'Consider reviewing the module before continuing.';
+                scoreDiv.style.backgroundColor = '#ffebee';
+            }
+
+            const feedback = document.getElementById('final-quiz-feedback');
+            feedback.className = 'feedback info show';
+            feedback.innerHTML = '<strong>Quiz submitted!</strong> Scroll down to see your score.';
+        }
+
+        function resetFinalQuiz() {
+            for (let i = 1; i <= 5; i++) {
+                const options = document.querySelectorAll(`input[name="fq${i}"]`);
+                options.forEach(opt => {
+                    opt.checked = false;
+                    opt.closest('.option-item').classList.remove('correct', 'incorrect');
+                });
+            }
+            document.getElementById('final-quiz-feedback').className = 'feedback';
+            document.getElementById('quiz-score').style.display = 'none';
+        }
+
+        // ==================== Initialize ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProgress();
+            updateNavHighlight();
+
+            // Initialize first step as revealed in step-reveal sections
+            document.querySelectorAll('.step-reveal').forEach(container => {
+                const firstStep = container.querySelector('.step-item');
+                if (firstStep) {
+                    firstStep.classList.add('revealed');
+                }
+            });
+
+            // Smooth scroll for nav links
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href').substring(1);
+                    const targetElement = document.getElementById(targetId);
+                    if (targetElement) {
+                        const navHeight = document.querySelector('.sticky-nav').offsetHeight;
+                        const targetPosition = targetElement.offsetTop - navHeight - 10;
+                        window.scrollTo({
+                            top: targetPosition,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
