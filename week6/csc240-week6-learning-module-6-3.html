@@ -1,0 +1,2687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 6.3: Mathematical Induction - The Principle | CSC 240</title>
+    <style>
+        /* CSS Reset and Base Styles */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #1a5f7a;
+            --primary-dark: #134b61;
+            --primary-light: #2d7d9a;
+            --secondary-color: #57837b;
+            --accent-color: #c38e70;
+            --accent-hover: #a67656;
+            --success-color: #2e7d32;
+            --success-light: #e8f5e9;
+            --error-color: #c62828;
+            --error-light: #ffebee;
+            --warning-color: #f57c00;
+            --warning-light: #fff3e0;
+            --info-color: #1565c0;
+            --info-light: #e3f2fd;
+            --background-color: #fafafa;
+            --surface-color: #ffffff;
+            --text-primary: #212121;
+            --text-secondary: #555555;
+            --text-muted: #757575;
+            --border-color: #e0e0e0;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 20px rgba(0,0,0,0.15);
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --font-mono: 'Consolas', 'Monaco', 'Courier New', monospace;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-main);
+            font-size: 16px;
+            line-height: 1.7;
+            color: var(--text-primary);
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Skip Link for Accessibility */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: var(--primary-color);
+            color: #ffffff;
+            padding: 8px 16px;
+            z-index: 1000;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .skip-link:focus {
+            top: 0;
+        }
+
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: #ffffff;
+            padding: 2rem 1rem;
+            text-align: center;
+            position: relative;
+        }
+
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-color), var(--secondary-color), var(--accent-color));
+        }
+
+        .course-tag {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 0.25rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.5px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin: 0.5rem 0;
+            font-weight: 700;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .module-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            margin-top: 0.5rem;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            background: var(--surface-color);
+            padding: 1rem 1.5rem;
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-label {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+
+        .progress-percentage {
+            font-weight: 700;
+            color: var(--primary-color);
+            font-size: 1rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: var(--border-color);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
+            border-radius: 5px;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+
+        /* Main Content */
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        /* Section Styles */
+        section {
+            background: var(--surface-color);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: 1.6rem;
+            margin: 0 0 1.5rem 0;
+            padding-bottom: 0.75rem;
+            border-bottom: 3px solid var(--accent-color);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        h2 .icon {
+            font-size: 1.4rem;
+        }
+
+        h3 {
+            color: var(--primary-dark);
+            font-size: 1.25rem;
+            margin: 1.75rem 0 1rem 0;
+        }
+
+        h4 {
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            margin: 1.5rem 0 0.75rem 0;
+        }
+
+        p {
+            margin: 0 0 1rem 0;
+            color: var(--text-secondary);
+        }
+
+        /* Learning Objectives Box */
+        .objectives-box {
+            background: linear-gradient(135deg, var(--info-light) 0%, #f5f9ff 100%);
+            border: 1px solid #90caf9;
+            border-left: 5px solid var(--info-color);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .objectives-box h3 {
+            color: var(--info-color);
+            margin: 0 0 1rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .objectives-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .objectives-list li {
+            padding: 0.5rem 0 0.5rem 2rem;
+            position: relative;
+            color: var(--text-primary);
+        }
+
+        .objectives-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--success-color);
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        /* Definition Box */
+        .definition-box {
+            background: linear-gradient(135deg, #f3e5f5 0%, #faf5fc 100%);
+            border: 1px solid #ce93d8;
+            border-left: 5px solid #8e24aa;
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .definition-box h4 {
+            color: #8e24aa;
+            margin: 0 0 0.75rem 0;
+            font-size: 1.1rem;
+        }
+
+        .definition-box p {
+            margin: 0;
+            color: var(--text-primary);
+        }
+
+        /* Theorem Box */
+        .theorem-box {
+            background: linear-gradient(135deg, #e8eaf6 0%, #f5f6fc 100%);
+            border: 1px solid #9fa8da;
+            border-left: 5px solid #3f51b5;
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .theorem-box h4 {
+            color: #3f51b5;
+            margin: 0 0 0.75rem 0;
+            font-size: 1.1rem;
+        }
+
+        .theorem-box p {
+            margin: 0;
+            color: var(--text-primary);
+        }
+
+        /* Key Concept Box */
+        .concept-box {
+            background: linear-gradient(135deg, #e8f5e9 0%, #f5faf5 100%);
+            border: 1px solid #a5d6a7;
+            border-left: 5px solid var(--success-color);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .concept-box h4 {
+            color: var(--success-color);
+            margin: 0 0 0.75rem 0;
+        }
+
+        /* Warning Box */
+        .warning-box {
+            background: linear-gradient(135deg, var(--warning-light) 0%, #fffaf5 100%);
+            border: 1px solid #ffcc80;
+            border-left: 5px solid var(--warning-color);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .warning-box h4 {
+            color: #e65100;
+            margin: 0 0 0.75rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Example Box */
+        .example-box {
+            background: var(--surface-color);
+            border: 2px solid var(--primary-light);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .example-box h4 {
+            color: var(--primary-color);
+            margin: 0 0 1rem 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px dashed var(--primary-light);
+        }
+
+        /* Proof Structure */
+        .proof-box {
+            background: #fffde7;
+            border: 2px solid #ffd54f;
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .proof-box h4 {
+            color: #f57f17;
+            margin: 0 0 1rem 0;
+        }
+
+        /* Induction Template Box */
+        .template-box {
+            background: linear-gradient(135deg, #e0f7fa 0%, #f5fcfd 100%);
+            border: 2px solid #4dd0e1;
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .template-box h4 {
+            color: #00838f;
+            margin: 0 0 1rem 0;
+        }
+
+        .template-step {
+            background: #ffffff;
+            border-left: 4px solid #00838f;
+            padding: 1rem;
+            margin: 0.75rem 0;
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+        }
+
+        .template-step-title {
+            font-weight: 700;
+            color: #00838f;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Domino Visualization */
+        .domino-container {
+            display: flex;
+            align-items: flex-end;
+            gap: 0.5rem;
+            padding: 2rem;
+            background: #f5f5f5;
+            border-radius: var(--radius-md);
+            margin: 1.5rem 0;
+            overflow-x: auto;
+            justify-content: center;
+        }
+
+        .domino {
+            width: 30px;
+            height: 60px;
+            background: linear-gradient(180deg, #1a5f7a, #134b61);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 0.9rem;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .domino.fallen {
+            transform: rotate(70deg) translateX(10px);
+            background: linear-gradient(180deg, var(--success-color), #1b5e20);
+        }
+
+        .domino:hover:not(.fallen) {
+            transform: scale(1.05);
+        }
+
+        .domino-label {
+            position: absolute;
+            bottom: -25px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Code Blocks */
+        pre {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 1.25rem;
+            border-radius: var(--radius-md);
+            overflow-x: auto;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin: 1rem 0;
+            white-space: pre;
+            word-wrap: normal;
+        }
+
+        code {
+            font-family: var(--font-mono);
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: inherit;
+        }
+
+        :not(pre) > code {
+            background: #f5f5f5;
+            padding: 0.2rem 0.4rem;
+            border-radius: var(--radius-sm);
+            color: #c7254e;
+            font-size: 0.9em;
+        }
+
+        .code-keyword { color: #569cd6; }
+        .code-string { color: #ce9178; }
+        .code-comment { color: #6a9955; }
+        .code-number { color: #b5cea8; }
+        .code-function { color: #dcdcaa; }
+        .code-type { color: #4ec9b0; }
+
+        /* Interactive Elements */
+        .interactive-section {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f5faff 100%);
+            border: 2px solid #64b5f6;
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .interactive-section h3 {
+            color: var(--info-color);
+            margin: 0 0 1rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Buttons */
+        button {
+            font-family: var(--font-main);
+            font-size: 1rem;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: #ffffff;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary:focus {
+            outline: 3px solid var(--primary-light);
+            outline-offset: 2px;
+        }
+
+        .btn-secondary {
+            background: var(--secondary-color);
+            color: #ffffff;
+        }
+
+        .btn-secondary:hover {
+            background: #456b64;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary:focus {
+            outline: 3px solid var(--secondary-color);
+            outline-offset: 2px;
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: #ffffff;
+        }
+
+        .btn-success:hover {
+            background: #1b5e20;
+        }
+
+        .btn-success:focus {
+            outline: 3px solid var(--success-color);
+            outline-offset: 2px;
+        }
+
+        .btn-reset {
+            background: #757575;
+            color: #ffffff;
+        }
+
+        .btn-reset:hover {
+            background: #616161;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        input[type="text"],
+        input[type="number"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-family: var(--font-main);
+            font-size: 1rem;
+            transition: border-color 0.2s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(26, 95, 122, 0.1);
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        /* Radio and Checkbox Styles */
+        .option-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .option-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .option-item:hover {
+            background: #f0f4f8;
+            border-color: var(--primary-light);
+        }
+
+        .option-item input[type="radio"],
+        .option-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-top: 2px;
+            cursor: pointer;
+        }
+
+        .option-item label {
+            margin: 0;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .option-item.correct {
+            background: var(--success-light);
+            border-color: var(--success-color);
+        }
+
+        .option-item.incorrect {
+            background: var(--error-light);
+            border-color: var(--error-color);
+        }
+
+        /* Feedback Messages */
+        .feedback {
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .feedback.show {
+            display: block;
+        }
+
+        .feedback.success {
+            background: var(--success-light);
+            border: 1px solid var(--success-color);
+            color: #1b5e20;
+        }
+
+        .feedback.error {
+            background: var(--error-light);
+            border: 1px solid var(--error-color);
+            color: #b71c1c;
+        }
+
+        .feedback.info {
+            background: var(--info-light);
+            border: 1px solid var(--info-color);
+            color: #0d47a1;
+        }
+
+        /* Collapsible Sections */
+        .collapsible {
+            background: var(--surface-color);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .collapsible-header {
+            padding: 1rem 1.25rem;
+            background: #f8f9fa;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            color: var(--text-primary);
+            transition: background 0.2s ease;
+        }
+
+        .collapsible-header:hover {
+            background: #f0f4f8;
+        }
+
+        .collapsible-header:focus {
+            outline: 3px solid var(--primary-color);
+            outline-offset: -3px;
+        }
+
+        .collapsible-icon {
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
+        }
+
+        .collapsible.open .collapsible-icon {
+            transform: rotate(180deg);
+        }
+
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .collapsible.open .collapsible-content {
+            max-height: 3000px;
+        }
+
+        .collapsible-body {
+            padding: 1.25rem;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border: 1px solid var(--border-color);
+        }
+
+        th {
+            background: var(--primary-color);
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        tr:hover {
+            background: #f0f4f8;
+        }
+
+        /* Math Display */
+        .math-display {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            text-align: center;
+            font-size: 1.1rem;
+            margin: 1rem 0;
+            border: 1px solid var(--border-color);
+            overflow-x: auto;
+        }
+
+        .math-inline {
+            font-style: italic;
+            white-space: nowrap;
+        }
+
+        /* Comparison Table */
+        .comparison-table {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .comparison-column {
+            background: #f8f9fa;
+            border-radius: var(--radius-md);
+            padding: 1.25rem;
+            border: 2px solid var(--border-color);
+        }
+
+        .comparison-column h4 {
+            color: var(--primary-color);
+            margin: 0 0 1rem 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary-light);
+        }
+
+        .comparison-column.highlight {
+            border-color: var(--primary-color);
+            background: linear-gradient(135deg, #e3f2fd 0%, #f5faff 100%);
+        }
+
+        /* Step-by-Step Reveal */
+        .step-reveal {
+            margin: 1.5rem 0;
+        }
+
+        .step-item {
+            background: #f8f9fa;
+            border-left: 4px solid var(--border-color);
+            padding: 1rem 1.25rem;
+            margin: 0.5rem 0;
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+            opacity: 0.5;
+            transition: all 0.3s ease;
+        }
+
+        .step-item.revealed {
+            opacity: 1;
+            border-left-color: var(--primary-color);
+            background: #ffffff;
+        }
+
+        .step-number {
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-right: 0.5rem;
+        }
+
+        /* Completion Checkboxes */
+        .completion-tracker {
+            background: #f8f9fa;
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .completion-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .completion-item:last-child {
+            border-bottom: none;
+        }
+
+        .completion-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .completion-item label {
+            margin: 0;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .completion-item.completed label {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+
+        /* Quiz Container */
+        .quiz-container {
+            background: var(--surface-color);
+            border: 2px solid var(--primary-light);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .quiz-question {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            font-size: 1.05rem;
+        }
+
+        .quiz-score {
+            text-align: center;
+            padding: 1rem;
+            background: var(--info-light);
+            border-radius: var(--radius-md);
+            margin-top: 1rem;
+        }
+
+        .quiz-score .score-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--primary-dark);
+            color: #ffffff;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        footer p {
+            color: rgba(255,255,255,0.9);
+            margin: 0.5rem 0;
+        }
+
+        footer a {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Navigation */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 2px solid var(--border-color);
+        }
+
+        .nav-buttons a {
+            text-decoration: none;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.6rem;
+            }
+
+            h2 {
+                font-size: 1.4rem;
+            }
+
+            section {
+                padding: 1.25rem;
+            }
+
+            main {
+                padding: 1rem;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .btn-group button {
+                width: 100%;
+            }
+
+            .nav-buttons {
+                flex-direction: column;
+            }
+
+            .comparison-table {
+                grid-template-columns: 1fr;
+            }
+
+            .domino-container {
+                justify-content: flex-start;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            .progress-container,
+            .interactive-section,
+            .btn-group,
+            .nav-buttons,
+            .skip-link {
+                display: none;
+            }
+
+            section {
+                break-inside: avoid;
+                box-shadow: none;
+                border: 1px solid #ccc;
+            }
+        }
+
+        /* Focus Visible for Keyboard Navigation */
+        *:focus-visible {
+            outline: 3px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        /* High Contrast Mode Support */
+        @media (prefers-contrast: high) {
+            :root {
+                --border-color: #000000;
+            }
+
+            .option-item,
+            .collapsible-header {
+                border-width: 2px;
+            }
+        }
+
+        /* Reduced Motion */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+
+            html {
+                scroll-behavior: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <header>
+        <div class="course-tag">CSC 240 - Discrete Structures</div>
+        <h1>Module 6.3: Mathematical Induction</h1>
+        <p class="module-subtitle">The Principle - Why Induction Works and How to Use It</p>
+    </header>
+
+    <div class="progress-container" role="region" aria-label="Module progress">
+        <div class="progress-header">
+            <span class="progress-label">Module Progress</span>
+            <span class="progress-percentage" id="progress-text">0%</span>
+        </div>
+        <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+            <div class="progress-fill" id="progress-fill"></div>
+        </div>
+    </div>
+
+    <main id="main-content">
+        <!-- Section 1: Introduction and Objectives -->
+        <section id="section-intro">
+            <h2><span class="icon">📚</span> Introduction</h2>
+
+            <p>Welcome to Module 6.3! Having mastered proof by contradiction in Modules 6.1 and 6.2, we now turn to one of the most powerful and widely-used proof techniques in mathematics and computer science: <strong>Mathematical Induction</strong>.</p>
+
+            <p>Induction is the primary tool for proving statements about <em>all</em> natural numbers. While you can't check infinitely many cases one by one, induction provides a clever way to prove infinitely many statements with a finite proof.</p>
+
+            <div class="concept-box">
+                <h4>💡 Why Induction Matters in Computer Science</h4>
+                <p>Mathematical induction is essential for:</p>
+                <ul>
+                    <li><strong>Algorithm correctness:</strong> Proving that algorithms work for all input sizes</li>
+                    <li><strong>Recursive function verification:</strong> Showing recursive code produces correct results</li>
+                    <li><strong>Data structure properties:</strong> Proving properties of trees, lists, and graphs</li>
+                    <li><strong>Complexity analysis:</strong> Establishing running time bounds</li>
+                </ul>
+            </div>
+
+            <div class="objectives-box">
+                <h3><span>🎯</span> Learning Objectives</h3>
+                <ul class="objectives-list">
+                    <li>State the Principle of Mathematical Induction precisely</li>
+                    <li>Explain why induction produces valid proofs using the domino analogy</li>
+                    <li>Identify the base case and inductive step in an induction proof</li>
+                    <li>Connect induction to the well-ordering principle</li>
+                    <li>Understand the role and proper use of the inductive hypothesis</li>
+                    <li>Avoid common misconceptions about induction</li>
+                </ul>
+            </div>
+
+            <div class="warning-box">
+                <h4>⚠️ Prerequisites from Week 5</h4>
+                <p>Before proceeding, ensure you understand:</p>
+                <ul>
+                    <li>Direct proof technique (foundation for the inductive step)</li>
+                    <li>Logical implication P → Q and its truth conditions</li>
+                    <li>Definitions of even, odd, and divisibility</li>
+                    <li>Mathematical writing conventions (the 4 C's)</li>
+                </ul>
+            </div>
+
+            <div class="completion-tracker">
+                <strong>Section Checklist:</strong>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-intro" onchange="updateProgress()">
+                    <label for="check-intro">I have read the introduction and understand why induction is important</label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: The Domino Analogy -->
+        <section id="section-domino">
+            <h2><span class="icon">🎲</span> The Domino Analogy</h2>
+
+            <p>The best way to understand mathematical induction is through the <strong>domino analogy</strong>. Imagine an infinite line of dominoes, numbered 1, 2, 3, 4, and so on forever.</p>
+
+            <h3>The Setup</h3>
+
+            <p>Your goal is to knock down <em>all</em> the dominoes. But there are infinitely many of them! How can you possibly knock down infinitely many dominoes?</p>
+
+            <div class="domino-container" id="domino-demo" role="img" aria-label="Interactive domino demonstration">
+                <div class="domino" data-num="1" onclick="knockDomino(1)">1<span class="domino-label">n=1</span></div>
+                <div class="domino" data-num="2" onclick="knockDomino(2)">2<span class="domino-label">n=2</span></div>
+                <div class="domino" data-num="3" onclick="knockDomino(3)">3<span class="domino-label">n=3</span></div>
+                <div class="domino" data-num="4" onclick="knockDomino(4)">4<span class="domino-label">n=4</span></div>
+                <div class="domino" data-num="5" onclick="knockDomino(5)">5<span class="domino-label">n=5</span></div>
+                <div class="domino" data-num="6" onclick="knockDomino(6)">6<span class="domino-label">n=6</span></div>
+                <div class="domino" data-num="7" onclick="knockDomino(7)">7<span class="domino-label">n=7</span></div>
+                <div class="domino" data-num="8" onclick="knockDomino(8)">8<span class="domino-label">n=8</span></div>
+                <div class="domino" data-num="9" style="opacity: 0.5;">...</div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn-primary" onclick="startDominoChain()">Knock Down First Domino</button>
+                <button class="btn-reset" onclick="resetDominoes()">Reset Dominoes</button>
+            </div>
+
+            <h3>The Two Key Conditions</h3>
+
+            <p>To guarantee that <strong>all</strong> dominoes fall, you need exactly two things:</p>
+
+            <div class="comparison-table">
+                <div class="comparison-column highlight">
+                    <h4>1. Base Case</h4>
+                    <p><strong>Knock down the first domino.</strong></p>
+                    <p>Without this, nothing gets started. Even if dominoes are perfectly arranged, if you never push the first one, none will fall.</p>
+                </div>
+                <div class="comparison-column highlight">
+                    <h4>2. Inductive Step</h4>
+                    <p><strong>Each domino knocks down the next.</strong></p>
+                    <p>The dominoes must be arranged so that whenever one falls, it causes the next one to fall too.</p>
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <h4>💡 The Key Insight</h4>
+                <p>If both conditions hold:</p>
+                <ul>
+                    <li>Domino 1 falls (base case)</li>
+                    <li>Since 1 falls, 2 falls (inductive step: 1 → 2)</li>
+                    <li>Since 2 falls, 3 falls (inductive step: 2 → 3)</li>
+                    <li>Since 3 falls, 4 falls (inductive step: 3 → 4)</li>
+                    <li>And so on... <strong>every domino falls!</strong></li>
+                </ul>
+            </div>
+
+            <h3>Why Both Conditions Are Necessary</h3>
+
+            <div class="example-box">
+                <h4>What Goes Wrong Without the Base Case?</h4>
+                <p>Suppose the dominoes are perfectly arranged (each will knock down the next), but you never push the first one.</p>
+                <p><strong>Result:</strong> No dominoes fall! The chain reaction never starts.</p>
+                <p><em>Mathematical analogy:</em> You might prove "if P(k) then P(k+1)" for all k, but if P(1) is false, the implication tells you nothing useful.</p>
+            </div>
+
+            <div class="example-box">
+                <h4>What Goes Wrong Without the Inductive Step?</h4>
+                <p>Suppose you knock down the first domino, but the dominoes are spaced too far apart—each one falls but doesn't reach the next.</p>
+                <p><strong>Result:</strong> Only domino 1 falls!</p>
+                <p><em>Mathematical analogy:</em> You prove P(1) is true, but you have no way to extend this to P(2), P(3), etc.</p>
+            </div>
+
+            <!-- Interactive: Identify Missing Components -->
+            <div class="interactive-section">
+                <h3><span>🔄</span> Interactive: What's Missing?</h3>
+                <p>For each scenario, identify what's missing that prevents us from concluding all dominoes fall.</p>
+
+                <div class="quiz-container">
+                    <div class="quiz-item">
+                        <p class="quiz-question">Scenario 1: "I've verified that domino 1 is standing upright and ready to fall."</p>
+                        <div class="option-group" id="domino-q1">
+                            <div class="option-item">
+                                <input type="radio" name="dq1" id="dq1-a" value="a">
+                                <label for="dq1-a">Missing base case (first domino not pushed)</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="radio" name="dq1" id="dq1-b" value="b">
+                                <label for="dq1-b">Missing inductive step (dominoes don't knock each other down)</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="radio" name="dq1" id="dq1-c" value="c">
+                                <label for="dq1-c">Both are missing</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="quiz-item">
+                        <p class="quiz-question">Scenario 2: "I've pushed domino 1 and it fell, but the dominoes are 10 feet apart."</p>
+                        <div class="option-group" id="domino-q2">
+                            <div class="option-item">
+                                <input type="radio" name="dq2" id="dq2-a" value="a">
+                                <label for="dq2-a">Missing base case</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="radio" name="dq2" id="dq2-b" value="b">
+                                <label for="dq2-b">Missing inductive step</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="radio" name="dq2" id="dq2-c" value="c">
+                                <label for="dq2-c">Both are missing</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="quiz-item">
+                        <p class="quiz-question">Scenario 3: "I've verified that each domino, when it falls, will knock down the next one."</p>
+                        <div class="option-group" id="domino-q3">
+                            <div class="option-item">
+                                <input type="radio" name="dq3" id="dq3-a" value="a">
+                                <label for="dq3-a">Missing base case</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="radio" name="dq3" id="dq3-b" value="b">
+                                <label for="dq3-b">Missing inductive step</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="radio" name="dq3" id="dq3-c" value="c">
+                                <label for="dq3-c">Nothing is missing</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button class="btn-primary" onclick="checkDominoQuiz()">Check Answers</button>
+                        <button class="btn-reset" onclick="resetDominoQuiz()">Reset</button>
+                    </div>
+
+                    <div id="domino-quiz-feedback" class="feedback"></div>
+                </div>
+            </div>
+
+            <div class="completion-tracker">
+                <strong>Section Checklist:</strong>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-domino-1" onchange="updateProgress()">
+                    <label for="check-domino-1">I understand the domino analogy</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-domino-2" onchange="updateProgress()">
+                    <label for="check-domino-2">I know why both base case and inductive step are necessary</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-domino-3" onchange="updateProgress()">
+                    <label for="check-domino-3">I completed the interactive exercise</label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: The Formal Principle -->
+        <section id="section-formal">
+            <h2><span class="icon">📐</span> The Principle of Mathematical Induction</h2>
+
+            <p>Now let's translate the domino analogy into precise mathematical language.</p>
+
+            <h3>The Formal Statement</h3>
+
+            <div class="theorem-box">
+                <h4>📐 Principle of Mathematical Induction</h4>
+                <p>Let P(n) be a statement about the positive integer n. If:</p>
+                <ol>
+                    <li><strong>Base Case:</strong> P(1) is true, and</li>
+                    <li><strong>Inductive Step:</strong> For all k ≥ 1, if P(k) is true, then P(k+1) is true</li>
+                </ol>
+                <p>Then P(n) is true for all positive integers n ≥ 1.</p>
+            </div>
+
+            <h3>Understanding the Components</h3>
+
+            <div class="definition-box">
+                <h4>📖 P(n) - The Predicate</h4>
+                <p>P(n) is a statement that depends on n. For each specific value of n, P(n) is either true or false.</p>
+                <p><strong>Example:</strong> P(n) might be "1 + 2 + 3 + ... + n = n(n+1)/2"</p>
+                <ul>
+                    <li>P(1) is the statement "1 = 1(2)/2" (which is true)</li>
+                    <li>P(2) is the statement "1 + 2 = 2(3)/2" (which is true)</li>
+                    <li>P(100) is the statement "1 + 2 + ... + 100 = 100(101)/2"</li>
+                </ul>
+            </div>
+
+            <div class="definition-box">
+                <h4>📖 The Base Case</h4>
+                <p>The base case establishes that P(n₀) is true for some starting value n₀ (usually n₀ = 1 or n₀ = 0).</p>
+                <p>This is typically the "easy" part—just verify the statement for one specific value.</p>
+            </div>
+
+            <div class="definition-box">
+                <h4>📖 The Inductive Step</h4>
+                <p>The inductive step proves: <strong>For all k ≥ n₀, P(k) → P(k+1)</strong></p>
+                <p>This is the "if-then" part: IF P(k) is true, THEN P(k+1) must also be true.</p>
+            </div>
+
+            <div class="definition-box">
+                <h4>📖 The Inductive Hypothesis</h4>
+                <p>When proving the inductive step, we <strong>assume</strong> P(k) is true for some arbitrary k. This assumption is called the <strong>inductive hypothesis</strong>.</p>
+                <p>We then use this assumption to prove P(k+1).</p>
+            </div>
+
+            <h3>The Logical Form</h3>
+
+            <p>Symbolically, the Principle of Mathematical Induction states:</p>
+
+            <div class="math-display">
+                [P(1) ∧ (∀k ≥ 1)(P(k) → P(k+1))] → (∀n ≥ 1)P(n)
+            </div>
+
+            <p>In words: "If P(1) is true AND for every k, P(k) implies P(k+1), THEN P(n) is true for all n."</p>
+
+            <h3>Why Is This Valid?</h3>
+
+            <div class="concept-box">
+                <h4>💡 The Chain of Implications</h4>
+                <p>Given the base case and inductive step, here's why P(n) is true for any n:</p>
+                <ul>
+                    <li>P(1) is true (base case)</li>
+                    <li>P(1) → P(2), and P(1) is true, so P(2) is true (modus ponens)</li>
+                    <li>P(2) → P(3), and P(2) is true, so P(3) is true (modus ponens)</li>
+                    <li>P(3) → P(4), and P(3) is true, so P(4) is true (modus ponens)</li>
+                    <li>...continue for any finite n...</li>
+                </ul>
+                <p>For any specific n, we can reach P(n) in n-1 applications of modus ponens!</p>
+            </div>
+
+            <h3>Connection to Well-Ordering</h3>
+
+            <div class="theorem-box">
+                <h4>📐 Well-Ordering Principle</h4>
+                <p>Every non-empty set of positive integers has a smallest element.</p>
+            </div>
+
+            <p>The Principle of Mathematical Induction is actually <em>equivalent</em> to the Well-Ordering Principle. Here's an informal argument:</p>
+
+            <div class="collapsible">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)" tabindex="0" role="button" aria-expanded="false">
+                    <span>Why Induction Follows from Well-Ordering</span>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <p>Suppose P(1) is true and P(k) → P(k+1) for all k ≥ 1.</p>
+                        <p>We want to show P(n) is true for all n ≥ 1.</p>
+                        <p><strong>Proof by contradiction:</strong></p>
+                        <p>Suppose not. Then the set S = {n ∈ ℤ⁺ : P(n) is false} is non-empty.</p>
+                        <p>By the Well-Ordering Principle, S has a smallest element m.</p>
+                        <p>Since P(1) is true, we have 1 ∉ S, so m > 1.</p>
+                        <p>Since m is the smallest element of S, we have m-1 ∉ S, meaning P(m-1) is true.</p>
+                        <p>By the inductive step, P(m-1) → P(m), so P(m) is true.</p>
+                        <p>But this contradicts m ∈ S (meaning P(m) is false)!</p>
+                        <p>Therefore, S must be empty, and P(n) is true for all n ≥ 1. ∎</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="completion-tracker">
+                <strong>Section Checklist:</strong>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-formal-1" onchange="updateProgress()">
+                    <label for="check-formal-1">I can state the Principle of Mathematical Induction</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-formal-2" onchange="updateProgress()">
+                    <label for="check-formal-2">I understand what P(n), base case, and inductive step mean</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-formal-3" onchange="updateProgress()">
+                    <label for="check-formal-3">I understand the connection to well-ordering</label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: The Proof Template -->
+        <section id="section-template">
+            <h2><span class="icon">📝</span> The Induction Proof Template</h2>
+
+            <p>Every induction proof follows a standard structure. Learning this template will help you write clear, organized proofs.</p>
+
+            <div class="template-box">
+                <h4>📋 Standard Induction Proof Template</h4>
+
+                <div class="template-step">
+                    <div class="template-step-title">Step 0: State What You're Proving</div>
+                    <p><strong>Claim:</strong> For all integers n ≥ n₀, P(n).</p>
+                    <p><em>We proceed by induction on n.</em></p>
+                </div>
+
+                <div class="template-step">
+                    <div class="template-step-title">Step 1: Base Case</div>
+                    <p><strong>Base Case (n = n₀):</strong> We verify that P(n₀) is true.</p>
+                    <p>[Show the explicit calculation or verification]</p>
+                    <p>Thus, P(n₀) holds. ✓</p>
+                </div>
+
+                <div class="template-step">
+                    <div class="template-step-title">Step 2: Inductive Hypothesis</div>
+                    <p><strong>Inductive Hypothesis:</strong> Assume P(k) is true for some arbitrary k ≥ n₀.</p>
+                    <p>[Write out explicitly what P(k) says]</p>
+                </div>
+
+                <div class="template-step">
+                    <div class="template-step-title">Step 3: Inductive Step</div>
+                    <p><strong>Inductive Step:</strong> We must show P(k+1) is true.</p>
+                    <p>[Write out what P(k+1) says—what you need to prove]</p>
+                    <p>[Use the inductive hypothesis to prove P(k+1)]</p>
+                    <p>Thus, P(k+1) holds. ✓</p>
+                </div>
+
+                <div class="template-step">
+                    <div class="template-step-title">Step 4: Conclusion</div>
+                    <p><strong>Conclusion:</strong> By the Principle of Mathematical Induction, P(n) is true for all n ≥ n₀. ∎</p>
+                </div>
+            </div>
+
+            <h3>A Complete Example</h3>
+
+            <div class="theorem-box">
+                <h4>📐 Theorem</h4>
+                <p>For all positive integers n: 1 + 2 + 3 + ... + n = n(n+1)/2</p>
+            </div>
+
+            <div class="proof-box">
+                <h4>Proof by Induction</h4>
+
+                <p><strong>Claim:</strong> For all integers n ≥ 1, 1 + 2 + 3 + ... + n = n(n+1)/2.</p>
+                <p>We proceed by induction on n.</p>
+
+                <p><strong>Base Case (n = 1):</strong></p>
+                <p>When n = 1, the left side is: 1</p>
+                <p>The right side is: 1(1+1)/2 = 1(2)/2 = 1</p>
+                <p>Since LHS = RHS = 1, the base case holds. ✓</p>
+
+                <p><strong>Inductive Hypothesis:</strong></p>
+                <p>Assume that for some k ≥ 1:</p>
+                <div class="math-display">1 + 2 + 3 + ... + k = k(k+1)/2</div>
+
+                <p><strong>Inductive Step:</strong></p>
+                <p>We must show: 1 + 2 + 3 + ... + k + (k+1) = (k+1)(k+2)/2</p>
+                <p>Starting with the left side:</p>
+                <div class="math-display">
+                    1 + 2 + 3 + ... + k + (k+1)<br>
+                    = [1 + 2 + 3 + ... + k] + (k+1)<br>
+                    = k(k+1)/2 + (k+1)  &nbsp;&nbsp;&nbsp;&nbsp;[by inductive hypothesis]<br>
+                    = k(k+1)/2 + 2(k+1)/2<br>
+                    = [k(k+1) + 2(k+1)]/2<br>
+                    = [(k+1)(k + 2)]/2<br>
+                    = (k+1)(k+2)/2
+                </div>
+                <p>This equals the right side, so P(k+1) holds. ✓</p>
+
+                <p><strong>Conclusion:</strong> By the Principle of Mathematical Induction, for all n ≥ 1:</p>
+                <div class="math-display">1 + 2 + 3 + ... + n = n(n+1)/2 ∎</div>
+            </div>
+
+            <h3>Key Observations About the Proof</h3>
+
+            <div class="concept-box">
+                <h4>💡 Notice These Important Points</h4>
+                <ol>
+                    <li><strong>The inductive hypothesis is used!</strong> In the inductive step, we explicitly used the assumption that 1 + 2 + ... + k = k(k+1)/2.</li>
+                    <li><strong>We proved an implication.</strong> We showed: IF P(k) is true, THEN P(k+1) is true. We did NOT prove P(k) is true!</li>
+                    <li><strong>The algebra connects k to k+1.</strong> The key step was recognizing that the sum up to k+1 equals (the sum up to k) plus (k+1).</li>
+                </ol>
+            </div>
+
+            <!-- Interactive: Identify Proof Parts -->
+            <div class="interactive-section">
+                <h3><span>🔄</span> Interactive: Label the Proof Parts</h3>
+                <p>Read the following induction proof and identify each component.</p>
+
+                <div class="example-box">
+                    <h4>Proof that n! ≥ 2ⁿ⁻¹ for all n ≥ 1</h4>
+                    <p><strong>[A]</strong> We proceed by induction on n.</p>
+                    <p><strong>[B]</strong> When n = 1: LHS = 1! = 1, RHS = 2⁰ = 1. Since 1 ≥ 1, the base case holds.</p>
+                    <p><strong>[C]</strong> Assume k! ≥ 2^(k-1) for some k ≥ 1.</p>
+                    <p><strong>[D]</strong> We show (k+1)! ≥ 2^k.</p>
+                    <p><strong>[E]</strong> (k+1)! = (k+1) · k! ≥ (k+1) · 2^(k-1) ≥ 2 · 2^(k-1) = 2^k ✓</p>
+                    <p><strong>[F]</strong> By induction, n! ≥ 2^(n-1) for all n ≥ 1. ∎</p>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="form-group">
+                        <label for="part-base">Which label is the Base Case?</label>
+                        <select id="part-base">
+                            <option value="">Select...</option>
+                            <option value="A">[A]</option>
+                            <option value="B">[B]</option>
+                            <option value="C">[C]</option>
+                            <option value="D">[D]</option>
+                            <option value="E">[E]</option>
+                            <option value="F">[F]</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="part-ih">Which label is the Inductive Hypothesis?</label>
+                        <select id="part-ih">
+                            <option value="">Select...</option>
+                            <option value="A">[A]</option>
+                            <option value="B">[B]</option>
+                            <option value="C">[C]</option>
+                            <option value="D">[D]</option>
+                            <option value="E">[E]</option>
+                            <option value="F">[F]</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="part-goal">Which label states what we need to prove in the inductive step?</label>
+                        <select id="part-goal">
+                            <option value="">Select...</option>
+                            <option value="A">[A]</option>
+                            <option value="B">[B]</option>
+                            <option value="C">[C]</option>
+                            <option value="D">[D]</option>
+                            <option value="E">[E]</option>
+                            <option value="F">[F]</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="part-work">Which label contains the main algebraic work using the IH?</label>
+                        <select id="part-work">
+                            <option value="">Select...</option>
+                            <option value="A">[A]</option>
+                            <option value="B">[B]</option>
+                            <option value="C">[C]</option>
+                            <option value="D">[D]</option>
+                            <option value="E">[E]</option>
+                            <option value="F">[F]</option>
+                        </select>
+                    </div>
+
+                    <div class="btn-group">
+                        <button class="btn-primary" onclick="checkPartLabels()">Check Answers</button>
+                        <button class="btn-reset" onclick="resetPartLabels()">Reset</button>
+                    </div>
+
+                    <div id="parts-feedback" class="feedback"></div>
+                </div>
+            </div>
+
+            <div class="completion-tracker">
+                <strong>Section Checklist:</strong>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-template-1" onchange="updateProgress()">
+                    <label for="check-template-1">I understand the 4-step proof template</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-template-2" onchange="updateProgress()">
+                    <label for="check-template-2">I followed the sum formula example</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-template-3" onchange="updateProgress()">
+                    <label for="check-template-3">I completed the proof labeling exercise</label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5: Common Misconceptions -->
+        <section id="section-misconceptions">
+            <h2><span class="icon">⚠️</span> Common Misconceptions</h2>
+
+            <p>Induction is often misunderstood. Let's address the most common misconceptions head-on.</p>
+
+            <h3>Misconception 1: "Induction is Circular Reasoning"</h3>
+
+            <div class="warning-box">
+                <h4>❌ The Misconception</h4>
+                <p>"You're assuming P(k) is true to prove P(k+1). But how do you know P(k) is true? Aren't you assuming what you're trying to prove?"</p>
+            </div>
+
+            <div class="concept-box">
+                <h4>✅ The Reality</h4>
+                <p>We are NOT assuming P(k) is true for all k. We are proving a <strong>conditional statement</strong>:</p>
+                <p style="text-align: center;"><strong>IF</strong> P(k) is true, <strong>THEN</strong> P(k+1) is true.</p>
+                <p>This is a valid implication regardless of whether P(k) is actually true!</p>
+                <p>Remember: P → Q is true whenever Q is true, or whenever P is false. We're proving that the implication holds for all k.</p>
+                <p>The base case then "activates" the chain: P(1) is true, so by our implication, P(2) is true, so P(3) is true, etc.</p>
+            </div>
+
+            <h3>Misconception 2: "The Base Case Can Be Any Value"</h3>
+
+            <div class="warning-box">
+                <h4>❌ The Misconception</h4>
+                <p>"I can start my induction wherever I want."</p>
+            </div>
+
+            <div class="concept-box">
+                <h4>✅ The Reality</h4>
+                <p>The base case determines where your conclusion applies. If you prove:</p>
+                <ul>
+                    <li>Base case: P(1) is true</li>
+                    <li>Inductive step: P(k) → P(k+1) for k ≥ 1</li>
+                </ul>
+                <p>Then you can only conclude P(n) for n ≥ 1.</p>
+                <p>If you prove:</p>
+                <ul>
+                    <li>Base case: P(5) is true</li>
+                    <li>Inductive step: P(k) → P(k+1) for k ≥ 5</li>
+                </ul>
+                <p>Then you can only conclude P(n) for n ≥ 5. You've said nothing about P(1), P(2), P(3), or P(4)!</p>
+            </div>
+
+            <h3>Misconception 3: "I Don't Need to Use the Inductive Hypothesis"</h3>
+
+            <div class="warning-box">
+                <h4>❌ The Misconception</h4>
+                <p>"I proved P(k+1) directly without using the assumption that P(k) is true. My proof is still valid!"</p>
+            </div>
+
+            <div class="concept-box">
+                <h4>✅ The Reality</h4>
+                <p>If you can prove P(k+1) without using P(k), you're doing a <strong>direct proof</strong>, not induction!</p>
+                <p>This might actually be fine—but then you should just prove P(n) directly for arbitrary n, without the induction framework.</p>
+                <p>The power of induction is that we get to USE the inductive hypothesis. If you're not using it, induction is the wrong technique.</p>
+            </div>
+
+            <h3>Misconception 4: "Checking a Few Cases is Enough"</h3>
+
+            <div class="warning-box">
+                <h4>❌ The Misconception</h4>
+                <p>"I verified P(1), P(2), P(3), P(4), and P(5). That's enough to conclude P(n) is true for all n."</p>
+            </div>
+
+            <div class="concept-box">
+                <h4>✅ The Reality</h4>
+                <p>Checking finitely many cases NEVER proves an infinite statement!</p>
+                <p>Consider: "n² + n + 41 is prime for all n ≥ 0"</p>
+                <ul>
+                    <li>n=0: 41 (prime ✓)</li>
+                    <li>n=1: 43 (prime ✓)</li>
+                    <li>n=2: 47 (prime ✓)</li>
+                    <li>...</li>
+                    <li>n=39: 1601 (prime ✓)</li>
+                    <li>n=40: 1681 = 41² (NOT prime ✗)</li>
+                </ul>
+                <p>The pattern held for 40 cases but then failed! You need the inductive step to guarantee it works forever.</p>
+            </div>
+
+            <!-- Interactive: Spot the Error -->
+            <div class="interactive-section">
+                <h3><span>🔄</span> Interactive: Spot the Error</h3>
+                <p>Each of the following "proofs" contains an error. Identify what's wrong.</p>
+
+                <div class="quiz-container">
+                    <div class="quiz-item">
+                        <p class="quiz-question">"Proof" 1: All horses are the same color.</p>
+                        <p><em>Base case:</em> A set of 1 horse trivially has all horses the same color. ✓</p>
+                        <p><em>Inductive step:</em> Assume any set of k horses has all the same color. Consider a set of k+1 horses. Remove one horse; the remaining k horses are the same color. Put it back and remove a different horse; those k horses are also the same color. Since both groups overlap, all k+1 horses are the same color. ✓</p>
+                        <p><em>Conclusion:</em> All horses are the same color. ∎</p>
+
+                        <div class="option-group" id="error-q1">
+                            <div class="option-item">
+                                <input type="radio" name="eq1" id="eq1-a" value="a">
+                                <label for="eq1-a">The base case is wrong</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="radio" name="eq1" id="eq1-b" value="b">
+                                <label for="eq1-b">The inductive step fails when k=1 (the two groups don't overlap)</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="radio" name="eq1" id="eq1-c" value="c">
+                                <label for="eq1-c">The conclusion doesn't follow from the premises</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="quiz-item">
+                        <p class="quiz-question">"Proof" 2: For all n ≥ 1, n² < n.</p>
+                        <p><em>Inductive step:</em> Assume k² < k. Then (k+1)² = k² + 2k + 1 < k + 2k + 1 = 3k + 1. Since 3k + 1 > k + 1, we have... hmm, this doesn't work.</p>
+                        <p><em>Conclusion:</em> The proof fails, so n² < n is false.</p>
+
+                        <div class="option-group" id="error-q2">
+                            <div class="option-item">
+                                <input type="radio" name="eq2" id="eq2-a" value="a">
+                                <label for="eq2-a">The inductive step is wrong</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="radio" name="eq2" id="eq2-b" value="b">
+                                <label for="eq2-b">The base case is missing (and would fail: 1² = 1 is not < 1)</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="radio" name="eq2" id="eq2-c" value="c">
+                                <label for="eq2-c">The conclusion is correct but the reasoning is wrong</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button class="btn-primary" onclick="checkErrorQuiz()">Check Answers</button>
+                        <button class="btn-reset" onclick="resetErrorQuiz()">Reset</button>
+                    </div>
+
+                    <div id="error-feedback" class="feedback"></div>
+                </div>
+            </div>
+
+            <div class="completion-tracker">
+                <strong>Section Checklist:</strong>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-misc-1" onchange="updateProgress()">
+                    <label for="check-misc-1">I understand why induction is not circular reasoning</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-misc-2" onchange="updateProgress()">
+                    <label for="check-misc-2">I know the importance of the base case value</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-misc-3" onchange="updateProgress()">
+                    <label for="check-misc-3">I completed the error-spotting exercise</label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 6: Connection to Computer Science -->
+        <section id="section-cs">
+            <h2><span class="icon">💻</span> Connection to Computer Science</h2>
+
+            <p>Mathematical induction is deeply connected to recursion in programming. Understanding this connection will help you both write correct recursive code and prove that your algorithms work.</p>
+
+            <h3>Induction ↔ Recursion</h3>
+
+            <div class="comparison-table">
+                <div class="comparison-column">
+                    <h4>Mathematical Induction</h4>
+                    <ul>
+                        <li><strong>Base case:</strong> Prove P(1) directly</li>
+                        <li><strong>Inductive step:</strong> Assume P(k), prove P(k+1)</li>
+                        <li><strong>Result:</strong> P(n) true for all n</li>
+                    </ul>
+                </div>
+                <div class="comparison-column">
+                    <h4>Recursive Function</h4>
+                    <ul>
+                        <li><strong>Base case:</strong> Return answer for n=1 directly</li>
+                        <li><strong>Recursive case:</strong> Use answer for k to compute answer for k+1</li>
+                        <li><strong>Result:</strong> Correct answer for all n</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>Example: Sum Function</h3>
+
+            <p>Consider the mathematical statement we proved earlier:</p>
+            <div class="math-display">1 + 2 + 3 + ... + n = n(n+1)/2</div>
+
+            <p>Here's a recursive implementation and its correctness proof:</p>
+
+            <pre><code><span class="code-comment">/**
+ * Computes 1 + 2 + 3 + ... + n recursively.
+ * 
+ * CORRECTNESS PROOF BY INDUCTION:
+ * 
+ * Claim: sum(n) returns n(n+1)/2 for all n ≥ 1.
+ * 
+ * Base Case (n=1): sum(1) returns 1 = 1(2)/2. ✓
+ * 
+ * Inductive Hypothesis: Assume sum(k) returns k(k+1)/2.
+ * 
+ * Inductive Step: sum(k+1) returns sum(k) + (k+1)
+ *                                = k(k+1)/2 + (k+1)  [by IH]
+ *                                = (k+1)(k+2)/2      [algebra]
+ * This is correct! ✓
+ * 
+ * By induction, sum(n) is correct for all n ≥ 1.
+ */</span>
+<span class="code-keyword">public static int</span> <span class="code-function">sum</span>(<span class="code-type">int</span> n) {
+    <span class="code-comment">// Base case</span>
+    <span class="code-keyword">if</span> (n == <span class="code-number">1</span>) {
+        <span class="code-keyword">return</span> <span class="code-number">1</span>;
+    }
+    <span class="code-comment">// Recursive case: use sum(n-1) to compute sum(n)</span>
+    <span class="code-keyword">return</span> <span class="code-function">sum</span>(n - <span class="code-number">1</span>) + n;
+}</code></pre>
+
+            <h3>Example: Factorial Function</h3>
+
+            <pre><code><span class="code-comment">/**
+ * Computes n! = n × (n-1) × ... × 2 × 1.
+ * 
+ * CORRECTNESS PROOF BY INDUCTION:
+ * 
+ * Claim: factorial(n) returns n! for all n ≥ 0.
+ * 
+ * Base Case (n=0): factorial(0) returns 1 = 0!. ✓
+ * 
+ * Inductive Hypothesis: Assume factorial(k) returns k!.
+ * 
+ * Inductive Step: factorial(k+1) returns (k+1) * factorial(k)
+ *                                       = (k+1) * k!  [by IH]
+ *                                       = (k+1)!      [definition]
+ * This is correct! ✓
+ * 
+ * By induction, factorial(n) is correct for all n ≥ 0.
+ */</span>
+<span class="code-keyword">public static long</span> <span class="code-function">factorial</span>(<span class="code-type">int</span> n) {
+    <span class="code-comment">// Base case</span>
+    <span class="code-keyword">if</span> (n == <span class="code-number">0</span>) {
+        <span class="code-keyword">return</span> <span class="code-number">1</span>;
+    }
+    <span class="code-comment">// Recursive case</span>
+    <span class="code-keyword">return</span> n * <span class="code-function">factorial</span>(n - <span class="code-number">1</span>);
+}</code></pre>
+
+            <h3>The Parallel Structure</h3>
+
+            <div class="concept-box">
+                <h4>💡 Key Insight</h4>
+                <p>Notice the parallel structure:</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Induction Proof</th>
+                            <th>Recursive Code</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Base case: verify P(n₀)</td>
+                            <td>Base case: <code>if (n == n₀) return ...</code></td>
+                        </tr>
+                        <tr>
+                            <td>IH: assume P(k) true</td>
+                            <td>Recursive call: <code>f(k)</code> gives correct answer</td>
+                        </tr>
+                        <tr>
+                            <td>IS: use P(k) to prove P(k+1)</td>
+                            <td>Use <code>f(k)</code> to compute <code>f(k+1)</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p>This is why CSLO 4 connects mathematical induction to recursion—they are two sides of the same coin!</p>
+            </div>
+
+            <h3>Loop Invariants (Preview)</h3>
+
+            <p>Induction also underlies <strong>loop invariants</strong>, which we use to prove iterative algorithms correct:</p>
+
+            <pre><code><span class="code-comment">/**
+ * Computes 1 + 2 + ... + n iteratively.
+ * 
+ * LOOP INVARIANT: At the start of iteration i, sum = 1 + 2 + ... + (i-1)
+ * 
+ * Proof by induction on the iteration number:
+ * - Base: Before iteration 1, sum = 0 = (empty sum). ✓
+ * - IH: Assume at start of iteration k, sum = 1 + 2 + ... + (k-1).
+ * - IS: Iteration k adds k to sum, so after iteration k,
+ *       sum = 1 + 2 + ... + (k-1) + k = 1 + 2 + ... + k. ✓
+ * 
+ * After iteration n, sum = 1 + 2 + ... + n. Correct!
+ */</span>
+<span class="code-keyword">public static int</span> <span class="code-function">sumIterative</span>(<span class="code-type">int</span> n) {
+    <span class="code-type">int</span> sum = <span class="code-number">0</span>;
+    <span class="code-keyword">for</span> (<span class="code-type">int</span> i = <span class="code-number">1</span>; i <= n; i++) {
+        sum = sum + i;  <span class="code-comment">// Invariant maintained</span>
+    }
+    <span class="code-keyword">return</span> sum;
+}</code></pre>
+
+            <div class="completion-tracker">
+                <strong>Section Checklist:</strong>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-cs-1" onchange="updateProgress()">
+                    <label for="check-cs-1">I understand the connection between induction and recursion</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-cs-2" onchange="updateProgress()">
+                    <label for="check-cs-2">I can see how induction proofs mirror recursive code</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-cs-3" onchange="updateProgress()">
+                    <label for="check-cs-3">I understand the concept of loop invariants</label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 7: Practice Problems -->
+        <section id="section-practice">
+            <h2><span class="icon">✏️</span> Practice Problems</h2>
+
+            <p>Practice identifying the components of induction proofs and setting up your own proofs.</p>
+
+            <h3>Problem 1: Identify the Components</h3>
+
+            <div class="collapsible">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)" tabindex="0" role="button" aria-expanded="false">
+                    <span>Problem Statement</span>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <p>For the statement "For all n ≥ 1, 2ⁿ > n", identify:</p>
+                        <ol>
+                            <li>What is P(n)?</li>
+                            <li>What is P(1)? Is it true?</li>
+                            <li>What is P(k)?</li>
+                            <li>What is P(k+1)?</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <div class="collapsible">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)" tabindex="0" role="button" aria-expanded="false">
+                    <span>Solution</span>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <ol>
+                            <li><strong>P(n):</strong> 2ⁿ > n</li>
+                            <li><strong>P(1):</strong> 2¹ > 1, i.e., 2 > 1. Yes, this is true!</li>
+                            <li><strong>P(k):</strong> 2^k > k (the inductive hypothesis)</li>
+                            <li><strong>P(k+1):</strong> 2^(k+1) > k+1 (what we need to prove)</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Problem 2: Write the Setup</h3>
+
+            <div class="collapsible">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)" tabindex="0" role="button" aria-expanded="false">
+                    <span>Problem Statement</span>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <p>For the statement "For all n ≥ 0, 3 divides n³ - n", write:</p>
+                        <ol>
+                            <li>The base case (what n value and what to verify)</li>
+                            <li>The inductive hypothesis</li>
+                            <li>What you need to prove in the inductive step</li>
+                        </ol>
+                        <p>(You don't need to complete the proof—just set it up.)</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="collapsible">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)" tabindex="0" role="button" aria-expanded="false">
+                    <span>Solution</span>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <ol>
+                            <li><strong>Base case (n = 0):</strong> Verify 3 | (0³ - 0) = 3 | 0. Since 0 = 3·0, this is true. ✓</li>
+                            <li><strong>Inductive hypothesis:</strong> Assume 3 | (k³ - k) for some k ≥ 0. That is, k³ - k = 3m for some integer m.</li>
+                            <li><strong>Inductive step goal:</strong> Prove 3 | ((k+1)³ - (k+1)).</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Problem 3: Complete the Proof</h3>
+
+            <div class="collapsible">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)" tabindex="0" role="button" aria-expanded="false">
+                    <span>Problem Statement</span>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <p><strong>Prove:</strong> For all n ≥ 1, 1 + 3 + 5 + ... + (2n-1) = n².</p>
+                        <p>(The sum of the first n odd numbers equals n².)</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="collapsible">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)" tabindex="0" role="button" aria-expanded="false">
+                    <span>Solution</span>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <div class="proof-box">
+                            <h4>Proof by Induction</h4>
+                            <p><strong>Base Case (n = 1):</strong></p>
+                            <p>LHS = 1 (just the first odd number)</p>
+                            <p>RHS = 1² = 1</p>
+                            <p>LHS = RHS ✓</p>
+
+                            <p><strong>Inductive Hypothesis:</strong></p>
+                            <p>Assume 1 + 3 + 5 + ... + (2k-1) = k² for some k ≥ 1.</p>
+
+                            <p><strong>Inductive Step:</strong></p>
+                            <p>We must show: 1 + 3 + 5 + ... + (2k-1) + (2(k+1)-1) = (k+1)²</p>
+                            <p>The next odd number after (2k-1) is (2k+1) = 2(k+1)-1.</p>
+                            <div class="math-display">
+                                1 + 3 + 5 + ... + (2k-1) + (2k+1)<br>
+                                = k² + (2k+1)  &nbsp;&nbsp;[by IH]<br>
+                                = k² + 2k + 1<br>
+                                = (k+1)² ✓
+                            </div>
+
+                            <p><strong>Conclusion:</strong> By induction, 1 + 3 + 5 + ... + (2n-1) = n² for all n ≥ 1. ∎</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interactive: Build a Proof -->
+            <div class="interactive-section">
+                <h3><span>🔄</span> Interactive: Fill in the Proof</h3>
+                <p>Complete this induction proof by filling in the blanks.</p>
+
+                <div class="quiz-container">
+                    <p><strong>Theorem:</strong> For all n ≥ 1, 1² + 2² + 3² + ... + n² = n(n+1)(2n+1)/6</p>
+
+                    <div class="proof-box">
+                        <p><strong>Base Case (n = 1):</strong></p>
+                        <p>LHS = 1² = 
+                            <select id="fill-1" aria-label="Fill in LHS value">
+                                <option value="">?</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="0">0</option>
+                            </select>
+                        </p>
+                        <p>RHS = 1(2)(3)/6 = 
+                            <select id="fill-2" aria-label="Fill in RHS value">
+                                <option value="">?</option>
+                                <option value="1">1</option>
+                                <option value="6">6</option>
+                                <option value="3">3</option>
+                            </select>
+                        </p>
+                        <p>LHS = RHS ✓</p>
+
+                        <p><strong>Inductive Hypothesis:</strong></p>
+                        <p>Assume 1² + 2² + ... + k² = 
+                            <select id="fill-3" aria-label="Fill in IH formula">
+                                <option value="">?</option>
+                                <option value="k(k+1)(2k+1)/6">k(k+1)(2k+1)/6</option>
+                                <option value="k(k+1)/2">k(k+1)/2</option>
+                                <option value="k²">k²</option>
+                            </select>
+                        </p>
+
+                        <p><strong>Inductive Step:</strong></p>
+                        <p>We must show: 1² + 2² + ... + k² + (k+1)² = (k+1)(k+2)(2k+3)/6</p>
+                        <p>Starting with LHS:</p>
+                        <p>1² + 2² + ... + k² + (k+1)²</p>
+                        <p>= [1² + 2² + ... + k²] + (k+1)²</p>
+                        <p>= 
+                            <select id="fill-4" aria-label="Apply IH">
+                                <option value="">?</option>
+                                <option value="k(k+1)(2k+1)/6">k(k+1)(2k+1)/6</option>
+                                <option value="(k+1)²">(k+1)²</option>
+                                <option value="k²">k²</option>
+                            </select>
+                            + (k+1)² &nbsp;&nbsp;[by 
+                            <select id="fill-5" aria-label="Justification">
+                                <option value="">?</option>
+                                <option value="IH">IH</option>
+                                <option value="base case">base case</option>
+                                <option value="algebra">algebra</option>
+                            </select>]
+                        </p>
+                    </div>
+
+                    <div class="btn-group">
+                        <button class="btn-primary" onclick="checkFillProof()">Check Answers</button>
+                        <button class="btn-reset" onclick="resetFillProof()">Reset</button>
+                    </div>
+
+                    <div id="fill-feedback" class="feedback"></div>
+                </div>
+            </div>
+
+            <div class="completion-tracker">
+                <strong>Section Checklist:</strong>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-prac-1" onchange="updateProgress()">
+                    <label for="check-prac-1">I can identify P(n), P(k), and P(k+1)</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-prac-2" onchange="updateProgress()">
+                    <label for="check-prac-2">I can set up an induction proof</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-prac-3" onchange="updateProgress()">
+                    <label for="check-prac-3">I completed the fill-in-the-blank exercise</label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 8: Knowledge Check Quiz -->
+        <section id="section-quiz">
+            <h2><span class="icon">📋</span> Knowledge Check</h2>
+
+            <p>Test your understanding of the Principle of Mathematical Induction.</p>
+
+            <div class="quiz-container" id="final-quiz">
+                <div class="quiz-item">
+                    <p class="quiz-question">1. In mathematical induction, what do we assume in the inductive hypothesis?</p>
+                    <div class="option-group" id="fq1-options">
+                        <div class="option-item">
+                            <input type="radio" name="fq1" id="fq1-a" value="a">
+                            <label for="fq1-a">P(n) is true for all n</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq1" id="fq1-b" value="b">
+                            <label for="fq1-b">P(k) is true for some arbitrary k ≥ n₀</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq1" id="fq1-c" value="c">
+                            <label for="fq1-c">P(k+1) is true</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq1" id="fq1-d" value="d">
+                            <label for="fq1-d">P(1) is true</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quiz-item">
+                    <p class="quiz-question">2. If you prove the base case for n = 5 and the inductive step for k ≥ 5, what can you conclude?</p>
+                    <div class="option-group" id="fq2-options">
+                        <div class="option-item">
+                            <input type="radio" name="fq2" id="fq2-a" value="a">
+                            <label for="fq2-a">P(n) is true for all n ≥ 1</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq2" id="fq2-b" value="b">
+                            <label for="fq2-b">P(n) is true for all n ≥ 5</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq2" id="fq2-c" value="c">
+                            <label for="fq2-c">P(n) is true only for n = 5</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq2" id="fq2-d" value="d">
+                            <label for="fq2-d">P(n) is true for n = 1, 2, 3, 4, 5</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quiz-item">
+                    <p class="quiz-question">3. In the domino analogy, what does "knocking down the first domino" correspond to?</p>
+                    <div class="option-group" id="fq3-options">
+                        <div class="option-item">
+                            <input type="radio" name="fq3" id="fq3-a" value="a">
+                            <label for="fq3-a">The inductive step</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq3" id="fq3-b" value="b">
+                            <label for="fq3-b">The inductive hypothesis</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq3" id="fq3-c" value="c">
+                            <label for="fq3-c">The base case</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq3" id="fq3-d" value="d">
+                            <label for="fq3-d">The conclusion</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quiz-item">
+                    <p class="quiz-question">4. Why is mathematical induction NOT circular reasoning?</p>
+                    <div class="option-group" id="fq4-options">
+                        <div class="option-item">
+                            <input type="radio" name="fq4" id="fq4-a" value="a">
+                            <label for="fq4-a">Because we verify the base case separately</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq4" id="fq4-b" value="b">
+                            <label for="fq4-b">Because we prove an implication (P(k) → P(k+1)), not that P(k) is true</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq4" id="fq4-c" value="c">
+                            <label for="fq4-c">Because we only check finitely many cases</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq4" id="fq4-d" value="d">
+                            <label for="fq4-d">Because induction is an axiom, not a proof technique</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quiz-item">
+                    <p class="quiz-question">5. What is the relationship between mathematical induction and recursion?</p>
+                    <div class="option-group" id="fq5-options">
+                        <div class="option-item">
+                            <input type="radio" name="fq5" id="fq5-a" value="a">
+                            <label for="fq5-a">They are unrelated concepts</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq5" id="fq5-b" value="b">
+                            <label for="fq5-b">Induction proves properties; recursion computes values—both use base case + step structure</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq5" id="fq5-c" value="c">
+                            <label for="fq5-c">Recursion is used to prove induction works</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq5" id="fq5-d" value="d">
+                            <label for="fq5-d">Induction only works for recursive functions</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn-primary" onclick="checkFinalQuiz()">Submit Quiz</button>
+                    <button class="btn-reset" onclick="resetFinalQuiz()">Reset Quiz</button>
+                </div>
+
+                <div id="final-quiz-feedback" class="feedback"></div>
+
+                <div class="quiz-score" id="quiz-score" style="display: none;">
+                    <p>Your Score:</p>
+                    <div class="score-value" id="score-value">0/5</div>
+                    <p id="score-message"></p>
+                </div>
+            </div>
+
+            <div class="completion-tracker">
+                <strong>Section Checklist:</strong>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-quiz-1" onchange="updateProgress()">
+                    <label for="check-quiz-1">I completed the knowledge check quiz</label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 9: Summary -->
+        <section id="section-summary">
+            <h2><span class="icon">🎓</span> Summary and Next Steps</h2>
+
+            <h3>Key Takeaways</h3>
+
+            <div class="concept-box">
+                <h4>What You Learned in Module 6.3</h4>
+                <ul>
+                    <li><strong>The Principle:</strong> To prove P(n) for all n ≥ n₀, prove P(n₀) and prove P(k) → P(k+1)</li>
+                    <li><strong>Domino Analogy:</strong> Base case starts the chain; inductive step keeps it going</li>
+                    <li><strong>Both Parts Required:</strong> Without base case, nothing starts; without inductive step, nothing propagates</li>
+                    <li><strong>Not Circular:</strong> We prove an implication, not that P(k) is true</li>
+                    <li><strong>CS Connection:</strong> Induction proofs mirror recursive function structure</li>
+                </ul>
+            </div>
+
+            <h3>Induction Proof Checklist</h3>
+
+            <div class="template-box">
+                <h4>✅ Before Submitting an Induction Proof, Verify:</h4>
+                <ul>
+                    <li>☐ I clearly stated what I'm proving: "For all n ≥ ___, P(n)"</li>
+                    <li>☐ I explicitly verified the base case with calculations</li>
+                    <li>☐ I clearly stated the inductive hypothesis: "Assume P(k) for some k ≥ ___"</li>
+                    <li>☐ I stated what I need to prove: "We must show P(k+1)"</li>
+                    <li>☐ I actually USED the inductive hypothesis in my proof</li>
+                    <li>☐ I concluded with "By induction, P(n) for all n ≥ ___"</li>
+                </ul>
+            </div>
+
+            <h3>Preparing for Module 6.4</h3>
+
+            <p>In the next module, you'll apply induction to prove <strong>summation formulas</strong>:</p>
+            <ul>
+                <li>Sum of first n integers: 1 + 2 + ... + n = n(n+1)/2</li>
+                <li>Sum of first n squares: 1² + 2² + ... + n² = n(n+1)(2n+1)/6</li>
+                <li>Geometric series: 1 + r + r² + ... + rⁿ = (rⁿ⁺¹ - 1)/(r - 1)</li>
+                <li>And more!</li>
+            </ul>
+
+            <div class="warning-box">
+                <h4>⚠️ Before Moving On</h4>
+                <p>Make sure you can:</p>
+                <ul>
+                    <li>State the Principle of Mathematical Induction precisely</li>
+                    <li>Explain the domino analogy and why both parts are necessary</li>
+                    <li>Identify P(n), P(k), and P(k+1) for a given statement</li>
+                    <li>Set up an induction proof (base case, IH, and goal)</li>
+                    <li>Explain why induction is not circular reasoning</li>
+                </ul>
+            </div>
+
+            <div class="completion-tracker">
+                <strong>Final Checklist:</strong>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-final-1" onchange="updateProgress()">
+                    <label for="check-final-1">I can state and explain the Principle of Mathematical Induction</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-final-2" onchange="updateProgress()">
+                    <label for="check-final-2">I understand the connection between induction and recursion</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-final-3" onchange="updateProgress()">
+                    <label for="check-final-3">I am ready for Module 6.4 (Summation Formulas)</label>
+                </div>
+            </div>
+
+            <div class="nav-buttons">
+                <a href="#" onclick="alert('Module 6.2 link'); return false;">
+                    <button class="btn-secondary">← Previous: Module 6.2</button>
+                </a>
+                <a href="#" onclick="alert('Module 6.4 coming soon!'); return false;">
+                    <button class="btn-primary">Next: Module 6.4 - Summation Formulas →</button>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p><strong>CSC 240 - Discrete Structures</strong></p>
+        <p>Module 6.3: Mathematical Induction - The Principle</p>
+        <p>Mendocino College | Spring 2026</p>
+        <p>Questions? Contact your instructor through Canvas or during office hours.</p>
+    </footer>
+
+    <script>
+        // ==================== Progress Tracking ====================
+        function updateProgress() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            const checked = document.querySelectorAll('input[type="checkbox"]:checked');
+            const percentage = Math.round((checked.length / checkboxes.length) * 100);
+
+            document.getElementById('progress-fill').style.width = percentage + '%';
+            document.getElementById('progress-text').textContent = percentage + '%';
+
+            const progressBar = document.querySelector('.progress-bar');
+            progressBar.setAttribute('aria-valuenow', percentage);
+
+            // Save to session storage
+            const checkboxStates = {};
+            checkboxes.forEach(cb => {
+                checkboxStates[cb.id] = cb.checked;
+            });
+            sessionStorage.setItem('module63Progress', JSON.stringify(checkboxStates));
+        }
+
+        function loadProgress() {
+            const saved = sessionStorage.getItem('module63Progress');
+            if (saved) {
+                const checkboxStates = JSON.parse(saved);
+                Object.keys(checkboxStates).forEach(id => {
+                    const checkbox = document.getElementById(id);
+                    if (checkbox) {
+                        checkbox.checked = checkboxStates[id];
+                        const parent = checkbox.closest('.completion-item');
+                        if (parent) {
+                            parent.classList.toggle('completed', checkboxStates[id]);
+                        }
+                    }
+                });
+                updateProgress();
+            }
+        }
+
+        // ==================== Domino Animation ====================
+        let dominoChainRunning = false;
+
+        function knockDomino(num) {
+            const domino = document.querySelector(`.domino[data-num="${num}"]`);
+            if (domino && !domino.classList.contains('fallen')) {
+                domino.classList.add('fallen');
+            }
+        }
+
+        function startDominoChain() {
+            if (dominoChainRunning) return;
+            dominoChainRunning = true;
+
+            resetDominoes();
+
+            let currentDomino = 1;
+            const maxDomino = 8;
+
+            function knockNext() {
+                if (currentDomino <= maxDomino) {
+                    knockDomino(currentDomino);
+                    currentDomino++;
+                    setTimeout(knockNext, 300);
+                } else {
+                    dominoChainRunning = false;
+                }
+            }
+
+            setTimeout(knockNext, 100);
+        }
+
+        function resetDominoes() {
+            const dominoes = document.querySelectorAll('.domino');
+            dominoes.forEach(d => d.classList.remove('fallen'));
+            dominoChainRunning = false;
+        }
+
+        // ==================== Domino Quiz ====================
+        function checkDominoQuiz() {
+            const answers = {
+                'dq1': 'c', // Both missing (standing but not pushed, no mention of chain)
+                'dq2': 'b', // Missing inductive step
+                'dq3': 'a'  // Missing base case
+            };
+
+            // Actually, let me reconsider:
+            // Scenario 1: "verified domino 1 is standing" - not pushed (base case missing), no chain mentioned (inductive step missing) = both
+            // Scenario 2: "pushed domino 1, but 10 feet apart" - base case done, inductive step fails = b
+            // Scenario 3: "each domino knocks down next" - inductive step done, base case missing = a
+
+            let correct = 0;
+            const explanations = [];
+
+            for (let i = 1; i <= 3; i++) {
+                const selected = document.querySelector(`input[name="dq${i}"]:checked`);
+                const options = document.querySelectorAll(`input[name="dq${i}"]`);
+
+                options.forEach(opt => {
+                    const parent = opt.closest('.option-item');
+                    parent.classList.remove('correct', 'incorrect');
+
+                    if (opt.value === answers[`dq${i}`]) {
+                        parent.classList.add('correct');
+                    } else if (selected && opt === selected && opt.value !== answers[`dq${i}`]) {
+                        parent.classList.add('incorrect');
+                    }
+                });
+
+                if (selected && selected.value === answers[`dq${i}`]) {
+                    correct++;
+                }
+            }
+
+            const feedback = document.getElementById('domino-quiz-feedback');
+            if (correct === 3) {
+                feedback.className = 'feedback success show';
+                feedback.innerHTML = '<strong>Perfect!</strong> You understand exactly what each component of induction provides.';
+            } else {
+                feedback.className = 'feedback info show';
+                feedback.innerHTML = `<strong>Score: ${correct}/3</strong><br>
+                    <p>Scenario 1: Both are missing - the domino is ready but not pushed (no base case), and we don't know if they'll chain (no inductive step).</p>
+                    <p>Scenario 2: Base case is done (pushed first), but inductive step fails (too far apart).</p>
+                    <p>Scenario 3: Inductive step is established, but base case is missing (never pushed the first).</p>`;
+            }
+        }
+
+        function resetDominoQuiz() {
+            for (let i = 1; i <= 3; i++) {
+                const options = document.querySelectorAll(`input[name="dq${i}"]`);
+                options.forEach(opt => {
+                    opt.checked = false;
+                    opt.closest('.option-item').classList.remove('correct', 'incorrect');
+                });
+            }
+            document.getElementById('domino-quiz-feedback').className = 'feedback';
+        }
+
+        // ==================== Part Labels Quiz ====================
+        function checkPartLabels() {
+            const answers = {
+                'part-base': 'B',
+                'part-ih': 'C',
+                'part-goal': 'D',
+                'part-work': 'E'
+            };
+
+            let correct = 0;
+            let total = 4;
+
+            Object.keys(answers).forEach(id => {
+                const select = document.getElementById(id);
+                if (select.value === answers[id]) {
+                    correct++;
+                    select.style.backgroundColor = '#e8f5e9';
+                    select.style.borderColor = '#4caf50';
+                } else if (select.value !== '') {
+                    select.style.backgroundColor = '#ffebee';
+                    select.style.borderColor = '#f44336';
+                }
+            });
+
+            const feedback = document.getElementById('parts-feedback');
+            if (correct === total) {
+                feedback.className = 'feedback success show';
+                feedback.innerHTML = '<strong>Excellent!</strong> You correctly identified all parts of the induction proof.';
+            } else {
+                feedback.className = 'feedback info show';
+                feedback.innerHTML = `<strong>Score: ${correct}/${total}</strong>. Review the proof template structure.`;
+            }
+        }
+
+        function resetPartLabels() {
+            ['part-base', 'part-ih', 'part-goal', 'part-work'].forEach(id => {
+                const select = document.getElementById(id);
+                select.value = '';
+                select.style.backgroundColor = '';
+                select.style.borderColor = '';
+            });
+            document.getElementById('parts-feedback').className = 'feedback';
+        }
+
+        // ==================== Error Quiz ====================
+        function checkErrorQuiz() {
+            const answers = {
+                'eq1': 'b',
+                'eq2': 'b'
+            };
+
+            let correct = 0;
+
+            for (let i = 1; i <= 2; i++) {
+                const selected = document.querySelector(`input[name="eq${i}"]:checked`);
+                const options = document.querySelectorAll(`input[name="eq${i}"]`);
+
+                options.forEach(opt => {
+                    const parent = opt.closest('.option-item');
+                    parent.classList.remove('correct', 'incorrect');
+
+                    if (opt.value === answers[`eq${i}`]) {
+                        parent.classList.add('correct');
+                    } else if (selected && opt === selected && opt.value !== answers[`eq${i}`]) {
+                        parent.classList.add('incorrect');
+                    }
+                });
+
+                if (selected && selected.value === answers[`eq${i}`]) {
+                    correct++;
+                }
+            }
+
+            const feedback = document.getElementById('error-feedback');
+            feedback.className = 'feedback info show';
+            feedback.innerHTML = `<strong>Score: ${correct}/2</strong><br>
+                <p><strong>"Proof" 1:</strong> The famous "all horses are the same color" fallacy! The inductive step fails when k=1: removing one horse from a set of 2 leaves just 1 horse in each group, and the two groups don't overlap.</p>
+                <p><strong>"Proof" 2:</strong> The base case P(1): 1² < 1 means 1 < 1, which is FALSE. The statement is simply false, and checking the base case would reveal this immediately.</p>`;
+        }
+
+        function resetErrorQuiz() {
+            for (let i = 1; i <= 2; i++) {
+                const options = document.querySelectorAll(`input[name="eq${i}"]`);
+                options.forEach(opt => {
+                    opt.checked = false;
+                    opt.closest('.option-item').classList.remove('correct', 'incorrect');
+                });
+            }
+            document.getElementById('error-feedback').className = 'feedback';
+        }
+
+        // ==================== Fill Proof ====================
+        function checkFillProof() {
+            const answers = {
+                'fill-1': '1',
+                'fill-2': '1',
+                'fill-3': 'k(k+1)(2k+1)/6',
+                'fill-4': 'k(k+1)(2k+1)/6',
+                'fill-5': 'IH'
+            };
+
+            let correct = 0;
+            let total = 5;
+
+            Object.keys(answers).forEach(id => {
+                const select = document.getElementById(id);
+                if (select.value === answers[id]) {
+                    correct++;
+                    select.style.backgroundColor = '#e8f5e9';
+                    select.style.borderColor = '#4caf50';
+                } else if (select.value !== '') {
+                    select.style.backgroundColor = '#ffebee';
+                    select.style.borderColor = '#f44336';
+                }
+            });
+
+            const feedback = document.getElementById('fill-feedback');
+            if (correct === total) {
+                feedback.className = 'feedback success show';
+                feedback.innerHTML = '<strong>Perfect!</strong> You correctly filled in all the blanks. You\'re ready to write complete induction proofs!';
+            } else {
+                feedback.className = 'feedback info show';
+                feedback.innerHTML = `<strong>Score: ${correct}/${total}</strong>. Review the proof template and try again.`;
+            }
+        }
+
+        function resetFillProof() {
+            ['fill-1', 'fill-2', 'fill-3', 'fill-4', 'fill-5'].forEach(id => {
+                const select = document.getElementById(id);
+                select.value = '';
+                select.style.backgroundColor = '';
+                select.style.borderColor = '';
+            });
+            document.getElementById('fill-feedback').className = 'feedback';
+        }
+
+        // ==================== Final Quiz ====================
+        function checkFinalQuiz() {
+            const answers = {
+                'fq1': 'b',
+                'fq2': 'b',
+                'fq3': 'c',
+                'fq4': 'b',
+                'fq5': 'b'
+            };
+
+            let correct = 0;
+            let total = 5;
+
+            for (let i = 1; i <= 5; i++) {
+                const selected = document.querySelector(`input[name="fq${i}"]:checked`);
+                const options = document.querySelectorAll(`input[name="fq${i}"]`);
+
+                options.forEach(opt => {
+                    const parent = opt.closest('.option-item');
+                    parent.classList.remove('correct', 'incorrect');
+
+                    if (opt.value === answers[`fq${i}`]) {
+                        parent.classList.add('correct');
+                    } else if (selected && opt === selected && opt.value !== answers[`fq${i}`]) {
+                        parent.classList.add('incorrect');
+                    }
+                });
+
+                if (selected && selected.value === answers[`fq${i}`]) {
+                    correct++;
+                }
+            }
+
+            const scoreDiv = document.getElementById('quiz-score');
+            const scoreValue = document.getElementById('score-value');
+            const scoreMessage = document.getElementById('score-message');
+
+            scoreDiv.style.display = 'block';
+            scoreValue.textContent = `${correct}/${total}`;
+
+            if (correct === total) {
+                scoreMessage.textContent = 'Excellent! You have a solid understanding of mathematical induction.';
+                scoreDiv.style.backgroundColor = '#e8f5e9';
+            } else if (correct >= 3) {
+                scoreMessage.textContent = 'Good work! Review any questions you missed before continuing.';
+                scoreDiv.style.backgroundColor = '#fff3e0';
+            } else {
+                scoreMessage.textContent = 'Consider reviewing the module before proceeding to Module 6.4.';
+                scoreDiv.style.backgroundColor = '#ffebee';
+            }
+
+            const feedback = document.getElementById('final-quiz-feedback');
+            feedback.className = 'feedback info show';
+            feedback.innerHTML = '<strong>Quiz submitted!</strong> Scroll down to see your score.';
+        }
+
+        function resetFinalQuiz() {
+            for (let i = 1; i <= 5; i++) {
+                const options = document.querySelectorAll(`input[name="fq${i}"]`);
+                options.forEach(opt => {
+                    opt.checked = false;
+                    opt.closest('.option-item').classList.remove('correct', 'incorrect');
+                });
+            }
+            document.getElementById('final-quiz-feedback').className = 'feedback';
+            document.getElementById('quiz-score').style.display = 'none';
+        }
+
+        // ==================== Collapsible Sections ====================
+        function toggleCollapsible(header) {
+            const collapsible = header.closest('.collapsible');
+            collapsible.classList.toggle('open');
+            const isOpen = collapsible.classList.contains('open');
+            header.setAttribute('aria-expanded', isOpen);
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.target.classList.contains('collapsible-header')) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    toggleCollapsible(e.target);
+                }
+            }
+        });
+
+        // ==================== Completion Item Styling ====================
+        document.querySelectorAll('.completion-item input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                this.closest('.completion-item').classList.toggle('completed', this.checked);
+            });
+        });
+
+        // ==================== Initialize ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProgress();
+        });
+    </script>
+</body>
+</html>
