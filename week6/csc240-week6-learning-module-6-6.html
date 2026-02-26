@@ -1,0 +1,2472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 6.6: Induction and Computer Science Connections | CSC 240</title>
+    <style>
+        /* CSS Reset and Base Styles */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #1a5f7a;
+            --primary-dark: #134b61;
+            --primary-light: #2d7d9a;
+            --secondary-color: #57837b;
+            --accent-color: #c38e70;
+            --accent-hover: #a67656;
+            --success-color: #2e7d32;
+            --success-light: #e8f5e9;
+            --error-color: #c62828;
+            --error-light: #ffebee;
+            --warning-color: #f57c00;
+            --warning-light: #fff3e0;
+            --info-color: #1565c0;
+            --info-light: #e3f2fd;
+            --background-color: #fafafa;
+            --surface-color: #ffffff;
+            --text-primary: #212121;
+            --text-secondary: #555555;
+            --text-muted: #757575;
+            --border-color: #e0e0e0;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 20px rgba(0,0,0,0.15);
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --font-mono: 'Consolas', 'Monaco', 'Courier New', monospace;
+            --nav-height: 50px;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-main);
+            font-size: 16px;
+            line-height: 1.7;
+            color: var(--text-primary);
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Skip Link for Accessibility */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: var(--primary-color);
+            color: #ffffff;
+            padding: 8px 16px;
+            z-index: 1001;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .skip-link:focus {
+            top: 0;
+        }
+
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: #ffffff;
+            padding: 2rem 1rem;
+            text-align: center;
+            position: relative;
+        }
+
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-color), var(--secondary-color), var(--accent-color));
+        }
+
+        .course-tag {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 0.25rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.5px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin: 0.5rem 0;
+            font-weight: 700;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .module-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            margin-top: 0.5rem;
+        }
+
+        /* Sticky Navigation Bar */
+        .sticky-nav {
+            position: sticky;
+            top: 0;
+            background: var(--surface-color);
+            border-bottom: 2px solid var(--border-color);
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1rem;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        .nav-links::-webkit-scrollbar {
+            display: none;
+        }
+
+        .nav-links li {
+            flex-shrink: 0;
+        }
+
+        .nav-links a {
+            display: block;
+            padding: 0.875rem 1rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+            background: rgba(26, 95, 122, 0.05);
+        }
+
+        .nav-links a.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .nav-links a:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: -2px;
+        }
+
+        .nav-progress {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0;
+            flex-shrink: 0;
+        }
+
+        .nav-progress-bar {
+            width: 100px;
+            height: 6px;
+            background: var(--border-color);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .nav-progress-fill {
+            height: 100%;
+            background: var(--primary-color);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .nav-progress-text {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            min-width: 36px;
+        }
+
+        @media (max-width: 900px) {
+            .nav-links a {
+                padding: 0.75rem 0.75rem;
+                font-size: 0.85rem;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .nav-container {
+                flex-wrap: wrap;
+            }
+
+            .nav-links {
+                width: 100%;
+                order: 2;
+                padding-bottom: 0.5rem;
+            }
+
+            .nav-progress {
+                order: 1;
+                margin-left: auto;
+            }
+        }
+
+        /* Main Content */
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        /* Section Styles */
+        section {
+            background: var(--surface-color);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            scroll-margin-top: calc(var(--nav-height) + 20px);
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: 1.6rem;
+            margin: 0 0 1.5rem 0;
+            padding-bottom: 0.75rem;
+            border-bottom: 3px solid var(--accent-color);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        h2 .icon {
+            font-size: 1.4rem;
+        }
+
+        h3 {
+            color: var(--primary-dark);
+            font-size: 1.25rem;
+            margin: 1.75rem 0 1rem 0;
+        }
+
+        h4 {
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            margin: 1.5rem 0 0.75rem 0;
+        }
+
+        p {
+            margin: 0 0 1rem 0;
+            color: var(--text-secondary);
+        }
+
+        /* Learning Objectives Box */
+        .objectives-box {
+            background: linear-gradient(135deg, var(--info-light) 0%, #f5f9ff 100%);
+            border: 1px solid #90caf9;
+            border-left: 5px solid var(--info-color);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .objectives-box h3 {
+            color: var(--info-color);
+            margin: 0 0 1rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .objectives-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .objectives-list li {
+            padding: 0.5rem 0 0.5rem 2rem;
+            position: relative;
+            color: var(--text-primary);
+        }
+
+        .objectives-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--success-color);
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        /* Definition Box */
+        .definition-box {
+            background: linear-gradient(135deg, #f3e5f5 0%, #faf5fc 100%);
+            border: 1px solid #ce93d8;
+            border-left: 5px solid #8e24aa;
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .definition-box h4 {
+            color: #8e24aa;
+            margin: 0 0 0.75rem 0;
+            font-size: 1.1rem;
+        }
+
+        .definition-box p {
+            margin: 0;
+            color: var(--text-primary);
+        }
+
+        /* Theorem Box */
+        .theorem-box {
+            background: linear-gradient(135deg, #e8eaf6 0%, #f5f6fc 100%);
+            border: 1px solid #9fa8da;
+            border-left: 5px solid #3f51b5;
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .theorem-box h4 {
+            color: #3f51b5;
+            margin: 0 0 0.75rem 0;
+            font-size: 1.1rem;
+        }
+
+        .theorem-box p {
+            margin: 0;
+            color: var(--text-primary);
+        }
+
+        /* Key Concept Box */
+        .concept-box {
+            background: linear-gradient(135deg, #e8f5e9 0%, #f5faf5 100%);
+            border: 1px solid #a5d6a7;
+            border-left: 5px solid var(--success-color);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .concept-box h4 {
+            color: var(--success-color);
+            margin: 0 0 0.75rem 0;
+        }
+
+        /* Warning Box */
+        .warning-box {
+            background: linear-gradient(135deg, var(--warning-light) 0%, #fffaf5 100%);
+            border: 1px solid #ffcc80;
+            border-left: 5px solid var(--warning-color);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .warning-box h4 {
+            color: #e65100;
+            margin: 0 0 0.75rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Example Box */
+        .example-box {
+            background: var(--surface-color);
+            border: 2px solid var(--primary-light);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .example-box h4 {
+            color: var(--primary-color);
+            margin: 0 0 1rem 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px dashed var(--primary-light);
+        }
+
+        /* Proof Structure */
+        .proof-box {
+            background: #fffde7;
+            border: 2px solid #ffd54f;
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .proof-box h4 {
+            color: #f57f17;
+            margin: 0 0 1rem 0;
+        }
+
+        /* Parallel Box - for showing induction/recursion side by side */
+        .parallel-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .parallel-box {
+            background: #f8f9fa;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 1.25rem;
+        }
+
+        .parallel-box.induction {
+            border-color: #3f51b5;
+            background: linear-gradient(135deg, #e8eaf6 0%, #f5f6fc 100%);
+        }
+
+        .parallel-box.recursion {
+            border-color: #00897b;
+            background: linear-gradient(135deg, #e0f2f1 0%, #f5fdfb 100%);
+        }
+
+        .parallel-box h4 {
+            margin: 0 0 1rem 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid currentColor;
+        }
+
+        .parallel-box.induction h4 {
+            color: #3f51b5;
+        }
+
+        .parallel-box.recursion h4 {
+            color: #00897b;
+        }
+
+        @media (max-width: 768px) {
+            .parallel-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Code Blocks */
+        pre {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 1.25rem;
+            border-radius: var(--radius-md);
+            overflow-x: auto;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin: 1rem 0;
+            white-space: pre;
+            word-wrap: normal;
+        }
+
+        code {
+            font-family: var(--font-mono);
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: inherit;
+        }
+
+        :not(pre) > code {
+            background: #f5f5f5;
+            padding: 0.2rem 0.4rem;
+            border-radius: var(--radius-sm);
+            color: #c7254e;
+            font-size: 0.9em;
+        }
+
+        .code-keyword { color: #569cd6; }
+        .code-string { color: #ce9178; }
+        .code-comment { color: #6a9955; }
+        .code-number { color: #b5cea8; }
+        .code-function { color: #dcdcaa; }
+        .code-type { color: #4ec9b0; }
+
+        /* Interactive Elements */
+        .interactive-section {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f5faff 100%);
+            border: 2px solid #64b5f6;
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .interactive-section h3 {
+            color: var(--info-color);
+            margin: 0 0 1rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Buttons */
+        button {
+            font-family: var(--font-main);
+            font-size: 1rem;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: #ffffff;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary:focus {
+            outline: 3px solid var(--primary-light);
+            outline-offset: 2px;
+        }
+
+        .btn-secondary {
+            background: var(--secondary-color);
+            color: #ffffff;
+        }
+
+        .btn-secondary:hover {
+            background: #456b64;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary:focus {
+            outline: 3px solid var(--secondary-color);
+            outline-offset: 2px;
+        }
+
+        .btn-reset {
+            background: #757575;
+            color: #ffffff;
+        }
+
+        .btn-reset:hover {
+            background: #616161;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        input[type="text"],
+        input[type="number"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-family: var(--font-main);
+            font-size: 1rem;
+            transition: border-color 0.2s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(26, 95, 122, 0.1);
+        }
+
+        /* Radio and Checkbox Styles */
+        .option-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .option-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .option-item:hover {
+            background: #f0f4f8;
+            border-color: var(--primary-light);
+        }
+
+        .option-item input[type="radio"],
+        .option-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-top: 2px;
+            cursor: pointer;
+        }
+
+        .option-item label {
+            margin: 0;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .option-item.correct {
+            background: var(--success-light);
+            border-color: var(--success-color);
+        }
+
+        .option-item.incorrect {
+            background: var(--error-light);
+            border-color: var(--error-color);
+        }
+
+        /* Feedback Messages */
+        .feedback {
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .feedback.show {
+            display: block;
+        }
+
+        .feedback.success {
+            background: var(--success-light);
+            border: 1px solid var(--success-color);
+            color: #1b5e20;
+        }
+
+        .feedback.error {
+            background: var(--error-light);
+            border: 1px solid var(--error-color);
+            color: #b71c1c;
+        }
+
+        .feedback.info {
+            background: var(--info-light);
+            border: 1px solid var(--info-color);
+            color: #0d47a1;
+        }
+
+        /* Collapsible Sections */
+        .collapsible {
+            background: var(--surface-color);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .collapsible-header {
+            padding: 1rem 1.25rem;
+            background: #f8f9fa;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            color: var(--text-primary);
+            transition: background 0.2s ease;
+        }
+
+        .collapsible-header:hover {
+            background: #f0f4f8;
+        }
+
+        .collapsible-header:focus {
+            outline: 3px solid var(--primary-color);
+            outline-offset: -3px;
+        }
+
+        .collapsible-icon {
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
+        }
+
+        .collapsible.open .collapsible-icon {
+            transform: rotate(180deg);
+        }
+
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .collapsible.open .collapsible-content {
+            max-height: 5000px;
+        }
+
+        .collapsible-body {
+            padding: 1.25rem;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border: 1px solid var(--border-color);
+        }
+
+        th {
+            background: var(--primary-color);
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        tr:hover {
+            background: #f0f4f8;
+        }
+
+        /* Math Display */
+        .math-display {
+            background: #f8f9fa;
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius-md);
+            text-align: center;
+            font-size: 1.1rem;
+            margin: 1rem 0;
+            border: 1px solid var(--border-color);
+            overflow-x: auto;
+            line-height: 1.8;
+        }
+
+        /* Mapping Diagram */
+        .mapping-diagram {
+            background: #f8f9fa;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .mapping-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px dashed var(--border-color);
+        }
+
+        .mapping-row:last-child {
+            border-bottom: none;
+        }
+
+        .mapping-item {
+            min-width: 200px;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-sm);
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .mapping-item.induction {
+            background: #e8eaf6;
+            color: #3f51b5;
+            border: 1px solid #9fa8da;
+        }
+
+        .mapping-item.recursion {
+            background: #e0f2f1;
+            color: #00897b;
+            border: 1px solid #80cbc4;
+        }
+
+        .mapping-arrow {
+            font-size: 1.5rem;
+            color: var(--text-muted);
+        }
+
+        /* Step Reveal */
+        .step-reveal {
+            margin: 1.5rem 0;
+        }
+
+        .step-item {
+            background: #f8f9fa;
+            border-left: 4px solid var(--border-color);
+            padding: 1rem 1.25rem;
+            margin: 0.5rem 0;
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+            opacity: 0.5;
+            transition: all 0.3s ease;
+        }
+
+        .step-item.revealed {
+            opacity: 1;
+            border-left-color: var(--primary-color);
+            background: #ffffff;
+        }
+
+        .step-number {
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-right: 0.5rem;
+        }
+
+        /* Completion Checkboxes */
+        .completion-tracker {
+            background: #f8f9fa;
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .completion-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .completion-item:last-child {
+            border-bottom: none;
+        }
+
+        .completion-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .completion-item label {
+            margin: 0;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .completion-item.completed label {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+
+        /* Quiz Container */
+        .quiz-container {
+            background: var(--surface-color);
+            border: 2px solid var(--primary-light);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .quiz-question {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            font-size: 1.05rem;
+        }
+
+        .quiz-score {
+            text-align: center;
+            padding: 1rem;
+            background: var(--info-light);
+            border-radius: var(--radius-md);
+            margin-top: 1rem;
+        }
+
+        .quiz-score .score-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        /* CSLO Badge */
+        .cslo-badge {
+            display: inline-block;
+            background: var(--primary-color);
+            color: #ffffff;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin: 0.25rem;
+        }
+
+        .cslo-badge.cslo-1 {
+            background: #3f51b5;
+        }
+
+        .cslo-badge.cslo-4 {
+            background: #00897b;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--primary-dark);
+            color: #ffffff;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        footer p {
+            color: rgba(255,255,255,0.9);
+            margin: 0.5rem 0;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.6rem;
+            }
+
+            h2 {
+                font-size: 1.4rem;
+            }
+
+            section {
+                padding: 1.25rem;
+            }
+
+            main {
+                padding: 1rem;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .btn-group button {
+                width: 100%;
+            }
+
+            .mapping-row {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .mapping-arrow {
+                transform: rotate(90deg);
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            .sticky-nav,
+            .interactive-section,
+            .btn-group,
+            .skip-link,
+            .completion-tracker {
+                display: none;
+            }
+
+            section {
+                break-inside: avoid;
+                box-shadow: none;
+                border: 1px solid #ccc;
+            }
+        }
+
+        /* Focus Visible */
+        *:focus-visible {
+            outline: 3px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        /* High Contrast Mode */
+        @media (prefers-contrast: high) {
+            :root {
+                --border-color: #000000;
+            }
+        }
+
+        /* Reduced Motion */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+
+            html {
+                scroll-behavior: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <header>
+        <div class="course-tag">CSC 240 - Discrete Structures</div>
+        <h1>Module 6.6: Induction and Computer Science</h1>
+        <p class="module-subtitle">Recursion, Loop Invariants, and Algorithm Correctness</p>
+    </header>
+
+    <!-- Sticky Navigation Bar -->
+    <nav class="sticky-nav" role="navigation" aria-label="Module sections">
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="#section-intro" class="active">Introduction</a></li>
+                <li><a href="#section-parallel">Induction ↔ Recursion</a></li>
+                <li><a href="#section-correctness">Recursive Correctness</a></li>
+                <li><a href="#section-invariants">Loop Invariants</a></li>
+                <li><a href="#section-complexity">Complexity Analysis</a></li>
+                <li><a href="#section-practice">Practice</a></li>
+                <li><a href="#section-quiz">Quiz</a></li>
+                <li><a href="#section-summary">Summary</a></li>
+            </ul>
+            <div class="nav-progress">
+                <div class="nav-progress-bar">
+                    <div class="nav-progress-fill" id="nav-progress-fill"></div>
+                </div>
+                <span class="nav-progress-text" id="nav-progress-text">0%</span>
+            </div>
+        </div>
+    </nav>
+
+    <main id="main-content">
+        <!-- Section 1: Introduction -->
+        <section id="section-intro">
+            <h2><span class="icon">📚</span> Introduction</h2>
+
+            <p>Welcome to Module 6.6, the capstone module for Week 6! This module makes explicit the deep connections between mathematical induction and core computer science concepts. Understanding these connections is essential for:</p>
+
+            <ul>
+                <li>Writing correct recursive programs</li>
+                <li>Proving that algorithms work for all inputs</li>
+                <li>Analyzing algorithm efficiency</li>
+                <li>Understanding why recursive solutions are valid</li>
+            </ul>
+
+            <div class="objectives-box">
+                <h3><span>🎯</span> Learning Objectives</h3>
+                <ul class="objectives-list">
+                    <li>Explain the structural parallel between induction proofs and recursive functions</li>
+                    <li>Prove correctness of recursive algorithms using induction</li>
+                    <li>Understand and apply loop invariants for iterative algorithm verification</li>
+                    <li>Use induction to analyze algorithm complexity</li>
+                    <li>Connect the well-ordering principle to program termination</li>
+                </ul>
+            </div>
+
+            <div class="concept-box">
+                <h4>🎓 Course Learning Outcomes</h4>
+                <p>This module directly addresses both of Week 6's CSLOs:</p>
+                <p>
+                    <span class="cslo-badge cslo-1">CSLO 1</span>
+                    Apply symbolic logic and proof methods to model and analyze program/algorithm correctness
+                </p>
+                <p>
+                    <span class="cslo-badge cslo-4">CSLO 4</span>
+                    Explain the relationship between mathematical induction and recursion/recurrence equations
+                </p>
+            </div>
+
+            <div class="warning-box">
+                <h4>⚠️ Prerequisites</h4>
+                <p>This module assumes you have completed Modules 6.3-6.5 and understand:</p>
+                <ul>
+                    <li>The Principle of Mathematical Induction</li>
+                    <li>How to write base case and inductive step</li>
+                    <li>Using the inductive hypothesis in proofs</li>
+                    <li>Basic Java recursion syntax</li>
+                </ul>
+            </div>
+
+            <div class="completion-tracker">
+                <strong>Section Checklist:</strong>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-intro" onchange="updateProgress()">
+                    <label for="check-intro">I understand the goals of this module</label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: The Parallel Between Induction and Recursion -->
+        <section id="section-parallel">
+            <h2><span class="icon">🔄</span> The Induction-Recursion Parallel</h2>
+
+            <p>Mathematical induction and recursive programming are two sides of the same coin. They share the same logical structure, just applied in different contexts.</p>
+
+            <h3>The Structural Correspondence</h3>
+
+            <div class="mapping-diagram">
+                <div class="mapping-row">
+                    <div class="mapping-item induction">Base Case: Prove P(n₀)</div>
+                    <div class="mapping-arrow">↔</div>
+                    <div class="mapping-item recursion">Base Case: Return value for smallest input</div>
+                </div>
+                <div class="mapping-row">
+                    <div class="mapping-item induction">Inductive Hypothesis: Assume P(k)</div>
+                    <div class="mapping-arrow">↔</div>
+                    <div class="mapping-item recursion">Recursive Call: Trust f(k) is correct</div>
+                </div>
+                <div class="mapping-row">
+                    <div class="mapping-item induction">Inductive Step: Prove P(k+1) using P(k)</div>
+                    <div class="mapping-arrow">↔</div>
+                    <div class="mapping-item recursion">Recursive Case: Compute f(k+1) using f(k)</div>
+                </div>
+                <div class="mapping-row">
+                    <div class="mapping-item induction">Conclusion: P(n) true for all n ≥ n₀</div>
+                    <div class="mapping-arrow">↔</div>
+                    <div class="mapping-item recursion">Result: f(n) correct for all n ≥ n₀</div>
+                </div>
+            </div>
+
+            <h3>Side-by-Side Example: Factorial</h3>
+
+            <div class="parallel-container">
+                <div class="parallel-box induction">
+                    <h4>Induction Proof</h4>
+                    <p><strong>Claim:</strong> n! = n × (n-1) × ... × 1 for all n ≥ 0, with 0! = 1.</p>
+
+                    <p><strong>Base Case (n = 0):</strong><br>
+                    0! = 1 by definition. ✓</p>
+
+                    <p><strong>Inductive Hypothesis:</strong><br>
+                    Assume k! = k × (k-1) × ... × 1 for some k ≥ 0.</p>
+
+                    <p><strong>Inductive Step:</strong><br>
+                    (k+1)! = (k+1) × k!<br>
+                    = (k+1) × k × (k-1) × ... × 1 [by IH]<br>
+                    ✓</p>
+                </div>
+
+                <div class="parallel-box recursion">
+                    <h4>Recursive Function</h4>
+                    <pre><code><span class="code-keyword">public static long</span> <span class="code-function">factorial</span>(<span class="code-type">int</span> n) {
+    <span class="code-comment">// Base case</span>
+    <span class="code-keyword">if</span> (n == <span class="code-number">0</span>) {
+        <span class="code-keyword">return</span> <span class="code-number">1</span>;
+    }
+    
+    <span class="code-comment">// Recursive case:</span>
+    <span class="code-comment">// Trust factorial(n-1) is correct</span>
+    <span class="code-comment">// Use it to compute factorial(n)</span>
+    <span class="code-keyword">return</span> n * <span class="code-function">factorial</span>(n - <span class="code-number">1</span>);
+}</code></pre>
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <h4>💡 The Key Insight</h4>
+                <p>When you write a recursive function:</p>
+                <ul>
+                    <li>The <strong>base case</strong> handles the smallest input directly—no recursion needed</li>
+                    <li>The <strong>recursive call</strong> is like the inductive hypothesis—you <em>trust</em> it gives the right answer for smaller inputs</li>
+                    <li>The <strong>recursive case</strong> builds the answer for the current input using the trusted smaller result</li>
+                </ul>
+                <p>This is exactly the structure of an induction proof!</p>
+            </div>
+
+            <h3>Why Can We "Trust" the Recursive Call?</h3>
+
+            <p>Students often wonder: "How can we trust that the recursive call works? Aren't we assuming what we're trying to prove?"</p>
+
+            <div class="example-box">
+                <h4>The Answer: Well-Founded Recursion</h4>
+                <p>The recursion is valid because:</p>
+                <ol>
+                    <li><strong>The base case terminates:</strong> For n = 0, we return immediately without recursion</li>
+                    <li><strong>Each recursive call is on a smaller input:</strong> factorial(n) calls factorial(n-1), where n-1 < n</li>
+                    <li><strong>We eventually reach the base case:</strong> Starting from any n ≥ 0, repeated subtraction of 1 eventually reaches 0</li>
+                </ol>
+                <p>This is exactly the well-ordering principle: every descending sequence of non-negative integers is finite!</p>
+            </div>
+
+            <!-- Interactive: Match the Parts -->
+            <div class="interactive-section">
+                <h3><span>🔄</span> Interactive: Match Induction to Recursion</h3>
+                <p>Match each part of the induction proof to its corresponding part in the recursive function.</p>
+
+                <div class="quiz-container">
+                    <p>Consider this recursive function:</p>
+                    <pre><code><span class="code-keyword">public static int</span> <span class="code-function">sum</span>(<span class="code-type">int</span> n) {
+    <span class="code-keyword">if</span> (n == <span class="code-number">1</span>) <span class="code-keyword">return</span> <span class="code-number">1</span>;           <span class="code-comment">// Line A</span>
+    <span class="code-keyword">return</span> <span class="code-function">sum</span>(n - <span class="code-number">1</span>) + n;           <span class="code-comment">// Line B</span>
+}</code></pre>
+
+                    <div class="form-group">
+                        <label for="match-1">The base case P(1) corresponds to:</label>
+                        <select id="match-1">
+                            <option value="">Select...</option>
+                            <option value="A">Line A</option>
+                            <option value="B">Line B</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="match-2">The inductive hypothesis (assuming P(k)) corresponds to:</label>
+                        <select id="match-2">
+                            <option value="">Select...</option>
+                            <option value="call">The recursive call sum(n-1)</option>
+                            <option value="return">The return statement</option>
+                            <option value="if">The if condition</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="match-3">Using P(k) to prove P(k+1) corresponds to:</label>
+                        <select id="match-3">
+                            <option value="">Select...</option>
+                            <option value="A">Line A only</option>
+                            <option value="B">Line B: combining sum(n-1) with n</option>
+                            <option value="both">Both lines together</option>
+                        </select>
+                    </div>
+
+                    <div class="btn-group">
+                        <button class="btn-primary" onclick="checkMatchQuiz()">Check Answers</button>
+                        <button class="btn-reset" onclick="resetMatchQuiz()">Reset</button>
+                    </div>
+
+                    <div id="match-feedback" class="feedback"></div>
+                </div>
+            </div>
+
+            <div class="completion-tracker">
+                <strong>Section Checklist:</strong>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-parallel-1" onchange="updateProgress()">
+                    <label for="check-parallel-1">I understand the structural parallel</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-parallel-2" onchange="updateProgress()">
+                    <label for="check-parallel-2">I see how base case/IH/IS map to recursive code</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-parallel-3" onchange="updateProgress()">
+                    <label for="check-parallel-3">I completed the matching exercise</label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Proving Recursive Algorithm Correctness -->
+        <section id="section-correctness">
+            <h2><span class="icon">✓</span> Proving Recursive Algorithm Correctness</h2>
+
+            <p>Now let's formalize how to prove that a recursive function computes what it's supposed to compute.</p>
+
+            <h3>The Correctness Proof Template</h3>
+
+            <div class="definition-box">
+                <h4>📖 Correctness Proof Structure</h4>
+                <p>To prove a recursive function f(n) correctly computes some property P:</p>
+                <ol>
+                    <li><strong>State the claim:</strong> "For all n ≥ n₀, f(n) returns [specification]"</li>
+                    <li><strong>Base case:</strong> Verify f(n₀) returns the correct value</li>
+                    <li><strong>Inductive hypothesis:</strong> Assume f(k) is correct for some k ≥ n₀</li>
+                    <li><strong>Inductive step:</strong> Show f(k+1) is correct, using the IH about f(k)</li>
+                </ol>
+            </div>
+
+            <h3>Example 1: Power Function</h3>
+
+            <div class="example-box">
+                <h4>The Function</h4>
+                <pre><code><span class="code-comment">/**
+ * Computes x^n for n >= 0.
+ * @param x the base
+ * @param n the exponent (non-negative)
+ * @return x raised to the power n
+ */</span>
+<span class="code-keyword">public static double</span> <span class="code-function">power</span>(<span class="code-type">double</span> x, <span class="code-type">int</span> n) {
+    <span class="code-keyword">if</span> (n == <span class="code-number">0</span>) {
+        <span class="code-keyword">return</span> <span class="code-number">1</span>;
+    }
+    <span class="code-keyword">return</span> x * <span class="code-function">power</span>(x, n - <span class="code-number">1</span>);
+}</code></pre>
+            </div>
+
+            <div class="proof-box">
+                <h4>Correctness Proof</h4>
+                <p><strong>Claim:</strong> For all n ≥ 0, power(x, n) returns xⁿ.</p>
+
+                <p><strong>Proof by induction on n:</strong></p>
+
+                <p><strong>Base Case (n = 0):</strong><br>
+                power(x, 0) returns 1.<br>
+                By definition, x⁰ = 1 for any x.<br>
+                So power(x, 0) = x⁰. ✓</p>
+
+                <p><strong>Inductive Hypothesis:</strong><br>
+                Assume power(x, k) = xᵏ for some k ≥ 0.</p>
+
+                <p><strong>Inductive Step:</strong><br>
+                We must show power(x, k+1) = xᵏ⁺¹.</p>
+
+                <p>By the code: power(x, k+1) = x * power(x, k)<br>
+                = x * xᵏ &nbsp;&nbsp;&nbsp;[by IH]<br>
+                = xᵏ⁺¹ &nbsp;&nbsp;&nbsp;[exponent rule] ✓</p>
+
+                <p><strong>Conclusion:</strong> By induction, power(x, n) = xⁿ for all n ≥ 0. ∎</p>
+            </div>
+
+            <h3>Example 2: Fibonacci Function</h3>
+
+            <div class="example-box">
+                <h4>The Function</h4>
+                <pre><code><span class="code-comment">/**
+ * Computes the nth Fibonacci number.
+ * F(0) = 0, F(1) = 1, F(n) = F(n-1) + F(n-2) for n >= 2
+ */</span>
+<span class="code-keyword">public static int</span> <span class="code-function">fib</span>(<span class="code-type">int</span> n) {
+    <span class="code-keyword">if</span> (n == <span class="code-number">0</span>) <span class="code-keyword">return</span> <span class="code-number">0</span>;
+    <span class="code-keyword">if</span> (n == <span class="code-number">1</span>) <span class="code-keyword">return</span> <span class="code-number">1</span>;
+    <span class="code-keyword">return</span> <span class="code-function">fib</span>(n - <span class="code-number">1</span>) + <span class="code-function">fib</span>(n - <span class="code-number">2</span>);
+}</code></pre>
+            </div>
+
+            <div class="warning-box">
+                <h4>⚠️ Note: Two Base Cases!</h4>
+                <p>The Fibonacci function has <strong>two</strong> base cases (n = 0 and n = 1) because the recursive case uses <strong>two</strong> previous values (n-1 and n-2).</p>
+                <p>This requires <strong>strong induction</strong>, which you'll learn in Week 7. For now, understand that we need enough base cases to "anchor" all the recursive calls.</p>
+            </div>
+
+            <div class="collapsible">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)" tabindex="0" role="button" aria-expanded="false">
+                    <span>Preview: Strong Induction for Fibonacci</span>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <p>In strong induction, instead of assuming just P(k), we assume P(n₀), P(n₀+1), ..., P(k) are all true.</p>
+                        <p>For Fibonacci:</p>
+                        <ul>
+                            <li><strong>Base cases:</strong> fib(0) = 0 = F₀ ✓ and fib(1) = 1 = F₁ ✓</li>
+                            <li><strong>Strong IH:</strong> Assume fib(j) = Fⱼ for all j ≤ k where k ≥ 1</li>
+                            <li><strong>Inductive step:</strong> fib(k+1) = fib(k) + fib(k-1) = Fₖ + Fₖ₋₁ = Fₖ₊₁ ✓</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Example 3: Binary Search</h3>
+
+            <div class="example-box">
+                <h4>The Function</h4>
+                <pre><code><span class="code-comment">/**
+ * Searches for target in sorted array arr[low..high].
+ * Returns index of target if found, -1 otherwise.
+ */</span>
+<span class="code-keyword">public static int</span> <span class="code-function">binarySearch</span>(<span class="code-type">int</span>[] arr, <span class="code-type">int</span> target, 
+                                  <span class="code-type">int</span> low, <span class="code-type">int</span> high) {
+    <span class="code-comment">// Base case: empty range</span>
+    <span class="code-keyword">if</span> (low > high) {
+        <span class="code-keyword">return</span> -<span class="code-number">1</span>;
+    }
+    
+    <span class="code-type">int</span> mid = low + (high - low) / <span class="code-number">2</span>;
+    
+    <span class="code-keyword">if</span> (arr[mid] == target) {
+        <span class="code-keyword">return</span> mid;
+    } <span class="code-keyword">else if</span> (arr[mid] > target) {
+        <span class="code-keyword">return</span> <span class="code-function">binarySearch</span>(arr, target, low, mid - <span class="code-number">1</span>);
+    } <span class="code-keyword">else</span> {
+        <span class="code-keyword">return</span> <span class="code-function">binarySearch</span>(arr, target, mid + <span class="code-number">1</span>, high);
+    }
+}</code></pre>
+            </div>
+
+            <div class="concept-box">
+                <h4>💡 Correctness Argument (Informal)</h4>
+                <p>Binary search is correct because:</p>
+                <ol>
+                    <li><strong>Base case:</strong> If low > high, the range is empty, so target isn't there → return -1 ✓</li>
+                    <li><strong>Recursive case:</strong> We check the middle element:
+                        <ul>
+                            <li>If it's the target, we found it ✓</li>
+                            <li>If target < arr[mid], target must be in the left half (array is sorted)</li>
+                            <li>If target > arr[mid], target must be in the right half</li>
+                        </ul>
+                    </li>
+                    <li><strong>Termination:</strong> Each recursive call reduces the range size by at least half, eventually reaching an empty range</li>
+                </ol>
+            </div>
+
+            <div class="completion-tracker">
+                <strong>Section Checklist:</strong>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-correct-1" onchange="updateProgress()">
+                    <label for="check-correct-1">I understand the correctness proof template</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-correct-2" onchange="updateProgress()">
+                    <label for="check-correct-2">I followed the power function proof</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-correct-3" onchange="updateProgress()">
+                    <label for="check-correct-3">I understand why Fibonacci needs two base cases</label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Loop Invariants -->
+        <section id="section-invariants">
+            <h2><span class="icon">🔁</span> Loop Invariants</h2>
+
+            <p>Induction isn't just for recursive functions—it's also the foundation for proving <strong>iterative</strong> (loop-based) algorithms correct using <strong>loop invariants</strong>.</p>
+
+            <h3>What is a Loop Invariant?</h3>
+
+            <div class="definition-box">
+                <h4>📖 Definition: Loop Invariant</h4>
+                <p>A <strong>loop invariant</strong> is a property that:</p>
+                <ol>
+                    <li><strong>Initialization:</strong> Is true before the loop starts</li>
+                    <li><strong>Maintenance:</strong> If true before an iteration, remains true after that iteration</li>
+                    <li><strong>Termination:</strong> When the loop ends, the invariant (plus the exit condition) implies correctness</li>
+                </ol>
+            </div>
+
+            <div class="concept-box">
+                <h4>💡 Loop Invariants ARE Induction!</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Induction</th>
+                            <th>Loop Invariant</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Base case: P(n₀) is true</td>
+                            <td>Initialization: Invariant holds before loop</td>
+                        </tr>
+                        <tr>
+                            <td>Inductive step: P(k) → P(k+1)</td>
+                            <td>Maintenance: Invariant preserved by each iteration</td>
+                        </tr>
+                        <tr>
+                            <td>Conclusion: P(n) for all n ≥ n₀</td>
+                            <td>Termination: Invariant + exit → correctness</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Example: Iterative Sum</h3>
+
+            <div class="example-box">
+                <h4>The Function</h4>
+                <pre><code><span class="code-comment">/**
+ * Computes 1 + 2 + 3 + ... + n iteratively.
+ */</span>
+<span class="code-keyword">public static int</span> <span class="code-function">sum</span>(<span class="code-type">int</span> n) {
+    <span class="code-type">int</span> result = <span class="code-number">0</span>;
+    <span class="code-keyword">for</span> (<span class="code-type">int</span> i = <span class="code-number">1</span>; i <= n; i++) {
+        result = result + i;
+    }
+    <span class="code-keyword">return</span> result;
+}</code></pre>
+            </div>
+
+            <div class="proof-box">
+                <h4>Correctness Proof Using Loop Invariant</h4>
+
+                <p><strong>Loop Invariant:</strong> At the start of each iteration with loop variable i, result = 1 + 2 + ... + (i-1).</p>
+
+                <p><strong>Initialization (before first iteration, i = 1):</strong><br>
+                result = 0 = (empty sum) = sum of integers from 1 to 0. ✓</p>
+
+                <p><strong>Maintenance (if true before iteration i, show true after):</strong><br>
+                Before iteration: result = 1 + 2 + ... + (i-1) [by invariant]<br>
+                During iteration: result = result + i = 1 + 2 + ... + (i-1) + i<br>
+                After iteration: result = 1 + 2 + ... + i<br>
+                Next iteration starts with i+1, and result = 1 + 2 + ... + ((i+1)-1). ✓</p>
+
+                <p><strong>Termination (loop exits when i = n+1):</strong><br>
+                Invariant says: result = 1 + 2 + ... + ((n+1)-1) = 1 + 2 + ... + n. ✓</p>
+
+                <p><strong>Conclusion:</strong> The function returns 1 + 2 + ... + n. ∎</p>
+            </div>
+
+            <h3>Example: Finding Maximum</h3>
+
+            <div class="example-box">
+                <h4>The Function</h4>
+                <pre><code><span class="code-comment">/**
+ * Returns the maximum element in a non-empty array.
+ */</span>
+<span class="code-keyword">public static int</span> <span class="code-function">findMax</span>(<span class="code-type">int</span>[] arr) {
+    <span class="code-type">int</span> max = arr[<span class="code-number">0</span>];
+    <span class="code-keyword">for</span> (<span class="code-type">int</span> i = <span class="code-number">1</span>; i < arr.length; i++) {
+        <span class="code-keyword">if</span> (arr[i] > max) {
+            max = arr[i];
+        }
+    }
+    <span class="code-keyword">return</span> max;
+}</code></pre>
+            </div>
+
+            <div class="collapsible">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)" tabindex="0" role="button" aria-expanded="false">
+                    <span>View Loop Invariant Proof</span>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <p><strong>Loop Invariant:</strong> At the start of iteration i, max = maximum of arr[0..i-1].</p>
+
+                        <p><strong>Initialization (i = 1):</strong><br>
+                        max = arr[0] = maximum of arr[0..0]. ✓</p>
+
+                        <p><strong>Maintenance:</strong><br>
+                        Before iteration i: max = max(arr[0..i-1])<br>
+                        During iteration: we set max = max(max, arr[i]) = max(arr[0..i])<br>
+                        After iteration: max = max(arr[0..i])<br>
+                        For next iteration i+1: max = max(arr[0..(i+1)-1]). ✓</p>
+
+                        <p><strong>Termination (i = arr.length):</strong><br>
+                        max = max(arr[0..arr.length-1]) = max of entire array. ✓</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interactive: Identify the Invariant -->
+            <div class="interactive-section">
+                <h3><span>🔄</span> Interactive: Identify the Loop Invariant</h3>
+                <p>For the following code, select the correct loop invariant.</p>
+
+                <div class="quiz-container">
+                    <pre><code><span class="code-comment">// Computes n! (factorial)</span>
+<span class="code-type">int</span> result = <span class="code-number">1</span>;
+<span class="code-keyword">for</span> (<span class="code-type">int</span> i = <span class="code-number">1</span>; i <= n; i++) {
+    result = result * i;
+}</code></pre>
+
+                    <p class="quiz-question">What is the loop invariant?</p>
+
+                    <div class="option-group" id="invariant-options">
+                        <div class="option-item">
+                            <input type="radio" name="inv" id="inv-a" value="a">
+                            <label for="inv-a">At the start of iteration i, result = i!</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="inv" id="inv-b" value="b">
+                            <label for="inv-b">At the start of iteration i, result = (i-1)!</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="inv" id="inv-c" value="c">
+                            <label for="inv-c">At the start of iteration i, result = n!</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="inv" id="inv-d" value="d">
+                            <label for="inv-d">At the start of iteration i, result = i × (i-1)!</label>
+                        </div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button class="btn-primary" onclick="checkInvariantQuiz()">Check Answer</button>
+                        <button class="btn-reset" onclick="resetInvariantQuiz()">Reset</button>
+                    </div>
+
+                    <div id="invariant-feedback" class="feedback"></div>
+                </div>
+            </div>
+
+            <div class="completion-tracker">
+                <strong>Section Checklist:</strong>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-inv-1" onchange="updateProgress()">
+                    <label for="check-inv-1">I understand what a loop invariant is</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-inv-2" onchange="updateProgress()">
+                    <label for="check-inv-2">I see the connection between invariants and induction</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-inv-3" onchange="updateProgress()">
+                    <label for="check-inv-3">I completed the invariant identification exercise</label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5: Complexity Analysis -->
+        <section id="section-complexity">
+            <h2><span class="icon">📊</span> Complexity Analysis with Induction</h2>
+
+            <p>Induction is also used to prove facts about algorithm complexity, particularly for recursive algorithms.</p>
+
+            <h3>Proving Time Complexity Bounds</h3>
+
+            <div class="example-box">
+                <h4>Example: Proving T(n) = O(n) for Linear Recursion</h4>
+                <p>Consider a recursive function with recurrence: T(n) = T(n-1) + c for n > 1, T(1) = c.</p>
+                <p><strong>Claim:</strong> T(n) = cn for all n ≥ 1.</p>
+
+                <p><strong>Base case:</strong> T(1) = c = c(1). ✓</p>
+
+                <p><strong>Inductive hypothesis:</strong> Assume T(k) = ck for some k ≥ 1.</p>
+
+                <p><strong>Inductive step:</strong><br>
+                T(k+1) = T(k) + c = ck + c = c(k+1). ✓</p>
+
+                <p>Therefore, T(n) = cn = O(n). ∎</p>
+            </div>
+
+            <h3>Example: Analyzing Recursive Sum</h3>
+
+            <div class="example-box">
+                <h4>The Function</h4>
+                <pre><code><span class="code-keyword">public static int</span> <span class="code-function">sum</span>(<span class="code-type">int</span> n) {
+    <span class="code-keyword">if</span> (n == <span class="code-number">1</span>) <span class="code-keyword">return</span> <span class="code-number">1</span>;       <span class="code-comment">// T(1) = c₁</span>
+    <span class="code-keyword">return</span> <span class="code-function">sum</span>(n - <span class="code-number">1</span>) + n;       <span class="code-comment">// T(n) = T(n-1) + c₂</span>
+}</code></pre>
+            </div>
+
+            <div class="proof-box">
+                <h4>Complexity Proof</h4>
+                <p><strong>Recurrence:</strong> T(n) = T(n-1) + c for n > 1, T(1) = c (where c is some constant).</p>
+
+                <p><strong>Claim:</strong> T(n) ≤ cn for all n ≥ 1 (i.e., T(n) = O(n)).</p>
+
+                <p><strong>Proof by induction:</strong></p>
+
+                <p><strong>Base case (n = 1):</strong> T(1) = c ≤ c(1) = c. ✓</p>
+
+                <p><strong>Inductive hypothesis:</strong> Assume T(k) ≤ ck for some k ≥ 1.</p>
+
+                <p><strong>Inductive step:</strong><br>
+                T(k+1) = T(k) + c ≤ ck + c = c(k+1). ✓</p>
+
+                <p><strong>Conclusion:</strong> T(n) ≤ cn = O(n) for all n ≥ 1. ∎</p>
+            </div>
+
+            <h3>Example: Binary Search Complexity</h3>
+
+            <div class="theorem-box">
+                <h4>📐 Theorem</h4>
+                <p>Binary search has time complexity O(log n).</p>
+            </div>
+
+            <div class="collapsible">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)" tabindex="0" role="button" aria-expanded="false">
+                    <span>View Complexity Analysis</span>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <p><strong>Recurrence:</strong> T(n) = T(n/2) + c for n > 1, T(1) = c.</p>
+
+                        <p><strong>Claim:</strong> T(n) ≤ c(log₂n + 1) for all n ≥ 1.</p>
+
+                        <p>This can be proved by strong induction (Week 7), but the intuition is:</p>
+                        <ul>
+                            <li>Each recursive call halves the problem size</li>
+                            <li>Starting from n, we can halve at most log₂n times before reaching 1</li>
+                            <li>Each level does O(1) work</li>
+                            <li>Total: O(log n) levels × O(1) work = O(log n)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Common Recurrences and Their Solutions</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Recurrence</th>
+                        <th>Solution</th>
+                        <th>Example Algorithm</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>T(n) = T(n-1) + c</td>
+                        <td>O(n)</td>
+                        <td>Linear recursion (factorial, sum)</td>
+                    </tr>
+                    <tr>
+                        <td>T(n) = T(n-1) + n</td>
+                        <td>O(n²)</td>
+                        <td>Selection sort</td>
+                    </tr>
+                    <tr>
+                        <td>T(n) = T(n/2) + c</td>
+                        <td>O(log n)</td>
+                        <td>Binary search</td>
+                    </tr>
+                    <tr>
+                        <td>T(n) = 2T(n/2) + n</td>
+                        <td>O(n log n)</td>
+                        <td>Merge sort</td>
+                    </tr>
+                    <tr>
+                        <td>T(n) = 2T(n-1) + c</td>
+                        <td>O(2ⁿ)</td>
+                        <td>Naive Fibonacci</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="completion-tracker">
+                <strong>Section Checklist:</strong>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-complex-1" onchange="updateProgress()">
+                    <label for="check-complex-1">I understand how induction proves complexity bounds</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-complex-2" onchange="updateProgress()">
+                    <label for="check-complex-2">I can recognize common recurrence patterns</label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 6: Practice Problems -->
+        <section id="section-practice">
+            <h2><span class="icon">✏️</span> Practice Problems</h2>
+
+            <p>Apply what you've learned by working through these problems.</p>
+
+            <h3>Problem 1: Prove Recursive Function Correctness</h3>
+
+            <div class="example-box">
+                <h4>The Function</h4>
+                <pre><code><span class="code-comment">/**
+ * Computes 2^n for n >= 0.
+ */</span>
+<span class="code-keyword">public static int</span> <span class="code-function">powerOfTwo</span>(<span class="code-type">int</span> n) {
+    <span class="code-keyword">if</span> (n == <span class="code-number">0</span>) <span class="code-keyword">return</span> <span class="code-number">1</span>;
+    <span class="code-keyword">return</span> <span class="code-number">2</span> * <span class="code-function">powerOfTwo</span>(n - <span class="code-number">1</span>);
+}</code></pre>
+                <p><strong>Task:</strong> Prove that powerOfTwo(n) = 2ⁿ for all n ≥ 0.</p>
+            </div>
+
+            <div class="collapsible">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)" tabindex="0" role="button" aria-expanded="false">
+                    <span>View Solution</span>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <div class="proof-box">
+                            <h4>Proof</h4>
+                            <p><strong>Claim:</strong> powerOfTwo(n) = 2ⁿ for all n ≥ 0.</p>
+
+                            <p><strong>Base case (n = 0):</strong><br>
+                            powerOfTwo(0) returns 1 = 2⁰. ✓</p>
+
+                            <p><strong>Inductive hypothesis:</strong><br>
+                            Assume powerOfTwo(k) = 2ᵏ for some k ≥ 0.</p>
+
+                            <p><strong>Inductive step:</strong><br>
+                            powerOfTwo(k+1) = 2 * powerOfTwo(k) [by code]<br>
+                            = 2 * 2ᵏ [by IH]<br>
+                            = 2ᵏ⁺¹ ✓</p>
+
+                            <p>By induction, powerOfTwo(n) = 2ⁿ for all n ≥ 0. ∎</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Problem 2: Write a Loop Invariant</h3>
+
+            <div class="example-box">
+                <h4>The Function</h4>
+                <pre><code><span class="code-comment">/**
+ * Computes the product 1 × 2 × 3 × ... × n = n!
+ */</span>
+<span class="code-keyword">public static int</span> <span class="code-function">factorial</span>(<span class="code-type">int</span> n) {
+    <span class="code-type">int</span> result = <span class="code-number">1</span>;
+    <span class="code-keyword">for</span> (<span class="code-type">int</span> i = <span class="code-number">2</span>; i <= n; i++) {
+        result = result * i;
+    }
+    <span class="code-keyword">return</span> result;
+}</code></pre>
+                <p><strong>Task:</strong> State the loop invariant and prove the function is correct.</p>
+            </div>
+
+            <div class="collapsible">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)" tabindex="0" role="button" aria-expanded="false">
+                    <span>View Solution</span>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <p><strong>Loop Invariant:</strong> At the start of iteration i, result = (i-1)!</p>
+
+                        <p><strong>Initialization (i = 2):</strong><br>
+                        result = 1 = 1! = (2-1)!. ✓</p>
+
+                        <p><strong>Maintenance:</strong><br>
+                        Before iteration i: result = (i-1)!<br>
+                        After iteration i: result = (i-1)! × i = i!<br>
+                        For next iteration i+1: result = i! = ((i+1)-1)!. ✓</p>
+
+                        <p><strong>Termination (i = n+1):</strong><br>
+                        result = ((n+1)-1)! = n!. ✓</p>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Problem 3: Match Code to Proof</h3>
+
+            <!-- Interactive -->
+            <div class="interactive-section">
+                <h3><span>🔄</span> Interactive: Complete the Correspondence</h3>
+
+                <div class="quiz-container">
+                    <p>For the function below, fill in the blanks to complete the correctness proof.</p>
+
+                    <pre><code><span class="code-comment">// Computes the sum of array elements</span>
+<span class="code-keyword">public static int</span> <span class="code-function">arraySum</span>(<span class="code-type">int</span>[] arr, <span class="code-type">int</span> n) {
+    <span class="code-keyword">if</span> (n == <span class="code-number">0</span>) <span class="code-keyword">return</span> <span class="code-number">0</span>;
+    <span class="code-keyword">return</span> <span class="code-function">arraySum</span>(arr, n - <span class="code-number">1</span>) + arr[n - <span class="code-number">1</span>];
+}</code></pre>
+
+                    <div class="form-group">
+                        <label for="fill-1">Base case: arraySum(arr, 0) returns ___, which equals the sum of ___ elements.</label>
+                        <select id="fill-1">
+                            <option value="">Select...</option>
+                            <option value="0-zero">0, zero</option>
+                            <option value="1-one">1, one</option>
+                            <option value="arr0-first">arr[0], the first</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="fill-2">Inductive hypothesis: Assume arraySum(arr, k) returns ___.</label>
+                        <select id="fill-2">
+                            <option value="">Select...</option>
+                            <option value="arrk">arr[k]</option>
+                            <option value="sum-k">arr[0] + arr[1] + ... + arr[k-1]</option>
+                            <option value="sum-k1">arr[0] + arr[1] + ... + arr[k]</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="fill-3">Inductive step: arraySum(arr, k+1) = arraySum(arr, k) + arr[k] = ___.</label>
+                        <select id="fill-3">
+                            <option value="">Select...</option>
+                            <option value="sum-k">arr[0] + ... + arr[k-1]</option>
+                            <option value="sum-k1">arr[0] + ... + arr[k-1] + arr[k]</option>
+                            <option value="sum-k2">arr[0] + ... + arr[k] + arr[k+1]</option>
+                        </select>
+                    </div>
+
+                    <div class="btn-group">
+                        <button class="btn-primary" onclick="checkFillQuiz()">Check Answers</button>
+                        <button class="btn-reset" onclick="resetFillQuiz()">Reset</button>
+                    </div>
+
+                    <div id="fill-feedback" class="feedback"></div>
+                </div>
+            </div>
+
+            <div class="completion-tracker">
+                <strong>Section Checklist:</strong>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-prac-1" onchange="updateProgress()">
+                    <label for="check-prac-1">I completed the powerOfTwo proof</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-prac-2" onchange="updateProgress()">
+                    <label for="check-prac-2">I wrote the factorial loop invariant</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-prac-3" onchange="updateProgress()">
+                    <label for="check-prac-3">I completed the interactive exercise</label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 7: Knowledge Check Quiz -->
+        <section id="section-quiz">
+            <h2><span class="icon">📋</span> Knowledge Check</h2>
+
+            <p>Test your understanding of the connections between induction and computer science.</p>
+
+            <div class="quiz-container" id="final-quiz">
+                <div class="quiz-item">
+                    <p class="quiz-question">1. In a recursive function, what corresponds to the inductive hypothesis?</p>
+                    <div class="option-group" id="fq1-options">
+                        <div class="option-item">
+                            <input type="radio" name="fq1" id="fq1-a" value="a">
+                            <label for="fq1-a">The base case return statement</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq1" id="fq1-b" value="b">
+                            <label for="fq1-b">Trusting that the recursive call returns the correct value</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq1" id="fq1-c" value="c">
+                            <label for="fq1-c">The function signature</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq1" id="fq1-d" value="d">
+                            <label for="fq1-d">The return type</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quiz-item">
+                    <p class="quiz-question">2. What are the three parts of a loop invariant proof?</p>
+                    <div class="option-group" id="fq2-options">
+                        <div class="option-item">
+                            <input type="radio" name="fq2" id="fq2-a" value="a">
+                            <label for="fq2-a">Input, Process, Output</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq2" id="fq2-b" value="b">
+                            <label for="fq2-b">Initialization, Maintenance, Termination</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq2" id="fq2-c" value="c">
+                            <label for="fq2-c">Declaration, Assignment, Return</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq2" id="fq2-d" value="d">
+                            <label for="fq2-d">Base, Recursive, Terminal</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quiz-item">
+                    <p class="quiz-question">3. Why does a recursive function terminate (not run forever)?</p>
+                    <div class="option-group" id="fq3-options">
+                        <div class="option-item">
+                            <input type="radio" name="fq3" id="fq3-a" value="a">
+                            <label for="fq3-a">Because Java automatically limits recursion depth</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq3" id="fq3-b" value="b">
+                            <label for="fq3-b">Because each recursive call is on a smaller input, eventually reaching the base case</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq3" id="fq3-c" value="c">
+                            <label for="fq3-c">Because the function has a return statement</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq3" id="fq3-d" value="d">
+                            <label for="fq3-d">Because the compiler optimizes away infinite recursion</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quiz-item">
+                    <p class="quiz-question">4. For a loop that computes 1 + 2 + ... + n with variable sum, what's a good invariant at iteration i?</p>
+                    <div class="option-group" id="fq4-options">
+                        <div class="option-item">
+                            <input type="radio" name="fq4" id="fq4-a" value="a">
+                            <label for="fq4-a">sum = n(n+1)/2</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq4" id="fq4-b" value="b">
+                            <label for="fq4-b">sum = 1 + 2 + ... + (i-1)</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq4" id="fq4-c" value="c">
+                            <label for="fq4-c">sum = i</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq4" id="fq4-d" value="d">
+                            <label for="fq4-d">sum > 0</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quiz-item">
+                    <p class="quiz-question">5. The recurrence T(n) = T(n-1) + c has solution:</p>
+                    <div class="option-group" id="fq5-options">
+                        <div class="option-item">
+                            <input type="radio" name="fq5" id="fq5-a" value="a">
+                            <label for="fq5-a">O(log n)</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq5" id="fq5-b" value="b">
+                            <label for="fq5-b">O(n)</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq5" id="fq5-c" value="c">
+                            <label for="fq5-c">O(n²)</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq5" id="fq5-d" value="d">
+                            <label for="fq5-d">O(2ⁿ)</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn-primary" onclick="checkFinalQuiz()">Submit Quiz</button>
+                    <button class="btn-reset" onclick="resetFinalQuiz()">Reset Quiz</button>
+                </div>
+
+                <div id="final-quiz-feedback" class="feedback"></div>
+
+                <div class="quiz-score" id="quiz-score" style="display: none;">
+                    <p>Your Score:</p>
+                    <div class="score-value" id="score-value">0/5</div>
+                    <p id="score-message"></p>
+                </div>
+            </div>
+
+            <div class="completion-tracker">
+                <strong>Section Checklist:</strong>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-quiz-1" onchange="updateProgress()">
+                    <label for="check-quiz-1">I completed the knowledge check quiz</label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 8: Summary -->
+        <section id="section-summary">
+            <h2><span class="icon">🎓</span> Summary</h2>
+
+            <h3>Key Connections</h3>
+
+            <div class="concept-box">
+                <h4>What You Learned in Module 6.6</h4>
+                <ul>
+                    <li><strong>Induction ↔ Recursion:</strong> Base case, IH, and IS correspond directly to recursive function structure</li>
+                    <li><strong>Correctness Proofs:</strong> Use induction to prove recursive functions compute what they should</li>
+                    <li><strong>Loop Invariants:</strong> Induction in disguise—initialization, maintenance, termination</li>
+                    <li><strong>Complexity Analysis:</strong> Induction proves bounds on recurrence relations</li>
+                    <li><strong>Well-Ordering:</strong> Guarantees termination of well-founded recursion</li>
+                </ul>
+            </div>
+
+            <h3>The Big Picture</h3>
+
+            <div class="mapping-diagram">
+                <div class="mapping-row">
+                    <div class="mapping-item induction">Mathematical Induction</div>
+                    <div class="mapping-arrow">↔</div>
+                    <div class="mapping-item recursion">Recursive Algorithms</div>
+                </div>
+                <div class="mapping-row">
+                    <div class="mapping-item induction">Loop Invariants</div>
+                    <div class="mapping-arrow">↔</div>
+                    <div class="mapping-item recursion">Iterative Algorithms</div>
+                </div>
+                <div class="mapping-row">
+                    <div class="mapping-item induction">Recurrence Solutions</div>
+                    <div class="mapping-arrow">↔</div>
+                    <div class="mapping-item recursion">Complexity Analysis</div>
+                </div>
+            </div>
+
+            <h3>Week 6 Complete!</h3>
+
+            <div class="concept-box">
+                <h4>🎉 Congratulations!</h4>
+                <p>You've completed Week 6: Proof Techniques II. You now have two powerful proof tools:</p>
+                <ul>
+                    <li><strong>Proof by Contradiction:</strong> For impossibility, non-existence, and uniqueness</li>
+                    <li><strong>Mathematical Induction:</strong> For statements about all natural numbers</li>
+                </ul>
+                <p>And you understand how induction connects to computer science through recursion, loop invariants, and algorithm analysis.</p>
+            </div>
+
+            <h3>Looking Ahead to Week 7</h3>
+
+            <div class="warning-box">
+                <h4>📅 Week 7: Advanced Induction Techniques</h4>
+                <p>Next week you'll learn:</p>
+                <ul>
+                    <li><strong>Strong Induction:</strong> Assume P(n₀), ..., P(k) all true to prove P(k+1)</li>
+                    <li><strong>Structural Induction:</strong> Induction on recursively-defined structures</li>
+                    <li><strong>Well-Ordering Principle:</strong> Deeper connections to induction</li>
+                    <li><strong>Applications:</strong> Fibonacci, prime factorization, trees</li>
+                </ul>
+            </div>
+
+            <div class="completion-tracker">
+                <strong>Final Checklist:</strong>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-final-1" onchange="updateProgress()">
+                    <label for="check-final-1">I can explain the induction-recursion parallel</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-final-2" onchange="updateProgress()">
+                    <label for="check-final-2">I can prove recursive function correctness</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-final-3" onchange="updateProgress()">
+                    <label for="check-final-3">I understand loop invariants</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-final-4" onchange="updateProgress()">
+                    <label for="check-final-4">I am ready for Week 7</label>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p><strong>CSC 240 - Discrete Structures</strong></p>
+        <p>Module 6.6: Induction and Computer Science Connections</p>
+        <p>Mendocino College | Spring 2026</p>
+    </footer>
+
+    <script>
+        // ==================== Progress Tracking ====================
+        function updateProgress() {
+            const checkboxes = document.querySelectorAll('.completion-item input[type="checkbox"]');
+            const checked = document.querySelectorAll('.completion-item input[type="checkbox"]:checked');
+            const percentage = Math.round((checked.length / checkboxes.length) * 100);
+
+            document.getElementById('nav-progress-fill').style.width = percentage + '%';
+            document.getElementById('nav-progress-text').textContent = percentage + '%';
+
+            const checkboxStates = {};
+            checkboxes.forEach(cb => {
+                checkboxStates[cb.id] = cb.checked;
+            });
+            sessionStorage.setItem('module66Progress', JSON.stringify(checkboxStates));
+
+            checkboxes.forEach(cb => {
+                const parent = cb.closest('.completion-item');
+                if (parent) {
+                    parent.classList.toggle('completed', cb.checked);
+                }
+            });
+        }
+
+        function loadProgress() {
+            const saved = sessionStorage.getItem('module66Progress');
+            if (saved) {
+                const checkboxStates = JSON.parse(saved);
+                Object.keys(checkboxStates).forEach(id => {
+                    const checkbox = document.getElementById(id);
+                    if (checkbox) {
+                        checkbox.checked = checkboxStates[id];
+                        const parent = checkbox.closest('.completion-item');
+                        if (parent) {
+                            parent.classList.toggle('completed', checkboxStates[id]);
+                        }
+                    }
+                });
+                updateProgress();
+            }
+        }
+
+        // ==================== Navigation Highlighting ====================
+        function updateNavHighlight() {
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('.nav-links a');
+            const navHeight = document.querySelector('.sticky-nav').offsetHeight;
+
+            let currentSection = '';
+
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - navHeight - 100;
+                const sectionBottom = sectionTop + section.offsetHeight;
+
+                if (window.scrollY >= sectionTop && window.scrollY < sectionBottom) {
+                    currentSection = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + currentSection) {
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        let scrollTimeout;
+        window.addEventListener('scroll', function() {
+            if (scrollTimeout) {
+                window.cancelAnimationFrame(scrollTimeout);
+            }
+            scrollTimeout = window.requestAnimationFrame(function() {
+                updateNavHighlight();
+            });
+        });
+
+        // ==================== Match Quiz ====================
+        function checkMatchQuiz() {
+            const answers = {
+                'match-1': 'A',
+                'match-2': 'call',
+                'match-3': 'B'
+            };
+
+            let correct = 0;
+
+            Object.keys(answers).forEach(id => {
+                const select = document.getElementById(id);
+                if (select.value === answers[id]) {
+                    correct++;
+                    select.style.backgroundColor = '#e8f5e9';
+                    select.style.borderColor = '#4caf50';
+                } else if (select.value !== '') {
+                    select.style.backgroundColor = '#ffebee';
+                    select.style.borderColor = '#f44336';
+                }
+            });
+
+            const feedback = document.getElementById('match-feedback');
+            if (correct === 3) {
+                feedback.className = 'feedback success show';
+                feedback.innerHTML = '<strong>Excellent!</strong> You correctly identified all the correspondences between induction and recursion.';
+            } else {
+                feedback.className = 'feedback info show';
+                feedback.innerHTML = `<strong>Score: ${correct}/3</strong><br>
+                    • Line A (base case) corresponds to P(1)<br>
+                    • The recursive call sum(n-1) is the IH—we trust it works<br>
+                    • Line B uses sum(n-1) to compute sum(n), just like using P(k) to prove P(k+1)`;
+            }
+        }
+
+        function resetMatchQuiz() {
+            ['match-1', 'match-2', 'match-3'].forEach(id => {
+                const select = document.getElementById(id);
+                select.value = '';
+                select.style.backgroundColor = '';
+                select.style.borderColor = '';
+            });
+            document.getElementById('match-feedback').className = 'feedback';
+        }
+
+        // ==================== Invariant Quiz ====================
+        function checkInvariantQuiz() {
+            const selected = document.querySelector('input[name="inv"]:checked');
+            const options = document.querySelectorAll('input[name="inv"]');
+
+            options.forEach(opt => {
+                const parent = opt.closest('.option-item');
+                parent.classList.remove('correct', 'incorrect');
+
+                if (opt.value === 'b') {
+                    parent.classList.add('correct');
+                } else if (selected && opt === selected && opt.value !== 'b') {
+                    parent.classList.add('incorrect');
+                }
+            });
+
+            const feedback = document.getElementById('invariant-feedback');
+            if (selected && selected.value === 'b') {
+                feedback.className = 'feedback success show';
+                feedback.innerHTML = '<strong>Correct!</strong> At the start of iteration i, result = (i-1)!. When i=2, result=1=1!. After the loop (i=n+1), result = n!.';
+            } else {
+                feedback.className = 'feedback info show';
+                feedback.innerHTML = '<strong>Not quite.</strong> The invariant should describe what result equals <em>before</em> each iteration. Since the loop starts at i=2 with result=1, and 1=1!=(2-1)!, the invariant is: result = (i-1)!';
+            }
+        }
+
+        function resetInvariantQuiz() {
+            const options = document.querySelectorAll('input[name="inv"]');
+            options.forEach(opt => {
+                opt.checked = false;
+                opt.closest('.option-item').classList.remove('correct', 'incorrect');
+            });
+            document.getElementById('invariant-feedback').className = 'feedback';
+        }
+
+        // ==================== Fill Quiz ====================
+        function checkFillQuiz() {
+            const answers = {
+                'fill-1': '0-zero',
+                'fill-2': 'sum-k',
+                'fill-3': 'sum-k1'
+            };
+
+            let correct = 0;
+
+            Object.keys(answers).forEach(id => {
+                const select = document.getElementById(id);
+                if (select.value === answers[id]) {
+                    correct++;
+                    select.style.backgroundColor = '#e8f5e9';
+                    select.style.borderColor = '#4caf50';
+                } else if (select.value !== '') {
+                    select.style.backgroundColor = '#ffebee';
+                    select.style.borderColor = '#f44336';
+                }
+            });
+
+            const feedback = document.getElementById('fill-feedback');
+            if (correct === 3) {
+                feedback.className = 'feedback success show';
+                feedback.innerHTML = '<strong>Perfect!</strong> You correctly completed the correctness proof.';
+            } else {
+                feedback.className = 'feedback info show';
+                feedback.innerHTML = `<strong>Score: ${correct}/3</strong><br>
+                    • Base case: returns 0, sum of zero elements<br>
+                    • IH: arraySum(arr, k) = arr[0] + ... + arr[k-1] (sum of first k elements)<br>
+                    • IS: arraySum(arr, k+1) = arr[0] + ... + arr[k-1] + arr[k] (sum of first k+1 elements)`;
+            }
+        }
+
+        function resetFillQuiz() {
+            ['fill-1', 'fill-2', 'fill-3'].forEach(id => {
+                const select = document.getElementById(id);
+                select.value = '';
+                select.style.backgroundColor = '';
+                select.style.borderColor = '';
+            });
+            document.getElementById('fill-feedback').className = 'feedback';
+        }
+
+        // ==================== Final Quiz ====================
+        function checkFinalQuiz() {
+            const answers = {
+                'fq1': 'b',
+                'fq2': 'b',
+                'fq3': 'b',
+                'fq4': 'b',
+                'fq5': 'b'
+            };
+
+            let correct = 0;
+            let total = 5;
+
+            for (let i = 1; i <= 5; i++) {
+                const selected = document.querySelector(`input[name="fq${i}"]:checked`);
+                const options = document.querySelectorAll(`input[name="fq${i}"]`);
+
+                options.forEach(opt => {
+                    const parent = opt.closest('.option-item');
+                    parent.classList.remove('correct', 'incorrect');
+
+                    if (opt.value === answers[`fq${i}`]) {
+                        parent.classList.add('correct');
+                    } else if (selected && opt === selected && opt.value !== answers[`fq${i}`]) {
+                        parent.classList.add('incorrect');
+                    }
+                });
+
+                if (selected && selected.value === answers[`fq${i}`]) {
+                    correct++;
+                }
+            }
+
+            const scoreDiv = document.getElementById('quiz-score');
+            const scoreValue = document.getElementById('score-value');
+            const scoreMessage = document.getElementById('score-message');
+
+            scoreDiv.style.display = 'block';
+            scoreValue.textContent = `${correct}/${total}`;
+
+            if (correct === total) {
+                scoreMessage.textContent = 'Excellent! You understand the connections between induction and CS.';
+                scoreDiv.style.backgroundColor = '#e8f5e9';
+            } else if (correct >= 3) {
+                scoreMessage.textContent = 'Good work! Review any concepts you missed.';
+                scoreDiv.style.backgroundColor = '#fff3e0';
+            } else {
+                scoreMessage.textContent = 'Consider reviewing the module before Week 7.';
+                scoreDiv.style.backgroundColor = '#ffebee';
+            }
+
+            const feedback = document.getElementById('final-quiz-feedback');
+            feedback.className = 'feedback info show';
+            feedback.innerHTML = '<strong>Quiz submitted!</strong> Scroll down to see your score.';
+        }
+
+        function resetFinalQuiz() {
+            for (let i = 1; i <= 5; i++) {
+                const options = document.querySelectorAll(`input[name="fq${i}"]`);
+                options.forEach(opt => {
+                    opt.checked = false;
+                    opt.closest('.option-item').classList.remove('correct', 'incorrect');
+                });
+            }
+            document.getElementById('final-quiz-feedback').className = 'feedback';
+            document.getElementById('quiz-score').style.display = 'none';
+        }
+
+        // ==================== Collapsible Sections ====================
+        function toggleCollapsible(header) {
+            const collapsible = header.closest('.collapsible');
+            collapsible.classList.toggle('open');
+            const isOpen = collapsible.classList.contains('open');
+            header.setAttribute('aria-expanded', isOpen);
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.target.classList.contains('collapsible-header')) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    toggleCollapsible(e.target);
+                }
+            }
+        });
+
+        // ==================== Initialize ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProgress();
+            updateNavHighlight();
+
+            // Smooth scroll for nav links
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href').substring(1);
+                    const targetElement = document.getElementById(targetId);
+                    if (targetElement) {
+                        const navHeight = document.querySelector('.sticky-nav').offsetHeight;
+                        const targetPosition = targetElement.offsetTop - navHeight - 10;
+                        window.scrollTo({
+                            top: targetPosition,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
