@@ -110,8 +110,76 @@
 
         .module-subtitle {
             font-size: 1.1rem;
-            opacity: 0.95;
+            color: #ffffff;
+            font-weight: 600;
             margin-top: 0.5rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        /* Sticky Section Navigation */
+        .section-nav {
+            background: var(--primary-dark);
+            position: sticky;
+            top: 0;
+            z-index: 200;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+            border-bottom: 3px solid var(--accent-color);
+        }
+
+        .section-nav-inner {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            align-items: center;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .section-nav-inner::-webkit-scrollbar {
+            display: none;
+        }
+
+        .section-nav-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            padding: 0.75rem 0.75rem 0.75rem 0;
+            white-space: nowrap;
+            border-right: 1px solid rgba(255,255,255,0.15);
+            margin-right: 0.25rem;
+            flex-shrink: 0;
+        }
+
+        .section-nav a {
+            color: rgba(255,255,255,0.82);
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 500;
+            padding: 0.75rem 0.6rem;
+            white-space: nowrap;
+            transition: color 0.2s ease, background 0.2s ease;
+            border-bottom: 2px solid transparent;
+            flex-shrink: 0;
+        }
+
+        .section-nav a:hover {
+            color: #ffffff;
+            background: rgba(255,255,255,0.08);
+            border-bottom-color: var(--accent-color);
+        }
+
+        .section-nav a:focus-visible {
+            outline: 2px solid var(--accent-color);
+            outline-offset: -2px;
+        }
+
+        .section-nav a.active {
+            color: #ffffff;
+            border-bottom-color: var(--accent-color);
+            font-weight: 700;
         }
 
         /* Progress Bar */
@@ -119,9 +187,6 @@
             background: var(--surface-color);
             padding: 1rem 1.5rem;
             box-shadow: var(--shadow-sm);
-            position: sticky;
-            top: 0;
-            z-index: 100;
             border-bottom: 1px solid var(--border-color);
         }
 
@@ -970,6 +1035,7 @@
         /* Print Styles */
         @media print {
             .progress-container,
+            .section-nav,
             .interactive-section,
             .btn-group,
             .nav-buttons,
@@ -1026,6 +1092,21 @@
         <h1>Module 6.3: Mathematical Induction</h1>
         <p class="module-subtitle">The Principle - Why Induction Works and How to Use It</p>
     </header>
+
+    <nav class="section-nav" aria-label="Module sections">
+        <div class="section-nav-inner">
+            <span class="section-nav-label">Sections:</span>
+            <a href="#section-intro">Introduction</a>
+            <a href="#section-domino">Domino Analogy</a>
+            <a href="#section-formal">The Principle</a>
+            <a href="#section-template">Proof Template</a>
+            <a href="#section-misconceptions">Misconceptions</a>
+            <a href="#section-cs">CS Connection</a>
+            <a href="#section-practice">Practice</a>
+            <a href="#section-quiz">Knowledge Check</a>
+            <a href="#section-summary">Summary</a>
+        </div>
+    </nav>
 
     <div class="progress-container" role="region" aria-label="Module progress">
         <div class="progress-header">
@@ -2295,14 +2376,6 @@
                 </div>
             </div>
 
-            <div class="nav-buttons">
-                <a href="#" onclick="alert('Module 6.2 link'); return false;">
-                    <button class="btn-secondary">← Previous: Module 6.2</button>
-                </a>
-                <a href="#" onclick="alert('Module 6.4 coming soon!'); return false;">
-                    <button class="btn-primary">Next: Module 6.4 - Summation Formulas →</button>
-                </a>
-            </div>
         </section>
     </main>
 
@@ -2677,6 +2750,29 @@
                 this.closest('.completion-item').classList.toggle('completed', this.checked);
             });
         });
+
+        // ==================== Section Nav Active State ====================
+        (function() {
+            const navLinks = document.querySelectorAll('.section-nav a');
+            const sections = Array.from(navLinks).map(link => {
+                const id = link.getAttribute('href').substring(1);
+                return document.getElementById(id);
+            }).filter(Boolean);
+
+            function updateActiveLink() {
+                const scrollY = window.scrollY + 120;
+                let current = sections[0];
+                for (const section of sections) {
+                    if (section.offsetTop <= scrollY) current = section;
+                }
+                navLinks.forEach(link => {
+                    link.classList.toggle('active', link.getAttribute('href') === '#' + current.id);
+                });
+            }
+
+            window.addEventListener('scroll', updateActiveLink, { passive: true });
+            updateActiveLink();
+        })();
 
         // ==================== Initialize ====================
         document.addEventListener('DOMContentLoaded', function() {
