@@ -1,0 +1,2699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 6.5: Mathematical Induction - Divisibility and Inequalities | CSC 240</title>
+    <style>
+        /* CSS Reset and Base Styles */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #1a5f7a;
+            --primary-dark: #134b61;
+            --primary-light: #2d7d9a;
+            --secondary-color: #57837b;
+            --accent-color: #c38e70;
+            --accent-hover: #a67656;
+            --success-color: #2e7d32;
+            --success-light: #e8f5e9;
+            --error-color: #c62828;
+            --error-light: #ffebee;
+            --warning-color: #f57c00;
+            --warning-light: #fff3e0;
+            --info-color: #1565c0;
+            --info-light: #e3f2fd;
+            --background-color: #fafafa;
+            --surface-color: #ffffff;
+            --text-primary: #212121;
+            --text-secondary: #555555;
+            --text-muted: #757575;
+            --border-color: #e0e0e0;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 20px rgba(0,0,0,0.15);
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --font-mono: 'Consolas', 'Monaco', 'Courier New', monospace;
+            --nav-height: 50px;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-main);
+            font-size: 16px;
+            line-height: 1.7;
+            color: var(--text-primary);
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Skip Link for Accessibility */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: var(--primary-color);
+            color: #ffffff;
+            padding: 8px 16px;
+            z-index: 1001;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .skip-link:focus {
+            top: 0;
+        }
+
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: #ffffff;
+            padding: 2rem 1rem;
+            text-align: center;
+            position: relative;
+        }
+
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-color), var(--secondary-color), var(--accent-color));
+        }
+
+        .course-tag {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 0.25rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.5px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin: 0.5rem 0;
+            font-weight: 700;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .module-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            margin-top: 0.5rem;
+        }
+
+        /* Sticky Navigation Bar */
+        .sticky-nav {
+            position: sticky;
+            top: 0;
+            background: var(--surface-color);
+            border-bottom: 2px solid var(--border-color);
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1rem;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        .nav-links::-webkit-scrollbar {
+            display: none;
+        }
+
+        .nav-links li {
+            flex-shrink: 0;
+        }
+
+        .nav-links a {
+            display: block;
+            padding: 0.875rem 1rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+            background: rgba(26, 95, 122, 0.05);
+        }
+
+        .nav-links a.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .nav-links a:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: -2px;
+        }
+
+        .nav-progress {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0;
+            flex-shrink: 0;
+        }
+
+        .nav-progress-bar {
+            width: 100px;
+            height: 6px;
+            background: var(--border-color);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .nav-progress-fill {
+            height: 100%;
+            background: var(--primary-color);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .nav-progress-text {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            min-width: 36px;
+        }
+
+        @media (max-width: 900px) {
+            .nav-links a {
+                padding: 0.75rem 0.75rem;
+                font-size: 0.85rem;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .nav-container {
+                flex-wrap: wrap;
+            }
+
+            .nav-links {
+                width: 100%;
+                order: 2;
+                padding-bottom: 0.5rem;
+            }
+
+            .nav-progress {
+                order: 1;
+                margin-left: auto;
+            }
+        }
+
+        /* Main Content */
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        /* Section Styles */
+        section {
+            background: var(--surface-color);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            scroll-margin-top: calc(var(--nav-height) + 20px);
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: 1.6rem;
+            margin: 0 0 1.5rem 0;
+            padding-bottom: 0.75rem;
+            border-bottom: 3px solid var(--accent-color);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        h2 .icon {
+            font-size: 1.4rem;
+        }
+
+        h3 {
+            color: var(--primary-dark);
+            font-size: 1.25rem;
+            margin: 1.75rem 0 1rem 0;
+        }
+
+        h4 {
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            margin: 1.5rem 0 0.75rem 0;
+        }
+
+        p {
+            margin: 0 0 1rem 0;
+            color: var(--text-secondary);
+        }
+
+        /* Learning Objectives Box */
+        .objectives-box {
+            background: linear-gradient(135deg, var(--info-light) 0%, #f5f9ff 100%);
+            border: 1px solid #90caf9;
+            border-left: 5px solid var(--info-color);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .objectives-box h3 {
+            color: var(--info-color);
+            margin: 0 0 1rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .objectives-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .objectives-list li {
+            padding: 0.5rem 0 0.5rem 2rem;
+            position: relative;
+            color: var(--text-primary);
+        }
+
+        .objectives-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--success-color);
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        /* Definition Box */
+        .definition-box {
+            background: linear-gradient(135deg, #f3e5f5 0%, #faf5fc 100%);
+            border: 1px solid #ce93d8;
+            border-left: 5px solid #8e24aa;
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .definition-box h4 {
+            color: #8e24aa;
+            margin: 0 0 0.75rem 0;
+            font-size: 1.1rem;
+        }
+
+        .definition-box p {
+            margin: 0;
+            color: var(--text-primary);
+        }
+
+        /* Theorem Box */
+        .theorem-box {
+            background: linear-gradient(135deg, #e8eaf6 0%, #f5f6fc 100%);
+            border: 1px solid #9fa8da;
+            border-left: 5px solid #3f51b5;
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .theorem-box h4 {
+            color: #3f51b5;
+            margin: 0 0 0.75rem 0;
+            font-size: 1.1rem;
+        }
+
+        .theorem-box p {
+            margin: 0;
+            color: var(--text-primary);
+        }
+
+        /* Key Concept Box */
+        .concept-box {
+            background: linear-gradient(135deg, #e8f5e9 0%, #f5faf5 100%);
+            border: 1px solid #a5d6a7;
+            border-left: 5px solid var(--success-color);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .concept-box h4 {
+            color: var(--success-color);
+            margin: 0 0 0.75rem 0;
+        }
+
+        /* Warning Box */
+        .warning-box {
+            background: linear-gradient(135deg, var(--warning-light) 0%, #fffaf5 100%);
+            border: 1px solid #ffcc80;
+            border-left: 5px solid var(--warning-color);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .warning-box h4 {
+            color: #e65100;
+            margin: 0 0 0.75rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Example Box */
+        .example-box {
+            background: var(--surface-color);
+            border: 2px solid var(--primary-light);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .example-box h4 {
+            color: var(--primary-color);
+            margin: 0 0 1rem 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px dashed var(--primary-light);
+        }
+
+        /* Proof Structure */
+        .proof-box {
+            background: #fffde7;
+            border: 2px solid #ffd54f;
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .proof-box h4 {
+            color: #f57f17;
+            margin: 0 0 1rem 0;
+        }
+
+        /* Technique Box */
+        .technique-box {
+            background: linear-gradient(135deg, #e0f7fa 0%, #f5fcfd 100%);
+            border: 2px solid #4dd0e1;
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .technique-box h4 {
+            color: #00838f;
+            margin: 0 0 1rem 0;
+        }
+
+        /* Code Blocks */
+        pre {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 1.25rem;
+            border-radius: var(--radius-md);
+            overflow-x: auto;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin: 1rem 0;
+            white-space: pre;
+            word-wrap: normal;
+        }
+
+        code {
+            font-family: var(--font-mono);
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: inherit;
+        }
+
+        :not(pre) > code {
+            background: #f5f5f5;
+            padding: 0.2rem 0.4rem;
+            border-radius: var(--radius-sm);
+            color: #c7254e;
+            font-size: 0.9em;
+        }
+
+        .code-keyword { color: #569cd6; }
+        .code-string { color: #ce9178; }
+        .code-comment { color: #6a9955; }
+        .code-number { color: #b5cea8; }
+        .code-function { color: #dcdcaa; }
+        .code-type { color: #4ec9b0; }
+
+        /* Interactive Elements */
+        .interactive-section {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f5faff 100%);
+            border: 2px solid #64b5f6;
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .interactive-section h3 {
+            color: var(--info-color);
+            margin: 0 0 1rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Buttons */
+        button {
+            font-family: var(--font-main);
+            font-size: 1rem;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: #ffffff;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary:focus {
+            outline: 3px solid var(--primary-light);
+            outline-offset: 2px;
+        }
+
+        .btn-secondary {
+            background: var(--secondary-color);
+            color: #ffffff;
+        }
+
+        .btn-secondary:hover {
+            background: #456b64;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary:focus {
+            outline: 3px solid var(--secondary-color);
+            outline-offset: 2px;
+        }
+
+        .btn-reset {
+            background: #757575;
+            color: #ffffff;
+        }
+
+        .btn-reset:hover {
+            background: #616161;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        input[type="text"],
+        input[type="number"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-family: var(--font-main);
+            font-size: 1rem;
+            transition: border-color 0.2s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(26, 95, 122, 0.1);
+        }
+
+        /* Radio and Checkbox Styles */
+        .option-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .option-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .option-item:hover {
+            background: #f0f4f8;
+            border-color: var(--primary-light);
+        }
+
+        .option-item input[type="radio"],
+        .option-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-top: 2px;
+            cursor: pointer;
+        }
+
+        .option-item label {
+            margin: 0;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .option-item.correct {
+            background: var(--success-light);
+            border-color: var(--success-color);
+        }
+
+        .option-item.incorrect {
+            background: var(--error-light);
+            border-color: var(--error-color);
+        }
+
+        /* Feedback Messages */
+        .feedback {
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .feedback.show {
+            display: block;
+        }
+
+        .feedback.success {
+            background: var(--success-light);
+            border: 1px solid var(--success-color);
+            color: #1b5e20;
+        }
+
+        .feedback.error {
+            background: var(--error-light);
+            border: 1px solid var(--error-color);
+            color: #b71c1c;
+        }
+
+        .feedback.info {
+            background: var(--info-light);
+            border: 1px solid var(--info-color);
+            color: #0d47a1;
+        }
+
+        /* Collapsible Sections */
+        .collapsible {
+            background: var(--surface-color);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .collapsible-header {
+            padding: 1rem 1.25rem;
+            background: #f8f9fa;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            color: var(--text-primary);
+            transition: background 0.2s ease;
+        }
+
+        .collapsible-header:hover {
+            background: #f0f4f8;
+        }
+
+        .collapsible-header:focus {
+            outline: 3px solid var(--primary-color);
+            outline-offset: -3px;
+        }
+
+        .collapsible-icon {
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
+        }
+
+        .collapsible.open .collapsible-icon {
+            transform: rotate(180deg);
+        }
+
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .collapsible.open .collapsible-content {
+            max-height: 5000px;
+        }
+
+        .collapsible-body {
+            padding: 1.25rem;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border: 1px solid var(--border-color);
+        }
+
+        th {
+            background: var(--primary-color);
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        tr:hover {
+            background: #f0f4f8;
+        }
+
+        /* Math Display */
+        .math-display {
+            background: #f8f9fa;
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius-md);
+            text-align: center;
+            font-size: 1.1rem;
+            margin: 1rem 0;
+            border: 1px solid var(--border-color);
+            overflow-x: auto;
+            line-height: 1.8;
+        }
+
+        /* Proof Step Display */
+        .proof-step {
+            background: #ffffff;
+            border-left: 4px solid var(--primary-color);
+            padding: 0.75rem 1rem;
+            margin: 0.5rem 0;
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+        }
+
+        .proof-step-label {
+            font-weight: 700;
+            color: var(--primary-color);
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .proof-step-content {
+            color: var(--text-secondary);
+        }
+
+        .proof-step-math {
+            background: #f8f9fa;
+            padding: 0.5rem 1rem;
+            margin: 0.5rem 0;
+            border-radius: var(--radius-sm);
+            font-family: var(--font-mono);
+            overflow-x: auto;
+        }
+
+        /* Algebra Steps */
+        .algebra-steps {
+            background: #f8f9fa;
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: var(--font-mono);
+            font-size: 0.95rem;
+            line-height: 2;
+            overflow-x: auto;
+        }
+
+        .algebra-line {
+            display: flex;
+            align-items: baseline;
+            gap: 1rem;
+            padding: 0.25rem 0;
+        }
+
+        .algebra-equals {
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        .algebra-expression {
+            flex: 1;
+        }
+
+        .algebra-reason {
+            color: var(--text-muted);
+            font-style: italic;
+            font-size: 0.85rem;
+            min-width: 150px;
+            text-align: right;
+        }
+
+        /* Step Reveal */
+        .step-reveal {
+            margin: 1.5rem 0;
+        }
+
+        .step-item {
+            background: #f8f9fa;
+            border-left: 4px solid var(--border-color);
+            padding: 1rem 1.25rem;
+            margin: 0.5rem 0;
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+            opacity: 0.5;
+            transition: all 0.3s ease;
+        }
+
+        .step-item.revealed {
+            opacity: 1;
+            border-left-color: var(--primary-color);
+            background: #ffffff;
+        }
+
+        .step-number {
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-right: 0.5rem;
+        }
+
+        /* Completion Checkboxes */
+        .completion-tracker {
+            background: #f8f9fa;
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .completion-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .completion-item:last-child {
+            border-bottom: none;
+        }
+
+        .completion-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .completion-item label {
+            margin: 0;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .completion-item.completed label {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+
+        /* Quiz Container */
+        .quiz-container {
+            background: var(--surface-color);
+            border: 2px solid var(--primary-light);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .quiz-question {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            font-size: 1.05rem;
+        }
+
+        .quiz-score {
+            text-align: center;
+            padding: 1rem;
+            background: var(--info-light);
+            border-radius: var(--radius-md);
+            margin-top: 1rem;
+        }
+
+        .quiz-score .score-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        /* Pattern Box */
+        .pattern-box {
+            background: linear-gradient(135deg, #fff8e1 0%, #fffdf5 100%);
+            border: 2px solid #ffcc80;
+            border-radius: var(--radius-md);
+            padding: 1.25rem;
+            margin: 1rem 0;
+        }
+
+        .pattern-box h4 {
+            color: #e65100;
+            margin: 0 0 0.75rem 0;
+            font-size: 1rem;
+        }
+
+        /* Comparison Cards */
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .comparison-card {
+            background: #f8f9fa;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 1.25rem;
+        }
+
+        .comparison-card h4 {
+            color: var(--primary-color);
+            margin: 0 0 0.75rem 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary-light);
+        }
+
+        .comparison-card.highlight {
+            border-color: var(--primary-color);
+            background: linear-gradient(135deg, #e3f2fd 0%, #f5faff 100%);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--primary-dark);
+            color: #ffffff;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        footer p {
+            color: rgba(255,255,255,0.9);
+            margin: 0.5rem 0;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.6rem;
+            }
+
+            h2 {
+                font-size: 1.4rem;
+            }
+
+            section {
+                padding: 1.25rem;
+            }
+
+            main {
+                padding: 1rem;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .btn-group button {
+                width: 100%;
+            }
+
+            .algebra-line {
+                flex-direction: column;
+                gap: 0.25rem;
+            }
+
+            .algebra-reason {
+                text-align: left;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            .sticky-nav,
+            .interactive-section,
+            .btn-group,
+            .skip-link,
+            .completion-tracker {
+                display: none;
+            }
+
+            section {
+                break-inside: avoid;
+                box-shadow: none;
+                border: 1px solid #ccc;
+            }
+        }
+
+        /* Focus Visible */
+        *:focus-visible {
+            outline: 3px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        /* High Contrast Mode */
+        @media (prefers-contrast: high) {
+            :root {
+                --border-color: #000000;
+            }
+        }
+
+        /* Reduced Motion */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+
+            html {
+                scroll-behavior: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <header>
+        <div class="course-tag">CSC 240 - Discrete Structures</div>
+        <h1>Module 6.5: Mathematical Induction</h1>
+        <p class="module-subtitle">Divisibility and Inequalities - Non-Summation Induction Proofs</p>
+    </header>
+
+    <!-- Sticky Navigation Bar -->
+    <nav class="sticky-nav" role="navigation" aria-label="Module sections">
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="#section-intro" class="active">Introduction</a></li>
+                <li><a href="#section-divisibility-basics">Divisibility Basics</a></li>
+                <li><a href="#section-divisibility-proofs">Divisibility Proofs</a></li>
+                <li><a href="#section-inequality-basics">Inequality Basics</a></li>
+                <li><a href="#section-inequality-proofs">Inequality Proofs</a></li>
+                <li><a href="#section-practice">Practice</a></li>
+                <li><a href="#section-quiz">Quiz</a></li>
+                <li><a href="#section-summary">Summary</a></li>
+            </ul>
+            <div class="nav-progress">
+                <div class="nav-progress-bar">
+                    <div class="nav-progress-fill" id="nav-progress-fill"></div>
+                </div>
+                <span class="nav-progress-text" id="nav-progress-text">0%</span>
+            </div>
+        </div>
+    </nav>
+
+    <main id="main-content">
+        <!-- Section 1: Introduction -->
+        <section id="section-intro">
+            <h2><span class="icon">📚</span> Introduction</h2>
+
+            <p>Welcome to Module 6.5! In Module 6.4, you mastered induction proofs for summation formulas. Now we expand your induction toolkit to handle two important categories of statements that don't involve sums:</p>
+
+            <ul>
+                <li><strong>Divisibility properties:</strong> "For all n ≥ 0, 3 divides 4ⁿ - 1"</li>
+                <li><strong>Inequalities:</strong> "For all n ≥ 1, 2ⁿ > n"</li>
+            </ul>
+
+            <p>These types of proofs appear frequently in computer science when analyzing algorithms, proving correctness of recursive functions, and establishing bounds on computational resources.</p>
+
+            <div class="objectives-box">
+                <h3><span>🎯</span> Learning Objectives</h3>
+                <ul class="objectives-list">
+                    <li>Apply induction to prove divisibility properties</li>
+                    <li>Apply induction to prove inequalities</li>
+                    <li>Recognize common patterns in divisibility induction proofs</li>
+                    <li>Handle inequalities carefully in inductive steps</li>
+                    <li>Choose appropriate base cases for different types of claims</li>
+                    <li>Connect these proofs to algorithm analysis</li>
+                </ul>
+            </div>
+
+            <div class="concept-box">
+                <h4>📋 How This Differs from Summation Proofs</h4>
+                <p>In summation proofs, we used the "splitting" technique to separate the (k+1)th term. For divisibility and inequality proofs, we use different strategies:</p>
+                <ul>
+                    <li><strong>Divisibility:</strong> Factor expressions to reveal multiples of the divisor</li>
+                    <li><strong>Inequalities:</strong> Build on the IH by adding/multiplying both sides</li>
+                </ul>
+            </div>
+
+            <div class="completion-tracker">
+                <strong>Section Checklist:</strong>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-intro" onchange="updateProgress()">
+                    <label for="check-intro">I understand the goals of this module</label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Divisibility Basics -->
+        <section id="section-divisibility-basics">
+            <h2><span class="icon">➗</span> Divisibility Basics</h2>
+
+            <p>Before diving into proofs, let's review the definition and key properties of divisibility.</p>
+
+            <div class="definition-box">
+                <h4>📖 Definition: Divisibility</h4>
+                <p>For integers a and b with a ≠ 0, we say <strong>a divides b</strong> (written a | b) if there exists an integer k such that b = ak.</p>
+                <p>Equivalently: b is a multiple of a, or b is divisible by a.</p>
+            </div>
+
+            <div class="example-box">
+                <h4>Examples</h4>
+                <ul>
+                    <li>3 | 12 because 12 = 3 × 4 ✓</li>
+                    <li>5 | 0 because 0 = 5 × 0 ✓</li>
+                    <li>7 | 21 because 21 = 7 × 3 ✓</li>
+                    <li>4 ∤ 10 because 10 ≠ 4k for any integer k ✗</li>
+                </ul>
+            </div>
+
+            <h3>Key Properties for Proofs</h3>
+
+            <div class="technique-box">
+                <h4>📋 Properties We'll Use</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Property</th>
+                            <th>Statement</th>
+                            <th>Why It's Useful</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Sum Rule</strong></td>
+                            <td>If d | a and d | b, then d | (a + b)</td>
+                            <td>Combine divisible terms</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Difference Rule</strong></td>
+                            <td>If d | a and d | b, then d | (a - b)</td>
+                            <td>Subtract divisible terms</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Multiple Rule</strong></td>
+                            <td>If d | a, then d | (ca) for any integer c</td>
+                            <td>Scale divisible terms</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Transitivity</strong></td>
+                            <td>If a | b and b | c, then a | c</td>
+                            <td>Chain divisibility</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>The Key Technique: Factoring for Divisibility</h3>
+
+            <div class="pattern-box">
+                <h4>🔑 The Pattern</h4>
+                <p>To prove d | f(k+1) using the fact that d | f(k):</p>
+                <ol>
+                    <li>Express f(k+1) in terms of f(k)</li>
+                    <li>Rewrite as: f(k+1) = [something involving f(k)] + [multiple of d]</li>
+                    <li>Apply the Sum Rule: both parts are divisible by d</li>
+                </ol>
+            </div>
+
+            <div class="example-box">
+                <h4>Preview: Why 4ⁿ⁺¹ - 1 involves 4ⁿ - 1</h4>
+                <p>We can write:</p>
+                <div class="math-display">
+                    4ⁿ⁺¹ - 1 = 4 · 4ⁿ - 1 = 4 · 4ⁿ - 4 + 3 = 4(4ⁿ - 1) + 3
+                </div>
+                <p>Now we see: 4ⁿ⁺¹ - 1 = 4(4ⁿ - 1) + 3</p>
+                <p>If 3 | (4ⁿ - 1), then 3 | 4(4ⁿ - 1), and since 3 | 3, we get 3 | (4ⁿ⁺¹ - 1)!</p>
+            </div>
+
+            <!-- Interactive: Divisibility Check -->
+            <div class="interactive-section">
+                <h3><span>🔄</span> Interactive: Check Divisibility</h3>
+                <p>Practice identifying divisibility relationships.</p>
+
+                <div class="quiz-container">
+                    <div class="quiz-item">
+                        <p class="quiz-question">Which of the following are true?</p>
+                        <div class="option-group" id="div-check">
+                            <div class="option-item">
+                                <input type="checkbox" name="dc" id="dc-a" value="a">
+                                <label for="dc-a">6 | 42</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="checkbox" name="dc" id="dc-b" value="b">
+                                <label for="dc-b">5 | 23</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="checkbox" name="dc" id="dc-c" value="c">
+                                <label for="dc-c">3 | (4² - 1) = 3 | 15</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="checkbox" name="dc" id="dc-d" value="d">
+                                <label for="dc-d">7 | 0</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="checkbox" name="dc" id="dc-e" value="e">
+                                <label for="dc-e">4 | (5³ - 1) = 4 | 124</label>
+                            </div>
+                        </div>
+
+                        <div class="btn-group">
+                            <button class="btn-primary" onclick="checkDivisibilityQuiz()">Check Answers</button>
+                            <button class="btn-reset" onclick="resetDivisibilityQuiz()">Reset</button>
+                        </div>
+
+                        <div id="div-feedback" class="feedback"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="completion-tracker">
+                <strong>Section Checklist:</strong>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-divbasic-1" onchange="updateProgress()">
+                    <label for="check-divbasic-1">I understand the definition of divisibility</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-divbasic-2" onchange="updateProgress()">
+                    <label for="check-divbasic-2">I know the Sum and Multiple rules</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-divbasic-3" onchange="updateProgress()">
+                    <label for="check-divbasic-3">I completed the divisibility check exercise</label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Divisibility Proofs -->
+        <section id="section-divisibility-proofs">
+            <h2><span class="icon">📐</span> Divisibility Proofs by Induction</h2>
+
+            <p>Let's work through complete divisibility proofs, examining the key techniques at each step.</p>
+
+            <h3>Example 1: 3 | (4ⁿ - 1)</h3>
+
+            <div class="theorem-box">
+                <h4>📐 Theorem</h4>
+                <p>For all integers n ≥ 0, 3 divides 4ⁿ - 1.</p>
+            </div>
+
+            <div class="proof-box">
+                <h4>Proof by Mathematical Induction</h4>
+
+                <div class="proof-step">
+                    <span class="proof-step-label">Base Case (n = 0):</span>
+                    <span class="proof-step-content">
+                        <br>4⁰ - 1 = 1 - 1 = 0
+                        <br>Since 0 = 3 × 0, we have 3 | 0. ✓
+                    </span>
+                </div>
+
+                <div class="proof-step">
+                    <span class="proof-step-label">Inductive Hypothesis:</span>
+                    <span class="proof-step-content">
+                        Assume for some k ≥ 0 that 3 | (4ᵏ - 1).
+                        <br>This means 4ᵏ - 1 = 3m for some integer m.
+                    </span>
+                </div>
+
+                <div class="proof-step">
+                    <span class="proof-step-label">Inductive Step:</span>
+                    <span class="proof-step-content">
+                        We must show: 3 | (4ᵏ⁺¹ - 1)
+                    </span>
+                </div>
+
+                <div class="proof-step">
+                    <span class="proof-step-label">Proof:</span>
+                    <div class="algebra-steps">
+                        <div class="algebra-line">
+                            <span class="algebra-expression">4ᵏ⁺¹ - 1</span>
+                        </div>
+                        <div class="algebra-line">
+                            <span class="algebra-equals">=</span>
+                            <span class="algebra-expression">4 · 4ᵏ - 1</span>
+                            <span class="algebra-reason">[Exponent rule]</span>
+                        </div>
+                        <div class="algebra-line">
+                            <span class="algebra-equals">=</span>
+                            <span class="algebra-expression">4 · 4ᵏ - 4 + 3</span>
+                            <span class="algebra-reason">[Add and subtract 4]</span>
+                        </div>
+                        <div class="algebra-line">
+                            <span class="algebra-equals">=</span>
+                            <span class="algebra-expression">4(4ᵏ - 1) + 3</span>
+                            <span class="algebra-reason">[Factor out 4]</span>
+                        </div>
+                        <div class="algebra-line">
+                            <span class="algebra-equals">=</span>
+                            <span class="algebra-expression">4(3m) + 3</span>
+                            <span class="algebra-reason">[By IH: 4ᵏ - 1 = 3m]</span>
+                        </div>
+                        <div class="algebra-line">
+                            <span class="algebra-equals">=</span>
+                            <span class="algebra-expression">3(4m + 1)</span>
+                            <span class="algebra-reason">[Factor out 3]</span>
+                        </div>
+                    </div>
+                    <span class="proof-step-content">
+                        Since 4m + 1 is an integer, 4ᵏ⁺¹ - 1 = 3(4m + 1) is a multiple of 3.
+                        <br>Therefore, 3 | (4ᵏ⁺¹ - 1). ✓
+                    </span>
+                </div>
+
+                <div class="proof-step">
+                    <span class="proof-step-label">Conclusion:</span>
+                    <span class="proof-step-content">
+                        By the Principle of Mathematical Induction, 3 | (4ⁿ - 1) for all n ≥ 0. ∎
+                    </span>
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <h4>💡 The Key Move</h4>
+                <p>The crucial step was rewriting 4ᵏ⁺¹ - 1 as 4(4ᵏ - 1) + 3:</p>
+                <ul>
+                    <li>4(4ᵏ - 1) is divisible by 3 because 4ᵏ - 1 is (by IH)</li>
+                    <li>3 is obviously divisible by 3</li>
+                    <li>By the Sum Rule, their sum is divisible by 3</li>
+                </ul>
+            </div>
+
+            <h3>Example 2: 6 | (n³ - n)</h3>
+
+            <div class="theorem-box">
+                <h4>📐 Theorem</h4>
+                <p>For all integers n ≥ 0, 6 divides n³ - n.</p>
+            </div>
+
+            <div class="step-reveal" id="n3-proof">
+                <div class="step-item revealed">
+                    <span class="step-number">Base Case (n = 0):</span>
+                    <p>0³ - 0 = 0 = 6 × 0, so 6 | 0. ✓</p>
+                </div>
+
+                <div class="step-item">
+                    <span class="step-number">Inductive Hypothesis:</span>
+                    <p>Assume 6 | (k³ - k) for some k ≥ 0.</p>
+                    <p>This means k³ - k = 6m for some integer m.</p>
+                </div>
+
+                <div class="step-item">
+                    <span class="step-number">Goal:</span>
+                    <p>Show that 6 | ((k+1)³ - (k+1)).</p>
+                </div>
+
+                <div class="step-item">
+                    <span class="step-number">Expand (k+1)³ - (k+1):</span>
+                    <div class="math-display">
+                        (k+1)³ - (k+1) = (k³ + 3k² + 3k + 1) - (k + 1)<br>
+                        = k³ + 3k² + 3k + 1 - k - 1<br>
+                        = k³ + 3k² + 2k
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <span class="step-number">Rewrite to use IH:</span>
+                    <div class="math-display">
+                        k³ + 3k² + 2k = (k³ - k) + 3k² + 3k<br>
+                        = (k³ - k) + 3k(k + 1)
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <span class="step-number">Apply IH and analyze:</span>
+                    <p>By IH, 6 | (k³ - k).</p>
+                    <p>For 3k(k+1): Since k and k+1 are consecutive integers, one is even.</p>
+                    <p>So k(k+1) is even, meaning k(k+1) = 2j for some integer j.</p>
+                    <p>Thus 3k(k+1) = 3(2j) = 6j, so 6 | 3k(k+1).</p>
+                </div>
+
+                <div class="step-item">
+                    <span class="step-number">Conclusion:</span>
+                    <p>Since 6 | (k³ - k) and 6 | 3k(k+1), by the Sum Rule:</p>
+                    <p>6 | [(k³ - k) + 3k(k+1)] = 6 | [(k+1)³ - (k+1)]. ✓</p>
+                    <p>By induction, 6 | (n³ - n) for all n ≥ 0. ∎</p>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn-primary" onclick="revealNextStep('n3-proof')">Reveal Next Step</button>
+                <button class="btn-secondary" onclick="revealAllSteps('n3-proof')">Show All Steps</button>
+                <button class="btn-reset" onclick="resetSteps('n3-proof')">Reset</button>
+            </div>
+
+            <h3>Common Patterns in Divisibility Proofs</h3>
+
+            <div class="pattern-box">
+                <h4>🔑 Pattern 1: aⁿ - 1 is divisible by a - 1</h4>
+                <p>For any integer a ≥ 2 and n ≥ 0: (a - 1) | (aⁿ - 1)</p>
+                <p><strong>Key technique:</strong> Write aⁿ⁺¹ - 1 = a·aⁿ - 1 = a(aⁿ - 1) + (a - 1)</p>
+            </div>
+
+            <div class="pattern-box">
+                <h4>🔑 Pattern 2: Consecutive integers</h4>
+                <p>The product of any k consecutive integers is divisible by k!</p>
+                <p><strong>Example:</strong> n(n+1) is always even (divisible by 2)</p>
+                <p><strong>Example:</strong> n(n+1)(n+2) is always divisible by 6</p>
+            </div>
+
+            <div class="completion-tracker">
+                <strong>Section Checklist:</strong>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-divproof-1" onchange="updateProgress()">
+                    <label for="check-divproof-1">I understand the 3 | (4ⁿ - 1) proof</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-divproof-2" onchange="updateProgress()">
+                    <label for="check-divproof-2">I worked through the 6 | (n³ - n) proof</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-divproof-3" onchange="updateProgress()">
+                    <label for="check-divproof-3">I recognize the common patterns</label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Inequality Basics -->
+        <section id="section-inequality-basics">
+            <h2><span class="icon">📊</span> Inequality Basics</h2>
+
+            <p>Inequality proofs by induction require careful handling of the inductive step. Let's establish the key techniques.</p>
+
+            <h3>Key Properties for Inequality Proofs</h3>
+
+            <div class="technique-box">
+                <h4>📋 Properties We'll Use</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Property</th>
+                            <th>Statement</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Addition</strong></td>
+                            <td>If a > b, then a + c > b + c</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Multiplication (positive)</strong></td>
+                            <td>If a > b and c > 0, then ac > bc</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Transitivity</strong></td>
+                            <td>If a > b and b > c, then a > c</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Power rule</strong></td>
+                            <td>If a > 1 and n > m ≥ 0, then aⁿ > aᵐ</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>The Key Technique: Building on the IH</h3>
+
+            <div class="pattern-box">
+                <h4>🔑 The Strategy</h4>
+                <p>To prove f(k+1) > g(k+1) using the IH that f(k) > g(k):</p>
+                <ol>
+                    <li>Start with what you want: f(k+1)</li>
+                    <li>Relate it to f(k) somehow</li>
+                    <li>Apply the IH to get a lower bound</li>
+                    <li>Show this lower bound ≥ g(k+1)</li>
+                </ol>
+            </div>
+
+            <div class="warning-box">
+                <h4>⚠️ Common Pitfall: Wrong Direction</h4>
+                <p>A common mistake is to start with the conclusion and work backward. Instead:</p>
+                <ul>
+                    <li><strong>Wrong:</strong> "We want to show 2ᵏ⁺¹ > k+1. If this is true, then..."</li>
+                    <li><strong>Right:</strong> "We have 2ᵏ⁺¹ = 2 · 2ᵏ > 2k [by IH]. Now we show 2k ≥ k+1..."</li>
+                </ul>
+                <p>Always build <em>forward</em> from what you know to what you want to show.</p>
+            </div>
+
+            <h3>Choosing the Right Base Case</h3>
+
+            <div class="concept-box">
+                <h4>💡 Base Case Selection</h4>
+                <p>For inequalities, the base case value matters more than for other proofs:</p>
+                <ul>
+                    <li><strong>2ⁿ > n:</strong> True for n ≥ 1 (base case n = 1: 2 > 1 ✓)</li>
+                    <li><strong>2ⁿ > n²:</strong> Only true for n ≥ 5 (check: 2⁴ = 16 < 16 = 4²)</li>
+                    <li><strong>n! > 2ⁿ:</strong> Only true for n ≥ 4 (check: 3! = 6 < 8 = 2³)</li>
+                </ul>
+                <p>Always verify your base case and make sure your conclusion states the correct range!</p>
+            </div>
+
+            <!-- Interactive: Find the Base Case -->
+            <div class="interactive-section">
+                <h3><span>🔄</span> Interactive: Find the Right Base Case</h3>
+                <p>For each inequality, find the smallest n for which it holds.</p>
+
+                <div class="quiz-container">
+                    <div class="form-group">
+                        <label for="base-1">2ⁿ > n³ holds for all n ≥ ___</label>
+                        <input type="number" id="base-1" min="1" max="20" placeholder="Enter a number">
+                        <small style="color: var(--text-muted);">Hint: Check n = 1, 2, 3, ... until the inequality holds and keeps holding</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="base-2">n! > 3ⁿ holds for all n ≥ ___</label>
+                        <input type="number" id="base-2" min="1" max="20" placeholder="Enter a number">
+                        <small style="color: var(--text-muted);">Hint: Compute both sides for small values</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="base-3">2ⁿ ≥ n² holds for all n ≥ ___</label>
+                        <input type="number" id="base-3" min="0" max="20" placeholder="Enter a number">
+                        <small style="color: var(--text-muted);">Hint: Note this is ≥, not ></small>
+                    </div>
+
+                    <div class="btn-group">
+                        <button class="btn-primary" onclick="checkBaseCases()">Check Answers</button>
+                        <button class="btn-reset" onclick="resetBaseCases()">Reset</button>
+                    </div>
+
+                    <div id="base-feedback" class="feedback"></div>
+                </div>
+            </div>
+
+            <div class="completion-tracker">
+                <strong>Section Checklist:</strong>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-ineqbasic-1" onchange="updateProgress()">
+                    <label for="check-ineqbasic-1">I understand the inequality properties</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-ineqbasic-2" onchange="updateProgress()">
+                    <label for="check-ineqbasic-2">I understand the importance of base case selection</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-ineqbasic-3" onchange="updateProgress()">
+                    <label for="check-ineqbasic-3">I completed the base case exercise</label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5: Inequality Proofs -->
+        <section id="section-inequality-proofs">
+            <h2><span class="icon">📈</span> Inequality Proofs by Induction</h2>
+
+            <p>Let's work through complete inequality proofs, focusing on the techniques for the inductive step.</p>
+
+            <h3>Example 1: 2ⁿ > n for all n ≥ 1</h3>
+
+            <div class="theorem-box">
+                <h4>📐 Theorem</h4>
+                <p>For all integers n ≥ 1, 2ⁿ > n.</p>
+            </div>
+
+            <div class="proof-box">
+                <h4>Proof by Mathematical Induction</h4>
+
+                <div class="proof-step">
+                    <span class="proof-step-label">Base Case (n = 1):</span>
+                    <span class="proof-step-content">
+                        <br>2¹ = 2 > 1 = n ✓
+                    </span>
+                </div>
+
+                <div class="proof-step">
+                    <span class="proof-step-label">Inductive Hypothesis:</span>
+                    <span class="proof-step-content">
+                        Assume 2ᵏ > k for some k ≥ 1.
+                    </span>
+                </div>
+
+                <div class="proof-step">
+                    <span class="proof-step-label">Inductive Step:</span>
+                    <span class="proof-step-content">
+                        We must show: 2ᵏ⁺¹ > k + 1
+                    </span>
+                </div>
+
+                <div class="proof-step">
+                    <span class="proof-step-label">Proof:</span>
+                    <div class="algebra-steps">
+                        <div class="algebra-line">
+                            <span class="algebra-expression">2ᵏ⁺¹ = 2 · 2ᵏ</span>
+                            <span class="algebra-reason">[Exponent rule]</span>
+                        </div>
+                        <div class="algebra-line">
+                            <span class="algebra-equals">></span>
+                            <span class="algebra-expression">2 · k</span>
+                            <span class="algebra-reason">[By IH: 2ᵏ > k, multiply by 2]</span>
+                        </div>
+                        <div class="algebra-line">
+                            <span class="algebra-equals">=</span>
+                            <span class="algebra-expression">k + k</span>
+                        </div>
+                        <div class="algebra-line">
+                            <span class="algebra-equals">≥</span>
+                            <span class="algebra-expression">k + 1</span>
+                            <span class="algebra-reason">[Since k ≥ 1]</span>
+                        </div>
+                    </div>
+                    <span class="proof-step-content">
+                        Therefore, 2ᵏ⁺¹ > k + 1. ✓
+                    </span>
+                </div>
+
+                <div class="proof-step">
+                    <span class="proof-step-label">Conclusion:</span>
+                    <span class="proof-step-content">
+                        By induction, 2ⁿ > n for all n ≥ 1. ∎
+                    </span>
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <h4>💡 The Key Insight</h4>
+                <p>We showed 2ᵏ⁺¹ > 2k ≥ k + 1 (when k ≥ 1).</p>
+                <p>The chain of inequalities: 2ᵏ⁺¹ > 2k ≥ k + 1 gives us 2ᵏ⁺¹ > k + 1 by transitivity.</p>
+            </div>
+
+            <h3>Example 2: n! > 2ⁿ for all n ≥ 4</h3>
+
+            <div class="theorem-box">
+                <h4>📐 Theorem</h4>
+                <p>For all integers n ≥ 4, n! > 2ⁿ.</p>
+            </div>
+
+            <div class="step-reveal" id="factorial-proof">
+                <div class="step-item revealed">
+                    <span class="step-number">Base Case (n = 4):</span>
+                    <p>4! = 24</p>
+                    <p>2⁴ = 16</p>
+                    <p>Since 24 > 16, the base case holds. ✓</p>
+                </div>
+
+                <div class="step-item">
+                    <span class="step-number">Inductive Hypothesis:</span>
+                    <p>Assume k! > 2ᵏ for some k ≥ 4.</p>
+                </div>
+
+                <div class="step-item">
+                    <span class="step-number">Goal:</span>
+                    <p>Show that (k+1)! > 2ᵏ⁺¹.</p>
+                </div>
+
+                <div class="step-item">
+                    <span class="step-number">Start with (k+1)!:</span>
+                    <div class="math-display">
+                        (k+1)! = (k+1) · k!
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <span class="step-number">Apply the IH:</span>
+                    <div class="math-display">
+                        (k+1) · k! > (k+1) · 2ᵏ
+                    </div>
+                    <p>[Since k! > 2ᵏ by IH, and k+1 > 0]</p>
+                </div>
+
+                <div class="step-item">
+                    <span class="step-number">Show (k+1) · 2ᵏ ≥ 2ᵏ⁺¹:</span>
+                    <p>We need (k+1) · 2ᵏ ≥ 2 · 2ᵏ = 2ᵏ⁺¹</p>
+                    <p>This requires k + 1 ≥ 2, i.e., k ≥ 1.</p>
+                    <p>Since k ≥ 4, this is satisfied. ✓</p>
+                </div>
+
+                <div class="step-item">
+                    <span class="step-number">Conclusion:</span>
+                    <p>(k+1)! = (k+1) · k! > (k+1) · 2ᵏ ≥ 2 · 2ᵏ = 2ᵏ⁺¹</p>
+                    <p>Therefore (k+1)! > 2ᵏ⁺¹. ✓</p>
+                    <p>By induction, n! > 2ⁿ for all n ≥ 4. ∎</p>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn-primary" onclick="revealNextStep('factorial-proof')">Reveal Next Step</button>
+                <button class="btn-secondary" onclick="revealAllSteps('factorial-proof')">Show All Steps</button>
+                <button class="btn-reset" onclick="resetSteps('factorial-proof')">Reset</button>
+            </div>
+
+            <h3>Example 3: 2ⁿ ≥ n² for all n ≥ 4</h3>
+
+            <div class="theorem-box">
+                <h4>📐 Theorem</h4>
+                <p>For all integers n ≥ 4, 2ⁿ ≥ n².</p>
+            </div>
+
+            <div class="collapsible">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)" tabindex="0" role="button" aria-expanded="false">
+                    <span>View Complete Proof</span>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <div class="proof-box">
+                            <h4>Proof</h4>
+                            <p><strong>Base Case (n = 4):</strong> 2⁴ = 16 = 4². Since 16 ≥ 16, the base case holds. ✓</p>
+
+                            <p><strong>Inductive Hypothesis:</strong> Assume 2ᵏ ≥ k² for some k ≥ 4.</p>
+
+                            <p><strong>Inductive Step:</strong> We show 2ᵏ⁺¹ ≥ (k+1)².</p>
+
+                            <div class="algebra-steps">
+                                <div class="algebra-line">
+                                    <span class="algebra-expression">2ᵏ⁺¹ = 2 · 2ᵏ ≥ 2k²</span>
+                                    <span class="algebra-reason">[By IH]</span>
+                                </div>
+                            </div>
+
+                            <p>We need to show 2k² ≥ (k+1)² = k² + 2k + 1.</p>
+                            <p>This is equivalent to: k² ≥ 2k + 1, or k² - 2k - 1 ≥ 0.</p>
+                            <p>For k ≥ 4: k² - 2k - 1 = k(k-2) - 1 ≥ 4(2) - 1 = 7 > 0. ✓</p>
+
+                            <p>Therefore 2ᵏ⁺¹ ≥ 2k² ≥ (k+1)². ✓</p>
+
+                            <p>By induction, 2ⁿ ≥ n² for all n ≥ 4. ∎</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h3>CS Application: Algorithm Complexity</h3>
+
+            <div class="example-box">
+                <h4>Why These Inequalities Matter</h4>
+                <p>These inequalities help us compare algorithm complexities:</p>
+                <ul>
+                    <li><strong>2ⁿ > n:</strong> Exponential algorithms are worse than linear</li>
+                    <li><strong>n! > 2ⁿ:</strong> Factorial is worse than exponential</li>
+                    <li><strong>2ⁿ ≥ n²:</strong> Exponential eventually dominates polynomial</li>
+                </ul>
+                <p>When analyzing algorithms, these relationships help us understand which approach is more efficient for large inputs.</p>
+            </div>
+
+            <div class="completion-tracker">
+                <strong>Section Checklist:</strong>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-ineqproof-1" onchange="updateProgress()">
+                    <label for="check-ineqproof-1">I understand the 2ⁿ > n proof</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-ineqproof-2" onchange="updateProgress()">
+                    <label for="check-ineqproof-2">I worked through the n! > 2ⁿ proof</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-ineqproof-3" onchange="updateProgress()">
+                    <label for="check-ineqproof-3">I understand how to chain inequalities</label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 6: Practice Problems -->
+        <section id="section-practice">
+            <h2><span class="icon">✏️</span> Practice Problems</h2>
+
+            <p>Apply what you've learned with these practice problems.</p>
+
+            <h3>Problem 1: Divisibility</h3>
+
+            <div class="theorem-box">
+                <h4>Prove</h4>
+                <p>For all n ≥ 0, 5 | (6ⁿ - 1).</p>
+            </div>
+
+            <div class="collapsible">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)" tabindex="0" role="button" aria-expanded="false">
+                    <span>Hint</span>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <p>Write 6ⁿ⁺¹ - 1 = 6 · 6ⁿ - 1 = 6 · 6ⁿ - 6 + 5 = 6(6ⁿ - 1) + 5.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="collapsible">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)" tabindex="0" role="button" aria-expanded="false">
+                    <span>Complete Solution</span>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <div class="proof-box">
+                            <h4>Proof</h4>
+                            <p><strong>Base Case (n = 0):</strong> 6⁰ - 1 = 0 = 5 × 0. So 5 | 0. ✓</p>
+                            <p><strong>IH:</strong> Assume 5 | (6ᵏ - 1), so 6ᵏ - 1 = 5m for some integer m.</p>
+                            <p><strong>IS:</strong> Show 5 | (6ᵏ⁺¹ - 1).</p>
+                            <div class="algebra-steps">
+                                <div class="algebra-line">
+                                    <span class="algebra-expression">6ᵏ⁺¹ - 1 = 6 · 6ᵏ - 1</span>
+                                </div>
+                                <div class="algebra-line">
+                                    <span class="algebra-equals">=</span>
+                                    <span class="algebra-expression">6 · 6ᵏ - 6 + 5</span>
+                                </div>
+                                <div class="algebra-line">
+                                    <span class="algebra-equals">=</span>
+                                    <span class="algebra-expression">6(6ᵏ - 1) + 5</span>
+                                </div>
+                                <div class="algebra-line">
+                                    <span class="algebra-equals">=</span>
+                                    <span class="algebra-expression">6(5m) + 5 = 5(6m + 1)</span>
+                                </div>
+                            </div>
+                            <p>Since 6m + 1 is an integer, 5 | (6ᵏ⁺¹ - 1). ✓</p>
+                            <p>By induction, 5 | (6ⁿ - 1) for all n ≥ 0. ∎</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Problem 2: Inequality</h3>
+
+            <div class="theorem-box">
+                <h4>Prove</h4>
+                <p>For all n ≥ 1, 3ⁿ > 2n + 1.</p>
+            </div>
+
+            <div class="collapsible">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)" tabindex="0" role="button" aria-expanded="false">
+                    <span>Hint</span>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <p>For the inductive step: 3ᵏ⁺¹ = 3 · 3ᵏ > 3(2k + 1) = 6k + 3.</p>
+                        <p>You need to show 6k + 3 ≥ 2(k+1) + 1 = 2k + 3.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="collapsible">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)" tabindex="0" role="button" aria-expanded="false">
+                    <span>Complete Solution</span>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <div class="proof-box">
+                            <h4>Proof</h4>
+                            <p><strong>Base Case (n = 1):</strong> 3¹ = 3 > 2(1) + 1 = 3? No! 3 is not > 3.</p>
+                            <p><strong>Try n = 2:</strong> 3² = 9 > 2(2) + 1 = 5. ✓</p>
+                            <p>Actually, let's check n = 1 more carefully: we need 3 > 3, which is false.</p>
+                            <p>So the theorem should be for n ≥ 2, or we use ≥ instead of >.</p>
+
+                            <p><strong>Revised: Prove 3ⁿ ≥ 2n + 1 for all n ≥ 1.</strong></p>
+                            <p><strong>Base Case (n = 1):</strong> 3¹ = 3 ≥ 2(1) + 1 = 3. ✓</p>
+                            <p><strong>IH:</strong> Assume 3ᵏ ≥ 2k + 1 for some k ≥ 1.</p>
+                            <p><strong>IS:</strong> Show 3ᵏ⁺¹ ≥ 2(k+1) + 1 = 2k + 3.</p>
+                            <div class="algebra-steps">
+                                <div class="algebra-line">
+                                    <span class="algebra-expression">3ᵏ⁺¹ = 3 · 3ᵏ ≥ 3(2k + 1)</span>
+                                    <span class="algebra-reason">[By IH]</span>
+                                </div>
+                                <div class="algebra-line">
+                                    <span class="algebra-equals">=</span>
+                                    <span class="algebra-expression">6k + 3</span>
+                                </div>
+                                <div class="algebra-line">
+                                    <span class="algebra-equals">≥</span>
+                                    <span class="algebra-expression">2k + 3</span>
+                                    <span class="algebra-reason">[Since 6k ≥ 2k for k ≥ 0]</span>
+                                </div>
+                            </div>
+                            <p>Therefore 3ᵏ⁺¹ ≥ 2k + 3 = 2(k+1) + 1. ✓</p>
+                            <p>By induction, 3ⁿ ≥ 2n + 1 for all n ≥ 1. ∎</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Problem 3: Divisibility with Consecutive Integers</h3>
+
+            <div class="theorem-box">
+                <h4>Prove</h4>
+                <p>For all n ≥ 1, 2 | n(n+1).</p>
+            </div>
+
+            <div class="collapsible">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)" tabindex="0" role="button" aria-expanded="false">
+                    <span>Complete Solution</span>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <div class="proof-box">
+                            <h4>Proof</h4>
+                            <p><strong>Base Case (n = 1):</strong> 1(2) = 2 = 2 × 1. So 2 | 2. ✓</p>
+                            <p><strong>IH:</strong> Assume 2 | k(k+1), so k(k+1) = 2m for some integer m.</p>
+                            <p><strong>IS:</strong> Show 2 | (k+1)(k+2).</p>
+                            <div class="algebra-steps">
+                                <div class="algebra-line">
+                                    <span class="algebra-expression">(k+1)(k+2) = (k+1)k + 2(k+1)</span>
+                                </div>
+                                <div class="algebra-line">
+                                    <span class="algebra-equals">=</span>
+                                    <span class="algebra-expression">k(k+1) + 2(k+1)</span>
+                                </div>
+                                <div class="algebra-line">
+                                    <span class="algebra-equals">=</span>
+                                    <span class="algebra-expression">2m + 2(k+1)</span>
+                                    <span class="algebra-reason">[By IH]</span>
+                                </div>
+                                <div class="algebra-line">
+                                    <span class="algebra-equals">=</span>
+                                    <span class="algebra-expression">2(m + k + 1)</span>
+                                </div>
+                            </div>
+                            <p>Since m + k + 1 is an integer, 2 | (k+1)(k+2). ✓</p>
+                            <p>By induction, 2 | n(n+1) for all n ≥ 1. ∎</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interactive: Fill in the Proof -->
+            <div class="interactive-section">
+                <h3><span>🔄</span> Interactive: Complete the Proof</h3>
+                <p>Fill in the blanks to complete this divisibility proof.</p>
+
+                <div class="quiz-container">
+                    <p><strong>Prove:</strong> For all n ≥ 0, 7 | (8ⁿ - 1).</p>
+
+                    <div class="proof-box">
+                        <p><strong>Base Case (n = 0):</strong></p>
+                        <p>8⁰ - 1 = 
+                            <select id="fill-1" aria-label="Base case value">
+                                <option value="">?</option>
+                                <option value="0">0</option>
+                                <option value="1">1</option>
+                                <option value="7">7</option>
+                            </select>
+                            , and 7 | 0. ✓
+                        </p>
+
+                        <p><strong>Inductive Hypothesis:</strong></p>
+                        <p>Assume 7 | (8ᵏ - 1), so 8ᵏ - 1 = 7m for some integer m.</p>
+
+                        <p><strong>Inductive Step:</strong></p>
+                        <p>8ᵏ⁺¹ - 1 = 8 · 8ᵏ - 1</p>
+                        <p>= 8 · 8ᵏ - 
+                            <select id="fill-2" aria-label="Number to add and subtract">
+                                <option value="">?</option>
+                                <option value="1">1</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                            </select>
+                            + 7
+                        </p>
+                        <p>= 8(8ᵏ - 1) + 
+                            <select id="fill-3" aria-label="Remaining term">
+                                <option value="">?</option>
+                                <option value="1">1</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                            </select>
+                        </p>
+                        <p>= 8(7m) + 7 = 7(
+                            <select id="fill-4" aria-label="Final factored form">
+                                <option value="">?</option>
+                                <option value="8m">8m</option>
+                                <option value="8m + 1">8m + 1</option>
+                                <option value="8m + 7">8m + 7</option>
+                            </select>
+                            )
+                        </p>
+                    </div>
+
+                    <div class="btn-group">
+                        <button class="btn-primary" onclick="checkFillProof()">Check Answers</button>
+                        <button class="btn-reset" onclick="resetFillProof()">Reset</button>
+                    </div>
+
+                    <div id="fill-feedback" class="feedback"></div>
+                </div>
+            </div>
+
+            <div class="completion-tracker">
+                <strong>Section Checklist:</strong>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-prac-1" onchange="updateProgress()">
+                    <label for="check-prac-1">I worked through the divisibility problem</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-prac-2" onchange="updateProgress()">
+                    <label for="check-prac-2">I worked through the inequality problem</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-prac-3" onchange="updateProgress()">
+                    <label for="check-prac-3">I completed the fill-in-the-blank exercise</label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 7: Knowledge Check Quiz -->
+        <section id="section-quiz">
+            <h2><span class="icon">📋</span> Knowledge Check</h2>
+
+            <p>Test your understanding of divisibility and inequality proofs by induction.</p>
+
+            <div class="quiz-container" id="final-quiz">
+                <div class="quiz-item">
+                    <p class="quiz-question">1. To prove d | f(k+1) using the IH that d | f(k), what's the typical strategy?</p>
+                    <div class="option-group" id="fq1-options">
+                        <div class="option-item">
+                            <input type="radio" name="fq1" id="fq1-a" value="a">
+                            <label for="fq1-a">Divide f(k+1) by d and check if the result is an integer</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq1" id="fq1-b" value="b">
+                            <label for="fq1-b">Write f(k+1) as [multiple of f(k)] + [multiple of d], then use the Sum Rule</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq1" id="fq1-c" value="c">
+                            <label for="fq1-c">Use proof by contradiction</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq1" id="fq1-d" value="d">
+                            <label for="fq1-d">Check several examples and generalize</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quiz-item">
+                    <p class="quiz-question">2. When proving 4ⁿ - 1 is divisible by 3, we write 4ⁿ⁺¹ - 1 = 4(4ⁿ - 1) + 3. Why does this help?</p>
+                    <div class="option-group" id="fq2-options">
+                        <div class="option-item">
+                            <input type="radio" name="fq2" id="fq2-a" value="a">
+                            <label for="fq2-a">Because 4 is divisible by 3</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq2" id="fq2-b" value="b">
+                            <label for="fq2-b">Because both 4(4ⁿ - 1) and 3 are divisible by 3</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq2" id="fq2-c" value="c">
+                            <label for="fq2-c">Because it makes the expression simpler</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq2" id="fq2-d" value="d">
+                            <label for="fq2-d">Because 4ⁿ⁺¹ = 4 · 4ⁿ by definition</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quiz-item">
+                    <p class="quiz-question">3. For the inequality 2ⁿ > n, what's the key step in proving 2ᵏ⁺¹ > k+1?</p>
+                    <div class="option-group" id="fq3-options">
+                        <div class="option-item">
+                            <input type="radio" name="fq3" id="fq3-a" value="a">
+                            <label for="fq3-a">Show 2ᵏ⁺¹ = 2 · 2ᵏ > 2k ≥ k+1 (for k ≥ 1)</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq3" id="fq3-b" value="b">
+                            <label for="fq3-b">Divide both sides by 2</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq3" id="fq3-c" value="c">
+                            <label for="fq3-c">Take logarithms of both sides</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq3" id="fq3-d" value="d">
+                            <label for="fq3-d">Use the formula for geometric series</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quiz-item">
+                    <p class="quiz-question">4. Why does the inequality n! > 2ⁿ require base case n = 4 instead of n = 1?</p>
+                    <div class="option-group" id="fq4-options">
+                        <div class="option-item">
+                            <input type="radio" name="fq4" id="fq4-a" value="a">
+                            <label for="fq4-a">The inequality is false for n = 1, 2, 3</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq4" id="fq4-b" value="b">
+                            <label for="fq4-b">The inductive step doesn't work for small values</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq4" id="fq4-c" value="c">
+                            <label for="fq4-c">4 is the first even number greater than 2</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq4" id="fq4-d" value="d">
+                            <label for="fq4-d">It's a convention in mathematics</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quiz-item">
+                    <p class="quiz-question">5. What property ensures that if d | a and d | b, then d | (a + b)?</p>
+                    <div class="option-group" id="fq5-options">
+                        <div class="option-item">
+                            <input type="radio" name="fq5" id="fq5-a" value="a">
+                            <label for="fq5-a">Transitivity of divisibility</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq5" id="fq5-b" value="b">
+                            <label for="fq5-b">The Sum Rule for divisibility</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq5" id="fq5-c" value="c">
+                            <label for="fq5-c">The definition of prime numbers</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="fq5" id="fq5-d" value="d">
+                            <label for="fq5-d">The Euclidean algorithm</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn-primary" onclick="checkFinalQuiz()">Submit Quiz</button>
+                    <button class="btn-reset" onclick="resetFinalQuiz()">Reset Quiz</button>
+                </div>
+
+                <div id="final-quiz-feedback" class="feedback"></div>
+
+                <div class="quiz-score" id="quiz-score" style="display: none;">
+                    <p>Your Score:</p>
+                    <div class="score-value" id="score-value">0/5</div>
+                    <p id="score-message"></p>
+                </div>
+            </div>
+
+            <div class="completion-tracker">
+                <strong>Section Checklist:</strong>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-quiz-1" onchange="updateProgress()">
+                    <label for="check-quiz-1">I completed the knowledge check quiz</label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 8: Summary -->
+        <section id="section-summary">
+            <h2><span class="icon">🎓</span> Summary</h2>
+
+            <h3>Key Techniques Reference</h3>
+
+            <div class="comparison-grid">
+                <div class="comparison-card highlight">
+                    <h4>Divisibility Proofs</h4>
+                    <ul>
+                        <li><strong>Goal:</strong> Show d | f(k+1)</li>
+                        <li><strong>Strategy:</strong> Write f(k+1) = c·f(k) + d·m</li>
+                        <li><strong>Key property:</strong> Sum Rule</li>
+                        <li><strong>Common pattern:</strong> aⁿ - 1 = a(aⁿ⁻¹ - 1) + (a-1)</li>
+                    </ul>
+                </div>
+                <div class="comparison-card highlight">
+                    <h4>Inequality Proofs</h4>
+                    <ul>
+                        <li><strong>Goal:</strong> Show f(k+1) > g(k+1)</li>
+                        <li><strong>Strategy:</strong> Chain: f(k+1) > ... ≥ g(k+1)</li>
+                        <li><strong>Key property:</strong> Transitivity</li>
+                        <li><strong>Watch for:</strong> Correct base case!</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>Common Divisibility Results</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Statement</th>
+                        <th>Base Case</th>
+                        <th>Key Rewriting</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>3 | (4ⁿ - 1)</td>
+                        <td>n = 0</td>
+                        <td>4ⁿ⁺¹ - 1 = 4(4ⁿ - 1) + 3</td>
+                    </tr>
+                    <tr>
+                        <td>5 | (6ⁿ - 1)</td>
+                        <td>n = 0</td>
+                        <td>6ⁿ⁺¹ - 1 = 6(6ⁿ - 1) + 5</td>
+                    </tr>
+                    <tr>
+                        <td>6 | n(n+1)(n+2)</td>
+                        <td>n = 0</td>
+                        <td>Product of 3 consecutive integers</td>
+                    </tr>
+                    <tr>
+                        <td>(a-1) | (aⁿ - 1)</td>
+                        <td>n = 0</td>
+                        <td>aⁿ⁺¹ - 1 = a(aⁿ - 1) + (a-1)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Common Inequality Results</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Statement</th>
+                        <th>Valid for</th>
+                        <th>Key Insight</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>2ⁿ > n</td>
+                        <td>n ≥ 1</td>
+                        <td>2k ≥ k + 1 when k ≥ 1</td>
+                    </tr>
+                    <tr>
+                        <td>2ⁿ ≥ n²</td>
+                        <td>n ≥ 4</td>
+                        <td>2k² ≥ (k+1)² when k ≥ 4</td>
+                    </tr>
+                    <tr>
+                        <td>n! > 2ⁿ</td>
+                        <td>n ≥ 4</td>
+                        <td>k + 1 ≥ 2 when k ≥ 1</td>
+                    </tr>
+                    <tr>
+                        <td>n! > 3ⁿ</td>
+                        <td>n ≥ 7</td>
+                        <td>k + 1 ≥ 3 when k ≥ 2</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Key Takeaways</h3>
+
+            <div class="concept-box">
+                <h4>What You Learned in Module 6.5</h4>
+                <ul>
+                    <li><strong>Divisibility technique:</strong> Factor to reveal multiples of the divisor</li>
+                    <li><strong>Inequality technique:</strong> Build chains using transitivity</li>
+                    <li><strong>Base case matters:</strong> Inequalities may only hold for n ≥ n₀</li>
+                    <li><strong>Sum Rule:</strong> If d | a and d | b, then d | (a + b)</li>
+                    <li><strong>CS connection:</strong> These proofs establish complexity relationships</li>
+                </ul>
+            </div>
+
+            <div class="warning-box">
+                <h4>⚠️ Before Moving On</h4>
+                <p>Make sure you can:</p>
+                <ul>
+                    <li>Prove divisibility statements like d | (aⁿ - 1)</li>
+                    <li>Prove inequalities like 2ⁿ > n</li>
+                    <li>Choose the correct base case for inequalities</li>
+                    <li>Use the Sum Rule and transitivity effectively</li>
+                </ul>
+            </div>
+
+            <div class="completion-tracker">
+                <strong>Final Checklist:</strong>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-final-1" onchange="updateProgress()">
+                    <label for="check-final-1">I can prove divisibility statements by induction</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-final-2" onchange="updateProgress()">
+                    <label for="check-final-2">I can prove inequalities by induction</label>
+                </div>
+                <div class="completion-item">
+                    <input type="checkbox" id="check-final-3" onchange="updateProgress()">
+                    <label for="check-final-3">I am ready for Module 6.6</label>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p><strong>CSC 240 - Discrete Structures</strong></p>
+        <p>Module 6.5: Mathematical Induction - Divisibility and Inequalities</p>
+        <p>Mendocino College | Spring 2026</p>
+    </footer>
+
+    <script>
+        // ==================== Progress Tracking ====================
+        function updateProgress() {
+            const checkboxes = document.querySelectorAll('.completion-item input[type="checkbox"]');
+            const checked = document.querySelectorAll('.completion-item input[type="checkbox"]:checked');
+            const percentage = Math.round((checked.length / checkboxes.length) * 100);
+
+            document.getElementById('nav-progress-fill').style.width = percentage + '%';
+            document.getElementById('nav-progress-text').textContent = percentage + '%';
+
+            const checkboxStates = {};
+            checkboxes.forEach(cb => {
+                checkboxStates[cb.id] = cb.checked;
+            });
+            sessionStorage.setItem('module65Progress', JSON.stringify(checkboxStates));
+
+            checkboxes.forEach(cb => {
+                const parent = cb.closest('.completion-item');
+                if (parent) {
+                    parent.classList.toggle('completed', cb.checked);
+                }
+            });
+        }
+
+        function loadProgress() {
+            const saved = sessionStorage.getItem('module65Progress');
+            if (saved) {
+                const checkboxStates = JSON.parse(saved);
+                Object.keys(checkboxStates).forEach(id => {
+                    const checkbox = document.getElementById(id);
+                    if (checkbox) {
+                        checkbox.checked = checkboxStates[id];
+                        const parent = checkbox.closest('.completion-item');
+                        if (parent) {
+                            parent.classList.toggle('completed', checkboxStates[id]);
+                        }
+                    }
+                });
+                updateProgress();
+            }
+        }
+
+        // ==================== Navigation Highlighting ====================
+        function updateNavHighlight() {
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('.nav-links a');
+            const navHeight = document.querySelector('.sticky-nav').offsetHeight;
+
+            let currentSection = '';
+
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - navHeight - 100;
+                const sectionBottom = sectionTop + section.offsetHeight;
+
+                if (window.scrollY >= sectionTop && window.scrollY < sectionBottom) {
+                    currentSection = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + currentSection) {
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        let scrollTimeout;
+        window.addEventListener('scroll', function() {
+            if (scrollTimeout) {
+                window.cancelAnimationFrame(scrollTimeout);
+            }
+            scrollTimeout = window.requestAnimationFrame(function() {
+                updateNavHighlight();
+            });
+        });
+
+        // ==================== Divisibility Quiz ====================
+        function checkDivisibilityQuiz() {
+            const correctAnswers = ['a', 'c', 'd', 'e']; // 6|42, 3|15, 7|0, 4|124
+            const checkboxes = document.querySelectorAll('#div-check input[type="checkbox"]');
+            
+            let correct = 0;
+            let total = 5;
+
+            checkboxes.forEach(cb => {
+                const parent = cb.closest('.option-item');
+                const isCorrect = correctAnswers.includes(cb.value);
+                const isChecked = cb.checked;
+
+                parent.classList.remove('correct', 'incorrect');
+
+                if (isCorrect && isChecked) {
+                    parent.classList.add('correct');
+                    correct++;
+                } else if (isCorrect && !isChecked) {
+                    parent.classList.add('correct'); // Show what should have been checked
+                } else if (!isCorrect && isChecked) {
+                    parent.classList.add('incorrect');
+                }
+            });
+
+            const feedback = document.getElementById('div-feedback');
+            const allCorrect = correct === correctAnswers.length && 
+                              document.querySelectorAll('#div-check input:checked').length === correctAnswers.length;
+
+            if (allCorrect) {
+                feedback.className = 'feedback success show';
+                feedback.innerHTML = '<strong>Perfect!</strong> You correctly identified all divisibility relationships.';
+            } else {
+                feedback.className = 'feedback info show';
+                feedback.innerHTML = `<strong>Review:</strong><br>
+                    • 6 | 42 ✓ (42 = 6 × 7)<br>
+                    • 5 ∤ 23 (23 = 5 × 4 + 3)<br>
+                    • 3 | 15 ✓ (15 = 3 × 5)<br>
+                    • 7 | 0 ✓ (0 = 7 × 0)<br>
+                    • 4 | 124 ✓ (124 = 4 × 31)`;
+            }
+        }
+
+        function resetDivisibilityQuiz() {
+            const checkboxes = document.querySelectorAll('#div-check input[type="checkbox"]');
+            checkboxes.forEach(cb => {
+                cb.checked = false;
+                cb.closest('.option-item').classList.remove('correct', 'incorrect');
+            });
+            document.getElementById('div-feedback').className = 'feedback';
+        }
+
+        // ==================== Base Case Quiz ====================
+        function checkBaseCases() {
+            const answers = {
+                'base-1': 10,  // 2^10 = 1024 > 1000 = 10^3
+                'base-2': 7,   // 7! = 5040 > 2187 = 3^7
+                'base-3': 4    // 2^4 = 16 >= 16 = 4^2
+            };
+
+            let correct = 0;
+            let feedback = '';
+
+            // Check base-1: 2^n > n^3
+            const val1 = parseInt(document.getElementById('base-1').value);
+            if (val1 === 10) {
+                correct++;
+                document.getElementById('base-1').style.borderColor = '#4caf50';
+                feedback += '<p>✓ 2ⁿ > n³ holds for n ≥ 10 (2¹⁰ = 1024 > 1000 = 10³)</p>';
+            } else {
+                document.getElementById('base-1').style.borderColor = '#f44336';
+                feedback += '<p>✗ 2ⁿ > n³: Check n=10. 2¹⁰ = 1024 > 1000 = 10³ ✓</p>';
+            }
+
+            // Check base-2: n! > 3^n
+            const val2 = parseInt(document.getElementById('base-2').value);
+            if (val2 === 7) {
+                correct++;
+                document.getElementById('base-2').style.borderColor = '#4caf50';
+                feedback += '<p>✓ n! > 3ⁿ holds for n ≥ 7 (7! = 5040 > 2187 = 3⁷)</p>';
+            } else {
+                document.getElementById('base-2').style.borderColor = '#f44336';
+                feedback += '<p>✗ n! > 3ⁿ: 6! = 720 < 729 = 3⁶, but 7! = 5040 > 2187 = 3⁷</p>';
+            }
+
+            // Check base-3: 2^n >= n^2
+            const val3 = parseInt(document.getElementById('base-3').value);
+            if (val3 === 4) {
+                correct++;
+                document.getElementById('base-3').style.borderColor = '#4caf50';
+                feedback += '<p>✓ 2ⁿ ≥ n² holds for n ≥ 4 (2⁴ = 16 ≥ 16 = 4²)</p>';
+            } else {
+                document.getElementById('base-3').style.borderColor = '#f44336';
+                feedback += '<p>✗ 2ⁿ ≥ n²: 2³ = 8 < 9 = 3², but 2⁴ = 16 = 4²</p>';
+            }
+
+            const feedbackDiv = document.getElementById('base-feedback');
+            feedbackDiv.className = correct === 3 ? 'feedback success show' : 'feedback info show';
+            feedbackDiv.innerHTML = `<strong>Score: ${correct}/3</strong><br>${feedback}`;
+        }
+
+        function resetBaseCases() {
+            ['base-1', 'base-2', 'base-3'].forEach(id => {
+                document.getElementById(id).value = '';
+                document.getElementById(id).style.borderColor = '';
+            });
+            document.getElementById('base-feedback').className = 'feedback';
+        }
+
+        // ==================== Step Reveal ====================
+        function revealNextStep(containerId) {
+            const container = document.getElementById(containerId);
+            const steps = container.querySelectorAll('.step-item:not(.revealed)');
+            if (steps.length > 0) {
+                steps[0].classList.add('revealed');
+            }
+        }
+
+        function revealAllSteps(containerId) {
+            const container = document.getElementById(containerId);
+            const steps = container.querySelectorAll('.step-item');
+            steps.forEach(step => step.classList.add('revealed'));
+        }
+
+        function resetSteps(containerId) {
+            const container = document.getElementById(containerId);
+            const steps = container.querySelectorAll('.step-item');
+            steps.forEach((step, index) => {
+                if (index === 0) {
+                    step.classList.add('revealed');
+                } else {
+                    step.classList.remove('revealed');
+                }
+            });
+        }
+
+        // ==================== Collapsible Sections ====================
+        function toggleCollapsible(header) {
+            const collapsible = header.closest('.collapsible');
+            collapsible.classList.toggle('open');
+            const isOpen = collapsible.classList.contains('open');
+            header.setAttribute('aria-expanded', isOpen);
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.target.classList.contains('collapsible-header')) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    toggleCollapsible(e.target);
+                }
+            }
+        });
+
+        // ==================== Fill Proof ====================
+        function checkFillProof() {
+            const answers = {
+                'fill-1': '0',
+                'fill-2': '8',
+                'fill-3': '7',
+                'fill-4': '8m + 1'
+            };
+
+            let correct = 0;
+            let total = 4;
+
+            Object.keys(answers).forEach(id => {
+                const select = document.getElementById(id);
+                if (select.value === answers[id]) {
+                    correct++;
+                    select.style.backgroundColor = '#e8f5e9';
+                    select.style.borderColor = '#4caf50';
+                } else if (select.value !== '') {
+                    select.style.backgroundColor = '#ffebee';
+                    select.style.borderColor = '#f44336';
+                }
+            });
+
+            const feedback = document.getElementById('fill-feedback');
+            if (correct === total) {
+                feedback.className = 'feedback success show';
+                feedback.innerHTML = '<strong>Excellent!</strong> You correctly completed the divisibility proof.';
+            } else {
+                feedback.className = 'feedback info show';
+                feedback.innerHTML = `<strong>Score: ${correct}/${total}</strong>. The pattern is: 8ⁿ⁺¹ - 1 = 8·8ⁿ - 8 + 7 = 8(8ⁿ - 1) + 7 = 8(7m) + 7 = 7(8m + 1).`;
+            }
+        }
+
+        function resetFillProof() {
+            ['fill-1', 'fill-2', 'fill-3', 'fill-4'].forEach(id => {
+                const select = document.getElementById(id);
+                select.value = '';
+                select.style.backgroundColor = '';
+                select.style.borderColor = '';
+            });
+            document.getElementById('fill-feedback').className = 'feedback';
+        }
+
+        // ==================== Final Quiz ====================
+        function checkFinalQuiz() {
+            const answers = {
+                'fq1': 'b',
+                'fq2': 'b',
+                'fq3': 'a',
+                'fq4': 'a',
+                'fq5': 'b'
+            };
+
+            let correct = 0;
+            let total = 5;
+
+            for (let i = 1; i <= 5; i++) {
+                const selected = document.querySelector(`input[name="fq${i}"]:checked`);
+                const options = document.querySelectorAll(`input[name="fq${i}"]`);
+
+                options.forEach(opt => {
+                    const parent = opt.closest('.option-item');
+                    parent.classList.remove('correct', 'incorrect');
+
+                    if (opt.value === answers[`fq${i}`]) {
+                        parent.classList.add('correct');
+                    } else if (selected && opt === selected && opt.value !== answers[`fq${i}`]) {
+                        parent.classList.add('incorrect');
+                    }
+                });
+
+                if (selected && selected.value === answers[`fq${i}`]) {
+                    correct++;
+                }
+            }
+
+            const scoreDiv = document.getElementById('quiz-score');
+            const scoreValue = document.getElementById('score-value');
+            const scoreMessage = document.getElementById('score-message');
+
+            scoreDiv.style.display = 'block';
+            scoreValue.textContent = `${correct}/${total}`;
+
+            if (correct === total) {
+                scoreMessage.textContent = 'Excellent! You have mastered divisibility and inequality proofs.';
+                scoreDiv.style.backgroundColor = '#e8f5e9';
+            } else if (correct >= 3) {
+                scoreMessage.textContent = 'Good work! Review the techniques for any questions you missed.';
+                scoreDiv.style.backgroundColor = '#fff3e0';
+            } else {
+                scoreMessage.textContent = 'Consider reviewing the module before continuing.';
+                scoreDiv.style.backgroundColor = '#ffebee';
+            }
+
+            const feedback = document.getElementById('final-quiz-feedback');
+            feedback.className = 'feedback info show';
+            feedback.innerHTML = '<strong>Quiz submitted!</strong> Scroll down to see your score.';
+        }
+
+        function resetFinalQuiz() {
+            for (let i = 1; i <= 5; i++) {
+                const options = document.querySelectorAll(`input[name="fq${i}"]`);
+                options.forEach(opt => {
+                    opt.checked = false;
+                    opt.closest('.option-item').classList.remove('correct', 'incorrect');
+                });
+            }
+            document.getElementById('final-quiz-feedback').className = 'feedback';
+            document.getElementById('quiz-score').style.display = 'none';
+        }
+
+        // ==================== Initialize ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProgress();
+            updateNavHighlight();
+
+            // Initialize first step as revealed
+            document.querySelectorAll('.step-reveal').forEach(container => {
+                const firstStep = container.querySelector('.step-item');
+                if (firstStep) {
+                    firstStep.classList.add('revealed');
+                }
+            });
+
+            // Smooth scroll for nav links
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href').substring(1);
+                    const targetElement = document.getElementById(targetId);
+                    if (targetElement) {
+                        const navHeight = document.querySelector('.sticky-nav').offsetHeight;
+                        const targetPosition = targetElement.offsetTop - navHeight - 10;
+                        window.scrollTo({
+                            top: targetPosition,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
