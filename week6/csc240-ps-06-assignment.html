@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PS-06: Proof by Contradiction and Mathematical Induction | CSC 240</title>
+    <style>
+        /* CSS Reset and Base Styles */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #1a5f7a;
+            --primary-dark: #134b61;
+            --primary-light: #2d7d9a;
+            --secondary-color: #57837b;
+            --accent-color: #c38e70;
+            --success-color: #2e7d32;
+            --success-light: #e8f5e9;
+            --error-color: #c62828;
+            --error-light: #ffebee;
+            --warning-color: #f57c00;
+            --warning-light: #fff3e0;
+            --info-color: #1565c0;
+            --info-light: #e3f2fd;
+            --background-color: #fafafa;
+            --surface-color: #ffffff;
+            --text-primary: #212121;
+            --text-secondary: #555555;
+            --text-muted: #757575;
+            --border-color: #e0e0e0;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --font-mono: 'Consolas', 'Monaco', 'Courier New', monospace;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-main);
+            font-size: 16px;
+            line-height: 1.7;
+            color: var(--text-primary);
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: var(--primary-color);
+            color: #ffffff;
+            padding: 8px 16px;
+            z-index: 1000;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .skip-link:focus {
+            top: 0;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: #ffffff;
+            padding: 2rem 1rem;
+            text-align: center;
+            position: relative;
+        }
+
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-color), var(--secondary-color), var(--accent-color));
+        }
+
+        .course-tag {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 0.25rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .assignment-type {
+            display: inline-block;
+            background: var(--accent-color);
+            color: #ffffff;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            margin: 0.5rem 0;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            margin-top: 0.5rem;
+        }
+
+        /* Progress Tracker */
+        .progress-container {
+            background: var(--surface-color);
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .progress-label {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .progress-text {
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .progress-bar {
+            width: 100%;
+            max-width: 800px;
+            height: 8px;
+            background: var(--border-color);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 0 auto;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
+            border-radius: 4px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        /* Main Content */
+        main {
+            padding: 2rem 0;
+        }
+
+        /* Section Styles */
+        .section {
+            background: var(--surface-color);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: 1.4rem;
+            margin: 0 0 1rem 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--accent-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        h3 {
+            color: var(--primary-dark);
+            font-size: 1.15rem;
+            margin: 1.5rem 0 0.75rem 0;
+        }
+
+        h4 {
+            color: var(--text-primary);
+            font-size: 1.05rem;
+            margin: 1.25rem 0 0.5rem 0;
+        }
+
+        p {
+            margin: 0 0 1rem 0;
+            color: var(--text-secondary);
+        }
+
+        /* Info Boxes */
+        .info-box {
+            border-radius: var(--radius-md);
+            padding: 1.25rem;
+            margin: 1rem 0;
+        }
+
+        .info-box.overview {
+            background: linear-gradient(135deg, var(--info-light) 0%, #f5f9ff 100%);
+            border: 1px solid #90caf9;
+            border-left: 4px solid var(--info-color);
+        }
+
+        .info-box.warning {
+            background: linear-gradient(135deg, var(--warning-light) 0%, #fffaf5 100%);
+            border: 1px solid #ffcc80;
+            border-left: 4px solid var(--warning-color);
+        }
+
+        .info-box.success {
+            background: linear-gradient(135deg, var(--success-light) 0%, #f5faf5 100%);
+            border: 1px solid #a5d6a7;
+            border-left: 4px solid var(--success-color);
+        }
+
+        .info-box.purple {
+            background: linear-gradient(135deg, #f3e5f5 0%, #faf5fc 100%);
+            border: 1px solid #ce93d8;
+            border-left: 4px solid #8e24aa;
+        }
+
+        .info-box h4 {
+            margin: 0 0 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .info-box.overview h4 { color: var(--info-color); }
+        .info-box.warning h4 { color: #e65100; }
+        .info-box.success h4 { color: var(--success-color); }
+        .info-box.purple h4 { color: #8e24aa; }
+
+        .info-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Meta Grid */
+        .meta-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .meta-item {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .meta-item .label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .meta-item .value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        /* Problem Cards */
+        .problem-card {
+            background: var(--surface-color);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .problem-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: #ffffff;
+            padding: 1rem 1.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .problem-number {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .problem-points {
+            background: rgba(255,255,255,0.2);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .problem-body {
+            padding: 1.25rem;
+        }
+
+        .problem-statement {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: var(--radius-sm);
+            border-left: 4px solid var(--primary-color);
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        /* Collapsible */
+        .collapsible {
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            margin: 0.75rem 0;
+            overflow: hidden;
+        }
+
+        .collapsible-header {
+            padding: 0.875rem 1rem;
+            background: #f8f9fa;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            color: var(--text-primary);
+            transition: background 0.2s ease;
+            border: none;
+            width: 100%;
+            text-align: left;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        .collapsible-header:hover {
+            background: #f0f4f8;
+        }
+
+        .collapsible-header:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: -2px;
+        }
+
+        .collapsible-icon {
+            transition: transform 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .collapsible.open .collapsible-icon {
+            transform: rotate(180deg);
+        }
+
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .collapsible.open .collapsible-content {
+            max-height: 2000px;
+        }
+
+        .collapsible-body {
+            padding: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        /* Code Blocks */
+        pre {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            overflow-x: auto;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin: 1rem 0;
+            white-space: pre;
+            word-wrap: normal;
+        }
+
+        code {
+            font-family: var(--font-mono);
+        }
+
+        :not(pre) > code {
+            background: #f5f5f5;
+            padding: 0.2rem 0.4rem;
+            border-radius: var(--radius-sm);
+            color: #c7254e;
+            font-size: 0.9em;
+        }
+
+        /* Math Display */
+        .math-display {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            text-align: center;
+            font-size: 1.1rem;
+            margin: 1rem 0;
+            border: 1px solid var(--border-color);
+            font-family: var(--font-mono);
+            overflow-x: auto;
+        }
+
+        /* Checklist */
+        .checklist {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0;
+        }
+
+        .checklist li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: #f8f9fa;
+            border-radius: var(--radius-sm);
+            margin-bottom: 0.5rem;
+            border: 1px solid var(--border-color);
+            transition: all 0.2s ease;
+        }
+
+        .checklist li:hover {
+            background: #f0f4f8;
+        }
+
+        .checklist input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-top: 2px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .checklist label {
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .checklist li.completed {
+            background: var(--success-light);
+            border-color: var(--success-color);
+        }
+
+        .checklist li.completed label {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+
+        /* Rubric Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.95rem;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border-color);
+        }
+
+        th {
+            background: var(--primary-color);
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        tr:hover {
+            background: #f0f4f8;
+        }
+
+        /* Buttons */
+        button, .btn {
+            font-family: var(--font-main);
+            font-size: 1rem;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: #ffffff;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary:focus {
+            outline: 3px solid var(--primary-light);
+            outline-offset: 2px;
+        }
+
+        .btn-secondary {
+            background: var(--secondary-color);
+            color: #ffffff;
+        }
+
+        .btn-secondary:hover {
+            background: #456b64;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        /* Tips List */
+        .tips-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .tips-list li {
+            padding: 0.5rem 0 0.5rem 1.75rem;
+            position: relative;
+        }
+
+        .tips-list li::before {
+            content: '💡';
+            position: absolute;
+            left: 0;
+        }
+
+        /* Requirements List */
+        .req-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .req-list li {
+            padding: 0.5rem 0 0.5rem 1.75rem;
+            position: relative;
+        }
+
+        .req-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--success-color);
+            font-weight: 700;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--primary-dark);
+            color: #ffffff;
+            padding: 1.5rem;
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        footer p {
+            color: rgba(255,255,255,0.9);
+            margin: 0.25rem 0;
+            font-size: 0.95rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            h2 {
+                font-size: 1.25rem;
+            }
+
+            .section {
+                padding: 1rem;
+            }
+
+            .meta-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .btn-group button, .btn-group .btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            .progress-container, .collapsible-header, footer {
+                display: none;
+            }
+
+            .collapsible-content {
+                max-height: none !important;
+            }
+
+            .section {
+                break-inside: avoid;
+                box-shadow: none;
+                border: 1px solid #ccc;
+            }
+        }
+
+        /* Focus Visible */
+        *:focus-visible {
+            outline: 3px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        /* Reduced Motion */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+            html {
+                scroll-behavior: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <header>
+        <div class="container">
+            <span class="course-tag">CSC 240 - Discrete Structures</span>
+            <div class="assignment-type">Written Assignment</div>
+            <h1>WA-06: Proof by Contradiction and Mathematical Induction</h1>
+            <p class="subtitle">Week 6 Written Assignment</p>
+        </div>
+    </header>
+
+    <div class="progress-container">
+        <div class="progress-header">
+            <span class="progress-label">Preparation Progress</span>
+            <span class="progress-text" id="progress-text">0%</span>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill"></div>
+        </div>
+    </div>
+
+    <main id="main-content">
+        <div class="container">
+            <!-- Overview Section -->
+            <section class="section" id="overview">
+                <h2>📋 Assignment Overview</h2>
+                
+                <div class="info-box overview">
+                    <h4>📌 Purpose</h4>
+                    <p>This assignment assesses your ability to construct formal mathematical proofs using two powerful techniques: proof by contradiction and mathematical induction. You will demonstrate mastery of the logical foundations and proof structures covered in Week 6.</p>
+                </div>
+
+                <div class="meta-grid">
+                    <div class="meta-item">
+                        <span class="label">Due Date</span>
+                        <span class="value">End of Week 6</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="label">Total Points</span>
+                        <span class="value">100 points</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="label">Problems</span>
+                        <span class="value">6 Problems</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="label">Est. Time</span>
+                        <span class="value">3-4 hours</span>
+                    </div>
+                </div>
+
+                <h3>Learning Outcomes Assessed</h3>
+                <ul class="req-list">
+                    <li><strong>CSLO 1:</strong> Apply symbolic logic and proof methods to model and analyze program/algorithm correctness</li>
+                    <li><strong>CSLO 4:</strong> Explain the relationship between mathematical induction and recursion/recurrence equations</li>
+                </ul>
+            </section>
+
+            <!-- Problems Section -->
+            <section class="section" id="problems">
+                <h2>📝 Assignment Problems</h2>
+
+                <div class="info-box warning">
+                    <h4>⚠️ Important Instructions</h4>
+                    <p>For each proof, you must use the specified proof technique. Show all steps clearly, state your assumptions explicitly, and follow the standard proof templates from the learning modules. Partial credit is available for correct reasoning with minor errors.</p>
+                </div>
+
+                <!-- Part A: Proof by Contradiction -->
+                <h3>Part A: Proof by Contradiction (40 points)</h3>
+
+                <!-- Problem 1 -->
+                <div class="problem-card">
+                    <div class="problem-header">
+                        <span class="problem-number">Problem 1</span>
+                        <span class="problem-points">15 points</span>
+                    </div>
+                    <div class="problem-body">
+                        <div class="problem-statement">
+                            Prove by contradiction: √3 is irrational.
+                        </div>
+                        
+                        <div class="collapsible">
+                            <button class="collapsible-header" onclick="toggleCollapsible(this)" aria-expanded="false">
+                                <span>📖 Hints and Guidance</span>
+                                <span class="collapsible-icon">▼</span>
+                            </button>
+                            <div class="collapsible-content">
+                                <div class="collapsible-body">
+                                    <ul class="tips-list">
+                                        <li>Follow the same structure as the √2 irrationality proof from Module 6.2</li>
+                                        <li>Assume √3 = a/b where gcd(a,b) = 1 (lowest terms)</li>
+                                        <li>You'll need to prove: if 3 | n², then 3 | n</li>
+                                        <li>The contradiction arises when both a and b are divisible by 3</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="collapsible">
+                            <button class="collapsible-header" onclick="toggleCollapsible(this)" aria-expanded="false">
+                                <span>✅ Grading Criteria</span>
+                                <span class="collapsible-icon">▼</span>
+                            </button>
+                            <div class="collapsible-content">
+                                <div class="collapsible-body">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Criterion</th>
+                                                <th>Points</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Correct assumption setup (√3 = a/b in lowest terms)</td>
+                                                <td>3</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Correct algebraic manipulation (3b² = a²)</td>
+                                                <td>3</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Proves 3|a² implies 3|a (with justification)</td>
+                                                <td>4</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Shows both a and b divisible by 3</td>
+                                                <td>3</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Clear statement of contradiction and conclusion</td>
+                                                <td>2</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Problem 2 -->
+                <div class="problem-card">
+                    <div class="problem-header">
+                        <span class="problem-number">Problem 2</span>
+                        <span class="problem-points">12 points</span>
+                    </div>
+                    <div class="problem-body">
+                        <div class="problem-statement">
+                            Prove by contradiction: There is no largest even integer.
+                        </div>
+                        
+                        <div class="collapsible">
+                            <button class="collapsible-header" onclick="toggleCollapsible(this)" aria-expanded="false">
+                                <span>📖 Hints and Guidance</span>
+                                <span class="collapsible-icon">▼</span>
+                            </button>
+                            <div class="collapsible-content">
+                                <div class="collapsible-body">
+                                    <ul class="tips-list">
+                                        <li>Assume there exists a largest even integer N</li>
+                                        <li>Construct a larger even integer from N</li>
+                                        <li>Consider N + 2 and show it's even and larger than N</li>
+                                        <li>This contradicts N being the largest</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Problem 3 -->
+                <div class="problem-card">
+                    <div class="problem-header">
+                        <span class="problem-number">Problem 3</span>
+                        <span class="problem-points">13 points</span>
+                    </div>
+                    <div class="problem-body">
+                        <div class="problem-statement">
+                            Prove by contradiction: If n² is odd, then n is odd.
+                        </div>
+                        
+                        <div class="collapsible">
+                            <button class="collapsible-header" onclick="toggleCollapsible(this)" aria-expanded="false">
+                                <span>📖 Hints and Guidance</span>
+                                <span class="collapsible-icon">▼</span>
+                            </button>
+                            <div class="collapsible-content">
+                                <div class="collapsible-body">
+                                    <ul class="tips-list">
+                                        <li>This can also be done by contrapositive, but use contradiction as specified</li>
+                                        <li>Assume n² is odd AND n is even</li>
+                                        <li>If n is even, write n = 2k and compute n²</li>
+                                        <li>Show n² must be even, contradicting the assumption</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Part B: Mathematical Induction -->
+                <h3>Part B: Mathematical Induction (60 points)</h3>
+
+                <!-- Problem 4 -->
+                <div class="problem-card">
+                    <div class="problem-header">
+                        <span class="problem-number">Problem 4</span>
+                        <span class="problem-points">20 points</span>
+                    </div>
+                    <div class="problem-body">
+                        <div class="problem-statement">
+                            Prove by mathematical induction: For all n ≥ 1,
+                            <div class="math-display">
+                                1² + 2² + 3² + ... + n² = n(n+1)(2n+1)/6
+                            </div>
+                        </div>
+                        
+                        <div class="collapsible">
+                            <button class="collapsible-header" onclick="toggleCollapsible(this)" aria-expanded="false">
+                                <span>📖 Hints and Guidance</span>
+                                <span class="collapsible-icon">▼</span>
+                            </button>
+                            <div class="collapsible-content">
+                                <div class="collapsible-body">
+                                    <ul class="tips-list">
+                                        <li>Base case: Verify for n = 1 that 1² = 1(2)(3)/6</li>
+                                        <li>Inductive step: Assume true for k, prove for k+1</li>
+                                        <li>Split: (sum to k+1) = (sum to k) + (k+1)²</li>
+                                        <li>Apply IH to replace sum to k with k(k+1)(2k+1)/6</li>
+                                        <li>Find common denominator and factor to get (k+1)(k+2)(2k+3)/6</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="collapsible">
+                            <button class="collapsible-header" onclick="toggleCollapsible(this)" aria-expanded="false">
+                                <span>✅ Grading Criteria</span>
+                                <span class="collapsible-icon">▼</span>
+                            </button>
+                            <div class="collapsible-content">
+                                <div class="collapsible-body">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Criterion</th>
+                                                <th>Points</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Correct base case verification</td>
+                                                <td>4</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Clear statement of inductive hypothesis</td>
+                                                <td>3</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Correct setup of what to prove (P(k+1))</td>
+                                                <td>3</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Correctly applies IH in derivation</td>
+                                                <td>4</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Correct algebraic manipulation</td>
+                                                <td>4</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Clear conclusion citing induction</td>
+                                                <td>2</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Problem 5 -->
+                <div class="problem-card">
+                    <div class="problem-header">
+                        <span class="problem-number">Problem 5</span>
+                        <span class="problem-points">20 points</span>
+                    </div>
+                    <div class="problem-body">
+                        <div class="problem-statement">
+                            Prove by mathematical induction: For all n ≥ 0, 5 divides (6ⁿ - 1).
+                        </div>
+                        
+                        <div class="collapsible">
+                            <button class="collapsible-header" onclick="toggleCollapsible(this)" aria-expanded="false">
+                                <span>📖 Hints and Guidance</span>
+                                <span class="collapsible-icon">▼</span>
+                            </button>
+                            <div class="collapsible-content">
+                                <div class="collapsible-body">
+                                    <ul class="tips-list">
+                                        <li>Base case: Check that 5 | (6⁰ - 1) = 5 | 0</li>
+                                        <li>Inductive hypothesis: 5 | (6ᵏ - 1), so 6ᵏ - 1 = 5m for some integer m</li>
+                                        <li>Key manipulation: 6ᵏ⁺¹ - 1 = 6·6ᵏ - 1 = 6·6ᵏ - 6 + 5 = 6(6ᵏ - 1) + 5</li>
+                                        <li>Apply IH and factor out 5</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Problem 6 -->
+                <div class="problem-card">
+                    <div class="problem-header">
+                        <span class="problem-number">Problem 6</span>
+                        <span class="problem-points">20 points</span>
+                    </div>
+                    <div class="problem-body">
+                        <div class="problem-statement">
+                            Prove by mathematical induction: For all n ≥ 1, 2ⁿ > n.
+                        </div>
+                        
+                        <div class="collapsible">
+                            <button class="collapsible-header" onclick="toggleCollapsible(this)" aria-expanded="false">
+                                <span>📖 Hints and Guidance</span>
+                                <span class="collapsible-icon">▼</span>
+                            </button>
+                            <div class="collapsible-content">
+                                <div class="collapsible-body">
+                                    <ul class="tips-list">
+                                        <li>Base case: Verify 2¹ > 1</li>
+                                        <li>Inductive hypothesis: Assume 2ᵏ > k for some k ≥ 1</li>
+                                        <li>Goal: Show 2ᵏ⁺¹ > k + 1</li>
+                                        <li>Key insight: 2ᵏ⁺¹ = 2·2ᵏ > 2k (by IH)</li>
+                                        <li>Show 2k ≥ k + 1 when k ≥ 1</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Submission Requirements -->
+            <section class="section" id="submission">
+                <h2>📤 Submission Requirements</h2>
+
+                <div class="info-box purple">
+                    <h4>📄 Format Requirements</h4>
+                    <ul class="req-list">
+                        <li>Submit as a single PDF document</li>
+                        <li>Handwritten work must be neat and legible (scan or photograph clearly)</li>
+                        <li>Typed submissions should use proper mathematical notation</li>
+                        <li>Each problem should start on a new page or be clearly separated</li>
+                        <li>Include your name and student ID on the first page</li>
+                    </ul>
+                </div>
+
+                <h3>Proof Writing Checklist</h3>
+                <p>Use this checklist to ensure your proofs are complete:</p>
+
+                <ul class="checklist" id="proof-checklist">
+                    <li>
+                        <input type="checkbox" id="check-1" onchange="updateProgress()">
+                        <label for="check-1">Each proof clearly states the technique being used</label>
+                    </li>
+                    <li>
+                        <input type="checkbox" id="check-2" onchange="updateProgress()">
+                        <label for="check-2">Contradiction proofs: Assumption is clearly stated at the beginning</label>
+                    </li>
+                    <li>
+                        <input type="checkbox" id="check-3" onchange="updateProgress()">
+                        <label for="check-3">Contradiction proofs: The contradiction is explicitly identified</label>
+                    </li>
+                    <li>
+                        <input type="checkbox" id="check-4" onchange="updateProgress()">
+                        <label for="check-4">Induction proofs: Base case is verified with explicit calculation</label>
+                    </li>
+                    <li>
+                        <input type="checkbox" id="check-5" onchange="updateProgress()">
+                        <label for="check-5">Induction proofs: Inductive hypothesis is clearly stated</label>
+                    </li>
+                    <li>
+                        <input type="checkbox" id="check-6" onchange="updateProgress()">
+                        <label for="check-6">Induction proofs: What needs to be proven (P(k+1)) is stated</label>
+                    </li>
+                    <li>
+                        <input type="checkbox" id="check-7" onchange="updateProgress()">
+                        <label for="check-7">Induction proofs: IH is explicitly used and labeled in the derivation</label>
+                    </li>
+                    <li>
+                        <input type="checkbox" id="check-8" onchange="updateProgress()">
+                        <label for="check-8">All algebraic steps are shown and justified</label>
+                    </li>
+                    <li>
+                        <input type="checkbox" id="check-9" onchange="updateProgress()">
+                        <label for="check-9">Each proof has a clear conclusion with ∎ or Q.E.D.</label>
+                    </li>
+                    <li>
+                        <input type="checkbox" id="check-10" onchange="updateProgress()">
+                        <label for="check-10">Work is neat, organized, and easy to follow</label>
+                    </li>
+                </ul>
+            </section>
+
+            <!-- Grading Rubric -->
+            <section class="section" id="rubric">
+                <h2>📊 Overall Grading Rubric</h2>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th>Points</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Part A: Contradiction</strong></td>
+                            <td>40</td>
+                            <td>Problems 1-3</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Part B: Induction</strong></td>
+                            <td>60</td>
+                            <td>Problems 4-6</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Total</strong></td>
+                            <td><strong>100</strong></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="info-box success">
+                    <h4>📈 Grading Standards</h4>
+                    <ul>
+                        <li><strong>A (90-100):</strong> All proofs are correct, complete, and well-written</li>
+                        <li><strong>B (80-89):</strong> Most proofs correct with minor errors or omissions</li>
+                        <li><strong>C (70-79):</strong> Demonstrates understanding but has significant gaps</li>
+                        <li><strong>D (60-69):</strong> Partial understanding with major errors</li>
+                        <li><strong>F (below 60):</strong> Does not demonstrate required competencies</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Resources -->
+            <section class="section" id="resources">
+                <h2>📚 Helpful Resources</h2>
+
+                <h3>Review Materials</h3>
+                <ul class="tips-list">
+                    <li><strong>Module 6.1-6.2:</strong> Proof by contradiction foundations and examples</li>
+                    <li><strong>Module 6.3-6.5:</strong> Mathematical induction principles and applications</li>
+                    <li><strong>Book of Proof (Hammack):</strong> Chapters 6 and 10</li>
+                    <li><strong>Saylor CS202:</strong> Unit 4.3-4.4</li>
+                </ul>
+
+                <h3>Common Mistakes to Avoid</h3>
+                <div class="info-box warning">
+                    <h4>⚠️ Watch Out For:</h4>
+                    <ul>
+                        <li><strong>Contradiction:</strong> Forgetting to state the assumption at the beginning</li>
+                        <li><strong>Contradiction:</strong> Not clearly identifying what the contradiction is</li>
+                        <li><strong>Induction:</strong> Skipping the base case or not verifying it explicitly</li>
+                        <li><strong>Induction:</strong> Not using the inductive hypothesis in your proof</li>
+                        <li><strong>Induction:</strong> Confusing what you're assuming (P(k)) with what you're proving (P(k+1))</li>
+                        <li><strong>Both:</strong> Skipping algebraic steps that are crucial to the argument</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Academic Integrity -->
+            <section class="section" id="integrity">
+                <h2>⚖️ Academic Integrity</h2>
+
+                <div class="info-box warning">
+                    <h4>📜 Honor Code Reminder</h4>
+                    <p>This assignment must be your own work. You may:</p>
+                    <ul>
+                        <li>Review course materials and textbooks</li>
+                        <li>Discuss general concepts with classmates</li>
+                        <li>Ask the instructor for clarification</li>
+                    </ul>
+                    <p><strong>You may NOT:</strong></p>
+                    <ul>
+                        <li>Copy proofs from any source (including online)</li>
+                        <li>Share your written work with classmates</li>
+                        <li>Use AI tools to generate proofs</li>
+                        <li>Submit work that is not your own</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Final Checklist -->
+            <section class="section" id="final">
+                <h2>✅ Ready to Submit?</h2>
+
+                <p>Before submitting, verify:</p>
+
+                <ul class="checklist" id="final-checklist">
+                    <li>
+                        <input type="checkbox" id="final-1" onchange="updateProgress()">
+                        <label for="final-1">All 6 problems are completed</label>
+                    </li>
+                    <li>
+                        <input type="checkbox" id="final-2" onchange="updateProgress()">
+                        <label for="final-2">Each proof uses the specified technique</label>
+                    </li>
+                    <li>
+                        <input type="checkbox" id="final-3" onchange="updateProgress()">
+                        <label for="final-3">Work is organized and clearly presented</label>
+                    </li>
+                    <li>
+                        <input type="checkbox" id="final-4" onchange="updateProgress()">
+                        <label for="final-4">Name and student ID are included</label>
+                    </li>
+                    <li>
+                        <input type="checkbox" id="final-5" onchange="updateProgress()">
+                        <label for="final-5">Document is saved as PDF</label>
+                    </li>
+                </ul>
+
+                <div class="btn-group">
+                    <button class="btn-primary" onclick="window.print()">🖨️ Print Assignment</button>
+                    <button class="btn-secondary" onclick="resetProgress()">🔄 Reset Checklist</button>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p><strong>CSC 240 - Discrete Structures</strong></p>
+            <p>-06: Proof by Contradiction and Mathematical Induction</p>
+            <p>Mendocino College | Spring 2026</p>
+        </div>
+    </footer>
+
+    <script>
+        // Collapsible functionality
+        function toggleCollapsible(button) {
+            const collapsible = button.closest('.collapsible');
+            const isOpen = collapsible.classList.contains('open');
+            collapsible.classList.toggle('open');
+            button.setAttribute('aria-expanded', !isOpen);
+        }
+
+        // Progress tracking
+        function updateProgress() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            const checked = document.querySelectorAll('input[type="checkbox"]:checked');
+            const percentage = Math.round((checked.length / checkboxes.length) * 100);
+
+            document.getElementById('progress-fill').style.width = percentage + '%';
+            document.getElementById('progress-text').textContent = percentage + '%';
+
+            // Update completed styling
+            checkboxes.forEach(cb => {
+                const li = cb.closest('li');
+                if (li) {
+                    li.classList.toggle('completed', cb.checked);
+                }
+            });
+
+            // Save to session storage
+            const states = {};
+            checkboxes.forEach(cb => {
+                states[cb.id] = cb.checked;
+            });
+            sessionStorage.setItem('wa06Progress', JSON.stringify(states));
+        }
+
+        function loadProgress() {
+            const saved = sessionStorage.getItem('wa06Progress');
+            if (saved) {
+                const states = JSON.parse(saved);
+                Object.keys(states).forEach(id => {
+                    const cb = document.getElementById(id);
+                    if (cb) {
+                        cb.checked = states[id];
+                        const li = cb.closest('li');
+                        if (li) {
+                            li.classList.toggle('completed', states[id]);
+                        }
+                    }
+                });
+                updateProgress();
+            }
+        }
+
+        function resetProgress() {
+            if (confirm('Are you sure you want to reset all checklist items?')) {
+                const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+                checkboxes.forEach(cb => {
+                    cb.checked = false;
+                    const li = cb.closest('li');
+                    if (li) {
+                        li.classList.remove('completed');
+                    }
+                });
+                sessionStorage.removeItem('wa06Progress');
+                updateProgress();
+            }
+        }
+
+        // Keyboard support for collapsibles
+        document.addEventListener('keydown', function(e) {
+            if (e.target.classList.contains('collapsible-header')) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    toggleCollapsible(e.target);
+                }
+            }
+        });
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', loadProgress);
+    </script>
+</body>
+</html>
