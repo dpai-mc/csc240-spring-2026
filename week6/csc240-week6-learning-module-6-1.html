@@ -883,31 +883,98 @@
             cursor: pointer;
         }
 
-        /* Step-by-Step Reveal */
-        .step-reveal {
+        /* Step-by-Step Accordions */
+        .step-accordion {
             margin: 1.5rem 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
         }
 
-        .step-item {
+        .step-accordion-item {
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            transition: border-color 0.2s ease;
+        }
+
+        .step-accordion-item[open] {
+            border-color: var(--primary-color);
+        }
+
+        .step-accordion-item summary {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.875rem 1.25rem;
             background: #f8f9fa;
-            border-left: 4px solid var(--border-color);
-            padding: 1rem 1.25rem;
-            margin: 0.5rem 0;
-            border-radius: 0 var(--radius-md) var(--radius-md) 0;
-            opacity: 0.5;
-            transition: all 0.3s ease;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-primary);
+            list-style: none;
+            user-select: none;
+            transition: background 0.2s ease;
         }
 
-        .step-item.revealed {
-            opacity: 1;
-            border-left-color: var(--primary-color);
-            background: #ffffff;
+        .step-accordion-item summary::-webkit-details-marker {
+            display: none;
         }
 
-        .step-number {
+        .step-accordion-item summary:hover {
+            background: #f0f4f8;
+        }
+
+        .step-accordion-item[open] summary {
+            background: var(--primary-color);
+            color: #ffffff;
+        }
+
+        .step-accordion-item summary:focus-visible {
+            outline: 3px solid var(--primary-color);
+            outline-offset: -3px;
+        }
+
+        .step-accordion-item[open] summary:focus-visible {
+            outline-color: #ffffff;
+        }
+
+        .step-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: #ffffff;
+            font-size: 0.85rem;
             font-weight: 700;
-            color: var(--primary-color);
-            margin-right: 0.5rem;
+            flex-shrink: 0;
+        }
+
+        .step-accordion-item[open] .step-badge {
+            background: rgba(255,255,255,0.25);
+        }
+
+        .step-chevron {
+            margin-left: auto;
+            font-size: 0.8rem;
+            transition: transform 0.25s ease;
+            flex-shrink: 0;
+        }
+
+        .step-accordion-item[open] .step-chevron {
+            transform: rotate(180deg);
+        }
+
+        .step-accordion-body {
+            padding: 1rem 1.25rem;
+            background: #ffffff;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .step-accordion-body p:last-child {
+            margin-bottom: 0;
         }
 
         /* Completion Checkboxes */
@@ -1613,59 +1680,85 @@
 
             <h3>Step-by-Step Analysis</h3>
 
-            <div class="step-reveal" id="example1-steps">
-                <div class="step-item revealed">
-                    <span class="step-number">Step 1:</span>
-                    <strong>Understand the statement.</strong>
-                    <p>We need to prove that no integer can be the largest. In other words, for every integer, there exists a larger one.</p>
-                </div>
+            <div class="step-accordion" id="example1-steps">
 
-                <div class="step-item">
-                    <span class="step-number">Step 2:</span>
-                    <strong>Form the negation.</strong>
-                    <p>The negation of "there is no largest integer" is "there exists a largest integer."</p>
-                    <p>This gives us something concrete: we can name this supposed largest integer and call it N.</p>
-                </div>
+                <details class="step-accordion-item" open>
+                    <summary>
+                        <span class="step-badge">1</span>
+                        Understand the statement
+                        <span class="step-chevron">▼</span>
+                    </summary>
+                    <div class="step-accordion-body">
+                        <p>We need to prove that no integer can be the largest. In other words, for every integer, there exists a larger one.</p>
+                    </div>
+                </details>
 
-                <div class="step-item">
-                    <span class="step-number">Step 3:</span>
-                    <strong>Set up the assumption.</strong>
-                    <p><em>Suppose, for the sake of contradiction, that there exists a largest integer N.</em></p>
-                    <p>This means: for all integers m, we have m ≤ N.</p>
-                </div>
+                <details class="step-accordion-item">
+                    <summary>
+                        <span class="step-badge">2</span>
+                        Form the negation
+                        <span class="step-chevron">▼</span>
+                    </summary>
+                    <div class="step-accordion-body">
+                        <p>The negation of "there is no largest integer" is "there exists a largest integer."</p>
+                        <p>This gives us something concrete: we can name this supposed largest integer and call it N.</p>
+                    </div>
+                </details>
 
-                <div class="step-item">
-                    <span class="step-number">Step 4:</span>
-                    <strong>Derive consequences.</strong>
-                    <p>Consider the number N + 1.</p>
-                    <ul>
-                        <li>Since N is an integer, N + 1 is also an integer (closure property)</li>
-                        <li>By basic arithmetic, N + 1 > N</li>
-                    </ul>
-                </div>
+                <details class="step-accordion-item">
+                    <summary>
+                        <span class="step-badge">3</span>
+                        Set up the assumption
+                        <span class="step-chevron">▼</span>
+                    </summary>
+                    <div class="step-accordion-body">
+                        <p><em>Suppose, for the sake of contradiction, that there exists a largest integer N.</em></p>
+                        <p>This means: for all integers m, we have m ≤ N.</p>
+                    </div>
+                </details>
 
-                <div class="step-item">
-                    <span class="step-number">Step 5:</span>
-                    <strong>Identify the contradiction.</strong>
-                    <p>We have:</p>
-                    <ul>
-                        <li>N is the largest integer (our assumption)</li>
-                        <li>N + 1 is an integer larger than N (what we derived)</li>
-                    </ul>
-                    <p>These cannot both be true. This is a contradiction!</p>
-                </div>
+                <details class="step-accordion-item">
+                    <summary>
+                        <span class="step-badge">4</span>
+                        Derive consequences
+                        <span class="step-chevron">▼</span>
+                    </summary>
+                    <div class="step-accordion-body">
+                        <p>Consider the number N + 1.</p>
+                        <ul>
+                            <li>Since N is an integer, N + 1 is also an integer (closure property)</li>
+                            <li>By basic arithmetic, N + 1 &gt; N</li>
+                        </ul>
+                    </div>
+                </details>
 
-                <div class="step-item">
-                    <span class="step-number">Step 6:</span>
-                    <strong>State the conclusion.</strong>
-                    <p>Since our assumption led to a contradiction, the assumption must be false. Therefore, there is no largest integer. ∎</p>
-                </div>
-            </div>
+                <details class="step-accordion-item">
+                    <summary>
+                        <span class="step-badge">5</span>
+                        Identify the contradiction
+                        <span class="step-chevron">▼</span>
+                    </summary>
+                    <div class="step-accordion-body">
+                        <p>We have:</p>
+                        <ul>
+                            <li>N is the largest integer (our assumption)</li>
+                            <li>N + 1 is an integer larger than N (what we derived)</li>
+                        </ul>
+                        <p>These cannot both be true. This is a contradiction!</p>
+                    </div>
+                </details>
 
-            <div class="btn-group">
-                <button class="btn-primary" onclick="revealNextStep('example1-steps')">Reveal Next Step</button>
-                <button class="btn-secondary" onclick="revealAllSteps('example1-steps')">Show All Steps</button>
-                <button class="btn-reset" onclick="resetSteps('example1-steps')">Reset</button>
+                <details class="step-accordion-item">
+                    <summary>
+                        <span class="step-badge">6</span>
+                        State the conclusion
+                        <span class="step-chevron">▼</span>
+                    </summary>
+                    <div class="step-accordion-body">
+                        <p>Since our assumption led to a contradiction, the assumption must be false. Therefore, there is no largest integer. ∎</p>
+                    </div>
+                </details>
+
             </div>
 
             <h3>The Complete Proof (Written Form)</h3>
@@ -2582,33 +2675,6 @@
             document.getElementById('blanks-feedback').className = 'feedback';
         }
 
-        // ==================== Step Reveal ====================
-        function revealNextStep(containerId) {
-            const container = document.getElementById(containerId);
-            const steps = container.querySelectorAll('.step-item:not(.revealed)');
-            if (steps.length > 0) {
-                steps[0].classList.add('revealed');
-            }
-        }
-
-        function revealAllSteps(containerId) {
-            const container = document.getElementById(containerId);
-            const steps = container.querySelectorAll('.step-item');
-            steps.forEach(step => step.classList.add('revealed'));
-        }
-
-        function resetSteps(containerId) {
-            const container = document.getElementById(containerId);
-            const steps = container.querySelectorAll('.step-item');
-            steps.forEach((step, index) => {
-                if (index === 0) {
-                    step.classList.add('revealed');
-                } else {
-                    step.classList.remove('revealed');
-                }
-            });
-        }
-
         // ==================== Collapsible Sections ====================
         function toggleCollapsible(header) {
             const collapsible = header.closest('.collapsible');
@@ -2731,14 +2797,6 @@
         // ==================== Initialize ====================
         document.addEventListener('DOMContentLoaded', function() {
             loadProgress();
-
-            // Initialize first step as revealed
-            document.querySelectorAll('.step-reveal').forEach(container => {
-                const firstStep = container.querySelector('.step-item');
-                if (firstStep) {
-                    firstStep.classList.add('revealed');
-                }
-            });
         });
     </script>
 </body>
