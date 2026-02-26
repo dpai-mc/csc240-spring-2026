@@ -1,0 +1,2108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSC 240 Week 6: Proof Techniques II — Contradiction and Induction Introduction</title>
+    <style>
+        /* ===== CSS RESET & BASE ===== */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #667eea;
+            --primary-dark: #5a6fd6;
+            --secondary: #764ba2;
+            --accent: #ff6b6b;
+            --accent-green: #4caf50;
+            --accent-blue: #2196f3;
+            --accent-gold: #ffd700;
+            --surface: #ffffff;
+            --surface-alt: #f8f9fa;
+            --border: #e0e0e0;
+            --text-primary: #1a1a2e;
+            --text-secondary: #555;
+            --text-muted: #777;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+            --shadow-md: 0 4px 20px rgba(102,126,234,0.15);
+            --shadow-lg: 0 10px 40px rgba(0,0,0,0.15);
+            --radius: 10px;
+            --radius-lg: 16px;
+            --transition: 0.25s ease;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.65;
+            color: var(--text-primary);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        /* ===== SKIP LINK ===== */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: var(--primary);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 0 0 var(--radius) 0;
+            text-decoration: none;
+            font-weight: 600;
+            z-index: 999;
+            transition: top var(--transition);
+        }
+        .skip-link:focus {
+            top: 0;
+        }
+
+        /* ===== CONTAINER ===== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+        }
+
+        /* ===== HEADER ===== */
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .header-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.35);
+            color: white;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+        }
+
+        header h1 {
+            font-size: 2.4rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 1px 2px 6px rgba(0,0,0,0.25);
+            line-height: 1.25;
+        }
+
+        header .subtitle {
+            font-size: 1.1rem;
+            color: #ffffff;
+            font-weight: 600;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.25);
+            margin-bottom: 6px;
+        }
+
+        header .course-info {
+            font-size: 0.95rem;
+            opacity: 0.88;
+        }
+
+        /* ===== WEEK INFO BAR ===== */
+        .week-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px;
+            padding: 24px 30px;
+            background: var(--surface-alt);
+            border-bottom: 3px solid var(--primary);
+        }
+
+        .info-card {
+            background: white;
+            padding: 18px 16px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            text-align: center;
+            transition: transform var(--transition), box-shadow var(--transition);
+            border-top: 3px solid var(--primary);
+        }
+
+        .info-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .info-card h3 {
+            color: var(--primary);
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .info-card p {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* ===== STICKY NAV ===== */
+        .page-nav {
+            background: var(--primary-dark);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            border-bottom: 3px solid var(--accent-gold);
+        }
+
+        .page-nav-inner {
+            max-width: 100%;
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .page-nav-inner::-webkit-scrollbar { display: none; }
+
+        .page-nav a {
+            color: rgba(255,255,255,0.82);
+            text-decoration: none;
+            font-size: 0.82rem;
+            font-weight: 500;
+            padding: 0.7rem 0.75rem;
+            white-space: nowrap;
+            transition: color var(--transition), border-color var(--transition);
+            border-bottom: 2px solid transparent;
+            flex-shrink: 0;
+        }
+
+        .page-nav a:hover,
+        .page-nav a.active {
+            color: #ffffff;
+            border-bottom-color: var(--accent-gold);
+        }
+
+        .page-nav a:focus-visible {
+            outline: 2px solid var(--accent-gold);
+            outline-offset: -2px;
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .content {
+            padding: 40px 40px;
+        }
+
+        .section {
+            margin-bottom: 48px;
+        }
+
+        .section h2 {
+            color: var(--primary);
+            font-size: 1.65rem;
+            margin-bottom: 18px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section h2 .section-icon {
+            font-size: 1.4rem;
+            flex-shrink: 0;
+        }
+
+        /* ===== CSLO BADGES ===== */
+        .cslo-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: var(--accent);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            margin: 3px 3px 3px 0;
+        }
+
+        .cslo-box {
+            background: #fff5f5;
+            border-left: 5px solid var(--accent);
+            padding: 20px 24px;
+            border-radius: 0 var(--radius) var(--radius) 0;
+            margin-bottom: 16px;
+        }
+
+        .cslo-box h3 {
+            color: var(--accent);
+            font-size: 1rem;
+            margin-bottom: 8px;
+        }
+
+        .cslo-box p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* ===== OBJECTIVES ===== */
+        .objectives-group {
+            margin-bottom: 24px;
+        }
+
+        .objectives-group h3 {
+            color: var(--secondary);
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            padding: 8px 14px;
+            background: linear-gradient(135deg, #f5f0ff, #ede9fe);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .objectives-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .objectives-list li {
+            padding: 10px 14px 10px 42px;
+            margin: 7px 0;
+            background: var(--surface-alt);
+            border-left: 4px solid var(--primary);
+            border-radius: 0 var(--radius) var(--radius) 0;
+            transition: all var(--transition);
+            position: relative;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+        }
+
+        .objectives-list li::before {
+            content: "✓";
+            position: absolute;
+            left: 14px;
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .objectives-list li:hover {
+            background: #ede9fe;
+            transform: translateX(4px);
+            border-left-color: var(--secondary);
+        }
+
+        /* ===== PREREQUISITES ===== */
+        .prereq-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 14px;
+            margin-top: 16px;
+        }
+
+        .prereq-card {
+            background: #f0f7ff;
+            border: 1px solid #c8deff;
+            border-radius: var(--radius);
+            padding: 16px 18px;
+            transition: all var(--transition);
+        }
+
+        .prereq-card:hover {
+            background: #e0f0ff;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .prereq-card strong {
+            display: block;
+            color: var(--accent-blue);
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .prereq-card span {
+            color: var(--text-secondary);
+            font-size: 0.88rem;
+        }
+
+        /* ===== MODULE CARDS ===== */
+        .modules-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 18px;
+            margin-top: 20px;
+        }
+
+        .module-card {
+            border: 2px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: all var(--transition);
+            background: white;
+        }
+
+        .module-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary);
+        }
+
+        .module-card-header {
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .module-card-header:focus-visible {
+            outline: 3px solid var(--primary);
+            outline-offset: -3px;
+        }
+
+        .module-card.contradiction .module-card-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .module-card.induction .module-card-header {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
+        }
+
+        .module-card.cs-connections .module-card-header {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            color: white;
+        }
+
+        .module-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .module-num {
+            background: rgba(255,255,255,0.25);
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .module-card-header h3 {
+            font-size: 0.98rem;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        .module-card-header .time-badge {
+            background: rgba(255,255,255,0.22);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .module-chevron {
+            font-size: 0.9rem;
+            transition: transform 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .module-card.open .module-chevron {
+            transform: rotate(180deg);
+        }
+
+        .module-card-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s ease;
+        }
+
+        .module-card.open .module-card-body {
+            max-height: 600px;
+        }
+
+        .module-card-content {
+            padding: 18px 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .module-card-content .cslo-tag {
+            display: inline-block;
+            background: #ede9fe;
+            color: var(--secondary);
+            padding: 2px 10px;
+            border-radius: 10px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .module-topics {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 14px;
+        }
+
+        .module-topics li {
+            padding: 6px 0 6px 22px;
+            position: relative;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .module-topics li:last-child {
+            border-bottom: none;
+        }
+
+        .module-topics li::before {
+            content: "▸";
+            position: absolute;
+            left: 4px;
+            color: var(--primary);
+            font-size: 0.85rem;
+        }
+
+        .module-reading {
+            background: #f0fff4;
+            border: 1px solid #a8e6b8;
+            border-radius: var(--radius);
+            padding: 10px 14px;
+            font-size: 0.85rem;
+            color: #2d6a4f;
+        }
+
+        .module-reading strong {
+            display: block;
+            margin-bottom: 3px;
+            font-size: 0.82rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* ===== ASSIGNMENT SECTION ===== */
+        .assignment-container {
+            background: #fffbeb;
+            border: 2px solid var(--accent-gold);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        .assignment-header-bar {
+            background: linear-gradient(135deg, #4a3880 0%, #764ba2 100%);
+            padding: 18px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .assignment-header-bar h3 {
+            color: #ffffff;
+            font-size: 1.2rem;
+            font-weight: 700;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+        }
+
+        .total-points-badge {
+            background: rgba(255,255,255,0.3);
+            color: white;
+            padding: 6px 18px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 1rem;
+            border: 1px solid rgba(255,255,255,0.4);
+        }
+
+        .assignment-body {
+            padding: 24px;
+        }
+
+        .assignment-part {
+            margin-bottom: 24px;
+        }
+
+        .part-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            border-radius: var(--radius);
+            margin-bottom: 14px;
+            cursor: pointer;
+            user-select: none;
+            transition: opacity var(--transition);
+        }
+
+        .part-header:hover { opacity: 0.88; }
+        .part-header:focus-visible {
+            outline: 3px solid var(--primary);
+            outline-offset: 2px;
+        }
+
+        .part-header.part-a {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .part-header.part-b {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
+        }
+
+        .part-header h4 {
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .part-points {
+            background: rgba(255,255,255,0.25);
+            padding: 3px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .part-toggle-icon {
+            font-size: 0.85rem;
+            transition: transform 0.3s ease;
+        }
+
+        .part-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s ease;
+        }
+
+        .part-body.open {
+            max-height: 800px;
+        }
+
+        .problem-item {
+            display: flex;
+            gap: 14px;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0e8c8;
+            align-items: flex-start;
+        }
+
+        .problem-item:last-child { border-bottom: none; }
+
+        .problem-num-badge {
+            background: var(--primary);
+            color: white;
+            min-width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.82rem;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .problem-info h5 {
+            color: var(--text-primary);
+            font-size: 0.92rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .problem-info p {
+            color: var(--text-secondary);
+            font-size: 0.87rem;
+            line-height: 1.5;
+        }
+
+        .problem-pts {
+            margin-left: auto;
+            background: #fef3c7;
+            border: 1px solid #fbbf24;
+            color: #92400e;
+            padding: 2px 10px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        /* ===== CHECKLIST ===== */
+        .checklist-container {
+            background: #f0fff4;
+            border: 2px solid #a8e6b8;
+            border-radius: var(--radius-lg);
+            padding: 24px;
+        }
+
+        .checklist-phase {
+            margin-bottom: 22px;
+        }
+
+        .checklist-phase:last-child { margin-bottom: 0; }
+
+        .phase-title {
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #2d6a4f;
+            padding: 6px 12px;
+            background: #c3f0d0;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            display: inline-block;
+        }
+
+        .checklist-items {
+            list-style: none;
+            padding: 0;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 9px 0;
+            border-bottom: 1px solid #d1fae5;
+            cursor: pointer;
+            transition: background var(--transition);
+            border-radius: 4px;
+            padding-left: 6px;
+        }
+
+        .checklist-item:last-child { border-bottom: none; }
+
+        .checklist-item:hover {
+            background: #e6fff0;
+        }
+
+        .checklist-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--accent-green);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .checklist-item label {
+            font-size: 0.92rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .checklist-item.completed label {
+            text-decoration: line-through;
+            color: #9ca3af;
+        }
+
+        .checklist-progress {
+            margin-top: 16px;
+        }
+
+        .checklist-progress-bar {
+            background: #d1fae5;
+            height: 14px;
+            border-radius: 7px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .checklist-progress-fill {
+            background: linear-gradient(90deg, #4caf50, #2e7d32);
+            height: 100%;
+            width: 0%;
+            transition: width 0.4s ease;
+            border-radius: 7px;
+        }
+
+        .checklist-progress-text {
+            font-size: 0.85rem;
+            color: #2d6a4f;
+            font-weight: 600;
+            text-align: right;
+        }
+
+        /* ===== RESOURCES ===== */
+        .resources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .resource-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px;
+            transition: all var(--transition);
+        }
+
+        .resource-card:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-sm);
+            transform: translateY(-2px);
+        }
+
+        .resource-card h4 {
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .resource-type-badge {
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-required {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-supplementary {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .resource-card p {
+            font-size: 0.87rem;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+        .resource-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: var(--primary);
+            color: white;
+            padding: 7px 15px;
+            border-radius: var(--radius);
+            text-decoration: none;
+            font-size: 0.82rem;
+            font-weight: 600;
+            transition: all var(--transition);
+        }
+
+        .resource-link:hover {
+            background: var(--secondary);
+            transform: translateY(-1px);
+        }
+
+        /* ===== TIPS BOX ===== */
+        .tips-box {
+            border-radius: var(--radius);
+            padding: 22px 24px;
+            margin-bottom: 16px;
+        }
+
+        .tips-box.blue {
+            background: #eff6ff;
+            border-left: 5px solid var(--accent-blue);
+        }
+
+        .tips-box.purple {
+            background: #f5f0ff;
+            border-left: 5px solid var(--secondary);
+        }
+
+        .tips-box.green {
+            background: #f0fff4;
+            border-left: 5px solid var(--accent-green);
+        }
+
+        .tips-box h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .tips-box.blue h3 { color: var(--accent-blue); }
+        .tips-box.purple h3 { color: var(--secondary); }
+        .tips-box.green h3 { color: #2d6a4f; }
+
+        .tips-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .tips-list li {
+            padding: 6px 0 6px 24px;
+            position: relative;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .tips-list li:last-child { border-bottom: none; }
+
+        .tips-list li::before {
+            position: absolute;
+            left: 0;
+            font-size: 0.8rem;
+        }
+
+        .tips-box.blue .tips-list li::before { content: "💡"; }
+        .tips-box.purple .tips-list li::before { content: "✏️"; }
+        .tips-box.green .tips-list li::before { content: "🔑"; }
+
+        /* ===== COMMON ERRORS TABLE ===== */
+        .errors-tabs {
+            margin-top: 16px;
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: 0;
+            margin-bottom: 0;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .tab-btn {
+            background: var(--surface-alt);
+            border: none;
+            border-bottom: 2px solid transparent;
+            padding: 10px 22px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: all var(--transition);
+            margin-bottom: -2px;
+        }
+
+        .tab-btn:hover {
+            color: var(--primary);
+            background: #ede9fe;
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+            background: white;
+        }
+
+        .tab-btn:focus-visible {
+            outline: 3px solid var(--primary);
+            outline-offset: 2px;
+        }
+
+        .tab-panel {
+            display: none;
+            padding-top: 16px;
+        }
+
+        .tab-panel.active { display: block; }
+
+        .error-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+        }
+
+        .error-table thead {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .error-table th {
+            padding: 12px 14px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .error-table td {
+            padding: 11px 14px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: top;
+            color: var(--text-secondary);
+        }
+
+        .error-table tr:nth-child(even) td {
+            background: var(--surface-alt);
+        }
+
+        .error-table tr:hover td {
+            background: #ede9fe;
+        }
+
+        .error-cell {
+            color: #b91c1c;
+            font-weight: 500;
+        }
+
+        .fix-cell {
+            color: #166534;
+            font-weight: 500;
+        }
+
+        /* ===== WEEK 7 PREVIEW ===== */
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 14px;
+            margin-top: 16px;
+        }
+
+        .preview-card {
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+            padding: 18px;
+            border-radius: var(--radius);
+            transition: all var(--transition);
+        }
+
+        .preview-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .preview-card h4 {
+            color: var(--primary);
+            font-size: 0.92rem;
+            margin-bottom: 7px;
+            font-weight: 700;
+        }
+
+        .preview-card p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* ===== CONNECTIONS ===== */
+        .connections-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        @media (max-width: 640px) {
+            .connections-row { grid-template-columns: 1fr; }
+        }
+
+        .connection-card {
+            padding: 18px;
+            border-radius: var(--radius);
+        }
+
+        .connection-card.backward {
+            background: #f0f4ff;
+            border: 1px solid #c7d4ff;
+        }
+
+        .connection-card.forward {
+            background: #f0fff4;
+            border: 1px solid #a8e6b8;
+        }
+
+        .connection-card h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .connection-card.backward h4 { color: var(--primary); }
+        .connection-card.forward h4 { color: #2d6a4f; }
+
+        .connection-card ul {
+            padding-left: 18px;
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+        }
+
+        .connection-card ul li { padding: 3px 0; }
+
+        /* ===== GETTING HELP ===== */
+        .help-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .help-card {
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+            padding: 20px;
+            border-radius: var(--radius);
+            text-align: center;
+            transition: all var(--transition);
+        }
+
+        .help-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .help-card .help-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .help-card h4 {
+            color: var(--primary);
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .help-card p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            background: #1a1a2e;
+            color: #aaa;
+            text-align: center;
+            padding: 24px 20px;
+            font-size: 0.88rem;
+        }
+
+        footer p { margin: 4px 0; }
+        footer strong { color: white; }
+
+        /* ===== FOCUS / ACCESSIBILITY ===== */
+        a:focus-visible,
+        button:focus-visible {
+            outline: 3px solid var(--accent-gold);
+            outline-offset: 2px;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            header h1 { font-size: 1.7rem; }
+            .week-info { grid-template-columns: repeat(2, 1fr); }
+            .content { padding: 24px 20px; }
+            .modules-section { grid-template-columns: 1fr; }
+            .resources-grid { grid-template-columns: 1fr; }
+            .preview-grid { grid-template-columns: 1fr 1fr; }
+        }
+
+        @media (max-width: 480px) {
+            body { padding: 10px; }
+            header { padding: 28px 20px 22px; }
+            header h1 { font-size: 1.45rem; }
+            .week-info { grid-template-columns: 1fr; padding: 16px; }
+            .content { padding: 20px 16px; }
+            .preview-grid { grid-template-columns: 1fr; }
+        }
+
+        @media print {
+            body { background: none; padding: 0; }
+            .container { box-shadow: none; border-radius: 0; }
+            .page-nav, .skip-link { display: none; }
+            .module-card-body, .part-body { max-height: none !important; }
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <div class="container">
+
+        <!-- ===== HEADER ===== -->
+        <header role="banner">
+            <div class="header-badge">Week 6 of 17</div>
+            <h1>Proof Techniques II</h1>
+            <p class="subtitle">Contradiction and Induction Introduction</p>
+            <p class="course-info">CSC 240 — Discrete Structures &nbsp;|&nbsp; Mendocino College &nbsp;|&nbsp; Spring 2026</p>
+        </header>
+
+        <!-- ===== WEEK INFO BAR ===== -->
+        <div class="week-info" role="region" aria-label="Week at a glance">
+            <div class="info-card">
+                <h3>In-Class</h3>
+                <p>3 hours</p>
+            </div>
+            <div class="info-card">
+                <h3>Out-of-Class</h3>
+                <p>6 hours</p>
+            </div>
+            <div class="info-card">
+                <h3>Total Hours</h3>
+                <p>9 hours</p>
+            </div>
+            <div class="info-card">
+                <h3>Modules</h3>
+                <p>6 modules</p>
+            </div>
+            <div class="info-card">
+                <h3>Assignment</h3>
+                <p>100 pts</p>
+            </div>
+            <div class="info-card">
+                <h3>CSLO Alignment</h3>
+                <p>1 &amp; 4</p>
+            </div>
+        </div>
+
+        <!-- ===== STICKY PAGE NAV ===== -->
+        <nav class="page-nav" aria-label="Page sections">
+            <div class="page-nav-inner">
+                <a href="#section-cslos">Learning Outcomes</a>
+                <a href="#section-objectives">Objectives</a>
+                <a href="#section-prerequisites">Prerequisites</a>
+                <a href="#section-modules">Modules</a>
+                <a href="#section-assignment">Assignment</a>
+                <a href="#section-readings">Readings</a>
+                <a href="#section-checklist">Checklist</a>
+                <a href="#section-errors">Common Errors</a>
+                <a href="#section-tips">Tips</a>
+                <a href="#section-connections">Connections</a>
+                <a href="#section-help">Getting Help</a>
+            </div>
+        </nav>
+
+        <!-- ===== MAIN CONTENT ===== -->
+        <main class="content" id="main-content" role="main">
+
+            <!-- COURSE LEARNING OUTCOMES -->
+            <section class="section" id="section-cslos" aria-labelledby="cslos-heading">
+                <h2 id="cslos-heading"><span class="section-icon" aria-hidden="true">🎯</span> Course Learning Outcomes</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 16px; font-size: 0.95rem;">This week addresses two Course Student Learning Outcomes:</p>
+
+                <div class="cslo-box">
+                    <h3>CSLO 1</h3>
+                    <p>Apply symbolic logic and proof methods to model and analyze program/algorithm correctness.</p>
+                    <div style="margin-top: 10px; font-size: 0.88rem; color: #b45309;">
+                        <strong>This week:</strong> Modules 6.1–6.5 directly apply contradiction and induction proofs to verify mathematical claims and algorithm behavior.
+                    </div>
+                </div>
+
+                <div class="cslo-box" style="border-left-color: var(--secondary);">
+                    <h3 style="color: var(--secondary);">CSLO 4</h3>
+                    <p>Explain the relationship between mathematical induction and recursion/recurrence equations.</p>
+                    <div style="margin-top: 10px; font-size: 0.88rem; color: var(--secondary);">
+                        <strong>This week:</strong> Modules 6.3–6.6 establish the structural parallel between induction proofs and recursive programs, loop invariants, and algorithm correctness.
+                    </div>
+                </div>
+
+                <div style="margin-top: 6px;">
+                    <span class="cslo-badge">CSLO 1</span>
+                    <span class="cslo-badge" style="background: var(--secondary);">CSLO 4</span>
+                </div>
+            </section>
+
+            <!-- LEARNING OBJECTIVES -->
+            <section class="section" id="section-objectives" aria-labelledby="objectives-heading">
+                <h2 id="objectives-heading"><span class="section-icon" aria-hidden="true">📋</span> Learning Objectives</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 20px; font-size: 0.95rem;">By the end of this week, you will be able to:</p>
+
+                <div class="objectives-group">
+                    <h3>🔴 Proof by Contradiction</h3>
+                    <ul class="objectives-list" aria-label="Proof by contradiction objectives">
+                        <li>Explain the logical foundation of proof by contradiction using the law of excluded middle</li>
+                        <li>Identify when proof by contradiction is the most appropriate technique</li>
+                        <li>Construct well-structured contradiction proofs for existence and uniqueness claims</li>
+                        <li>Apply proof by contradiction to prove classic results (irrationality of √2, infinitude of primes)</li>
+                        <li>Distinguish between proof by contradiction and proof by contrapositive</li>
+                    </ul>
+                </div>
+
+                <div class="objectives-group">
+                    <h3>🔵 Mathematical Induction Introduction</h3>
+                    <ul class="objectives-list" aria-label="Mathematical induction objectives">
+                        <li>Explain the principle of mathematical induction and why it produces valid proofs</li>
+                        <li>Identify the two essential components: base case and inductive step</li>
+                        <li>Write complete induction proofs for summation formulas</li>
+                        <li>Apply induction to prove divisibility properties and inequalities</li>
+                        <li>Connect mathematical induction to the well-ordering principle</li>
+                        <li>Recognize the relationship between induction and recursive algorithm correctness</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- PREREQUISITES -->
+            <section class="section" id="section-prerequisites" aria-labelledby="prereq-heading">
+                <h2 id="prereq-heading"><span class="section-icon" aria-hidden="true">📚</span> Prerequisites from Week 5</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 16px; font-size: 0.95rem;">Before beginning Week 6, ensure mastery of these concepts from Week 5:</p>
+
+                <div class="prereq-grid">
+                    <div class="prereq-card">
+                        <strong>Direct Proof Technique</strong>
+                        <span>Foundation for the inductive step in induction proofs. Assume hypothesis, derive conclusion.</span>
+                    </div>
+                    <div class="prereq-card">
+                        <strong>Proof by Contrapositive</strong>
+                        <span>Essential for understanding the distinction from contradiction. Proves ¬Q → ¬P to establish P → Q.</span>
+                    </div>
+                    <div class="prereq-card">
+                        <strong>Counterexamples</strong>
+                        <span>Helps identify which claims require induction vs. those that are simply false.</span>
+                    </div>
+                    <div class="prereq-card">
+                        <strong>Mathematical Writing — The 4 C's</strong>
+                        <span>Clarity, Completeness, Correctness, Conciseness. All proofs this week require clear, well-structured writing.</span>
+                    </div>
+                    <div class="prereq-card">
+                        <strong>Logical Equivalences</strong>
+                        <span>Especially (P → Q) ≡ (¬Q → ¬P). Required for setting up contradiction and contrapositive arguments.</span>
+                    </div>
+                    <div class="prereq-card">
+                        <strong>Quantifier Negation</strong>
+                        <span>¬(∀x, P(x)) ≡ ∃x, ¬P(x). Essential for formulating the negation in contradiction proofs.</span>
+                    </div>
+                    <div class="prereq-card">
+                        <strong>Definitions (Even, Odd, Divisibility)</strong>
+                        <span>These fundamental definitions are used throughout induction and contradiction proofs this week.</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- LEARNING MODULES -->
+            <section class="section" id="section-modules" aria-labelledby="modules-heading">
+                <h2 id="modules-heading"><span class="section-icon" aria-hidden="true">📖</span> Learning Modules</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 8px; font-size: 0.95rem;">Six modules build progressively from contradiction fundamentals through induction and computer science connections. Click any module to expand its details.</p>
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">Detailed module content is available in the individual learning module pages.</p>
+
+                <div class="modules-section" role="list">
+
+                    <!-- Module 6.1 -->
+                    <div class="module-card contradiction" role="listitem">
+                        <div class="module-card-header" onclick="toggleModule(this)" tabindex="0" role="button" aria-expanded="false" aria-controls="mod61-body">
+                            <div class="module-header-left">
+                                <span class="module-num">6.1</span>
+                                <h3>Proof by Contradiction — Foundations</h3>
+                            </div>
+                            <span class="time-badge">1.5 hrs</span>
+                            <span class="module-chevron" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="module-card-body" id="mod61-body">
+                            <div class="module-card-content">
+                                <span class="cslo-tag">CSLO 1</span>
+                                <ul class="module-topics" aria-label="Topics covered in Module 6.1">
+                                    <li>The law of excluded middle and principle of non-contradiction</li>
+                                    <li>How contradiction proofs work — logical justification (¬P → False) → P</li>
+                                    <li>Standard proof template and key phrases</li>
+                                    <li>When to choose contradiction vs. direct proof vs. contrapositive</li>
+                                    <li>Contradiction vs. contrapositive — side-by-side comparison</li>
+                                </ul>
+                                <div class="module-reading">
+                                    <strong>📖 Required Reading</strong>
+                                    Book of Proof (Hammack), Chapter 6 §6.1–6.2 &nbsp;|&nbsp; Saylor CS202, Unit 4.3
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Module 6.2 -->
+                    <div class="module-card contradiction" role="listitem">
+                        <div class="module-card-header" onclick="toggleModule(this)" tabindex="0" role="button" aria-expanded="false" aria-controls="mod62-body">
+                            <div class="module-header-left">
+                                <span class="module-num">6.2</span>
+                                <h3>Proof by Contradiction — Classic Examples</h3>
+                            </div>
+                            <span class="time-badge">1.5 hrs</span>
+                            <span class="module-chevron" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="module-card-body" id="mod62-body">
+                            <div class="module-card-content">
+                                <span class="cslo-tag">CSLO 1</span>
+                                <ul class="module-topics" aria-label="Topics covered in Module 6.2">
+                                    <li>Irrationality of √2 — full step-by-step proof and analysis</li>
+                                    <li>Infinitude of primes — Euclid's classic contradiction argument</li>
+                                    <li>No smallest positive rational number</li>
+                                    <li>AM-GM inequality via contradiction</li>
+                                    <li>Structural analysis of classic contradiction proofs</li>
+                                </ul>
+                                <div class="module-reading">
+                                    <strong>📖 Required Reading</strong>
+                                    Book of Proof (Hammack), Chapter 6 §6.3–6.4 &nbsp;|&nbsp; Saylor CS202, Unit 4.3
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Module 6.3 -->
+                    <div class="module-card induction" role="listitem">
+                        <div class="module-card-header" onclick="toggleModule(this)" tabindex="0" role="button" aria-expanded="false" aria-controls="mod63-body">
+                            <div class="module-header-left">
+                                <span class="module-num">6.3</span>
+                                <h3>Mathematical Induction — The Principle</h3>
+                            </div>
+                            <span class="time-badge">1.5 hrs</span>
+                            <span class="module-chevron" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="module-card-body" id="mod63-body">
+                            <div class="module-card-content">
+                                <span class="cslo-tag">CSLO 1</span>
+                                <span class="cslo-tag" style="background: var(--secondary);">CSLO 4</span>
+                                <ul class="module-topics" aria-label="Topics covered in Module 6.3">
+                                    <li>The domino analogy — intuitive foundation for induction</li>
+                                    <li>Formal principle: [P(n₀) ∧ (∀k ≥ n₀, P(k) → P(k+1))] → ∀n ≥ n₀, P(n)</li>
+                                    <li>Why induction works — connection to the well-ordering principle</li>
+                                    <li>Standard induction proof template and critical components</li>
+                                    <li>The inductive hypothesis — dispelling circular reasoning concerns</li>
+                                </ul>
+                                <div class="module-reading">
+                                    <strong>📖 Required Reading</strong>
+                                    Book of Proof (Hammack), Chapter 10 §10.1–10.2 &nbsp;|&nbsp; Saylor CS202, Unit 4.4
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Module 6.4 -->
+                    <div class="module-card induction" role="listitem">
+                        <div class="module-card-header" onclick="toggleModule(this)" tabindex="0" role="button" aria-expanded="false" aria-controls="mod64-body">
+                            <div class="module-header-left">
+                                <span class="module-num">6.4</span>
+                                <h3>Mathematical Induction — Summation Formulas</h3>
+                            </div>
+                            <span class="time-badge">2.0 hrs</span>
+                            <span class="module-chevron" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="module-card-body" id="mod64-body">
+                            <div class="module-card-content">
+                                <span class="cslo-tag">CSLO 1</span>
+                                <span class="cslo-tag" style="background: var(--secondary);">CSLO 4</span>
+                                <ul class="module-topics" aria-label="Topics covered in Module 6.4">
+                                    <li>Key technique: "splitting the sum" — Σᵢ₌₁ᵏ⁺¹ f(i) = Σᵢ₌₁ᵏ f(i) + f(k+1)</li>
+                                    <li>Sum of first n positive integers: Σi = n(n+1)/2</li>
+                                    <li>Sum of first n squares: Σi² = n(n+1)(2n+1)/6</li>
+                                    <li>Geometric series: Σrⁱ = (rⁿ⁺¹ − 1)/(r − 1) for r ≠ 1</li>
+                                    <li>Algebraic techniques: common denominator, factoring, expanding</li>
+                                </ul>
+                                <div class="module-reading">
+                                    <strong>📖 Required Reading</strong>
+                                    Book of Proof (Hammack), Chapter 10 §10.3 &nbsp;|&nbsp; Saylor CS202, Unit 4.4
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Module 6.5 -->
+                    <div class="module-card induction" role="listitem">
+                        <div class="module-card-header" onclick="toggleModule(this)" tabindex="0" role="button" aria-expanded="false" aria-controls="mod65-body">
+                            <div class="module-header-left">
+                                <span class="module-num">6.5</span>
+                                <h3>Mathematical Induction — Divisibility &amp; Inequalities</h3>
+                            </div>
+                            <span class="time-badge">1.5 hrs</span>
+                            <span class="module-chevron" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="module-card-body" id="mod65-body">
+                            <div class="module-card-content">
+                                <span class="cslo-tag">CSLO 1</span>
+                                <span class="cslo-tag" style="background: var(--secondary);">CSLO 4</span>
+                                <ul class="module-topics" aria-label="Topics covered in Module 6.5">
+                                    <li>Divisibility proofs: 3 | (4ⁿ − 1) and 6 | (n³ − n)</li>
+                                    <li>Factor-and-substitute technique for divisibility</li>
+                                    <li>Inequality proofs: 2ⁿ &gt; n for all n ≥ 1</li>
+                                    <li>Factorial inequality: n! &gt; 2ⁿ for all n ≥ 4</li>
+                                    <li>Choosing appropriate base cases for non-standard start values</li>
+                                </ul>
+                                <div class="module-reading">
+                                    <strong>📖 Required Reading</strong>
+                                    Book of Proof (Hammack), Chapter 10 §10.4 &nbsp;|&nbsp; Saylor CS202, Unit 4.4
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Module 6.6 -->
+                    <div class="module-card cs-connections" role="listitem">
+                        <div class="module-card-header" onclick="toggleModule(this)" tabindex="0" role="button" aria-expanded="false" aria-controls="mod66-body">
+                            <div class="module-header-left">
+                                <span class="module-num">6.6</span>
+                                <h3>Induction and Computer Science Connections</h3>
+                            </div>
+                            <span class="time-badge">1.0 hr</span>
+                            <span class="module-chevron" aria-hidden="true">▼</span>
+                        </div>
+                        <div class="module-card-body" id="mod66-body">
+                            <div class="module-card-content">
+                                <span class="cslo-tag">CSLO 1</span>
+                                <span class="cslo-tag" style="background: var(--secondary);">CSLO 4</span>
+                                <ul class="module-topics" aria-label="Topics covered in Module 6.6">
+                                    <li>Induction and recursion — two sides of the same coin (base case ↔ base case)</li>
+                                    <li>Proving recursive Java methods correct by induction</li>
+                                    <li>Loop invariants — the induction structure inside iterative programs</li>
+                                    <li>Binary search correctness proof by induction on array size</li>
+                                    <li>Preview: Strong Induction (Week 7) — when P(k) alone is not enough</li>
+                                </ul>
+                                <div class="module-reading">
+                                    <strong>📖 Required Reading</strong>
+                                    Book of Proof (Hammack), Chapter 10 §10.5 &nbsp;|&nbsp; Saylor CS202, Unit 4.4
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div><!-- end modules-section -->
+            </section>
+
+            <!-- ASSIGNMENT -->
+            <section class="section" id="section-assignment" aria-labelledby="assignment-heading">
+                <h2 id="assignment-heading"><span class="section-icon" aria-hidden="true">✏️</span> Week 6 Assignment</h2>
+
+                <div class="assignment-container" role="region" aria-label="Assignment PS-06">
+                    <div class="assignment-header-bar">
+                        <div>
+                            <h3>PS-06: Contradiction and Induction Fundamentals</h3>
+                            <p style="color: rgba(255,255,255,0.85); font-size: 0.88rem; margin-top: 3px;">Written problem set — submit via Canvas</p>
+                        </div>
+                        <div class="total-points-badge">100 points total</div>
+                    </div>
+
+                    <div class="assignment-body">
+                        <p style="color: var(--text-secondary); font-size: 0.92rem; margin-bottom: 20px; padding: 12px 16px; background: #fffbeb; border-radius: var(--radius); border: 1px solid #fde68a;">
+                            For each proof, use the specified technique. Show all steps clearly, state your assumptions explicitly, and follow the standard proof templates from the learning modules. Partial credit is available for correct reasoning with minor errors.
+                        </p>
+
+                        <!-- Part A -->
+                        <div class="assignment-part">
+                            <div class="part-header part-a" onclick="togglePart(this)" tabindex="0" role="button" aria-expanded="true" aria-controls="part-a-body">
+                                <h4>Part A: Proof by Contradiction</h4>
+                                <div class="part-points">
+                                    <span>40 points</span>
+                                    <span class="part-toggle-icon" aria-hidden="true">▼</span>
+                                </div>
+                            </div>
+                            <div class="part-body open" id="part-a-body">
+
+                                <div class="problem-item">
+                                    <div class="problem-num-badge" aria-hidden="true">1</div>
+                                    <div class="problem-info">
+                                        <h5>Contradiction Structure</h5>
+                                        <p>Identify the assumption, contradiction, and conclusion in given proofs. Determine whether contradiction or contrapositive is more appropriate for given statements.</p>
+                                    </div>
+                                    <div class="problem-pts">15 pts</div>
+                                </div>
+
+                                <div class="problem-item">
+                                    <div class="problem-num-badge" aria-hidden="true">2</div>
+                                    <div class="problem-info">
+                                        <h5>Irrationality Proofs</h5>
+                                        <p>Prove √5 is irrational. Prove √2 + √3 is irrational (challenging — requires careful setup).</p>
+                                    </div>
+                                    <div class="problem-pts">12 pts</div>
+                                </div>
+
+                                <div class="problem-item">
+                                    <div class="problem-num-badge" aria-hidden="true">3</div>
+                                    <div class="problem-info">
+                                        <h5>Original Contradiction Proofs</h5>
+                                        <p>Prove there is no largest negative rational number. Prove that if n² is divisible by 2, then n is divisible by 2 (using contradiction).</p>
+                                    </div>
+                                    <div class="problem-pts">13 pts</div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!-- Part B -->
+                        <div class="assignment-part">
+                            <div class="part-header part-b" onclick="togglePart(this)" tabindex="0" role="button" aria-expanded="true" aria-controls="part-b-body">
+                                <h4>Part B: Mathematical Induction</h4>
+                                <div class="part-points">
+                                    <span>60 points</span>
+                                    <span class="part-toggle-icon" aria-hidden="true">▼</span>
+                                </div>
+                            </div>
+                            <div class="part-body open" id="part-b-body">
+
+                                <div class="problem-item">
+                                    <div class="problem-num-badge" aria-hidden="true">4</div>
+                                    <div class="problem-info">
+                                        <h5>Induction Structure</h5>
+                                        <p>For given theorems, identify: base case, inductive hypothesis, and what to prove in the inductive step. Critique flawed induction proofs and explain what went wrong.</p>
+                                    </div>
+                                    <div class="problem-pts">20 pts</div>
+                                </div>
+
+                                <div class="problem-item">
+                                    <div class="problem-num-badge" aria-hidden="true">5</div>
+                                    <div class="problem-info">
+                                        <h5>Summation Proofs</h5>
+                                        <p>Prove Σᵢ₌₁ⁿ i(i+1) = n(n+1)(n+2)/3 &nbsp;|&nbsp; Prove Σᵢ₌₁ⁿ 1/2ⁱ = 1 − 1/2ⁿ &nbsp;|&nbsp; Prove Σᵢ₌₀ⁿ 2ⁱ = 2ⁿ⁺¹ − 1</p>
+                                    </div>
+                                    <div class="problem-pts">20 pts</div>
+                                </div>
+
+                                <div class="problem-item">
+                                    <div class="problem-num-badge" aria-hidden="true">6</div>
+                                    <div class="problem-info">
+                                        <h5>Divisibility and Inequality Proofs</h5>
+                                        <p>Prove 7 | (8ⁿ − 1) for all n ≥ 0 &nbsp;|&nbsp; Prove 3 | (n³ + 2n) for all n ≥ 0 &nbsp;|&nbsp; Prove 2ⁿ ≥ n² for all n ≥ 4</p>
+                                    </div>
+                                    <div class="problem-pts">20 pts</div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- READINGS -->
+            <section class="section" id="section-readings" aria-labelledby="readings-heading">
+                <h2 id="readings-heading"><span class="section-icon" aria-hidden="true">📕</span> Reading Assignments</h2>
+
+                <div class="resources-grid">
+
+                    <div class="resource-card">
+                        <h4>
+                            Book of Proof — Chapter 6
+                            <span class="resource-type-badge badge-required">Required</span>
+                        </h4>
+                        <p><strong>Proof by Contradiction</strong> (Hammack, 3rd Ed.)<br>
+                        Sections 6.1–6.4 — Foundations through classic examples.</p>
+                        <a href="https://www.people.vcu.edu/~rhammack/BookOfProof/" class="resource-link" target="_blank" rel="noopener noreferrer" aria-label="Access Book of Proof online (opens in new tab)">Access Free Online ↗</a>
+                    </div>
+
+                    <div class="resource-card">
+                        <h4>
+                            Book of Proof — Chapter 10
+                            <span class="resource-type-badge badge-required">Required</span>
+                        </h4>
+                        <p><strong>Mathematical Induction</strong> (Hammack, 3rd Ed.)<br>
+                        Sections 10.1–10.5 — Principle, summations, divisibility, CS connections.</p>
+                        <a href="https://www.people.vcu.edu/~rhammack/BookOfProof/" class="resource-link" target="_blank" rel="noopener noreferrer" aria-label="Access Book of Proof online (opens in new tab)">Access Free Online ↗</a>
+                    </div>
+
+                    <div class="resource-card">
+                        <h4>
+                            Saylor CS202 — Unit 4
+                            <span class="resource-type-badge badge-required">Required</span>
+                        </h4>
+                        <p><strong>Mathematical Induction and Proofs</strong><br>
+                        Sections 4.3–4.4 — Contradiction introduction, induction principle, and applications.</p>
+                        <a href="https://learn.saylor.org/course/view.php?id=67" class="resource-link" target="_blank" rel="noopener noreferrer" aria-label="Access Saylor CS202 (opens in new tab)">Access Course ↗</a>
+                    </div>
+
+                    <div class="resource-card">
+                        <h4>
+                            Brilliant.org
+                            <span class="resource-type-badge badge-supplementary">Supplementary</span>
+                        </h4>
+                        <p>Interactive exercises on proof by contradiction and mathematical induction with guided problem sets.</p>
+                        <a href="https://brilliant.org/wiki/proof-by-contradiction/" class="resource-link" target="_blank" rel="noopener noreferrer" aria-label="Brilliant.org contradiction guide (opens in new tab)">Explore ↗</a>
+                    </div>
+
+                    <div class="resource-card">
+                        <h4>
+                            MIT OpenCourseWare 6.042J
+                            <span class="resource-type-badge badge-supplementary">Supplementary</span>
+                        </h4>
+                        <p>Lecture notes on induction. Rigorous treatment of the material from MIT's discrete mathematics course.</p>
+                        <a href="https://ocw.mit.edu/courses/6-042j-mathematics-for-computer-science-fall-2010/" class="resource-link" target="_blank" rel="noopener noreferrer" aria-label="MIT OCW 6.042J (opens in new tab)">View Notes ↗</a>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- CHECKLIST -->
+            <section class="section" id="section-checklist" aria-labelledby="checklist-heading">
+                <h2 id="checklist-heading"><span class="section-icon" aria-hidden="true">✅</span> Week 6 Checklist</h2>
+                <p style="color: var(--text-secondary); font-size: 0.92rem; margin-bottom: 16px;">Check off items as you complete them. Progress is saved for this session.</p>
+
+                <div class="checklist-container" role="region" aria-label="Week 6 completion checklist">
+
+                    <div class="checklist-phase">
+                        <div class="phase-title">Before Starting</div>
+                        <ul class="checklist-items" aria-label="Before starting checklist">
+                            <li class="checklist-item" onclick="toggleCheck(this)">
+                                <input type="checkbox" id="chk1" aria-label="Completed PS-05a and PS-05b">
+                                <label for="chk1">Completed PS-05a and PS-05b</label>
+                            </li>
+                            <li class="checklist-item" onclick="toggleCheck(this)">
+                                <input type="checkbox" id="chk2" aria-label="Reviewed direct proof technique from Week 5">
+                                <label for="chk2">Reviewed direct proof technique from Week 5</label>
+                            </li>
+                            <li class="checklist-item" onclick="toggleCheck(this)">
+                                <input type="checkbox" id="chk3" aria-label="Reviewed contrapositive proofs from Week 5">
+                                <label for="chk3">Reviewed contrapositive proofs from Week 5</label>
+                            </li>
+                            <li class="checklist-item" onclick="toggleCheck(this)">
+                                <input type="checkbox" id="chk4" aria-label="Reviewed logical equivalences from Weeks 3-4">
+                                <label for="chk4">Reviewed logical equivalences from Weeks 3–4</label>
+                            </li>
+                            <li class="checklist-item" onclick="toggleCheck(this)">
+                                <input type="checkbox" id="chk5" aria-label="Understand negation of quantified statements">
+                                <label for="chk5">Understand negation of quantified statements</label>
+                            </li>
+                            <li class="checklist-item" onclick="toggleCheck(this)">
+                                <input type="checkbox" id="chk6" aria-label="Read Saylor CS202 Unit 4 Sections 4.3-4.4">
+                                <label for="chk6">Read Saylor CS202, Unit 4, Sections 4.3–4.4</label>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="checklist-phase">
+                        <div class="phase-title">During the Week — Modules</div>
+                        <ul class="checklist-items" aria-label="Module completion checklist">
+                            <li class="checklist-item" onclick="toggleCheck(this)">
+                                <input type="checkbox" id="chk7" aria-label="Completed Module 6.1: Contradiction Foundations">
+                                <label for="chk7">Completed Module 6.1 — Contradiction Foundations (1.5 hrs)</label>
+                            </li>
+                            <li class="checklist-item" onclick="toggleCheck(this)">
+                                <input type="checkbox" id="chk8" aria-label="Completed Module 6.2: Contradiction Examples">
+                                <label for="chk8">Completed Module 6.2 — Contradiction Classic Examples (1.5 hrs)</label>
+                            </li>
+                            <li class="checklist-item" onclick="toggleCheck(this)">
+                                <input type="checkbox" id="chk9" aria-label="Completed Module 6.3: Induction Principle">
+                                <label for="chk9">Completed Module 6.3 — Induction Principle (1.5 hrs)</label>
+                            </li>
+                            <li class="checklist-item" onclick="toggleCheck(this)">
+                                <input type="checkbox" id="chk10" aria-label="Completed Module 6.4: Summation Formulas">
+                                <label for="chk10">Completed Module 6.4 — Summation Formulas (2.0 hrs)</label>
+                            </li>
+                            <li class="checklist-item" onclick="toggleCheck(this)">
+                                <input type="checkbox" id="chk11" aria-label="Completed Module 6.5: Divisibility and Inequalities">
+                                <label for="chk11">Completed Module 6.5 — Divisibility &amp; Inequalities (1.5 hrs)</label>
+                            </li>
+                            <li class="checklist-item" onclick="toggleCheck(this)">
+                                <input type="checkbox" id="chk12" aria-label="Completed Module 6.6: CS Connections">
+                                <label for="chk12">Completed Module 6.6 — CS Connections (1.0 hr)</label>
+                            </li>
+                            <li class="checklist-item" onclick="toggleCheck(this)">
+                                <input type="checkbox" id="chk13" aria-label="Attended Week 6 lecture">
+                                <label for="chk13">Attended Week 6 lecture</label>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="checklist-phase">
+                        <div class="phase-title">By End of Week</div>
+                        <ul class="checklist-items" aria-label="End of week checklist">
+                            <li class="checklist-item" onclick="toggleCheck(this)">
+                                <input type="checkbox" id="chk14" aria-label="Submitted PS-06">
+                                <label for="chk14">Submitted PS-06: Contradiction and Induction Fundamentals</label>
+                            </li>
+                            <li class="checklist-item" onclick="toggleCheck(this)">
+                                <input type="checkbox" id="chk15" aria-label="Created personal reference sheet for proof techniques">
+                                <label for="chk15">Created personal reference sheet for proof techniques</label>
+                            </li>
+                            <li class="checklist-item" onclick="toggleCheck(this)">
+                                <input type="checkbox" id="chk16" aria-label="Prepared for Week 7">
+                                <label for="chk16">Prepared for Week 7 (Strong Induction &amp; Structural Induction)</label>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="checklist-progress" role="status" aria-live="polite">
+                        <div class="checklist-progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Checklist completion progress">
+                            <div class="checklist-progress-fill" id="checklistProgressFill"></div>
+                        </div>
+                        <div class="checklist-progress-text" id="checklistProgressText">0 of 16 items completed</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- COMMON ERRORS -->
+            <section class="section" id="section-errors" aria-labelledby="errors-heading">
+                <h2 id="errors-heading"><span class="section-icon" aria-hidden="true">⚠️</span> Common Errors to Avoid</h2>
+                <p style="color: var(--text-secondary); font-size: 0.92rem; margin-bottom: 16px;">These are the most frequent mistakes students make on proof assignments. Learn them now to avoid losing points.</p>
+
+                <div class="errors-tabs">
+                    <div class="tab-buttons" role="tablist" aria-label="Error type tabs">
+                        <button class="tab-btn active" onclick="switchTab(this, 'tab-contradiction')" role="tab" aria-selected="true" aria-controls="tab-contradiction" id="tab-btn-contradiction">
+                            Contradiction Errors
+                        </button>
+                        <button class="tab-btn" onclick="switchTab(this, 'tab-induction')" role="tab" aria-selected="false" aria-controls="tab-induction" id="tab-btn-induction">
+                            Induction Errors
+                        </button>
+                    </div>
+
+                    <div id="tab-contradiction" class="tab-panel active" role="tabpanel" aria-labelledby="tab-btn-contradiction">
+                        <table class="error-table" aria-label="Common contradiction proof errors">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Error</th>
+                                    <th scope="col">Example</th>
+                                    <th scope="col">Correction</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="error-cell">Not clearly stating the assumption</td>
+                                    <td>Starting proof without "Assume ¬P"</td>
+                                    <td class="fix-cell">Always explicitly state what you're assuming at the outset</td>
+                                </tr>
+                                <tr>
+                                    <td class="error-cell">Deriving something false but not a contradiction</td>
+                                    <td>"This gives a negative number"</td>
+                                    <td class="fix-cell">Explain WHY this is impossible — connect it to a known truth</td>
+                                </tr>
+                                <tr>
+                                    <td class="error-cell">Confusing with contrapositive</td>
+                                    <td>Proving ¬Q → ¬P and calling it contradiction</td>
+                                    <td class="fix-cell">Contradiction requires deriving Q ∧ ¬Q from ¬P — not just ¬P</td>
+                                </tr>
+                                <tr>
+                                    <td class="error-cell">Not using the assumption</td>
+                                    <td>Proof doesn't reference the negated statement at all</td>
+                                    <td class="fix-cell">Every step in your derivation must depend on the assumed ¬P</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div id="tab-induction" class="tab-panel" role="tabpanel" aria-labelledby="tab-btn-induction">
+                        <table class="error-table" aria-label="Common induction proof errors">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Error</th>
+                                    <th scope="col">Example</th>
+                                    <th scope="col">Correction</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="error-cell">Missing base case</td>
+                                    <td>Jumping straight to the inductive step</td>
+                                    <td class="fix-cell">Always verify the base case explicitly — it's not optional</td>
+                                </tr>
+                                <tr>
+                                    <td class="error-cell">Wrong base case value</td>
+                                    <td>Using n = 1 when the theorem starts at n = 0</td>
+                                    <td class="fix-cell">Check what values the theorem actually covers — read carefully</td>
+                                </tr>
+                                <tr>
+                                    <td class="error-cell">Not using the inductive hypothesis</td>
+                                    <td>Proving P(k+1) entirely from scratch</td>
+                                    <td class="fix-cell">Your proof MUST explicitly reference and apply P(k)</td>
+                                </tr>
+                                <tr>
+                                    <td class="error-cell">Circular reasoning</td>
+                                    <td>"Assume P(k+1) is true..."</td>
+                                    <td class="fix-cell">You assume P(k), then PROVE P(k+1) — never assume P(k+1)</td>
+                                </tr>
+                                <tr>
+                                    <td class="error-cell">Algebra errors</td>
+                                    <td>Incorrect expansion, factoring mistakes</td>
+                                    <td class="fix-cell">Double-check every algebraic step — show all intermediate work</td>
+                                </tr>
+                                <tr>
+                                    <td class="error-cell">Not stating IH clearly</td>
+                                    <td>Vague reference to "the formula"</td>
+                                    <td class="fix-cell">Write out exactly what P(k) says — no abbreviations</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TIPS FOR SUCCESS -->
+            <section class="section" id="section-tips" aria-labelledby="tips-heading">
+                <h2 id="tips-heading"><span class="section-icon" aria-hidden="true">💡</span> Tips for Success</h2>
+
+                <div class="tips-box blue">
+                    <h3>For Contradiction Proofs</h3>
+                    <ul class="tips-list">
+                        <li>Clearly state your assumption at the very beginning of the proof</li>
+                        <li>Keep track of what you're trying to contradict throughout the derivation</li>
+                        <li>Make sure your contradiction is genuine — not just "this seems odd"</li>
+                        <li>Use definitions and known theorems to derive consequences from ¬P</li>
+                    </ul>
+                </div>
+
+                <div class="tips-box purple">
+                    <h3>For Induction Proofs</h3>
+                    <ul class="tips-list">
+                        <li>Write out P(n) explicitly before starting — know exactly what you're proving</li>
+                        <li>Verify the base case carefully — don't assume it's obvious</li>
+                        <li>State the inductive hypothesis clearly — write out exactly what P(k) says</li>
+                        <li>Explicitly use the IH — your derivation must reference it by name</li>
+                        <li>Show your algebra — never skip steps in an induction proof</li>
+                    </ul>
+                </div>
+
+                <div class="tips-box green">
+                    <h3>General Proof Writing</h3>
+                    <ul class="tips-list">
+                        <li>Plan before writing — know where you're going before you start</li>
+                        <li>Use the standard templates from the modules — they provide essential structure</li>
+                        <li>Check your work — verify base cases, double-check all algebra</li>
+                        <li>Read your proof aloud — if it doesn't flow logically when spoken, revise it</li>
+                        <li>Seek help early — don't wait until the last day to start challenging proofs</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- CONNECTIONS -->
+            <section class="section" id="section-connections" aria-labelledby="connections-heading">
+                <h2 id="connections-heading"><span class="section-icon" aria-hidden="true">🔗</span> How This Week Connects</h2>
+
+                <div class="connections-row">
+                    <div class="connection-card backward">
+                        <h4>← Building on Week 5</h4>
+                        <ul>
+                            <li>Contradiction extends contrapositive reasoning by deriving explicit contradictions</li>
+                            <li>Week 5 proof structure (hypothesis → conclusion) is the template for the inductive step</li>
+                            <li>Even/odd and divisibility definitions from Week 5 appear in every proof this week</li>
+                            <li>Counterexample skills help identify when induction is needed vs. when a claim is false</li>
+                        </ul>
+                    </div>
+                    <div class="connection-card forward">
+                        <h4>→ Preparing for Week 7</h4>
+                        <ul>
+                            <li>Standard induction (Week 6) is the foundation for <strong>strong induction</strong> (Week 7)</li>
+                            <li>Proof by contradiction appears in well-ordering principle arguments</li>
+                            <li>Recursive algorithm analysis extends to more complex data structures (trees, lists)</li>
+                            <li>Summation algebra skills apply to analyzing recursive running times</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <h3 style="color: var(--text-primary); font-size: 1rem; margin-bottom: 14px; font-weight: 700;">Week 7 Preview: Advanced Induction Techniques</h3>
+                    <div class="preview-grid">
+                        <div class="preview-card">
+                            <h4>Strong Induction</h4>
+                            <p>Assume P(n₀), P(n₀+1), …, P(k) are ALL true when proving P(k+1) — more powerful for some problems.</p>
+                        </div>
+                        <div class="preview-card">
+                            <h4>Structural Induction</h4>
+                            <p>Induction on recursively-defined structures — trees, linked lists, parse trees, and other data structures.</p>
+                        </div>
+                        <div class="preview-card">
+                            <h4>Well-Ordering Principle</h4>
+                            <p>Deeper connections between induction and the well-ordering principle of natural numbers.</p>
+                        </div>
+                        <div class="preview-card">
+                            <h4>Applications</h4>
+                            <p>Prime factorization, Fibonacci properties, recursive data structure analysis, and recurrence relations.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- GETTING HELP -->
+            <section class="section" id="section-help" aria-labelledby="help-heading">
+                <h2 id="help-heading"><span class="section-icon" aria-hidden="true">🤝</span> Getting Help</h2>
+                <div class="help-grid">
+                    <div class="help-card">
+                        <span class="help-icon" aria-hidden="true">👨‍🏫</span>
+                        <h4>Office Hours</h4>
+                        <p>Check Canvas for the current schedule. Come prepared with specific questions — bring your attempted proof to show what you've tried.</p>
+                    </div>
+                    <div class="help-card">
+                        <span class="help-icon" aria-hidden="true">💬</span>
+                        <h4>Canvas Discussion</h4>
+                        <p>Post questions on Canvas. Helping classmates with their questions is an excellent way to reinforce your own understanding.</p>
+                    </div>
+                    <div class="help-card">
+                        <span class="help-icon" aria-hidden="true">📚</span>
+                        <h4>MESA Tutoring</h4>
+                        <p>Available for discrete math and proof concepts. Check Canvas for current hours and location details.</p>
+                    </div>
+                    <div class="help-card">
+                        <span class="help-icon" aria-hidden="true">📧</span>
+                        <h4>Instructor Email</h4>
+                        <p>Contact your instructor through Canvas messaging. Include your attempted work so the instructor can see your reasoning.</p>
+                    </div>
+                </div>
+            </section>
+
+        </main><!-- end main -->
+
+        <!-- ===== FOOTER ===== -->
+        <footer role="contentinfo">
+            <p><strong>CSC 240 — Discrete Structures</strong></p>
+            <p>Week 6 of 17 &nbsp;|&nbsp; Proof Techniques II: Contradiction and Induction Introduction</p>
+            <p>Mendocino College Computer Science Department &nbsp;|&nbsp; Spring 2026</p>
+            <p style="margin-top: 8px; font-size: 0.82rem;">Questions? Contact your instructor through Canvas or during office hours.</p>
+        </footer>
+
+    </div><!-- end container -->
+
+    <script>
+        // ===== MODULE ACCORDION =====
+        function toggleModule(headerEl) {
+            const card = headerEl.closest('.module-card');
+            const isOpen = card.classList.contains('open');
+            card.classList.toggle('open', !isOpen);
+            headerEl.setAttribute('aria-expanded', String(!isOpen));
+        }
+
+        // Keyboard support for module headers
+        document.querySelectorAll('.module-card-header').forEach(header => {
+            header.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    toggleModule(this);
+                }
+            });
+        });
+
+        // ===== ASSIGNMENT PART TOGGLE =====
+        function togglePart(headerEl) {
+            const body = headerEl.nextElementSibling;
+            const icon = headerEl.querySelector('.part-toggle-icon');
+            const isOpen = body.classList.contains('open');
+            body.classList.toggle('open', !isOpen);
+            headerEl.setAttribute('aria-expanded', String(!isOpen));
+            if (icon) icon.style.transform = isOpen ? '' : 'rotate(180deg)';
+        }
+
+        document.querySelectorAll('.part-header').forEach(header => {
+            header.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    togglePart(this);
+                }
+            });
+        });
+
+        // Set initial part toggle icon state (both start open)
+        document.querySelectorAll('.part-toggle-icon').forEach(icon => {
+            icon.style.transform = 'rotate(180deg)';
+        });
+
+        // ===== TAB SWITCHING =====
+        function switchTab(btnEl, panelId) {
+            // Deactivate all tabs
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+                btn.setAttribute('aria-selected', 'false');
+            });
+            document.querySelectorAll('.tab-panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+            // Activate selected
+            btnEl.classList.add('active');
+            btnEl.setAttribute('aria-selected', 'true');
+            document.getElementById(panelId).classList.add('active');
+        }
+
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.click();
+                }
+            });
+        });
+
+        // ===== CHECKLIST =====
+        const TOTAL_CHECKS = 16;
+
+        function toggleCheck(itemEl) {
+            const checkbox = itemEl.querySelector('input[type="checkbox"]');
+            // Only toggle if clicking the item (not already handled by checkbox)
+            if (event.target !== checkbox) {
+                checkbox.checked = !checkbox.checked;
+            }
+            itemEl.classList.toggle('completed', checkbox.checked);
+            updateChecklistProgress();
+        }
+
+        // Handle direct checkbox interaction
+        document.querySelectorAll('.checklist-item input[type="checkbox"]').forEach(cb => {
+            cb.addEventListener('change', function() {
+                const item = this.closest('.checklist-item');
+                item.classList.toggle('completed', this.checked);
+                updateChecklistProgress();
+            });
+        });
+
+        function updateChecklistProgress() {
+            const checked = document.querySelectorAll('.checklist-item input:checked').length;
+            const pct = Math.round((checked / TOTAL_CHECKS) * 100);
+            const fill = document.getElementById('checklistProgressFill');
+            const text = document.getElementById('checklistProgressText');
+            const bar = fill.closest('[role="progressbar"]');
+
+            fill.style.width = pct + '%';
+            bar.setAttribute('aria-valuenow', pct);
+            text.textContent = checked + ' of ' + TOTAL_CHECKS + ' items completed';
+
+            if (checked === TOTAL_CHECKS) {
+                text.textContent = '🎉 All items complete! Great work this week!';
+            }
+        }
+
+        // ===== STICKY NAV ACTIVE STATE =====
+        (function() {
+            const navLinks = document.querySelectorAll('.page-nav a');
+            const sectionIds = Array.from(navLinks).map(l => l.getAttribute('href').substring(1));
+            const sections = sectionIds.map(id => document.getElementById(id)).filter(Boolean);
+
+            function updateActiveNav() {
+                const scrollY = window.scrollY + 100;
+                let current = sections[0];
+                for (const sec of sections) {
+                    if (sec && sec.offsetTop <= scrollY) current = sec;
+                }
+                navLinks.forEach(link => {
+                    const isActive = link.getAttribute('href') === '#' + (current ? current.id : '');
+                    link.classList.toggle('active', isActive);
+                });
+            }
+
+            window.addEventListener('scroll', updateActiveNav, { passive: true });
+            updateActiveNav();
+        })();
+    </script>
+</body>
+</html>
