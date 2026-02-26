@@ -112,8 +112,10 @@
 
         .module-subtitle {
             font-size: 1.1rem;
-            opacity: 0.95;
+            color: #ffffff;
+            font-weight: 600;
             margin-top: 0.5rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
         }
 
         /* Sticky Navigation Bar */
@@ -879,31 +881,137 @@
         }
 
         /* Step Reveal */
-        .step-reveal {
+        /* Proof Step Accordion */
+        .proof-accordion {
             margin: 1.5rem 0;
+            border: 2px solid var(--primary-light);
+            border-radius: var(--radius-md);
+            overflow: hidden;
         }
 
-        .step-item {
-            background: #f8f9fa;
-            border-left: 4px solid var(--border-color);
-            padding: 1rem 1.25rem;
-            margin: 0.5rem 0;
-            border-radius: 0 var(--radius-md) var(--radius-md) 0;
-            opacity: 0.5;
-            transition: all 0.3s ease;
+        .proof-step-item {
+            border-bottom: 1px solid #d0e8f0;
         }
 
-        .step-item.revealed {
-            opacity: 1;
-            border-left-color: var(--primary-color);
-            background: #ffffff;
+        .proof-step-item:last-child {
+            border-bottom: none;
         }
 
-        .step-number {
+        .proof-step-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.875rem 1.25rem;
+            background: #f0f7fa;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.2s ease;
+            border: none;
+            width: 100%;
+            text-align: left;
+            font-family: var(--font-main);
+            font-size: 1rem;
+        }
+
+        .proof-step-header:hover {
+            background: #e0eff5;
+        }
+
+        .proof-step-header:focus-visible {
+            outline: 3px solid var(--primary-color);
+            outline-offset: -3px;
+        }
+
+        .proof-step-number {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 2rem;
+            height: 2rem;
+            background: var(--primary-color);
+            color: #ffffff;
+            border-radius: 50%;
             font-weight: 700;
-            color: var(--primary-color);
-            margin-right: 0.5rem;
+            font-size: 0.85rem;
+            flex-shrink: 0;
         }
+
+        .proof-step-title {
+            flex: 1;
+            font-weight: 600;
+            color: var(--primary-dark);
+            font-size: 0.95rem;
+        }
+
+        .proof-step-icon {
+            color: var(--text-muted);
+            font-size: 1rem;
+            transition: transform 0.25s ease;
+            flex-shrink: 0;
+        }
+
+        .proof-step-item.open .proof-step-icon {
+            transform: rotate(180deg);
+        }
+
+        .proof-step-item.open .proof-step-header {
+            background: #d6edf5;
+        }
+
+        .proof-step-item.open .proof-step-number {
+            background: var(--accent-color);
+        }
+
+        .proof-step-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .proof-step-item.open .proof-step-body {
+            max-height: 800px;
+        }
+
+        .proof-step-content {
+            padding: 1rem 1.25rem 1rem 4rem;
+            background: #ffffff;
+            border-top: 1px dashed #c8e2ec;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .proof-step-content p {
+            margin: 0.5rem 0;
+        }
+
+        .proof-step-content p:first-child { margin-top: 0; }
+        .proof-step-content p:last-child  { margin-bottom: 0; }
+
+        .proof-step-content .math-display,
+        .proof-step-content .algebra-steps {
+            margin: 0.75rem 0;
+        }
+
+        .proof-step-content strong {
+            color: var(--text-primary);
+        }
+
+        .accordion-controls {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-sm {
+            font-size: 0.85rem;
+            padding: 0.4rem 0.9rem;
+        }
+
+        /* Keep legacy selectors inert so nothing breaks */
+        .step-reveal { margin: 1.5rem 0; }
+        .step-item   { display: none; }
+        .step-number { font-weight: 700; color: var(--primary-color); }
 
         /* Completion Checkboxes */
         .completion-tracker {
@@ -1073,9 +1181,19 @@
             .sticky-nav,
             .interactive-section,
             .btn-group,
+            .accordion-controls,
             .skip-link,
             .completion-tracker {
                 display: none;
+            }
+
+            .proof-step-body {
+                max-height: none !important;
+                overflow: visible;
+            }
+
+            .proof-step-content {
+                display: block !important;
             }
 
             section {
@@ -1554,82 +1672,147 @@
 
             <h3>Step-by-Step Proof</h3>
 
-            <div class="step-reveal" id="squares-proof">
-                <div class="step-item revealed">
-                    <span class="step-number">Base Case (n = 1):</span>
-                    <p>LHS: 1² = 1</p>
-                    <p>RHS: 1(1+1)(2·1+1)/6 = 1(2)(3)/6 = 6/6 = 1</p>
-                    <p>LHS = RHS ✓</p>
-                </div>
+            <div class="accordion-controls">
+                <button class="btn-secondary btn-sm" onclick="expandAllSteps('squares-proof')">Expand All Steps</button>
+                <button class="btn-reset btn-sm" onclick="collapseAllSteps('squares-proof')">Collapse All</button>
+            </div>
 
-                <div class="step-item">
-                    <span class="step-number">Inductive Hypothesis:</span>
-                    <p>Assume for some k ≥ 1:</p>
-                    <div class="math-display">∑<sub>i=1</sub><sup>k</sup> i² = k(k+1)(2k+1)/6</div>
-                </div>
+            <div class="proof-accordion" id="squares-proof">
 
-                <div class="step-item">
-                    <span class="step-number">Goal (What we need to show):</span>
-                    <div class="math-display">∑<sub>i=1</sub><sup>k+1</sup> i² = (k+1)(k+2)(2k+3)/6</div>
-                    <p>Note: We get this by replacing k with k+1 in the formula.</p>
-                </div>
-
-                <div class="step-item">
-                    <span class="step-number">Split the Sum:</span>
-                    <div class="math-display">∑<sub>i=1</sub><sup>k+1</sup> i² = ∑<sub>i=1</sub><sup>k</sup> i² + (k+1)²</div>
-                </div>
-
-                <div class="step-item">
-                    <span class="step-number">Apply the Inductive Hypothesis:</span>
-                    <div class="math-display">= k(k+1)(2k+1)/6 + (k+1)²</div>
-                </div>
-
-                <div class="step-item">
-                    <span class="step-number">Find Common Denominator:</span>
-                    <div class="math-display">= k(k+1)(2k+1)/6 + 6(k+1)²/6</div>
-                </div>
-
-                <div class="step-item">
-                    <span class="step-number">Combine and Factor:</span>
-                    <div class="algebra-steps">
-                        <div class="algebra-line">
-                            <span class="algebra-equals">=</span>
-                            <span class="algebra-expression">[k(k+1)(2k+1) + 6(k+1)²]/6</span>
-                        </div>
-                        <div class="algebra-line">
-                            <span class="algebra-equals">=</span>
-                            <span class="algebra-expression">(k+1)[k(2k+1) + 6(k+1)]/6</span>
-                            <span class="algebra-reason">[Factor out (k+1)]</span>
-                        </div>
-                        <div class="algebra-line">
-                            <span class="algebra-equals">=</span>
-                            <span class="algebra-expression">(k+1)[2k² + k + 6k + 6]/6</span>
-                            <span class="algebra-reason">[Expand]</span>
-                        </div>
-                        <div class="algebra-line">
-                            <span class="algebra-equals">=</span>
-                            <span class="algebra-expression">(k+1)[2k² + 7k + 6]/6</span>
-                            <span class="algebra-reason">[Combine like terms]</span>
-                        </div>
-                        <div class="algebra-line">
-                            <span class="algebra-equals">=</span>
-                            <span class="algebra-expression">(k+1)(k+2)(2k+3)/6</span>
-                            <span class="algebra-reason">[Factor quadratic]</span>
+                <div class="proof-step-item">
+                    <button class="proof-step-header" onclick="toggleProofStep(this)" aria-expanded="false">
+                        <span class="proof-step-number">1</span>
+                        <span class="proof-step-title">Base Case (n = 1)</span>
+                        <span class="proof-step-icon">▼</span>
+                    </button>
+                    <div class="proof-step-body">
+                        <div class="proof-step-content">
+                            <p>LHS: 1² = 1</p>
+                            <p>RHS: 1(1+1)(2·1+1)/6 = 1(2)(3)/6 = 6/6 = 1</p>
+                            <p>LHS = RHS ✓</p>
                         </div>
                     </div>
                 </div>
 
-                <div class="step-item">
-                    <span class="step-number">Conclusion:</span>
-                    <p>This is exactly (k+1)(k+2)(2k+3)/6, which is what we needed to prove!</p>
-                    <p>By induction, ∑<sub>i=1</sub><sup>n</sup> i² = n(n+1)(2n+1)/6 for all n ≥ 1. ∎</p>
+                <div class="proof-step-item">
+                    <button class="proof-step-header" onclick="toggleProofStep(this)" aria-expanded="false">
+                        <span class="proof-step-number">2</span>
+                        <span class="proof-step-title">Inductive Hypothesis</span>
+                        <span class="proof-step-icon">▼</span>
+                    </button>
+                    <div class="proof-step-body">
+                        <div class="proof-step-content">
+                            <p>Assume for some k ≥ 1:</p>
+                            <div class="math-display">∑<sub>i=1</sub><sup>k</sup> i² = k(k+1)(2k+1)/6</div>
+                        </div>
+                    </div>
                 </div>
-            </div>
 
-            <div class="btn-group">
-                <button class="btn-primary" onclick="revealNextStep('squares-proof')">Reveal Next Step</button>
-                <button class="btn-secondary" onclick="revealAllSteps('squares-proof')">Show All Steps</button>
-                <button class="btn-reset" onclick="resetSteps('squares-proof')">Reset</button>
+                <div class="proof-step-item">
+                    <button class="proof-step-header" onclick="toggleProofStep(this)" aria-expanded="false">
+                        <span class="proof-step-number">3</span>
+                        <span class="proof-step-title">Goal — What we need to show</span>
+                        <span class="proof-step-icon">▼</span>
+                    </button>
+                    <div class="proof-step-body">
+                        <div class="proof-step-content">
+                            <div class="math-display">∑<sub>i=1</sub><sup>k+1</sup> i² = (k+1)(k+2)(2k+3)/6</div>
+                            <p>Note: We get this by replacing k with k+1 in the formula.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="proof-step-item">
+                    <button class="proof-step-header" onclick="toggleProofStep(this)" aria-expanded="false">
+                        <span class="proof-step-number">4</span>
+                        <span class="proof-step-title">Split the Sum</span>
+                        <span class="proof-step-icon">▼</span>
+                    </button>
+                    <div class="proof-step-body">
+                        <div class="proof-step-content">
+                            <div class="math-display">∑<sub>i=1</sub><sup>k+1</sup> i² = ∑<sub>i=1</sub><sup>k</sup> i² + (k+1)²</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="proof-step-item">
+                    <button class="proof-step-header" onclick="toggleProofStep(this)" aria-expanded="false">
+                        <span class="proof-step-number">5</span>
+                        <span class="proof-step-title">Apply the Inductive Hypothesis</span>
+                        <span class="proof-step-icon">▼</span>
+                    </button>
+                    <div class="proof-step-body">
+                        <div class="proof-step-content">
+                            <div class="math-display">= k(k+1)(2k+1)/6 + (k+1)²</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="proof-step-item">
+                    <button class="proof-step-header" onclick="toggleProofStep(this)" aria-expanded="false">
+                        <span class="proof-step-number">6</span>
+                        <span class="proof-step-title">Find Common Denominator</span>
+                        <span class="proof-step-icon">▼</span>
+                    </button>
+                    <div class="proof-step-body">
+                        <div class="proof-step-content">
+                            <div class="math-display">= k(k+1)(2k+1)/6 + 6(k+1)²/6</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="proof-step-item">
+                    <button class="proof-step-header" onclick="toggleProofStep(this)" aria-expanded="false">
+                        <span class="proof-step-number">7</span>
+                        <span class="proof-step-title">Combine and Factor</span>
+                        <span class="proof-step-icon">▼</span>
+                    </button>
+                    <div class="proof-step-body">
+                        <div class="proof-step-content">
+                            <div class="algebra-steps">
+                                <div class="algebra-line">
+                                    <span class="algebra-equals">=</span>
+                                    <span class="algebra-expression">[k(k+1)(2k+1) + 6(k+1)²]/6</span>
+                                </div>
+                                <div class="algebra-line">
+                                    <span class="algebra-equals">=</span>
+                                    <span class="algebra-expression">(k+1)[k(2k+1) + 6(k+1)]/6</span>
+                                    <span class="algebra-reason">[Factor out (k+1)]</span>
+                                </div>
+                                <div class="algebra-line">
+                                    <span class="algebra-equals">=</span>
+                                    <span class="algebra-expression">(k+1)[2k² + k + 6k + 6]/6</span>
+                                    <span class="algebra-reason">[Expand]</span>
+                                </div>
+                                <div class="algebra-line">
+                                    <span class="algebra-equals">=</span>
+                                    <span class="algebra-expression">(k+1)[2k² + 7k + 6]/6</span>
+                                    <span class="algebra-reason">[Combine like terms]</span>
+                                </div>
+                                <div class="algebra-line">
+                                    <span class="algebra-equals">=</span>
+                                    <span class="algebra-expression">(k+1)(k+2)(2k+3)/6</span>
+                                    <span class="algebra-reason">[Factor quadratic]</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="proof-step-item">
+                    <button class="proof-step-header" onclick="toggleProofStep(this)" aria-expanded="false">
+                        <span class="proof-step-number">8</span>
+                        <span class="proof-step-title">Conclusion</span>
+                        <span class="proof-step-icon">▼</span>
+                    </button>
+                    <div class="proof-step-body">
+                        <div class="proof-step-content">
+                            <p>This is exactly (k+1)(k+2)(2k+3)/6, which is what we needed to prove!</p>
+                            <p>By induction, ∑<sub>i=1</sub><sup>n</sup> i² = n(n+1)(2n+1)/6 for all n ≥ 1. ∎</p>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
             <h3>The Tricky Part: Factoring</h3>
@@ -2466,32 +2649,41 @@
             `;
         }
 
-        // ==================== Step Reveal ====================
-        function revealNextStep(containerId) {
-            const container = document.getElementById(containerId);
-            const steps = container.querySelectorAll('.step-item:not(.revealed)');
-            if (steps.length > 0) {
-                steps[0].classList.add('revealed');
-            }
+        // ==================== Proof Step Accordion ====================
+        function toggleProofStep(headerBtn) {
+            const item = headerBtn.closest('.proof-step-item');
+            const isOpen = item.classList.contains('open');
+            item.classList.toggle('open', !isOpen);
+            headerBtn.setAttribute('aria-expanded', String(!isOpen));
         }
 
-        function revealAllSteps(containerId) {
-            const container = document.getElementById(containerId);
-            const steps = container.querySelectorAll('.step-item');
-            steps.forEach(step => step.classList.add('revealed'));
+        function expandAllSteps(containerId) {
+            document.getElementById(containerId)
+                .querySelectorAll('.proof-step-item').forEach(item => {
+                    item.classList.add('open');
+                    const btn = item.querySelector('.proof-step-header');
+                    if (btn) btn.setAttribute('aria-expanded', 'true');
+                });
         }
 
-        function resetSteps(containerId) {
-            const container = document.getElementById(containerId);
-            const steps = container.querySelectorAll('.step-item');
-            steps.forEach((step, index) => {
-                if (index === 0) {
-                    step.classList.add('revealed');
-                } else {
-                    step.classList.remove('revealed');
+        function collapseAllSteps(containerId) {
+            document.getElementById(containerId)
+                .querySelectorAll('.proof-step-item').forEach(item => {
+                    item.classList.remove('open');
+                    const btn = item.querySelector('.proof-step-header');
+                    if (btn) btn.setAttribute('aria-expanded', 'false');
+                });
+        }
+
+        // Keyboard support for proof step headers
+        document.addEventListener('keydown', function(e) {
+            if (e.target.classList.contains('proof-step-header')) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    toggleProofStep(e.target);
                 }
-            });
-        }
+            }
+        });
 
         // ==================== Collapsible Sections ====================
         function toggleCollapsible(header) {
@@ -2627,14 +2819,6 @@
         document.addEventListener('DOMContentLoaded', function() {
             loadProgress();
             updateNavHighlight();
-
-            // Initialize first step as revealed in step-reveal sections
-            document.querySelectorAll('.step-reveal').forEach(container => {
-                const firstStep = container.querySelector('.step-item');
-                if (firstStep) {
-                    firstStep.classList.add('revealed');
-                }
-            });
 
             // Smooth scroll for nav links
             document.querySelectorAll('.nav-links a').forEach(link => {
