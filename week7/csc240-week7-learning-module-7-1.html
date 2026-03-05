@@ -1,0 +1,2469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 7.1: Fundamental Counting Principles | CSC 240 - Discrete Structures</title>
+    <style>
+        /* ===== CSS RESET & BASE ===== */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            font-size: 16px;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #ffffff;
+            color: #1a1a2e;
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+
+        /* ===== SKIP LINK (ADA) ===== */
+        .skip-link {
+            position: absolute;
+            top: -100px;
+            left: 0;
+            background: #0d47a1;
+            color: #ffffff;
+            padding: 12px 24px;
+            z-index: 10000;
+            font-size: 1rem;
+            text-decoration: none;
+            border-radius: 0 0 8px 0;
+        }
+
+        .skip-link:focus {
+            top: 0;
+        }
+
+        /* ===== PROGRESS BAR ===== */
+        .progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: #e0e0e0;
+            z-index: 9999;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #1565c0, #42a5f5);
+            transition: width 0.3s ease;
+            border-radius: 0 3px 3px 0;
+        }
+
+        /* ===== HEADER ===== */
+        .course-header {
+            background: linear-gradient(135deg, #0d47a1 0%, #1565c0 50%, #1976d2 100%);
+            color: #ffffff;
+            padding: 32px 24px 28px;
+            text-align: center;
+            margin-top: 6px;
+        }
+
+        .course-header .breadcrumb {
+            font-size: 0.9rem;
+            color: #bbdefb;
+            margin-bottom: 8px;
+        }
+
+        .course-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .course-header .subtitle {
+            font-size: 1.1rem;
+            color: #e3f2fd;
+            font-weight: 400;
+        }
+
+        .module-meta {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 18px;
+            margin-top: 16px;
+        }
+
+        .meta-badge {
+            background: rgba(255,255,255,0.18);
+            color: #ffffff;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* ===== LAYOUT ===== */
+        .page-wrapper {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 32px 20px 60px;
+        }
+
+        /* ===== LEARNING OBJECTIVES BOX ===== */
+        .objectives-box {
+            background: #e8f5e9;
+            border: 2px solid #388e3c;
+            border-radius: 12px;
+            padding: 24px 28px;
+            margin-bottom: 36px;
+        }
+
+        .objectives-box h2 {
+            color: #1b5e20;
+            font-size: 1.3rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .objectives-box ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .objectives-box li {
+            padding: 6px 0 6px 28px;
+            position: relative;
+            color: #1b5e20;
+            font-size: 0.98rem;
+        }
+
+        .objectives-box li::before {
+            content: "✓";
+            position: absolute;
+            left: 4px;
+            color: #388e3c;
+            font-weight: 700;
+        }
+
+        /* ===== SECTION STYLES ===== */
+        .section {
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .section:last-child {
+            border-bottom: none;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 18px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .section-number {
+            background: #0d47a1;
+            color: #ffffff;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .section h2 {
+            font-size: 1.5rem;
+            color: #0d47a1;
+        }
+
+        .section h3 {
+            font-size: 1.2rem;
+            color: #1565c0;
+            margin: 24px 0 12px;
+        }
+
+        .section h4 {
+            font-size: 1.05rem;
+            color: #1a1a2e;
+            margin: 18px 0 10px;
+        }
+
+        .section p {
+            margin-bottom: 14px;
+            font-size: 1rem;
+            color: #212121;
+        }
+
+        /* ===== DEFINITION BOX ===== */
+        .definition-box {
+            background: #e3f2fd;
+            border-left: 5px solid #1565c0;
+            border-radius: 0 10px 10px 0;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .definition-box .def-title {
+            font-weight: 700;
+            color: #0d47a1;
+            font-size: 1.05rem;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .definition-box p {
+            color: #1a1a2e;
+            margin-bottom: 8px;
+        }
+
+        /* ===== THEOREM / PRINCIPLE BOX ===== */
+        .theorem-box {
+            background: #fff3e0;
+            border-left: 5px solid #e65100;
+            border-radius: 0 10px 10px 0;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .theorem-box .thm-title {
+            font-weight: 700;
+            color: #bf360c;
+            font-size: 1.05rem;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .theorem-box p, .theorem-box ul {
+            color: #1a1a2e;
+        }
+
+        /* ===== EXAMPLE BOX ===== */
+        .example-box {
+            background: #f3e5f5;
+            border-left: 5px solid #7b1fa2;
+            border-radius: 0 10px 10px 0;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .example-box .ex-title {
+            font-weight: 700;
+            color: #6a1b9a;
+            font-size: 1.05rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .example-box p, .example-box ul {
+            color: #1a1a2e;
+        }
+
+        .example-box .solution {
+            background: rgba(255,255,255,0.6);
+            border-radius: 8px;
+            padding: 14px 18px;
+            margin-top: 12px;
+        }
+
+        .example-box .solution-title {
+            font-weight: 700;
+            color: #4a148c;
+            margin-bottom: 4px;
+        }
+
+        /* ===== WARNING / NOTE BOX ===== */
+        .warning-box {
+            background: #fce4ec;
+            border-left: 5px solid #c62828;
+            border-radius: 0 10px 10px 0;
+            padding: 18px 24px;
+            margin: 20px 0;
+        }
+
+        .warning-box .warn-title {
+            font-weight: 700;
+            color: #b71c1c;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .note-box {
+            background: #fffde7;
+            border-left: 5px solid #f9a825;
+            border-radius: 0 10px 10px 0;
+            padding: 18px 24px;
+            margin: 20px 0;
+        }
+
+        .note-box .note-title {
+            font-weight: 700;
+            color: #f57f17;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ===== CODE BLOCKS ===== */
+        pre {
+            background: #1e1e2f;
+            color: #e0e0e0;
+            border-radius: 10px;
+            padding: 20px 24px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.92rem;
+            line-height: 1.6;
+            margin: 16px 0;
+            white-space: pre;
+            tab-size: 4;
+            border: 1px solid #333;
+        }
+
+        pre code {
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.92rem;
+            white-space: pre;
+            background: none;
+            color: inherit;
+            padding: 0;
+        }
+
+        .code-label {
+            display: inline-block;
+            background: #0d47a1;
+            color: #ffffff;
+            padding: 3px 12px;
+            border-radius: 6px 6px 0 0;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: -2px;
+        }
+
+        /* inline code */
+        .inline-code {
+            background: #e8eaf6;
+            color: #283593;
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        /* ===== TABLES ===== */
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 16px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+
+        th {
+            background: #0d47a1;
+            color: #ffffff;
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 10px 16px;
+            border-bottom: 1px solid #e0e0e0;
+            color: #212121;
+        }
+
+        tr:nth-child(even) {
+            background: #f5f5f5;
+        }
+
+        tr:hover {
+            background: #e3f2fd;
+        }
+
+        /* ===== INTERACTIVE ACTIVITY ===== */
+        .activity-container {
+            background: #f5f5f5;
+            border: 2px solid #1565c0;
+            border-radius: 12px;
+            padding: 28px;
+            margin: 28px 0;
+        }
+
+        .activity-container h3 {
+            color: #0d47a1;
+            font-size: 1.25rem;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .activity-container p {
+            margin-bottom: 12px;
+        }
+
+        /* ===== FORM ELEMENTS ===== */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #1a1a2e;
+            font-size: 0.95rem;
+        }
+
+        .form-group input[type="number"],
+        .form-group input[type="text"],
+        .form-group select {
+            width: 100%;
+            max-width: 400px;
+            padding: 10px 14px;
+            border: 2px solid #bbdefb;
+            border-radius: 8px;
+            font-size: 1rem;
+            color: #1a1a2e;
+            background: #ffffff;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #1565c0;
+            box-shadow: 0 0 0 3px rgba(21,101,192,0.2);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .btn:active {
+            transform: scale(0.97);
+        }
+
+        .btn-primary {
+            background: #1565c0;
+            color: #ffffff;
+        }
+
+        .btn-primary:hover,
+        .btn-primary:focus {
+            background: #0d47a1;
+            outline: 3px solid #90caf9;
+        }
+
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #1a1a2e;
+            margin-left: 8px;
+        }
+
+        .btn-secondary:hover,
+        .btn-secondary:focus {
+            background: #bdbdbd;
+            outline: 3px solid #90caf9;
+        }
+
+        .btn-success {
+            background: #2e7d32;
+            color: #ffffff;
+        }
+
+        .btn-success:hover,
+        .btn-success:focus {
+            background: #1b5e20;
+            outline: 3px solid #a5d6a7;
+        }
+
+        /* ===== QUIZ STYLES ===== */
+        .quiz-question {
+            background: #ffffff;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px 24px;
+            margin-bottom: 20px;
+        }
+
+        .quiz-question h4 {
+            color: #0d47a1;
+            margin-bottom: 12px;
+        }
+
+        .quiz-options {
+            list-style: none;
+            padding: 0;
+        }
+
+        .quiz-options li {
+            margin-bottom: 8px;
+        }
+
+        .quiz-options label {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 10px 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s;
+            color: #212121;
+            font-size: 0.95rem;
+        }
+
+        .quiz-options label:hover {
+            background: #e3f2fd;
+            border-color: #90caf9;
+        }
+
+        .quiz-options input[type="radio"] {
+            margin-top: 3px;
+            accent-color: #1565c0;
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+
+        .feedback {
+            padding: 14px 18px;
+            border-radius: 8px;
+            margin-top: 12px;
+            font-weight: 600;
+            display: none;
+        }
+
+        .feedback.correct {
+            background: #e8f5e9;
+            color: #1b5e20;
+            border: 1px solid #4caf50;
+            display: block;
+        }
+
+        .feedback.incorrect {
+            background: #fce4ec;
+            color: #b71c1c;
+            border: 1px solid #ef5350;
+            display: block;
+        }
+
+        .feedback.info {
+            background: #e3f2fd;
+            color: #0d47a1;
+            border: 1px solid #42a5f5;
+            display: block;
+        }
+
+        /* ===== COLLAPSIBLE SECTIONS ===== */
+        .collapsible-toggle {
+            background: #e8eaf6;
+            border: 2px solid #c5cae9;
+            border-radius: 8px;
+            padding: 14px 20px;
+            width: 100%;
+            text-align: left;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #283593;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s;
+            margin-top: 12px;
+        }
+
+        .collapsible-toggle:hover,
+        .collapsible-toggle:focus {
+            background: #c5cae9;
+            outline: 3px solid #7986cb;
+        }
+
+        .collapsible-toggle .arrow {
+            transition: transform 0.3s;
+            font-size: 1.1rem;
+        }
+
+        .collapsible-toggle.active .arrow {
+            transform: rotate(180deg);
+        }
+
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+            background: #f5f5f5;
+            border-radius: 0 0 8px 8px;
+        }
+
+        .collapsible-content .inner {
+            padding: 18px 22px;
+        }
+
+        /* ===== DIAGRAM STYLES ===== */
+        .diagram-container {
+            text-align: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: #fafafa;
+            border-radius: 10px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .tree-diagram {
+            display: inline-block;
+            text-align: center;
+        }
+
+        .tree-level {
+            display: flex;
+            justify-content: center;
+            gap: 4px;
+            margin: 4px 0;
+        }
+
+        .tree-node {
+            background: #1565c0;
+            color: #ffffff;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-block;
+            min-width: 50px;
+        }
+
+        .tree-node.highlight {
+            background: #e65100;
+        }
+
+        .tree-connector {
+            color: #757575;
+            font-size: 0.9rem;
+        }
+
+        /* ===== STEP-BY-STEP DISPLAY ===== */
+        .step-display {
+            background: #ffffff;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 16px 0;
+        }
+
+        .step {
+            padding: 12px 16px;
+            border-left: 4px solid #1565c0;
+            margin-bottom: 12px;
+            background: #f8f9fa;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .step .step-num {
+            font-weight: 700;
+            color: #0d47a1;
+            margin-right: 8px;
+        }
+
+        /* ===== CALCULATOR RESULT ===== */
+        .result-display {
+            background: #e8f5e9;
+            border: 2px solid #4caf50;
+            border-radius: 10px;
+            padding: 20px 24px;
+            margin: 16px 0;
+            display: none;
+        }
+
+        .result-display h4 {
+            color: #1b5e20;
+            margin-bottom: 10px;
+        }
+
+        .result-display .result-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2e7d32;
+        }
+
+        .result-display .result-explanation {
+            margin-top: 8px;
+            color: #1b5e20;
+            font-size: 0.95rem;
+        }
+
+        /* ===== SECTION PROGRESS TRACKER ===== */
+        .section-tracker {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 24px 0;
+            padding: 18px 20px;
+            background: #f5f5f5;
+            border-radius: 10px;
+        }
+
+        .tracker-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            color: #616161;
+        }
+
+        .tracker-item.completed {
+            color: #2e7d32;
+            font-weight: 600;
+        }
+
+        .tracker-check {
+            width: 22px;
+            height: 22px;
+            border: 2px solid #bdbdbd;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            background: #ffffff;
+        }
+
+        .tracker-item.completed .tracker-check {
+            background: #2e7d32;
+            border-color: #2e7d32;
+            color: #ffffff;
+        }
+
+        /* ===== ORDERED / UNORDERED LISTS ===== */
+        .content-list {
+            padding-left: 24px;
+            margin: 10px 0 16px;
+        }
+
+        .content-list li {
+            margin-bottom: 6px;
+            color: #212121;
+        }
+
+        /* ===== MATH DISPLAY ===== */
+        .math-block {
+            text-align: center;
+            font-size: 1.2rem;
+            padding: 16px;
+            margin: 14px 0;
+            background: #fafafa;
+            border-radius: 8px;
+            color: #1a1a2e;
+            font-family: 'Cambria Math', 'Times New Roman', serif;
+            overflow-x: auto;
+        }
+
+        .math-inline {
+            font-family: 'Cambria Math', 'Times New Roman', serif;
+            font-size: 1.05em;
+            color: #1a1a2e;
+        }
+
+        /* ===== FOOTER ===== */
+        .page-footer {
+            background: #0d47a1;
+            color: #ffffff;
+            text-align: center;
+            padding: 24px 20px;
+            font-size: 0.9rem;
+        }
+
+        .page-footer a {
+            color: #90caf9;
+            text-decoration: underline;
+        }
+
+        .page-footer a:hover {
+            color: #ffffff;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .course-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .module-meta {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .page-wrapper {
+                padding: 20px 14px 40px;
+            }
+
+            pre {
+                font-size: 0.82rem;
+                padding: 14px 12px;
+            }
+
+            .activity-container {
+                padding: 18px;
+            }
+        }
+
+        /* ===== PRINT STYLES ===== */
+        @media print {
+            .progress-container, .skip-link, .btn, .activity-container {
+                display: none;
+            }
+
+            body {
+                font-size: 12pt;
+                color: #000;
+            }
+
+            .course-header {
+                background: #000 !important;
+                -webkit-print-color-adjust: exact;
+            }
+        }
+
+        /* ===== FOCUS VISIBLE FOR KEYBOARD NAV ===== */
+        *:focus-visible {
+            outline: 3px solid #1565c0;
+            outline-offset: 2px;
+        }
+
+        /* ===== VISUAL COUNTING GRID ===== */
+        .counting-grid {
+            display: grid;
+            gap: 6px;
+            margin: 16px auto;
+            max-width: 500px;
+        }
+
+        .counting-cell {
+            background: #e3f2fd;
+            border: 2px solid #90caf9;
+            border-radius: 8px;
+            padding: 10px 8px;
+            text-align: center;
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: #0d47a1;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        .counting-cell:hover {
+            background: #bbdefb;
+            transform: scale(1.05);
+        }
+
+        .counting-cell.highlighted {
+            background: #1565c0;
+            color: #ffffff;
+            border-color: #0d47a1;
+        }
+
+        /* ===== ANIMATED COUNTER ===== */
+        .big-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #0d47a1;
+            text-align: center;
+            margin: 12px 0;
+        }
+
+        /* ===== VISUAL SEPARATOR ===== */
+        .vs-badge {
+            display: inline-block;
+            background: #e65100;
+            color: #ffffff;
+            padding: 4px 14px;
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            margin: 8px 0;
+        }
+
+        /* ===== COMPARISON TABLE ===== */
+        .comparison-highlight-sum {
+            background: #e3f2fd !important;
+        }
+
+        .comparison-highlight-product {
+            background: #fff3e0 !important;
+        }
+
+        /* ===== INTERACTIVE DROPDOWN SCENARIO ===== */
+        .scenario-card {
+            background: #ffffff;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 12px 0;
+            transition: border-color 0.3s;
+        }
+
+        .scenario-card:hover {
+            border-color: #90caf9;
+        }
+
+        .scenario-card h4 {
+            margin-bottom: 8px;
+        }
+
+        /* ===== TOOLTIP ===== */
+        .tooltip-trigger {
+            border-bottom: 2px dashed #1565c0;
+            cursor: help;
+            position: relative;
+            color: #1565c0;
+            font-weight: 600;
+        }
+
+        .tooltip-trigger .tooltip-text {
+            visibility: hidden;
+            opacity: 0;
+            position: absolute;
+            bottom: 130%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1a1a2e;
+            color: #ffffff;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 400;
+            width: 260px;
+            text-align: center;
+            z-index: 100;
+            transition: opacity 0.3s;
+            line-height: 1.5;
+        }
+
+        .tooltip-trigger:hover .tooltip-text,
+        .tooltip-trigger:focus .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* ===== TABS ===== */
+        .tab-container {
+            margin: 20px 0;
+        }
+
+        .tab-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-bottom: 0;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            border: 2px solid #c5cae9;
+            border-bottom: none;
+            border-radius: 8px 8px 0 0;
+            background: #e8eaf6;
+            color: #283593;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .tab-btn:hover,
+        .tab-btn:focus {
+            background: #c5cae9;
+        }
+
+        .tab-btn.active {
+            background: #ffffff;
+            border-color: #1565c0;
+            color: #0d47a1;
+            border-bottom: 2px solid #ffffff;
+            position: relative;
+            z-index: 1;
+        }
+
+        .tab-panel {
+            display: none;
+            border: 2px solid #1565c0;
+            border-radius: 0 8px 8px 8px;
+            padding: 22px;
+            background: #ffffff;
+            margin-top: -2px;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        /* ===== INCLUSIVE-EXCLUSIVE VISUAL ===== */
+        .ie-visual {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+
+        .ie-circle {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #ffffff;
+        }
+
+        .ie-circle.set-a {
+            background: rgba(21, 101, 192, 0.7);
+        }
+
+        .ie-circle.set-b {
+            background: rgba(230, 81, 0, 0.7);
+            margin-left: -40px;
+        }
+
+        .ie-overlap {
+            position: relative;
+        }
+
+        /* ===== SUMMARY CARD ===== */
+        .summary-card {
+            background: linear-gradient(135deg, #e3f2fd, #f3e5f5);
+            border: 2px solid #7b1fa2;
+            border-radius: 12px;
+            padding: 24px 28px;
+            margin: 28px 0;
+        }
+
+        .summary-card h3 {
+            color: #4a148c;
+            margin-bottom: 14px;
+        }
+
+        .summary-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .summary-card li {
+            padding: 8px 0 8px 24px;
+            position: relative;
+            color: #1a1a2e;
+        }
+
+        .summary-card li::before {
+            content: "▸";
+            position: absolute;
+            left: 4px;
+            color: #7b1fa2;
+            font-weight: 700;
+        }
+
+        /* Ensure strong text is accessible */
+        strong {
+            color: inherit;
+        }
+
+        /* Link styles */
+        a {
+            color: #1565c0;
+            text-decoration: underline;
+        }
+
+        a:hover {
+            color: #0d47a1;
+        }
+
+        /* Score display */
+        .score-display {
+            text-align: center;
+            padding: 20px;
+            background: #e8f5e9;
+            border-radius: 10px;
+            margin-top: 16px;
+            display: none;
+        }
+
+        .score-display .score-number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #2e7d32;
+        }
+
+        .score-display .score-label {
+            color: #1b5e20;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Skip Link for Accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <!-- Progress Bar -->
+    <div class="progress-container" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Page reading progress">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <!-- Course Header -->
+    <header class="course-header">
+        <div class="breadcrumb" aria-label="Breadcrumb">CSC 240 — Discrete Structures → Week 7 → Module 7.1</div>
+        <h1>Module 7.1: Fundamental Counting Principles</h1>
+        <p class="subtitle">The Sum Rule, Product Rule, and Building Blocks of Combinatorics</p>
+        <div class="module-meta">
+            <span class="meta-badge">📅 Week 7 of 17</span>
+            <span class="meta-badge">⏱️ Estimated: 2.0 hours</span>
+            <span class="meta-badge">📖 Saylor.org CS202 Unit 2 §2.1–2.2</span>
+            <span class="meta-badge">🎯 CSLO 2</span>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="main-content" class="page-wrapper">
+
+        <!-- Section Progress Tracker -->
+        <div class="section-tracker" aria-label="Section progress tracker">
+            <div class="tracker-item" id="tracker-1"><span class="tracker-check" aria-hidden="true"></span> Why Counting?</div>
+            <div class="tracker-item" id="tracker-2"><span class="tracker-check" aria-hidden="true"></span> Sum Rule</div>
+            <div class="tracker-item" id="tracker-3"><span class="tracker-check" aria-hidden="true"></span> Product Rule</div>
+            <div class="tracker-item" id="tracker-4"><span class="tracker-check" aria-hidden="true"></span> Sum vs Product</div>
+            <div class="tracker-item" id="tracker-5"><span class="tracker-check" aria-hidden="true"></span> Inclusion-Exclusion</div>
+            <div class="tracker-item" id="tracker-6"><span class="tracker-check" aria-hidden="true"></span> Activities</div>
+            <div class="tracker-item" id="tracker-7"><span class="tracker-check" aria-hidden="true"></span> Knowledge Check</div>
+        </div>
+
+        <!-- Learning Objectives -->
+        <div class="objectives-box" role="region" aria-label="Learning objectives">
+            <h2>🎯 Learning Objectives</h2>
+            <p>After completing this module, you will be able to:</p>
+            <ul>
+                <li>Explain why counting techniques are essential in computer science and discrete mathematics</li>
+                <li>Apply the <strong>Sum Rule</strong> (Addition Principle) to count outcomes of mutually exclusive tasks</li>
+                <li>Apply the <strong>Product Rule</strong> (Multiplication Principle) to count outcomes of sequential tasks</li>
+                <li>Distinguish between scenarios requiring the Sum Rule versus the Product Rule</li>
+                <li>Apply the <strong>Inclusion-Exclusion Principle</strong> for two sets to handle overlapping categories</li>
+                <li>Solve applied counting problems relevant to computer science (passwords, bit strings, network paths)</li>
+            </ul>
+        </div>
+
+        <!-- ===================== SECTION 1: WHY COUNTING MATTERS ===================== -->
+        <section class="section" id="section-1" aria-labelledby="sec1-heading">
+            <div class="section-header" onclick="markSectionRead(1)">
+                <div class="section-number" aria-hidden="true">1</div>
+                <h2 id="sec1-heading">Why Counting Matters in Computer Science</h2>
+            </div>
+
+            <p>Counting — formally known as <strong>combinatorics</strong> — is one of the most practical areas of discrete mathematics. Every time you analyze an algorithm's complexity, calculate how many passwords are possible, determine the number of test cases needed, or figure out how many ways to assign resources, you are using counting techniques.</p>
+
+            <div class="definition-box">
+                <div class="def-title">📘 Definition: Combinatorics</div>
+                <p><strong>Combinatorics</strong> is the branch of mathematics concerned with counting, arranging, and selecting objects according to specified rules. It answers the question: <em>"How many ways can something happen?"</em></p>
+            </div>
+
+            <h3>Real-World Motivations</h3>
+
+            <p>Consider these everyday computing questions that require counting:</p>
+
+            <ul class="content-list">
+                <li><strong>Password Security:</strong> How many 8-character passwords can be formed using uppercase letters, lowercase letters, and digits? (This determines brute-force attack feasibility.)</li>
+                <li><strong>Algorithm Analysis:</strong> How many comparisons does a sorting algorithm make in the worst case?</li>
+                <li><strong>Networking:</strong> How many unique IP addresses are possible in IPv4 vs. IPv6?</li>
+                <li><strong>Testing:</strong> How many test inputs are needed to cover all combinations of boolean parameters?</li>
+                <li><strong>Database Queries:</strong> How many possible join results can a query produce?</li>
+                <li><strong>Bit Strings:</strong> How many binary strings of length <span class="math-inline">n</span> exist? (Answer: <span class="math-inline">2ⁿ</span>)</li>
+            </ul>
+
+            <div class="note-box">
+                <div class="note-title">💡 Connection to Previous Weeks</div>
+                <p>In Weeks 1–2, you studied <strong>sets</strong>, <strong>relations</strong>, and <strong>functions</strong>. Counting builds directly on set theory. The size of a set (its <strong>cardinality</strong>) is a counting concept. The union, intersection, and Cartesian product of sets all have counting implications that we will formalize in this module.</p>
+            </div>
+
+            <h3>The Two Fundamental Questions</h3>
+
+            <p>Almost every counting problem begins by asking one of two questions:</p>
+
+            <ol class="content-list">
+                <li><strong>"OR" question:</strong> How many ways can we do Task A <em>or</em> Task B? → <strong>Sum Rule</strong></li>
+                <li><strong>"AND" question:</strong> How many ways can we do Task A <em>and then</em> Task B? → <strong>Product Rule</strong></li>
+            </ol>
+
+            <p>These two principles form the foundation of all counting techniques. Every advanced method — permutations, combinations, the binomial theorem — ultimately reduces to applications of these two rules.</p>
+
+            <button class="collapsible-toggle" aria-expanded="false" onclick="toggleCollapsible(this)">
+                <span>📖 Historical Context: The Origins of Combinatorics</span>
+                <span class="arrow" aria-hidden="true">▼</span>
+            </button>
+            <div class="collapsible-content">
+                <div class="inner">
+                    <p>Combinatorics has ancient roots. The Indian mathematician <strong>Mahāvīra</strong> (9th century) studied permutations and combinations. <strong>Blaise Pascal</strong> (1623–1662) developed Pascal's Triangle, which we'll study in Module 7.3. <strong>Gottfried Leibniz</strong> (1646–1716) called combinatorics the "art of counting" and considered it foundational to logic and computation — a remarkably prescient view given its central role in modern computer science.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================== SECTION 2: THE SUM RULE ===================== -->
+        <section class="section" id="section-2" aria-labelledby="sec2-heading">
+            <div class="section-header" onclick="markSectionRead(2)">
+                <div class="section-number" aria-hidden="true">2</div>
+                <h2 id="sec2-heading">The Sum Rule (Addition Principle)</h2>
+            </div>
+
+            <div class="definition-box">
+                <div class="def-title">📘 Definition: The Sum Rule</div>
+                <p>If a task can be done in one of two ways, where:</p>
+                <ul class="content-list">
+                    <li>Way 1 can be done in <span class="math-inline">n₁</span> ways, and</li>
+                    <li>Way 2 can be done in <span class="math-inline">n₂</span> ways, and</li>
+                    <li>The two ways are <strong>mutually exclusive</strong> (no overlap),</li>
+                </ul>
+                <p>then the task can be done in <span class="math-inline">n₁ + n₂</span> ways.</p>
+            </div>
+
+            <div class="theorem-box">
+                <div class="thm-title">📐 Formal Statement (Set Theory Version)</div>
+                <p>If <span class="math-inline">A</span> and <span class="math-inline">B</span> are <strong>disjoint</strong> finite sets (i.e., <span class="math-inline">A ∩ B = ∅</span>), then:</p>
+                <div class="math-block">|A ∪ B| = |A| + |B|</div>
+                <p>More generally, for <span class="math-inline">k</span> pairwise disjoint sets <span class="math-inline">A₁, A₂, …, Aₖ</span>:</p>
+                <div class="math-block">|A₁ ∪ A₂ ∪ … ∪ Aₖ| = |A₁| + |A₂| + … + |Aₖ|</div>
+            </div>
+
+            <h3>Key Requirement: Mutually Exclusive</h3>
+
+            <p>The Sum Rule only applies directly when the categories <strong>do not overlap</strong>. The keyword to look for is <strong>"or"</strong> — when a problem says "either this <em>or</em> that," and the options cannot happen simultaneously, use the Sum Rule.</p>
+
+            <div class="warning-box">
+                <div class="warn-title">⚠️ Common Mistake</div>
+                <p>If the categories <strong>overlap</strong> (are not mutually exclusive), you cannot simply add. You must use the <strong>Inclusion-Exclusion Principle</strong> (covered in Section 5 of this module) to avoid double-counting.</p>
+            </div>
+
+            <h3>Examples</h3>
+
+            <div class="example-box">
+                <div class="ex-title">📝 Example 2.1: Choosing a Programming Language</div>
+                <p>A student must choose <strong>one</strong> programming language for a project. The department offers:</p>
+                <ul class="content-list">
+                    <li>3 compiled languages: Java, C++, Rust</li>
+                    <li>4 interpreted languages: Python, JavaScript, Ruby, PHP</li>
+                </ul>
+                <p>How many choices does the student have?</p>
+                <div class="solution">
+                    <div class="solution-title">Solution:</div>
+                    <p>The student picks <strong>either</strong> a compiled language <strong>or</strong> an interpreted language (not both). These categories are mutually exclusive — no language appears in both lists.</p>
+                    <p>By the Sum Rule: <strong>3 + 4 = 7</strong> choices.</p>
+                </div>
+            </div>
+
+            <div class="example-box">
+                <div class="ex-title">📝 Example 2.2: Selecting a Data Structure</div>
+                <p>A programmer needs to choose a data structure for a task. The options are:</p>
+                <ul class="content-list">
+                    <li>Linear structures: Array, Linked List, Stack, Queue (4 options)</li>
+                    <li>Tree structures: Binary Tree, BST, AVL Tree (3 options)</li>
+                    <li>Hash-based structures: HashMap, HashSet (2 options)</li>
+                </ul>
+                <p>How many total data structure options exist?</p>
+                <div class="solution">
+                    <div class="solution-title">Solution:</div>
+                    <p>Each category is mutually exclusive (a structure belongs to exactly one category).</p>
+                    <p>By the generalized Sum Rule: <strong>4 + 3 + 2 = 9</strong> options.</p>
+                </div>
+            </div>
+
+            <div class="example-box">
+                <div class="ex-title">📝 Example 2.3: Bit Strings Starting with 1 or Ending with 00</div>
+                <p>How many bit strings of length 4 either start with <span class="inline-code">1</span> or end with <span class="inline-code">00</span>?</p>
+                <div class="solution">
+                    <div class="solution-title">Solution:</div>
+                    <p><strong>Careful!</strong> These categories overlap — a string can start with <span class="inline-code">1</span> AND end with <span class="inline-code">00</span> (e.g., <span class="inline-code">1100</span>). We <strong>cannot</strong> use the simple Sum Rule here. We will solve this in Section 5 using Inclusion-Exclusion.</p>
+                    <p>This example illustrates why recognizing mutual exclusivity is critical.</p>
+                </div>
+            </div>
+
+            <h3>Sum Rule in Code</h3>
+
+            <p>Here's a simple Java illustration demonstrating the Sum Rule:</p>
+
+            <div class="code-label">Java</div>
+            <pre><code>/**
+ * Sum Rule Example: Counting menu choices
+ * A restaurant offers appetizers OR desserts (pick one category)
+ */
+public class SumRuleDemo {
+    public static void main(String[] args) {
+        String[] appetizers = {"Soup", "Salad", "Bruschetta", "Wings"};
+        String[] desserts = {"Cake", "Pie", "Ice Cream"};
+
+        // Sum Rule: total choices = |appetizers| + |desserts|
+        // (assuming you pick from exactly one category)
+        int totalChoices = appetizers.length + desserts.length;
+
+        System.out.println("Appetizer options: " + appetizers.length);
+        System.out.println("Dessert options:   " + desserts.length);
+        System.out.println("Total choices (Sum Rule): " + totalChoices);
+        // Output: Total choices (Sum Rule): 7
+    }
+}</code></pre>
+
+            <button class="collapsible-toggle" aria-expanded="false" onclick="toggleCollapsible(this)">
+                <span>🔍 Why "Mutually Exclusive" Matters — A Deeper Look</span>
+                <span class="arrow" aria-hidden="true">▼</span>
+            </button>
+            <div class="collapsible-content">
+                <div class="inner">
+                    <p>In set theory terms, two sets are <strong>disjoint</strong> when <span class="math-inline">A ∩ B = ∅</span>. When we add <span class="math-inline">|A| + |B|</span>, we're counting every element exactly once. If <span class="math-inline">A ∩ B ≠ ∅</span>, some elements get counted twice — once in <span class="math-inline">|A|</span> and once in <span class="math-inline">|B|</span>.</p>
+                    <p>Think of it as a Venn diagram: if the circles don't overlap, the total count is the sum of both circles. If they do overlap, you've counted the intersection twice and need to subtract it out.</p>
+                    <p>This is exactly what the Inclusion-Exclusion Principle does: <span class="math-inline">|A ∪ B| = |A| + |B| − |A ∩ B|</span>.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================== SECTION 3: THE PRODUCT RULE ===================== -->
+        <section class="section" id="section-3" aria-labelledby="sec3-heading">
+            <div class="section-header" onclick="markSectionRead(3)">
+                <div class="section-number" aria-hidden="true">3</div>
+                <h2 id="sec3-heading">The Product Rule (Multiplication Principle)</h2>
+            </div>
+
+            <div class="definition-box">
+                <div class="def-title">📘 Definition: The Product Rule</div>
+                <p>If a procedure consists of a <strong>sequence</strong> of steps where:</p>
+                <ul class="content-list">
+                    <li>Step 1 can be done in <span class="math-inline">n₁</span> ways, and</li>
+                    <li>Step 2 can be done in <span class="math-inline">n₂</span> ways (regardless of how Step 1 was done),</li>
+                </ul>
+                <p>then the entire procedure can be done in <span class="math-inline">n₁ × n₂</span> ways.</p>
+            </div>
+
+            <div class="theorem-box">
+                <div class="thm-title">📐 Formal Statement (Set Theory Version)</div>
+                <p>If <span class="math-inline">A</span> and <span class="math-inline">B</span> are finite sets, then the number of elements in their <strong>Cartesian product</strong> is:</p>
+                <div class="math-block">|A × B| = |A| · |B|</div>
+                <p>More generally, for <span class="math-inline">k</span> sets:</p>
+                <div class="math-block">|A₁ × A₂ × … × Aₖ| = |A₁| · |A₂| · … · |Aₖ|</div>
+            </div>
+
+            <h3>Key Requirement: Independent Sequential Steps</h3>
+
+            <p>The Product Rule applies when you are performing a <strong>sequence</strong> of choices, and the number of options at each step does not depend on previous choices. The keyword is <strong>"and"</strong> or <strong>"then"</strong> — when you do one thing <em>and then</em> another thing.</p>
+
+            <div class="note-box">
+                <div class="note-title">💡 Connection to Cartesian Products (Week 1)</div>
+                <p>Recall from Week 1 that the Cartesian product <span class="math-inline">A × B</span> is the set of all ordered pairs <span class="math-inline">(a, b)</span> where <span class="math-inline">a ∈ A</span> and <span class="math-inline">b ∈ B</span>. The Product Rule is simply counting the size of a Cartesian product! If <span class="math-inline">|A| = 3</span> and <span class="math-inline">|B| = 4</span>, then <span class="math-inline">|A × B| = 12</span>.</p>
+            </div>
+
+            <h3>Visualizing the Product Rule: Tree Diagrams</h3>
+
+            <p>A <strong>tree diagram</strong> is the best way to visualize the Product Rule. Each level of the tree represents one step, and each branch represents a choice at that step.</p>
+
+            <div class="example-box">
+                <div class="ex-title">📝 Example 3.1: Outfit Selection</div>
+                <p>You have 3 shirts (Red, Green, Blue) and 2 pants (Jeans, Khakis). How many outfits can you make?</p>
+                <div class="solution">
+                    <div class="solution-title">Solution (with Tree Diagram):</div>
+                    <p>Step 1: Choose a shirt (3 ways). Step 2: Choose pants (2 ways).</p>
+                    <p>By the Product Rule: <strong>3 × 2 = 6</strong> outfits.</p>
+                </div>
+            </div>
+
+            <!-- Interactive Tree Diagram -->
+            <div class="activity-container">
+                <h3>🌳 Interactive Tree Diagram: Outfit Combinations</h3>
+                <p>Click "Generate Tree" to see all possible outfit combinations visualized as a tree:</p>
+                <button class="btn btn-primary" onclick="generateOutfitTree()" aria-label="Generate outfit combination tree diagram">Generate Tree</button>
+                <div id="outfitTreeOutput" role="region" aria-live="polite" aria-label="Tree diagram output"></div>
+            </div>
+
+            <div class="example-box">
+                <div class="ex-title">📝 Example 3.2: License Plates</div>
+                <p>A license plate consists of 3 letters followed by 3 digits. How many distinct plates are possible?</p>
+                <div class="solution">
+                    <div class="solution-title">Solution:</div>
+                    <p>This is a 6-step sequential procedure:</p>
+                    <ul class="content-list">
+                        <li>Position 1 (letter): 26 choices</li>
+                        <li>Position 2 (letter): 26 choices</li>
+                        <li>Position 3 (letter): 26 choices</li>
+                        <li>Position 4 (digit): 10 choices</li>
+                        <li>Position 5 (digit): 10 choices</li>
+                        <li>Position 6 (digit): 10 choices</li>
+                    </ul>
+                    <p>By the Product Rule: <strong>26 × 26 × 26 × 10 × 10 × 10 = 26³ × 10³ = 17,576 × 1,000 = 17,576,000</strong> plates.</p>
+                </div>
+            </div>
+
+            <div class="example-box">
+                <div class="ex-title">📝 Example 3.3: Binary Strings</div>
+                <p>How many bit strings of length <span class="math-inline">n</span> exist?</p>
+                <div class="solution">
+                    <div class="solution-title">Solution:</div>
+                    <p>Each position has 2 choices (0 or 1), and there are <span class="math-inline">n</span> positions.</p>
+                    <p>By the Product Rule: <strong>2 × 2 × … × 2 (n times) = 2ⁿ</strong></p>
+                    <ul class="content-list">
+                        <li><span class="math-inline">n = 3</span>: 2³ = 8 strings (000, 001, 010, 011, 100, 101, 110, 111)</li>
+                        <li><span class="math-inline">n = 8</span>: 2⁸ = 256 (one byte's worth of values)</li>
+                        <li><span class="math-inline">n = 32</span>: 2³² = 4,294,967,296 (IPv4 addresses!)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="example-box">
+                <div class="ex-title">📝 Example 3.4: Password Strength Analysis</div>
+                <p>A password must be exactly 8 characters long. Characters can be uppercase letters (26), lowercase letters (26), or digits (10). How many possible passwords exist?</p>
+                <div class="solution">
+                    <div class="solution-title">Solution:</div>
+                    <p>Character set size: 26 + 26 + 10 = 62 (Sum Rule for the character set)</p>
+                    <p>Each of the 8 positions can be any of 62 characters (Product Rule for the sequence):</p>
+                    <div class="math-block">62⁸ = 218,340,105,584,896 ≈ 2.18 × 10¹⁴</div>
+                    <p>That's over <strong>218 trillion</strong> possible passwords! Notice how both rules work together: the Sum Rule determines the size of the character set, and the Product Rule counts the total combinations.</p>
+                </div>
+            </div>
+
+            <h3>Product Rule in Code</h3>
+
+            <div class="code-label">Java</div>
+            <pre><code>/**
+ * Product Rule Example: Counting all possible binary strings of length n
+ */
+public class ProductRuleDemo {
+    public static void main(String[] args) {
+        int n = 8; // bit string length
+
+        // Product Rule: 2 choices per position, n positions
+        long totalStrings = (long) Math.pow(2, n);
+
+        System.out.println("Bit string length: " + n);
+        System.out.println("Total bit strings: " + totalStrings);
+        // Output: Total bit strings: 256
+
+        // Password example: 62 chars, 8 positions
+        int charSetSize = 26 + 26 + 10; // Sum Rule for char set
+        long totalPasswords = (long) Math.pow(charSetSize, 8); // Product Rule
+
+        System.out.println("\nCharacter set size: " + charSetSize);
+        System.out.println("Password length: 8");
+        System.out.println("Total passwords: " + totalPasswords);
+        // Output: Total passwords: 218340105584896
+    }
+}</code></pre>
+
+            <h3>When the Product Rule Does NOT Apply</h3>
+
+            <div class="warning-box">
+                <div class="warn-title">⚠️ Dependent Choices</div>
+                <p>The standard Product Rule assumes the number of choices at each step is <strong>independent</strong> of previous choices. If choosing one option at Step 1 changes the number of options at Step 2, you need to be more careful.</p>
+                <p><strong>Example:</strong> Choosing 2 different letters from {A, B, C} without repetition:</p>
+                <ul class="content-list">
+                    <li>Step 1: 3 choices</li>
+                    <li>Step 2: 2 choices (one letter already used)</li>
+                    <li>Total: 3 × 2 = 6 (not 3 × 3 = 9)</li>
+                </ul>
+                <p>The Product Rule still works here — the key is that Step 2 <em>always</em> has 2 choices regardless of <em>which</em> letter was chosen in Step 1. We'll explore this more in Module 7.2 (Permutations).</p>
+            </div>
+        </section>
+
+        <!-- ===================== SECTION 4: SUM vs PRODUCT ===================== -->
+        <section class="section" id="section-4" aria-labelledby="sec4-heading">
+            <div class="section-header" onclick="markSectionRead(4)">
+                <div class="section-number" aria-hidden="true">4</div>
+                <h2 id="sec4-heading">Sum Rule vs. Product Rule — How to Decide</h2>
+            </div>
+
+            <p>One of the most common challenges in counting problems is deciding <strong>which rule to apply</strong>. Here's a systematic approach:</p>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th scope="col">Feature</th>
+                            <th scope="col">Sum Rule (Addition)</th>
+                            <th scope="col">Product Rule (Multiplication)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Keyword</strong></td>
+                            <td class="comparison-highlight-sum">"or", "either…or"</td>
+                            <td class="comparison-highlight-product">"and", "then", "followed by"</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Structure</strong></td>
+                            <td class="comparison-highlight-sum">Choose one from multiple categories</td>
+                            <td class="comparison-highlight-product">Make a sequence of choices</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Set operation</strong></td>
+                            <td class="comparison-highlight-sum">Union: A ∪ B</td>
+                            <td class="comparison-highlight-product">Cartesian Product: A × B</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Requirement</strong></td>
+                            <td class="comparison-highlight-sum">Categories must be disjoint</td>
+                            <td class="comparison-highlight-product">Steps are independent</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Formula</strong></td>
+                            <td class="comparison-highlight-sum">n₁ + n₂</td>
+                            <td class="comparison-highlight-product">n₁ × n₂</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Result tends to be</strong></td>
+                            <td class="comparison-highlight-sum">Smaller</td>
+                            <td class="comparison-highlight-product">Larger</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Decision Framework</h3>
+
+            <p>Ask yourself these questions when approaching a counting problem:</p>
+
+            <ol class="content-list">
+                <li><strong>Am I choosing ONE item from multiple categories?</strong> → Sum Rule</li>
+                <li><strong>Am I making a SEQUENCE of choices to build a compound outcome?</strong> → Product Rule</li>
+                <li><strong>Do the categories overlap?</strong> → Inclusion-Exclusion (Section 5)</li>
+                <li><strong>Are both rules needed?</strong> → Often yes! Many problems use both.</li>
+            </ol>
+
+            <div class="example-box">
+                <div class="ex-title">📝 Example 4.1: Combined Rules — Variable Names</div>
+                <p>In a programming language, a valid variable name:</p>
+                <ul class="content-list">
+                    <li>Must start with a letter (uppercase or lowercase) or underscore</li>
+                    <li>The second character can be any letter, digit, or underscore</li>
+                </ul>
+                <p>How many 2-character variable names are possible?</p>
+                <div class="solution">
+                    <div class="solution-title">Solution:</div>
+                    <p><strong>Step 1 (first character):</strong> Letters + underscore = 26 + 26 + 1 = <strong>53</strong> choices (Sum Rule to build the character set)</p>
+                    <p><strong>Step 2 (second character):</strong> Letters + digits + underscore = 26 + 26 + 10 + 1 = <strong>63</strong> choices (Sum Rule again)</p>
+                    <p><strong>Total:</strong> 53 × 63 = <strong>3,339</strong> valid 2-character variable names (Product Rule for the sequence)</p>
+                </div>
+            </div>
+
+            <div class="example-box">
+                <div class="ex-title">📝 Example 4.2: Combined Rules — Network Routing</div>
+                <p>A data packet can travel from Server A to Server B via:</p>
+                <ul class="content-list">
+                    <li><strong>Route Type 1:</strong> Through 2 intermediate routers, with 3 choices for the first router and 4 choices for the second</li>
+                    <li><strong>Route Type 2:</strong> Through a direct fiber link (5 different fibers available)</li>
+                </ul>
+                <p>How many total routes exist?</p>
+                <div class="solution">
+                    <div class="solution-title">Solution:</div>
+                    <p><strong>Route Type 1:</strong> 3 × 4 = 12 routes (Product Rule — sequential routers)</p>
+                    <p><strong>Route Type 2:</strong> 5 routes</p>
+                    <p><strong>Total:</strong> 12 + 5 = <strong>17</strong> routes (Sum Rule — choose one route type)</p>
+                </div>
+            </div>
+
+            <!-- Interactive Decision Tool -->
+            <div class="activity-container">
+                <h3>🧭 Interactive: Which Rule Should I Use?</h3>
+                <p>Read each scenario and select whether it requires the Sum Rule, Product Rule, or Both. Click "Check Answer" to see if you're correct.</p>
+
+                <div class="scenario-card" id="scenario-1">
+                    <h4>Scenario 1</h4>
+                    <p>A student can take <strong>either</strong> a morning class (5 options) <strong>or</strong> an evening class (3 options), but not both.</p>
+                    <div class="form-group">
+                        <label for="scenario1-select">Your answer:</label>
+                        <select id="scenario1-select">
+                            <option value="">— Select —</option>
+                            <option value="sum">Sum Rule</option>
+                            <option value="product">Product Rule</option>
+                            <option value="both">Both Rules</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" onclick="checkScenario(1, 'sum', 'Correct! The keyword \'either...or\' with mutually exclusive options signals the Sum Rule. Total: 5 + 3 = 8 options.', 'Not quite. Look for the keyword \'either...or\' — the student picks ONE class from two non-overlapping categories.')">Check Answer</button>
+                    <div id="scenario1-feedback" class="feedback" role="alert"></div>
+                </div>
+
+                <div class="scenario-card" id="scenario-2">
+                    <h4>Scenario 2</h4>
+                    <p>A PIN code consists of 4 digits, each from 0–9.</p>
+                    <div class="form-group">
+                        <label for="scenario2-select">Your answer:</label>
+                        <select id="scenario2-select">
+                            <option value="">— Select —</option>
+                            <option value="sum">Sum Rule</option>
+                            <option value="product">Product Rule</option>
+                            <option value="both">Both Rules</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" onclick="checkScenario(2, 'product', 'Correct! You make 4 sequential choices (one per digit position), each with 10 options. Total: 10⁴ = 10,000 PINs.', 'Not quite. You are building a sequence — choosing digit 1, THEN digit 2, THEN digit 3, THEN digit 4.')">Check Answer</button>
+                    <div id="scenario2-feedback" class="feedback" role="alert"></div>
+                </div>
+
+                <div class="scenario-card" id="scenario-3">
+                    <h4>Scenario 3</h4>
+                    <p>An ID code is either a single uppercase letter OR a 2-digit number (from 00 to 99).</p>
+                    <div class="form-group">
+                        <label for="scenario3-select">Your answer:</label>
+                        <select id="scenario3-select">
+                            <option value="">— Select —</option>
+                            <option value="sum">Sum Rule</option>
+                            <option value="product">Product Rule</option>
+                            <option value="both">Both Rules</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" onclick="checkScenario(3, 'both', 'Correct! The 2-digit number uses the Product Rule (10 × 10 = 100), then the Sum Rule combines the two categories: 26 + 100 = 126 total IDs.', 'Think carefully: the 2-digit number is built using one rule, and then the two categories (letter OR number) are combined using another rule.')">Check Answer</button>
+                    <div id="scenario3-feedback" class="feedback" role="alert"></div>
+                </div>
+
+                <div class="scenario-card" id="scenario-4">
+                    <h4>Scenario 4</h4>
+                    <p>A meal combo consists of one entrée (8 options), one side (5 options), and one drink (6 options).</p>
+                    <div class="form-group">
+                        <label for="scenario4-select">Your answer:</label>
+                        <select id="scenario4-select">
+                            <option value="">— Select —</option>
+                            <option value="sum">Sum Rule</option>
+                            <option value="product">Product Rule</option>
+                            <option value="both">Both Rules</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" onclick="checkScenario(4, 'product', 'Correct! You choose an entrée AND a side AND a drink — a sequence of independent choices. Total: 8 × 5 × 6 = 240 combos.', 'Not quite. You are choosing one from each category to build a complete combo — that\'s a sequence of choices.')">Check Answer</button>
+                    <div id="scenario4-feedback" class="feedback" role="alert"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================== SECTION 5: INCLUSION-EXCLUSION ===================== -->
+        <section class="section" id="section-5" aria-labelledby="sec5-heading">
+            <div class="section-header" onclick="markSectionRead(5)">
+                <div class="section-number" aria-hidden="true">5</div>
+                <h2 id="sec5-heading">The Inclusion-Exclusion Principle</h2>
+            </div>
+
+            <p>What happens when our categories <strong>overlap</strong>? We can't simply add because elements in the overlap would be counted twice. The <strong>Inclusion-Exclusion Principle</strong> corrects for this double-counting.</p>
+
+            <div class="definition-box">
+                <div class="def-title">📘 Definition: Inclusion-Exclusion Principle (Two Sets)</div>
+                <p>For any two finite sets <span class="math-inline">A</span> and <span class="math-inline">B</span>:</p>
+                <div class="math-block">|A ∪ B| = |A| + |B| − |A ∩ B|</div>
+                <p>We <strong>include</strong> both sets, then <strong>exclude</strong> the overlap to avoid counting it twice.</p>
+            </div>
+
+            <div class="note-box">
+                <div class="note-title">💡 Special Case: Disjoint Sets</div>
+                <p>When <span class="math-inline">A ∩ B = ∅</span>, we have <span class="math-inline">|A ∩ B| = 0</span>, and the formula reduces to the Sum Rule: <span class="math-inline">|A ∪ B| = |A| + |B|</span>. So the Inclusion-Exclusion Principle is a <strong>generalization</strong> of the Sum Rule.</p>
+            </div>
+
+            <h3>Visualizing Inclusion-Exclusion</h3>
+
+            <div class="diagram-container">
+                <p><strong>Venn Diagram Intuition:</strong></p>
+                <p style="font-size: 1.1rem; margin: 12px 0;">
+                    <span style="color: #1565c0; font-weight: 700;">|A|</span> counts everything in the left circle.<br>
+                    <span style="color: #e65100; font-weight: 700;">|B|</span> counts everything in the right circle.<br>
+                    The <span style="color: #6a1b9a; font-weight: 700;">overlap (A ∩ B)</span> gets counted <strong>twice</strong> — once in |A| and once in |B|.<br>
+                    So we <strong>subtract</strong> it once: <span style="color: #1565c0; font-weight: 700;">|A|</span> + <span style="color: #e65100; font-weight: 700;">|B|</span> − <span style="color: #6a1b9a; font-weight: 700;">|A ∩ B|</span>
+                </p>
+            </div>
+
+            <div class="example-box">
+                <div class="ex-title">📝 Example 5.1: Bit Strings (Revisited from Example 2.3)</div>
+                <p>How many bit strings of length 4 either start with <span class="inline-code">1</span> or end with <span class="inline-code">00</span>?</p>
+                <div class="solution">
+                    <div class="solution-title">Solution:</div>
+                    <p>Let <span class="math-inline">A</span> = set of 4-bit strings starting with <span class="inline-code">1</span></p>
+                    <p>Let <span class="math-inline">B</span> = set of 4-bit strings ending with <span class="inline-code">00</span></p>
+                    <p><strong>|A|:</strong> First bit is fixed as 1, remaining 3 bits are free: 1 × 2 × 2 × 2 = <strong>8</strong></p>
+                    <p><strong>|B|:</strong> Last two bits are fixed as 00, first 2 bits are free: 2 × 2 × 1 × 1 = <strong>4</strong></p>
+                    <p><strong>|A ∩ B|:</strong> Start with 1 AND end with 00: 1 × 2 × 1 × 1 = <strong>2</strong> (strings: <span class="inline-code">1000</span>, <span class="inline-code">1100</span>)</p>
+                    <p>By Inclusion-Exclusion: |A ∪ B| = 8 + 4 − 2 = <strong>10</strong></p>
+                </div>
+            </div>
+
+            <div class="example-box">
+                <div class="ex-title">📝 Example 5.2: CS Students with Skills</div>
+                <p>In a class of 40 CS students: 25 know Java, 18 know Python, and 10 know both Java and Python. How many students know <strong>at least one</strong> of these languages?</p>
+                <div class="solution">
+                    <div class="solution-title">Solution:</div>
+                    <p>Let <span class="math-inline">J</span> = students who know Java, <span class="math-inline">P</span> = students who know Python.</p>
+                    <p>|J ∪ P| = |J| + |P| − |J ∩ P| = 25 + 18 − 10 = <strong>33</strong> students know at least one language.</p>
+                    <p>This means 40 − 33 = <strong>7</strong> students know neither Java nor Python.</p>
+                </div>
+            </div>
+
+            <div class="example-box">
+                <div class="ex-title">📝 Example 5.3: Integers Divisible by 2 or 3</div>
+                <p>How many positive integers from 1 to 100 are divisible by 2 <strong>or</strong> 3?</p>
+                <div class="solution">
+                    <div class="solution-title">Solution:</div>
+                    <p>Let <span class="math-inline">A</span> = multiples of 2 in {1, …, 100}: |A| = ⌊100/2⌋ = <strong>50</strong></p>
+                    <p>Let <span class="math-inline">B</span> = multiples of 3 in {1, …, 100}: |B| = ⌊100/3⌋ = <strong>33</strong></p>
+                    <p><span class="math-inline">A ∩ B</span> = multiples of 6 (both 2 and 3): |A ∩ B| = ⌊100/6⌋ = <strong>16</strong></p>
+                    <p>|A ∪ B| = 50 + 33 − 16 = <strong>67</strong></p>
+                </div>
+            </div>
+
+            <h3>Three-Set Inclusion-Exclusion (Preview)</h3>
+
+            <div class="theorem-box">
+                <div class="thm-title">📐 Inclusion-Exclusion for Three Sets</div>
+                <p>For three finite sets <span class="math-inline">A</span>, <span class="math-inline">B</span>, and <span class="math-inline">C</span>:</p>
+                <div class="math-block">|A ∪ B ∪ C| = |A| + |B| + |C| − |A ∩ B| − |A ∩ C| − |B ∩ C| + |A ∩ B ∩ C|</div>
+                <p>Pattern: Add singles, subtract pairs, add triple. This alternating pattern continues for any number of sets.</p>
+            </div>
+
+            <h3>Inclusion-Exclusion in Code</h3>
+
+            <div class="code-label">Java</div>
+            <pre><code>/**
+ * Inclusion-Exclusion Example:
+ * Count integers from 1 to n divisible by a OR b
+ */
+public class InclusionExclusionDemo {
+    public static void main(String[] args) {
+        int n = 100;
+        int a = 2, b = 3;
+
+        int divByA = n / a;                    // multiples of a
+        int divByB = n / b;                    // multiples of b
+        int divByBoth = n / lcm(a, b);         // multiples of lcm(a,b)
+
+        // Inclusion-Exclusion: |A ∪ B| = |A| + |B| - |A ∩ B|
+        int divByAorB = divByA + divByB - divByBoth;
+
+        System.out.println("Integers 1-" + n + " divisible by " + a + ": " + divByA);
+        System.out.println("Integers 1-" + n + " divisible by " + b + ": " + divByB);
+        System.out.println("Integers 1-" + n + " divisible by both: " + divByBoth);
+        System.out.println("Divisible by " + a + " or " + b + ": " + divByAorB);
+        // Output: Divisible by 2 or 3: 67
+    }
+
+    static int gcd(int a, int b) {
+        while (b != 0) {
+            int temp = b;
+            b = a % b;
+            a = temp;
+        }
+        return a;
+    }
+
+    static int lcm(int a, int b) {
+        return a / gcd(a, b) * b;
+    }
+}</code></pre>
+
+            <!-- Interactive Inclusion-Exclusion Calculator -->
+            <div class="activity-container">
+                <h3>🔢 Interactive: Inclusion-Exclusion Calculator</h3>
+                <p>Enter the sizes of two sets and their intersection to compute the size of their union.</p>
+
+                <div class="form-group">
+                    <label for="ie-setA">|A| (size of set A):</label>
+                    <input type="number" id="ie-setA" min="0" max="10000" value="25" aria-describedby="ie-help">
+                </div>
+                <div class="form-group">
+                    <label for="ie-setB">|B| (size of set B):</label>
+                    <input type="number" id="ie-setB" min="0" max="10000" value="18">
+                </div>
+                <div class="form-group">
+                    <label for="ie-intersection">|A ∩ B| (size of intersection):</label>
+                    <input type="number" id="ie-intersection" min="0" max="10000" value="10">
+                </div>
+                <p id="ie-help" style="font-size: 0.85rem; color: #616161;">Note: |A ∩ B| cannot exceed |A| or |B|.</p>
+
+                <button class="btn btn-primary" onclick="calculateIE()" aria-label="Calculate inclusion-exclusion">Calculate |A ∪ B|</button>
+
+                <div class="result-display" id="ie-result" role="region" aria-live="polite">
+                    <h4>Result</h4>
+                    <div id="ie-result-content"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================== SECTION 6: INTERACTIVE ACTIVITIES ===================== -->
+        <section class="section" id="section-6" aria-labelledby="sec6-heading">
+            <div class="section-header" onclick="markSectionRead(6)">
+                <div class="section-number" aria-hidden="true">6</div>
+                <h2 id="sec6-heading">Interactive Counting Calculator</h2>
+            </div>
+
+            <p>Use this interactive tool to explore how the Product Rule works for common counting scenarios. Select a scenario type, configure the parameters, and see the calculation broken down step by step.</p>
+
+            <div class="activity-container">
+                <h3>🧮 Counting Scenario Explorer</h3>
+
+                <div class="tab-container">
+                    <div class="tab-buttons" role="tablist">
+                        <button class="tab-btn active" role="tab" aria-selected="true" aria-controls="tab-password" id="tab-btn-password" onclick="switchTab('password')">Password Counter</button>
+                        <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-bitstring" id="tab-btn-bitstring" onclick="switchTab('bitstring')">Bit String Counter</button>
+                        <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-plate" id="tab-btn-plate" onclick="switchTab('plate')">License Plate Counter</button>
+                    </div>
+
+                    <!-- Password Tab -->
+                    <div class="tab-panel active" role="tabpanel" id="tab-password" aria-labelledby="tab-btn-password">
+                        <h4>Password Strength Calculator</h4>
+                        <p>Configure a password policy and see how many possible passwords exist.</p>
+
+                        <div class="form-group">
+                            <label for="pwd-length">Password length:</label>
+                            <input type="number" id="pwd-length" min="1" max="20" value="8">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Character types included:</label>
+                            <div style="display: flex; flex-wrap: wrap; gap: 16px; margin-top: 6px;">
+                                <label style="display: flex; align-items: center; gap: 6px; border: none; padding: 0; cursor: pointer;">
+                                    <input type="checkbox" id="pwd-upper" checked style="width: 18px; height: 18px;"> Uppercase (A–Z): 26
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 6px; border: none; padding: 0; cursor: pointer;">
+                                    <input type="checkbox" id="pwd-lower" checked style="width: 18px; height: 18px;"> Lowercase (a–z): 26
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 6px; border: none; padding: 0; cursor: pointer;">
+                                    <input type="checkbox" id="pwd-digits" checked style="width: 18px; height: 18px;"> Digits (0–9): 10
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 6px; border: none; padding: 0; cursor: pointer;">
+                                    <input type="checkbox" id="pwd-special" style="width: 18px; height: 18px;"> Special (!@#$...): 32
+                                </label>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-primary" onclick="calculatePassword()" aria-label="Calculate password combinations">Calculate</button>
+
+                        <div class="result-display" id="pwd-result" role="region" aria-live="polite">
+                            <div id="pwd-result-content"></div>
+                        </div>
+                    </div>
+
+                    <!-- Bit String Tab -->
+                    <div class="tab-panel" role="tabpanel" id="tab-bitstring" aria-labelledby="tab-btn-bitstring">
+                        <h4>Bit String Counter</h4>
+                        <p>Calculate the number of binary strings of a given length.</p>
+
+                        <div class="form-group">
+                            <label for="bit-length">Bit string length (n):</label>
+                            <input type="number" id="bit-length" min="1" max="64" value="8">
+                        </div>
+
+                        <button class="btn btn-primary" onclick="calculateBitStrings()" aria-label="Calculate bit string count">Calculate</button>
+
+                        <div class="result-display" id="bit-result" role="region" aria-live="polite">
+                            <div id="bit-result-content"></div>
+                        </div>
+                    </div>
+
+                    <!-- License Plate Tab -->
+                    <div class="tab-panel" role="tabpanel" id="tab-plate" aria-labelledby="tab-btn-plate">
+                        <h4>License Plate Counter</h4>
+                        <p>Define a plate format using L (letter) and D (digit) characters.</p>
+
+                        <div class="form-group">
+                            <label for="plate-format">Plate format (e.g., LLLDDD):</label>
+                            <input type="text" id="plate-format" value="LLLDDD" maxlength="10" style="text-transform: uppercase;" aria-describedby="plate-help">
+                        </div>
+                        <p id="plate-help" style="font-size: 0.85rem; color: #616161;">Use L for letter positions and D for digit positions. Example: LLDDDL</p>
+
+                        <button class="btn btn-primary" onclick="calculatePlates()" aria-label="Calculate license plate combinations">Calculate</button>
+
+                        <div class="result-display" id="plate-result" role="region" aria-live="polite">
+                            <div id="plate-result-content"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================== SECTION 7: KNOWLEDGE CHECK ===================== -->
+        <section class="section" id="section-7" aria-labelledby="sec7-heading">
+            <div class="section-header" onclick="markSectionRead(7)">
+                <div class="section-number" aria-hidden="true">7</div>
+                <h2 id="sec7-heading">Knowledge Check</h2>
+            </div>
+
+            <p>Test your understanding of the fundamental counting principles covered in this module. Answer all questions, then click "Submit Quiz" to see your score.</p>
+
+            <form id="quizForm" onsubmit="return false;">
+
+                <!-- Question 1 -->
+                <div class="quiz-question" id="qq-1">
+                    <h4>Question 1 of 6</h4>
+                    <p>A computer lab has 12 Windows machines and 8 Mac machines. A student needs to use <strong>one</strong> computer. How many choices does the student have?</p>
+                    <ul class="quiz-options">
+                        <li><label><input type="radio" name="q1" value="a"> 96</label></li>
+                        <li><label><input type="radio" name="q1" value="b"> 20</label></li>
+                        <li><label><input type="radio" name="q1" value="c"> 4</label></li>
+                        <li><label><input type="radio" name="q1" value="d"> 192</label></li>
+                    </ul>
+                    <div id="fb-q1" class="feedback" role="alert"></div>
+                </div>
+
+                <!-- Question 2 -->
+                <div class="quiz-question" id="qq-2">
+                    <h4>Question 2 of 6</h4>
+                    <p>A 3-digit code is formed where the first digit is from {1, 2, 3, 4}, the second digit is from {5, 6, 7}, and the third digit is from {8, 9}. How many codes are possible?</p>
+                    <ul class="quiz-options">
+                        <li><label><input type="radio" name="q2" value="a"> 9</label></li>
+                        <li><label><input type="radio" name="q2" value="b"> 24</label></li>
+                        <li><label><input type="radio" name="q2" value="c"> 36</label></li>
+                        <li><label><input type="radio" name="q2" value="d"> 12</label></li>
+                    </ul>
+                    <div id="fb-q2" class="feedback" role="alert"></div>
+                </div>
+
+                <!-- Question 3 -->
+                <div class="quiz-question" id="qq-3">
+                    <h4>Question 3 of 6</h4>
+                    <p>In a survey of 50 programmers, 30 use Git, 25 use SVN, and 12 use both. How many use <strong>at least one</strong> version control system?</p>
+                    <ul class="quiz-options">
+                        <li><label><input type="radio" name="q3" value="a"> 55</label></li>
+                        <li><label><input type="radio" name="q3" value="b"> 43</label></li>
+                        <li><label><input type="radio" name="q3" value="c"> 67</label></li>
+                        <li><label><input type="radio" name="q3" value="d"> 37</label></li>
+                    </ul>
+                    <div id="fb-q3" class="feedback" role="alert"></div>
+                </div>
+
+                <!-- Question 4 -->
+                <div class="quiz-question" id="qq-4">
+                    <h4>Question 4 of 6</h4>
+                    <p>How many bit strings of length 5 are there?</p>
+                    <ul class="quiz-options">
+                        <li><label><input type="radio" name="q4" value="a"> 10</label></li>
+                        <li><label><input type="radio" name="q4" value="b"> 25</label></li>
+                        <li><label><input type="radio" name="q4" value="c"> 32</label></li>
+                        <li><label><input type="radio" name="q4" value="d"> 64</label></li>
+                    </ul>
+                    <div id="fb-q4" class="feedback" role="alert"></div>
+                </div>
+
+                <!-- Question 5 -->
+                <div class="quiz-question" id="qq-5">
+                    <h4>Question 5 of 6</h4>
+                    <p>Which counting principle corresponds to the Cartesian product of sets?</p>
+                    <ul class="quiz-options">
+                        <li><label><input type="radio" name="q5" value="a"> Sum Rule</label></li>
+                        <li><label><input type="radio" name="q5" value="b"> Product Rule</label></li>
+                        <li><label><input type="radio" name="q5" value="c"> Inclusion-Exclusion Principle</label></li>
+                        <li><label><input type="radio" name="q5" value="d"> Pigeonhole Principle</label></li>
+                    </ul>
+                    <div id="fb-q5" class="feedback" role="alert"></div>
+                </div>
+
+                <!-- Question 6 -->
+                <div class="quiz-question" id="qq-6">
+                    <h4>Question 6 of 6</h4>
+                    <p>A function name must start with a letter (52 options) or underscore (1 option), followed by any letter, digit (10 options), or underscore. How many 2-character function names are possible?</p>
+                    <ul class="quiz-options">
+                        <li><label><input type="radio" name="q6" value="a"> 53 + 63 = 116</label></li>
+                        <li><label><input type="radio" name="q6" value="b"> 53 × 63 = 3,339</label></li>
+                        <li><label><input type="radio" name="q6" value="c"> 62 × 62 = 3,844</label></li>
+                        <li><label><input type="radio" name="q6" value="d"> 52 × 62 = 3,224</label></li>
+                    </ul>
+                    <div id="fb-q6" class="feedback" role="alert"></div>
+                </div>
+
+                <div style="text-align: center; margin-top: 20px;">
+                    <button type="button" class="btn btn-success" onclick="submitQuiz()" aria-label="Submit quiz for grading">Submit Quiz</button>
+                    <button type="button" class="btn btn-secondary" onclick="resetQuiz()" aria-label="Reset quiz answers">Reset</button>
+                </div>
+
+                <div class="score-display" id="quiz-score" role="alert">
+                    <div class="score-label">Your Score</div>
+                    <div class="score-number" id="score-value"></div>
+                    <p id="score-message" style="margin-top: 8px;"></p>
+                </div>
+            </form>
+        </section>
+
+        <!-- ===================== SUMMARY ===================== -->
+        <div class="summary-card" role="region" aria-label="Module summary">
+            <h3>📋 Module 7.1 Summary</h3>
+            <ul>
+                <li><strong>Combinatorics</strong> is the mathematics of counting, essential for algorithm analysis, security, and data structure design.</li>
+                <li><strong>Sum Rule:</strong> If task can be done way 1 (n₁ ways) OR way 2 (n₂ ways), and ways are mutually exclusive, total = n₁ + n₂. Corresponds to |A ∪ B| for disjoint sets.</li>
+                <li><strong>Product Rule:</strong> If a procedure has Step 1 (n₁ ways) AND Step 2 (n₂ ways), total = n₁ × n₂. Corresponds to |A × B| (Cartesian product).</li>
+                <li><strong>Deciding which rule:</strong> "OR" → Sum Rule. "AND/THEN" → Product Rule. Many problems use both.</li>
+                <li><strong>Inclusion-Exclusion:</strong> When categories overlap, |A ∪ B| = |A| + |B| − |A ∩ B|. Generalizes the Sum Rule.</li>
+                <li><strong>CS Applications:</strong> Password strength (Product Rule), character set construction (Sum Rule), survey overlap (Inclusion-Exclusion).</li>
+            </ul>
+        </div>
+
+        <!-- What's Next -->
+        <div class="note-box" role="region" aria-label="Next module preview">
+            <div class="note-title">📍 Up Next: Module 7.2 — Permutations</div>
+            <p>In the next module, we'll study <strong>permutations</strong> — counting the number of ways to arrange objects in order. We'll formalize the idea of "choosing without replacement" and connect it to the Product Rule with decreasing options at each step. You'll learn the factorial function, the permutation formula P(n, r), and apply these to real computing problems.</p>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="page-footer" role="contentinfo">
+        <p>CSC 240 — Discrete Structures | Mendocino College | Spring 2026</p>
+        <p>Module 7.1: Fundamental Counting Principles</p>
+        <p>Textbook: <a href="https://learn.saylor.org/course/view.php?id=67" target="_blank" rel="noopener noreferrer">Saylor.org CS202 — Discrete Structures</a></p>
+        <p style="margin-top: 8px; font-size: 0.8rem;">CSLO 2: Apply combinatorics and set theory to counting problems.</p>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // ===== SESSION STORAGE FOR PROGRESS =====
+        const MODULE_KEY = 'csc240_mod71_progress';
+
+        function loadProgress() {
+            try {
+                const data = JSON.parse(sessionStorage.getItem(MODULE_KEY));
+                return data || { sections: {}, quizSubmitted: false, quizScore: 0 };
+            } catch (e) {
+                return { sections: {}, quizSubmitted: false, quizScore: 0 };
+            }
+        }
+
+        function saveProgress(data) {
+            try {
+                sessionStorage.setItem(MODULE_KEY, JSON.stringify(data));
+            } catch (e) {
+                // Session storage unavailable; fail silently
+            }
+        }
+
+        function markSectionRead(num) {
+            const progress = loadProgress();
+            progress.sections[num] = true;
+            saveProgress(progress);
+            updateTrackers();
+        }
+
+        function updateTrackers() {
+            const progress = loadProgress();
+            for (let i = 1; i <= 7; i++) {
+                const item = document.getElementById('tracker-' + i);
+                if (item) {
+                    if (progress.sections[i]) {
+                        item.classList.add('completed');
+                        item.querySelector('.tracker-check').textContent = '✓';
+                    } else {
+                        item.classList.remove('completed');
+                        item.querySelector('.tracker-check').textContent = '';
+                    }
+                }
+            }
+            // Update progress bar
+            const completed = Object.keys(progress.sections).filter(k => progress.sections[k]).length;
+            const pct = Math.round((completed / 7) * 100);
+            const bar = document.getElementById('progressBar');
+            if (bar) {
+                bar.style.width = pct + '%';
+                bar.parentElement.setAttribute('aria-valuenow', pct);
+            }
+        }
+
+        // ===== SCROLL-BASED SECTION TRACKING =====
+        function handleScroll() {
+            const sections = document.querySelectorAll('.section');
+            sections.forEach((sec, idx) => {
+                const rect = sec.getBoundingClientRect();
+                if (rect.top < window.innerHeight * 0.5 && rect.bottom > 0) {
+                    markSectionRead(idx + 1);
+                }
+            });
+        }
+
+        window.addEventListener('scroll', handleScroll, { passive: true });
+
+        // ===== COLLAPSIBLE SECTIONS =====
+        function toggleCollapsible(btn) {
+            const content = btn.nextElementSibling;
+            const expanded = btn.getAttribute('aria-expanded') === 'true';
+
+            if (expanded) {
+                content.style.maxHeight = null;
+                btn.setAttribute('aria-expanded', 'false');
+                btn.classList.remove('active');
+            } else {
+                content.style.maxHeight = content.scrollHeight + 'px';
+                btn.setAttribute('aria-expanded', 'true');
+                btn.classList.add('active');
+            }
+        }
+
+        // ===== TREE DIAGRAM GENERATOR =====
+        function generateOutfitTree() {
+            const shirts = ['Red', 'Green', 'Blue'];
+            const pants = ['Jeans', 'Khakis'];
+            let html = '<div style="margin-top: 16px;">';
+            html += '<div style="text-align: center; font-weight: 700; color: #0d47a1; margin-bottom: 12px; font-size: 1.1rem;">Outfit Combinations (3 shirts × 2 pants = 6 outfits)</div>';
+
+            html += '<div style="overflow-x: auto;">';
+            html += '<table style="margin: 0 auto; border-collapse: separate; border-spacing: 8px;">';
+
+            // Header row - Start
+            html += '<tr><td style="text-align: center; padding: 8px; background: #0d47a1; color: #fff; border-radius: 20px; font-weight: 700;" colspan="6">Start</td></tr>';
+
+            // Shirt level
+            html += '<tr>';
+            shirts.forEach(s => {
+                html += '<td colspan="2" style="text-align: center; padding: 8px 12px; background: #1565c0; color: #fff; border-radius: 20px; font-weight: 600;">🔽 ' + s + ' Shirt</td>';
+            });
+            html += '</tr>';
+
+            // Pants level
+            html += '<tr>';
+            let count = 1;
+            shirts.forEach(s => {
+                pants.forEach(p => {
+                    html += '<td style="text-align: center; padding: 8px 10px; background: #e3f2fd; color: #0d47a1; border-radius: 10px; border: 2px solid #90caf9; font-size: 0.88rem; font-weight: 600;">' + count + '. ' + s + ' + ' + p + '</td>';
+                    count++;
+                });
+            });
+            html += '</tr>';
+
+            html += '</table></div>';
+            html += '<p style="text-align: center; margin-top: 12px; color: #1b5e20; font-weight: 600;">✓ Total outcomes: 6 (Product Rule: 3 × 2 = 6)</p>';
+            html += '</div>';
+
+            document.getElementById('outfitTreeOutput').innerHTML = html;
+        }
+
+        // ===== SCENARIO CHECKER =====
+        function checkScenario(num, correctAnswer, correctMsg, incorrectMsg) {
+            const select = document.getElementById('scenario' + num + '-select');
+            const feedback = document.getElementById('scenario' + num + '-feedback');
+            const value = select.value;
+
+            if (!value) {
+                feedback.className = 'feedback info';
+                feedback.textContent = 'Please select an answer first.';
+                feedback.style.display = 'block';
+                return;
+            }
+
+            if (value === correctAnswer) {
+                feedback.className = 'feedback correct';
+                feedback.textContent = '✓ ' + correctMsg;
+            } else {
+                feedback.className = 'feedback incorrect';
+                feedback.textContent = '✗ ' + incorrectMsg;
+            }
+            feedback.style.display = 'block';
+        }
+
+        // ===== INCLUSION-EXCLUSION CALCULATOR =====
+        function calculateIE() {
+            const a = parseInt(document.getElementById('ie-setA').value) || 0;
+            const b = parseInt(document.getElementById('ie-setB').value) || 0;
+            const inter = parseInt(document.getElementById('ie-intersection').value) || 0;
+            const resultDiv = document.getElementById('ie-result');
+            const contentDiv = document.getElementById('ie-result-content');
+
+            if (inter > a || inter > b) {
+                contentDiv.innerHTML = '<p style="color: #b71c1c; font-weight: 600;">⚠️ Error: |A ∩ B| cannot be larger than |A| or |B|.</p>';
+                resultDiv.style.display = 'block';
+                resultDiv.style.background = '#fce4ec';
+                resultDiv.style.borderColor = '#ef5350';
+                return;
+            }
+
+            const union = a + b - inter;
+            const onlyA = a - inter;
+            const onlyB = b - inter;
+
+            resultDiv.style.background = '#e8f5e9';
+            resultDiv.style.borderColor = '#4caf50';
+
+            contentDiv.innerHTML =
+                '<h4 style="color: #1b5e20;">Inclusion-Exclusion Result</h4>' +
+                '<div class="step-display">' +
+                '<div class="step"><span class="step-num">Step 1:</span> |A| + |B| = ' + a + ' + ' + b + ' = ' + (a + b) + '</div>' +
+                '<div class="step"><span class="step-num">Step 2:</span> Subtract overlap: ' + (a + b) + ' − |A ∩ B| = ' + (a + b) + ' − ' + inter + ' = ' + union + '</div>' +
+                '</div>' +
+                '<div class="big-number">' + '|A ∪ B| = ' + union + '</div>' +
+                '<p style="color: #1b5e20;"><strong>Breakdown:</strong> Only in A: ' + onlyA + ' | In both: ' + inter + ' | Only in B: ' + onlyB + '</p>';
+
+            resultDiv.style.display = 'block';
+        }
+
+        // ===== TAB SWITCHING =====
+        function switchTab(tabName) {
+            // Deactivate all tabs
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+                btn.setAttribute('aria-selected', 'false');
+            });
+            document.querySelectorAll('.tab-panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+
+            // Activate selected tab
+            document.getElementById('tab-btn-' + tabName).classList.add('active');
+            document.getElementById('tab-btn-' + tabName).setAttribute('aria-selected', 'true');
+            document.getElementById('tab-' + tabName).classList.add('active');
+        }
+
+        // ===== PASSWORD CALCULATOR =====
+        function calculatePassword() {
+            const length = parseInt(document.getElementById('pwd-length').value) || 0;
+            const hasUpper = document.getElementById('pwd-upper').checked;
+            const hasLower = document.getElementById('pwd-lower').checked;
+            const hasDigits = document.getElementById('pwd-digits').checked;
+            const hasSpecial = document.getElementById('pwd-special').checked;
+
+            let charSetSize = 0;
+            let parts = [];
+
+            if (hasUpper) { charSetSize += 26; parts.push('26 uppercase'); }
+            if (hasLower) { charSetSize += 26; parts.push('26 lowercase'); }
+            if (hasDigits) { charSetSize += 10; parts.push('10 digits'); }
+            if (hasSpecial) { charSetSize += 32; parts.push('32 special'); }
+
+            const resultDiv = document.getElementById('pwd-result');
+            const contentDiv = document.getElementById('pwd-result-content');
+
+            if (charSetSize === 0 || length === 0) {
+                contentDiv.innerHTML = '<p style="color: #b71c1c;">Please select at least one character type and a length ≥ 1.</p>';
+                resultDiv.style.display = 'block';
+                return;
+            }
+
+            const total = Math.pow(charSetSize, length);
+            const totalFormatted = total.toLocaleString('en-US', { maximumFractionDigits: 0 });
+
+            // Estimate brute force time at 1 billion guesses/sec
+            const seconds = total / 1e9;
+            let timeStr = '';
+            if (seconds < 1) timeStr = 'less than 1 second';
+            else if (seconds < 60) timeStr = Math.round(seconds) + ' seconds';
+            else if (seconds < 3600) timeStr = (seconds / 60).toFixed(1) + ' minutes';
+            else if (seconds < 86400) timeStr = (seconds / 3600).toFixed(1) + ' hours';
+            else if (seconds < 31536000) timeStr = (seconds / 86400).toFixed(1) + ' days';
+            else timeStr = (seconds / 31536000).toFixed(1) + ' years';
+
+            contentDiv.innerHTML =
+                '<h4 style="color: #1b5e20;">Password Calculation</h4>' +
+                '<div class="step-display">' +
+                '<div class="step"><span class="step-num">Sum Rule:</span> Character set = ' + parts.join(' + ') + ' = <strong>' + charSetSize + '</strong> characters</div>' +
+                '<div class="step"><span class="step-num">Product Rule:</span> ' + charSetSize + '<sup>' + length + '</sup> = ' + charSetSize + ' × '.repeat(length - 1).slice(0, -3) + ' (' + length + ' positions)</div>' +
+                '</div>' +
+                '<div class="big-number">' + totalFormatted + '</div>' +
+                '<p style="color: #1b5e20; text-align: center;">possible passwords</p>' +
+                '<p style="color: #616161; text-align: center; font-size: 0.9rem; margin-top: 8px;">⏱️ Brute-force time at 10⁹ guesses/sec: <strong>' + timeStr + '</strong></p>';
+
+            resultDiv.style.display = 'block';
+            markSectionRead(6);
+        }
+
+        // ===== BIT STRING CALCULATOR =====
+        function calculateBitStrings() {
+            const n = parseInt(document.getElementById('bit-length').value) || 0;
+            const resultDiv = document.getElementById('bit-result');
+            const contentDiv = document.getElementById('bit-result-content');
+
+            if (n < 1 || n > 64) {
+                contentDiv.innerHTML = '<p style="color: #b71c1c;">Please enter a length between 1 and 64.</p>';
+                resultDiv.style.display = 'block';
+                return;
+            }
+
+            const total = Math.pow(2, n);
+            const totalFormatted = total.toLocaleString('en-US', { maximumFractionDigits: 0 });
+
+            let examplesHtml = '';
+            if (n <= 4) {
+                const strings = [];
+                for (let i = 0; i < total; i++) {
+                    strings.push(i.toString(2).padStart(n, '0'));
+                }
+                examplesHtml = '<p style="margin-top: 12px; color: #1b5e20;"><strong>All strings:</strong> ' + strings.join(', ') + '</p>';
+            }
+
+            contentDiv.innerHTML =
+                '<h4 style="color: #1b5e20;">Bit String Calculation</h4>' +
+                '<div class="step-display">' +
+                '<div class="step"><span class="step-num">Product Rule:</span> Each of ' + n + ' positions has 2 choices (0 or 1)</div>' +
+                '<div class="step"><span class="step-num">Total:</span> 2<sup>' + n + '</sup> = <strong>' + totalFormatted + '</strong></div>' +
+                '</div>' +
+                '<div class="big-number">2<sup>' + n + '</sup> = ' + totalFormatted + '</div>' +
+                examplesHtml;
+
+            resultDiv.style.display = 'block';
+            markSectionRead(6);
+        }
+
+        // ===== LICENSE PLATE CALCULATOR =====
+        function calculatePlates() {
+            const format = document.getElementById('plate-format').value.toUpperCase().trim();
+            const resultDiv = document.getElementById('plate-result');
+            const contentDiv = document.getElementById('plate-result-content');
+
+            if (!format || !/^[LD]+$/.test(format)) {
+                contentDiv.innerHTML = '<p style="color: #b71c1c;">Please enter a valid format using only L and D characters.</p>';
+                resultDiv.style.display = 'block';
+                return;
+            }
+
+            let total = 1;
+            let stepsHtml = '';
+            for (let i = 0; i < format.length; i++) {
+                const ch = format[i];
+                const choices = ch === 'L' ? 26 : 10;
+                const type = ch === 'L' ? 'letter (26)' : 'digit (10)';
+                total *= choices;
+                stepsHtml += '<div class="step"><span class="step-num">Position ' + (i + 1) + ':</span> ' + type + '</div>';
+            }
+
+            const totalFormatted = total.toLocaleString('en-US');
+
+            let formulaParts = [];
+            for (let i = 0; i < format.length; i++) {
+                formulaParts.push(format[i] === 'L' ? '26' : '10');
+            }
+
+            contentDiv.innerHTML =
+                '<h4 style="color: #1b5e20;">License Plate Calculation</h4>' +
+                '<p><strong>Format:</strong> ' + format.split('').join(' ') + '</p>' +
+                '<div class="step-display">' + stepsHtml + '</div>' +
+                '<p style="text-align: center; font-size: 1.05rem;"><strong>Product Rule:</strong> ' + formulaParts.join(' × ') + ' = <strong>' + totalFormatted + '</strong></p>' +
+                '<div class="big-number">' + totalFormatted + '</div>' +
+                '<p style="color: #1b5e20; text-align: center;">possible license plates</p>';
+
+            resultDiv.style.display = 'block';
+            markSectionRead(6);
+        }
+
+        // ===== QUIZ =====
+        const quizAnswers = {
+            q1: 'b', // 12 + 8 = 20
+            q2: 'b', // 4 × 3 × 2 = 24
+            q3: 'b', // 30 + 25 - 12 = 43
+            q4: 'c', // 2^5 = 32
+            q5: 'b', // Product Rule
+            q6: 'b'  // 53 × 63 = 3339
+        };
+
+        const quizExplanations = {
+            q1: {
+                correct: '✓ Correct! Sum Rule: 12 + 8 = 20. The student picks ONE computer from two mutually exclusive categories (Windows or Mac).',
+                incorrect: '✗ The student picks one computer from two non-overlapping categories. Sum Rule: 12 + 8 = 20.'
+            },
+            q2: {
+                correct: '✓ Correct! Product Rule: 4 × 3 × 2 = 24. Three sequential, independent choices.',
+                incorrect: '✗ This is a sequence of three independent choices. Product Rule: 4 × 3 × 2 = 24.'
+            },
+            q3: {
+                correct: '✓ Correct! Inclusion-Exclusion: |G ∪ S| = 30 + 25 − 12 = 43.',
+                incorrect: '✗ The categories overlap (12 use both). Inclusion-Exclusion: 30 + 25 − 12 = 43.'
+            },
+            q4: {
+                correct: '✓ Correct! Product Rule: 2⁵ = 32. Each of 5 positions has 2 choices.',
+                incorrect: '✗ Each of 5 positions has 2 choices (0 or 1). Product Rule: 2⁵ = 32.'
+            },
+            q5: {
+                correct: '✓ Correct! The Product Rule counts |A × B| = |A| · |B|, which is the size of the Cartesian product.',
+                incorrect: '✗ The Cartesian product A × B contains all ordered pairs (a, b). Its size |A × B| = |A| · |B| is the Product Rule.'
+            },
+            q6: {
+                correct: '✓ Correct! First character: 52 + 1 = 53 options (Sum Rule). Second character: 52 + 10 + 1 = 63 options (Sum Rule). Total: 53 × 63 = 3,339 (Product Rule).',
+                incorrect: '✗ First character: letters (52) + underscore (1) = 53 (Sum Rule). Second character: letters (52) + digits (10) + underscore (1) = 63 (Sum Rule). Sequence: 53 × 63 = 3,339 (Product Rule).'
+            }
+        };
+
+        function submitQuiz() {
+            let score = 0;
+            const total = Object.keys(quizAnswers).length;
+
+            for (const [qKey, correctVal] of Object.entries(quizAnswers)) {
+                const selected = document.querySelector('input[name="' + qKey + '"]:checked');
+                const fb = document.getElementById('fb-' + qKey);
+
+                if (selected && selected.value === correctVal) {
+                    score++;
+                    fb.className = 'feedback correct';
+                    fb.textContent = quizExplanations[qKey].correct;
+                } else {
+                    fb.className = 'feedback incorrect';
+                    fb.textContent = quizExplanations[qKey].incorrect;
+                }
+                fb.style.display = 'block';
+            }
+
+            const scoreDiv = document.getElementById('quiz-score');
+            const scoreVal = document.getElementById('score-value');
+            const scoreMsg = document.getElementById('score-message');
+
+            scoreVal.textContent = score + ' / ' + total;
+            scoreDiv.style.display = 'block';
+
+            if (score === total) {
+                scoreMsg.textContent = '🎉 Perfect score! You have mastered the fundamental counting principles!';
+            } else if (score >= total * 0.7) {
+                scoreMsg.textContent = '👍 Good work! Review the explanations for any questions you missed.';
+            } else {
+                scoreMsg.textContent = '📚 Consider reviewing the module content and trying again. Focus on distinguishing Sum Rule vs. Product Rule scenarios.';
+            }
+
+            markSectionRead(7);
+
+            // Save quiz state
+            const progress = loadProgress();
+            progress.quizSubmitted = true;
+            progress.quizScore = score;
+            saveProgress(progress);
+
+            // Scroll to score
+            scoreDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function resetQuiz() {
+            const total = Object.keys(quizAnswers).length;
+            for (const qKey of Object.keys(quizAnswers)) {
+                const radios = document.querySelectorAll('input[name="' + qKey + '"]');
+                radios.forEach(r => r.checked = false);
+                const fb = document.getElementById('fb-' + qKey);
+                fb.style.display = 'none';
+                fb.className = 'feedback';
+            }
+            document.getElementById('quiz-score').style.display = 'none';
+        }
+
+        // ===== INITIALIZATION =====
+        document.addEventListener('DOMContentLoaded', function () {
+            updateTrackers();
+            handleScroll();
+        });
+    </script>
+</body>
+</html>

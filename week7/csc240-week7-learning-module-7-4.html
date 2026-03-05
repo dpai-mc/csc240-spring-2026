@@ -1,0 +1,1504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 7.4: Counting in Computer Science | CSC 240 - Discrete Structures</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { font-size: 16px; scroll-behavior: smooth; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #ffffff; color: #1a1a2e;
+            line-height: 1.7; min-height: 100vh;
+        }
+        .skip-link {
+            position: absolute; top: -100px; left: 0;
+            background: #0d47a1; color: #ffffff;
+            padding: 12px 24px; z-index: 10000;
+            font-size: 1rem; text-decoration: none; border-radius: 0 0 8px 0;
+        }
+        .skip-link:focus { top: 0; }
+        .progress-container {
+            position: fixed; top: 0; left: 0; width: 100%;
+            height: 6px; background: #e0e0e0; z-index: 9999;
+        }
+        .progress-bar {
+            height: 100%; width: 0%;
+            background: linear-gradient(90deg, #1565c0, #42a5f5);
+            transition: width 0.3s ease; border-radius: 0 3px 3px 0;
+        }
+        .course-header {
+            background: linear-gradient(135deg, #0d47a1 0%, #1565c0 50%, #1976d2 100%);
+            color: #ffffff; padding: 32px 24px 28px; text-align: center; margin-top: 6px;
+        }
+        .course-header .breadcrumb { font-size: 0.9rem; color: #bbdefb; margin-bottom: 8px; }
+        .course-header h1 { font-size: 2rem; font-weight: 700; margin-bottom: 6px; }
+        .course-header .subtitle { font-size: 1.1rem; color: #e3f2fd; font-weight: 400; }
+        .module-meta {
+            display: flex; flex-wrap: wrap; justify-content: center;
+            gap: 18px; margin-top: 16px;
+        }
+        .meta-badge {
+            background: rgba(255,255,255,0.18); color: #ffffff;
+            padding: 6px 16px; border-radius: 20px; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .page-wrapper { max-width: 960px; margin: 0 auto; padding: 32px 20px 60px; }
+
+        /* Objectives */
+        .objectives-box {
+            background: #e8f5e9; border: 2px solid #388e3c;
+            border-radius: 12px; padding: 24px 28px; margin-bottom: 36px;
+        }
+        .objectives-box h2 {
+            color: #1b5e20; font-size: 1.3rem; margin-bottom: 12px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .objectives-box ul { list-style: none; padding: 0; }
+        .objectives-box li {
+            padding: 6px 0 6px 28px; position: relative;
+            color: #1b5e20; font-size: 0.98rem;
+        }
+        .objectives-box li::before {
+            content: "✓"; position: absolute; left: 4px;
+            color: #388e3c; font-weight: 700;
+        }
+
+        /* Sections */
+        .section {
+            margin-bottom: 40px; padding-bottom: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .section:last-child { border-bottom: none; }
+        .section-header {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 18px; cursor: pointer; user-select: none;
+        }
+        .section-number {
+            background: #0d47a1; color: #ffffff; width: 40px; height: 40px;
+            border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; font-weight: 700; font-size: 1.1rem; flex-shrink: 0;
+        }
+        .section h2 { font-size: 1.5rem; color: #0d47a1; }
+        .section h3 { font-size: 1.2rem; color: #1565c0; margin: 24px 0 12px; }
+        .section h4 { font-size: 1.05rem; color: #1a1a2e; margin: 18px 0 10px; }
+        .section p { margin-bottom: 14px; font-size: 1rem; color: #212121; }
+
+        /* Boxes */
+        .definition-box {
+            background: #e3f2fd; border-left: 5px solid #1565c0;
+            border-radius: 0 10px 10px 0; padding: 20px 24px; margin: 20px 0;
+        }
+        .definition-box .def-title {
+            font-weight: 700; color: #0d47a1; font-size: 1.05rem;
+            margin-bottom: 6px; display: flex; align-items: center; gap: 8px;
+        }
+        .definition-box p, .definition-box ul { color: #1a1a2e; margin-bottom: 8px; }
+
+        .theorem-box {
+            background: #fff3e0; border-left: 5px solid #e65100;
+            border-radius: 0 10px 10px 0; padding: 20px 24px; margin: 20px 0;
+        }
+        .theorem-box .thm-title {
+            font-weight: 700; color: #bf360c; font-size: 1.05rem;
+            margin-bottom: 6px; display: flex; align-items: center; gap: 8px;
+        }
+        .theorem-box p, .theorem-box ul { color: #1a1a2e; }
+
+        .example-box {
+            background: #f3e5f5; border-left: 5px solid #7b1fa2;
+            border-radius: 0 10px 10px 0; padding: 20px 24px; margin: 20px 0;
+        }
+        .example-box .ex-title {
+            font-weight: 700; color: #6a1b9a; font-size: 1.05rem;
+            margin-bottom: 8px; display: flex; align-items: center; gap: 8px;
+        }
+        .example-box p, .example-box ul { color: #1a1a2e; }
+        .example-box .solution {
+            background: rgba(255,255,255,0.6); border-radius: 8px;
+            padding: 14px 18px; margin-top: 12px;
+        }
+        .example-box .solution-title { font-weight: 700; color: #4a148c; margin-bottom: 4px; }
+
+        .warning-box {
+            background: #fce4ec; border-left: 5px solid #c62828;
+            border-radius: 0 10px 10px 0; padding: 18px 24px; margin: 20px 0;
+        }
+        .warning-box .warn-title {
+            font-weight: 700; color: #b71c1c; margin-bottom: 4px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .warning-box p, .warning-box ul { color: #212121; }
+
+        .note-box {
+            background: #fffde7; border-left: 5px solid #f9a825;
+            border-radius: 0 10px 10px 0; padding: 18px 24px; margin: 20px 0;
+        }
+        .note-box .note-title {
+            font-weight: 700; color: #f57f17; margin-bottom: 4px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .note-box p, .note-box ul { color: #212121; }
+
+        .connection-box {
+            background: #e8eaf6; border-left: 5px solid #3949ab;
+            border-radius: 0 10px 10px 0; padding: 18px 24px; margin: 20px 0;
+        }
+        .connection-box .conn-title {
+            font-weight: 700; color: #1a237e; margin-bottom: 6px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .connection-box p { color: #1a1a2e; }
+
+        /* Code */
+        pre {
+            background: #1e1e2f; color: #e0e0e0; border-radius: 10px;
+            padding: 20px 24px; overflow-x: auto;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.92rem; line-height: 1.6; margin: 16px 0;
+            white-space: pre; tab-size: 4; border: 1px solid #333;
+        }
+        pre code {
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.92rem; white-space: pre;
+            background: none; color: inherit; padding: 0;
+        }
+        .code-label {
+            display: inline-block; background: #0d47a1; color: #ffffff;
+            padding: 3px 12px; border-radius: 6px 6px 0 0;
+            font-size: 0.8rem; font-weight: 600; margin-bottom: -2px;
+        }
+        .inline-code {
+            background: #e8eaf6; color: #283593; padding: 2px 7px;
+            border-radius: 4px; font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        /* Tables */
+        .table-wrapper { overflow-x: auto; margin: 16px 0; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+        th {
+            background: #0d47a1; color: #ffffff; padding: 12px 16px;
+            text-align: left; font-weight: 600;
+        }
+        td { padding: 10px 16px; border-bottom: 1px solid #e0e0e0; color: #212121; }
+        tr:nth-child(even) { background: #f5f5f5; }
+        tr:hover { background: #e3f2fd; }
+
+        /* Activity */
+        .activity-container {
+            background: #f5f5f5; border: 2px solid #1565c0;
+            border-radius: 12px; padding: 28px; margin: 28px 0;
+        }
+        .activity-container h3 {
+            color: #0d47a1; font-size: 1.25rem; margin-bottom: 16px;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .activity-container p { margin-bottom: 12px; }
+
+        /* Forms */
+        .form-group { margin-bottom: 16px; }
+        .form-group label {
+            display: block; font-weight: 600; margin-bottom: 6px;
+            color: #1a1a2e; font-size: 0.95rem;
+        }
+        .form-group input[type="number"],
+        .form-group input[type="text"],
+        .form-group select {
+            width: 100%; max-width: 400px; padding: 10px 14px;
+            border: 2px solid #bbdefb; border-radius: 8px;
+            font-size: 1rem; color: #1a1a2e; background: #ffffff;
+            transition: border-color 0.2s;
+        }
+        .form-group input:focus, .form-group select:focus {
+            outline: none; border-color: #1565c0;
+            box-shadow: 0 0 0 3px rgba(21,101,192,0.2);
+        }
+        .btn {
+            display: inline-block; padding: 10px 24px; border: none;
+            border-radius: 8px; font-size: 1rem; font-weight: 600;
+            cursor: pointer; transition: background 0.2s, transform 0.1s;
+        }
+        .btn:active { transform: scale(0.97); }
+        .btn-primary { background: #1565c0; color: #ffffff; }
+        .btn-primary:hover, .btn-primary:focus { background: #0d47a1; outline: 3px solid #90caf9; }
+        .btn-secondary { background: #e0e0e0; color: #1a1a2e; margin-left: 8px; }
+        .btn-secondary:hover, .btn-secondary:focus { background: #bdbdbd; outline: 3px solid #90caf9; }
+        .btn-success { background: #2e7d32; color: #ffffff; }
+        .btn-success:hover, .btn-success:focus { background: #1b5e20; outline: 3px solid #a5d6a7; }
+
+        /* Feedback */
+        .feedback {
+            padding: 14px 18px; border-radius: 8px; margin-top: 12px;
+            font-weight: 600; display: none;
+        }
+        .feedback.correct { background: #e8f5e9; color: #1b5e20; border: 1px solid #4caf50; display: block; }
+        .feedback.incorrect { background: #fce4ec; color: #b71c1c; border: 1px solid #ef5350; display: block; }
+        .feedback.info { background: #e3f2fd; color: #0d47a1; border: 1px solid #42a5f5; display: block; }
+
+        /* Collapsible */
+        .collapsible-toggle {
+            background: #e8eaf6; border: 2px solid #c5cae9; border-radius: 8px;
+            padding: 14px 20px; width: 100%; text-align: left;
+            font-size: 1rem; font-weight: 600; color: #283593;
+            cursor: pointer; display: flex; justify-content: space-between;
+            align-items: center; transition: background 0.2s; margin-top: 12px;
+        }
+        .collapsible-toggle:hover, .collapsible-toggle:focus { background: #c5cae9; outline: 3px solid #7986cb; }
+        .collapsible-toggle .arrow { transition: transform 0.3s; font-size: 1.1rem; }
+        .collapsible-toggle.active .arrow { transform: rotate(180deg); }
+        .collapsible-content {
+            max-height: 0; overflow: hidden; transition: max-height 0.4s ease;
+            background: #f5f5f5; border-radius: 0 0 8px 8px;
+        }
+        .collapsible-content .inner { padding: 18px 22px; }
+
+        /* Steps */
+        .step-display {
+            background: #ffffff; border: 2px solid #e0e0e0;
+            border-radius: 10px; padding: 20px; margin: 16px 0;
+        }
+        .step {
+            padding: 12px 16px; border-left: 4px solid #1565c0;
+            margin-bottom: 12px; background: #f8f9fa; border-radius: 0 8px 8px 0;
+        }
+        .step .step-num { font-weight: 700; color: #0d47a1; margin-right: 8px; }
+
+        /* Result */
+        .result-display {
+            background: #e8f5e9; border: 2px solid #4caf50;
+            border-radius: 10px; padding: 20px 24px; margin: 16px 0; display: none;
+        }
+        .result-display h4 { color: #1b5e20; margin-bottom: 10px; }
+
+        /* Tracker */
+        .section-tracker {
+            display: flex; flex-wrap: wrap; gap: 10px; margin: 24px 0;
+            padding: 18px 20px; background: #f5f5f5; border-radius: 10px;
+        }
+        .tracker-item {
+            display: flex; align-items: center; gap: 6px;
+            font-size: 0.88rem; color: #616161;
+        }
+        .tracker-item.completed { color: #2e7d32; font-weight: 600; }
+        .tracker-check {
+            width: 22px; height: 22px; border: 2px solid #bdbdbd;
+            border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; font-size: 0.75rem; background: #ffffff;
+        }
+        .tracker-item.completed .tracker-check {
+            background: #2e7d32; border-color: #2e7d32; color: #ffffff;
+        }
+
+        /* Misc */
+        .content-list { padding-left: 24px; margin: 10px 0 16px; }
+        .content-list li { margin-bottom: 6px; color: #212121; }
+        .math-block {
+            text-align: center; font-size: 1.2rem; padding: 16px;
+            margin: 14px 0; background: #fafafa; border-radius: 8px;
+            color: #1a1a2e; font-family: 'Cambria Math', 'Times New Roman', serif;
+            overflow-x: auto;
+        }
+        .big-number {
+            font-size: 2.5rem; font-weight: 800; color: #0d47a1;
+            text-align: center; margin: 12px 0;
+        }
+        .summary-card {
+            background: linear-gradient(135deg, #e3f2fd, #f3e5f5);
+            border: 2px solid #7b1fa2; border-radius: 12px;
+            padding: 24px 28px; margin: 28px 0;
+        }
+        .summary-card h3 { color: #4a148c; margin-bottom: 14px; }
+        .summary-card ul { list-style: none; padding: 0; }
+        .summary-card li {
+            padding: 8px 0 8px 24px; position: relative; color: #1a1a2e;
+        }
+        .summary-card li::before {
+            content: "▸"; position: absolute; left: 4px;
+            color: #7b1fa2; font-weight: 700;
+        }
+
+        /* Quiz */
+        .quiz-question {
+            background: #ffffff; border: 2px solid #e0e0e0;
+            border-radius: 10px; padding: 20px 24px; margin-bottom: 20px;
+        }
+        .quiz-question h4 { color: #0d47a1; margin-bottom: 12px; }
+        .quiz-options { list-style: none; padding: 0; }
+        .quiz-options li { margin-bottom: 8px; }
+        .quiz-options label {
+            display: flex; align-items: flex-start; gap: 10px;
+            padding: 10px 14px; border: 2px solid #e0e0e0;
+            border-radius: 8px; cursor: pointer;
+            transition: background 0.2s, border-color 0.2s;
+            color: #212121; font-size: 0.95rem;
+        }
+        .quiz-options label:hover { background: #e3f2fd; border-color: #90caf9; }
+        .quiz-options input[type="radio"] {
+            margin-top: 3px; accent-color: #1565c0;
+            width: 18px; height: 18px; flex-shrink: 0;
+        }
+        .score-display {
+            text-align: center; padding: 20px; background: #e8f5e9;
+            border-radius: 10px; margin-top: 16px; display: none;
+        }
+        .score-display .score-number { font-size: 2rem; font-weight: 800; color: #2e7d32; }
+        .score-display .score-label { color: #1b5e20; font-size: 1rem; }
+
+        /* Scenario Cards */
+        .scenario-card {
+            background: #ffffff; border: 2px solid #e0e0e0;
+            border-radius: 12px; padding: 22px 24px; margin: 16px 0;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .scenario-card:hover { border-color: #90caf9; box-shadow: 0 2px 12px rgba(21,101,192,0.1); }
+        .scenario-card h4 { color: #0d47a1; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        .scenario-card .sc-meta {
+            font-size: 0.85rem; color: #616161; margin-bottom: 8px;
+            display: flex; gap: 12px; flex-wrap: wrap;
+        }
+        .scenario-card .sc-meta span {
+            background: #e8eaf6; padding: 2px 10px; border-radius: 12px;
+        }
+
+        /* Meter bar for security */
+        .security-meter {
+            width: 100%; height: 24px; background: #e0e0e0;
+            border-radius: 12px; overflow: hidden; margin: 8px 0;
+        }
+        .security-fill {
+            height: 100%; border-radius: 12px;
+            transition: width 0.5s ease, background 0.5s ease;
+        }
+        .security-label {
+            text-align: center; font-weight: 700; font-size: 0.9rem; margin-top: 4px;
+        }
+
+        /* Footer */
+        .page-footer {
+            background: #0d47a1; color: #ffffff; text-align: center;
+            padding: 24px 20px; font-size: 0.9rem;
+        }
+        .page-footer a { color: #90caf9; text-decoration: underline; }
+        .page-footer a:hover { color: #ffffff; }
+
+        strong { color: inherit; }
+        a { color: #1565c0; text-decoration: underline; }
+        a:hover { color: #0d47a1; }
+        *:focus-visible { outline: 3px solid #1565c0; outline-offset: 2px; }
+
+        @media (max-width: 768px) {
+            .course-header h1 { font-size: 1.5rem; }
+            .module-meta { flex-direction: column; align-items: center; }
+            .page-wrapper { padding: 20px 14px 40px; }
+            pre { font-size: 0.82rem; padding: 14px 12px; }
+            .activity-container { padding: 18px; }
+        }
+        @media print {
+            .progress-container, .skip-link, .btn, .activity-container { display: none; }
+            body { font-size: 12pt; color: #000; }
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <div class="progress-container" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Page reading progress">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <header class="course-header">
+        <div class="breadcrumb" aria-label="Breadcrumb">CSC 240 — Discrete Structures → Week 7 → Module 7.4</div>
+        <h1>Module 7.4: Counting in Computer Science</h1>
+        <p class="subtitle">Password Security, IP Addressing, Hash Collisions, and Algorithm Input Analysis</p>
+        <div class="module-meta">
+            <span class="meta-badge">📅 Week 7 of 17</span>
+            <span class="meta-badge">⏱️ Estimated: 1.0 hour</span>
+            <span class="meta-badge">📖 Saylor CS202 Unit 2</span>
+            <span class="meta-badge">🎯 CSLO 2, CSLO 3</span>
+        </div>
+    </header>
+
+    <main id="main-content" class="page-wrapper">
+
+        <div class="section-tracker" aria-label="Section progress tracker">
+            <div class="tracker-item" id="tracker-1"><span class="tracker-check" aria-hidden="true"></span> Passwords</div>
+            <div class="tracker-item" id="tracker-2"><span class="tracker-check" aria-hidden="true"></span> IP Addresses</div>
+            <div class="tracker-item" id="tracker-3"><span class="tracker-check" aria-hidden="true"></span> Hash Collisions</div>
+            <div class="tracker-item" id="tracker-4"><span class="tracker-check" aria-hidden="true"></span> Algorithm Inputs</div>
+            <div class="tracker-item" id="tracker-5"><span class="tracker-check" aria-hidden="true"></span> Activities</div>
+            <div class="tracker-item" id="tracker-6"><span class="tracker-check" aria-hidden="true"></span> Knowledge Check</div>
+        </div>
+
+        <div class="objectives-box" role="region" aria-label="Learning objectives">
+            <h2>🎯 Learning Objectives</h2>
+            <p>After completing this module, you will be able to:</p>
+            <ul>
+                <li>Apply counting principles to analyze password strength and brute-force attack feasibility</li>
+                <li>Calculate the size of IP address spaces (IPv4 and IPv6) using the Product Rule</li>
+                <li>Use the Pigeonhole Principle to reason about hash collisions</li>
+                <li>Count algorithm inputs to determine test case requirements and worst-case complexity</li>
+                <li>Identify which counting technique (sum, product, permutation, combination) applies to each CS scenario</li>
+                <li>Translate real-world computing problems into combinatorial formulas</li>
+            </ul>
+        </div>
+
+        <div class="connection-box">
+            <div class="conn-title">🔗 Connecting Modules 7.1–7.3 to Practice</div>
+            <p>In Modules 7.1–7.3 you learned the <strong>Sum Rule</strong>, <strong>Product Rule</strong>, <strong>Inclusion-Exclusion</strong>, <strong>permutations</strong> (P(n,r), nʳ), <strong>combinations</strong> (C(n,r)), <strong>Stars and Bars</strong>, and <strong>Pascal's Triangle</strong>. This module applies every one of these tools to real computing problems. The goal is to build your ability to <em>recognize</em> which technique a problem requires and <em>translate</em> the problem into the correct formula.</p>
+        </div>
+
+        <!-- ==================== SECTION 1: PASSWORD SECURITY ==================== -->
+        <section class="section" id="section-1" aria-labelledby="sec1-heading">
+            <div class="section-header" onclick="markSectionRead(1)">
+                <div class="section-number" aria-hidden="true">1</div>
+                <h2 id="sec1-heading">Password Security Analysis</h2>
+            </div>
+
+            <p>Password security is one of the most direct applications of counting in computing. The strength of a password policy depends on the <strong>size of the password space</strong> — the total number of possible passwords. A larger space means a brute-force attacker must try more guesses.</p>
+
+            <h3>The Counting Model</h3>
+
+            <p>A password of length L drawn from an alphabet of size A (with repetition allowed and order matters) is a <strong>permutation with repetition</strong>:</p>
+
+            <div class="math-block">Total passwords = Aᴸ</div>
+
+            <p>This is the Product Rule from Module 7.1: each of the L positions has A independent choices.</p>
+
+            <div class="definition-box">
+                <div class="def-title">📘 Key Terms</div>
+                <ul class="content-list">
+                    <li><strong>Alphabet size (A):</strong> Number of distinct characters allowed (Sum Rule builds this from character classes)</li>
+                    <li><strong>Password length (L):</strong> Number of character positions</li>
+                    <li><strong>Password space:</strong> Total possible passwords = Aᴸ</li>
+                    <li><strong>Entropy:</strong> log₂(Aᴸ) = L × log₂(A) bits — measures information content</li>
+                </ul>
+            </div>
+
+            <div class="example-box">
+                <div class="ex-title">📝 Example 1.1: Basic Password Analysis</div>
+                <p>A system requires passwords of exactly 8 characters. Compare these policies:</p>
+                <div class="solution">
+                    <div class="solution-title">Solution:</div>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr><th>Policy</th><th>Alphabet (A)</th><th>Space (A⁸)</th><th>Entropy (bits)</th><th>Brute-force @ 10⁹/s</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>Digits only</td><td>10</td><td>10⁸ = 100,000,000</td><td>26.6</td><td>0.1 seconds</td></tr>
+                                <tr><td>Lowercase only</td><td>26</td><td>26⁸ ≈ 2.09 × 10¹¹</td><td>37.6</td><td>3.5 minutes</td></tr>
+                                <tr><td>Lower + upper</td><td>52</td><td>52⁸ ≈ 5.35 × 10¹³</td><td>45.6</td><td>14.8 hours</td></tr>
+                                <tr><td>Lower + upper + digits</td><td>62</td><td>62⁸ ≈ 2.18 × 10¹⁴</td><td>47.6</td><td>2.5 days</td></tr>
+                                <tr><td>All printable ASCII</td><td>95</td><td>95⁸ ≈ 6.63 × 10¹⁵</td><td>52.6</td><td>76.8 days</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p><strong>Counting techniques used:</strong> Sum Rule (building alphabet: 26 + 26 + 10 = 62), Product Rule (Aᴸ for the total space).</p>
+                </div>
+            </div>
+
+            <div class="example-box">
+                <div class="ex-title">📝 Example 1.2: Variable-Length Passwords</div>
+                <p>A system allows passwords of length 6 to 10 using the 62-character alphanumeric alphabet. How many total passwords are possible?</p>
+                <div class="solution">
+                    <div class="solution-title">Solution:</div>
+                    <p>A password has length 6 <strong>or</strong> 7 <strong>or</strong> 8 <strong>or</strong> 9 <strong>or</strong> 10. These are mutually exclusive categories (a password has exactly one length), so we use the <strong>Sum Rule</strong>:</p>
+                    <p>Total = 62⁶ + 62⁷ + 62⁸ + 62⁹ + 62¹⁰</p>
+                    <p>= 56,800,235,584 + 3,521,614,606,208 + 218,340,105,584,896 + 13,537,086,546,263,552 + 839,299,365,868,340,224</p>
+                    <p>≈ <strong>8.53 × 10¹⁷</strong></p>
+                    <p><strong>Counting techniques used:</strong> Product Rule (each length), Sum Rule (combining lengths).</p>
+                </div>
+            </div>
+
+            <div class="example-box">
+                <div class="ex-title">📝 Example 1.3: Passwords with Constraints (Inclusion-Exclusion)</div>
+                <p>How many 8-character passwords using the 62-character alphabet contain <strong>at least one digit</strong>?</p>
+                <div class="solution">
+                    <div class="solution-title">Solution:</div>
+                    <p>Using <strong>complementary counting</strong> (Module 7.1):</p>
+                    <p>Passwords with at least one digit = Total − Passwords with <strong>no</strong> digits</p>
+                    <p>Total: 62⁸ ≈ 2.18 × 10¹⁴</p>
+                    <p>No digits (letters only, alphabet = 52): 52⁸ ≈ 5.35 × 10¹³</p>
+                    <p>At least one digit: 62⁸ − 52⁸ ≈ 2.18 × 10¹⁴ − 5.35 × 10¹³ ≈ <strong>1.65 × 10¹⁴</strong></p>
+                    <p><strong>Counting techniques used:</strong> Product Rule, Complementary Counting (Inclusion-Exclusion).</p>
+                </div>
+            </div>
+
+            <div class="note-box">
+                <div class="note-title">💡 Entropy and Security Standards</div>
+                <p>NIST (National Institute of Standards and Technology) recommends at least <strong>80 bits of entropy</strong> for high-security passwords. Since entropy = L × log₂(A), you can calculate the minimum length for any alphabet. With the 95-character printable ASCII set: L ≥ 80 / log₂(95) ≈ 80 / 6.57 ≈ 12.2, so at least <strong>13 characters</strong>.</p>
+            </div>
+
+            <!-- Interactive Password Analyzer -->
+            <div class="activity-container">
+                <h3>🔐 Interactive: Password Security Analyzer</h3>
+                <p>Configure a password policy and see the security analysis with brute-force time estimates.</p>
+                <div class="form-group">
+                    <label for="pw-length">Password length:</label>
+                    <input type="number" id="pw-length" min="1" max="32" value="8">
+                </div>
+                <div class="form-group">
+                    <label>Character classes included:</label>
+                    <div style="display:flex;flex-wrap:wrap;gap:14px;margin-top:6px;">
+                        <label style="display:flex;align-items:center;gap:6px;border:none;padding:0;cursor:pointer;">
+                            <input type="checkbox" id="pw-lower" checked style="width:18px;height:18px;"> Lowercase a–z (26)
+                        </label>
+                        <label style="display:flex;align-items:center;gap:6px;border:none;padding:0;cursor:pointer;">
+                            <input type="checkbox" id="pw-upper" checked style="width:18px;height:18px;"> Uppercase A–Z (26)
+                        </label>
+                        <label style="display:flex;align-items:center;gap:6px;border:none;padding:0;cursor:pointer;">
+                            <input type="checkbox" id="pw-digits" checked style="width:18px;height:18px;"> Digits 0–9 (10)
+                        </label>
+                        <label style="display:flex;align-items:center;gap:6px;border:none;padding:0;cursor:pointer;">
+                            <input type="checkbox" id="pw-special" style="width:18px;height:18px;"> Special chars (33)
+                        </label>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="analyzePassword()" aria-label="Analyze password security">Analyze Security</button>
+                <div class="result-display" id="pw-result" role="region" aria-live="polite">
+                    <div id="pw-result-content"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== SECTION 2: IP ADDRESSES ==================== -->
+        <section class="section" id="section-2" aria-labelledby="sec2-heading">
+            <div class="section-header" onclick="markSectionRead(2)">
+                <div class="section-number" aria-hidden="true">2</div>
+                <h2 id="sec2-heading">IP Address Spaces</h2>
+            </div>
+
+            <p>IP addresses are a perfect example of the Product Rule applied to networking. Understanding the size of address spaces explains why IPv4 addresses ran out and why IPv6 was designed.</p>
+
+            <h3>IPv4 Addresses</h3>
+
+            <div class="definition-box">
+                <div class="def-title">📘 IPv4 Structure</div>
+                <p>An IPv4 address is a <strong>32-bit</strong> binary number, typically displayed as four 8-bit <strong>octets</strong> in decimal notation (e.g., 192.168.1.1). Each octet ranges from 0 to 255.</p>
+            </div>
+
+            <div class="example-box">
+                <div class="ex-title">📝 Example 2.1: IPv4 Address Space</div>
+                <p>How many unique IPv4 addresses exist?</p>
+                <div class="solution">
+                    <div class="solution-title">Solution (Method 1 — Binary):</div>
+                    <p>32 bit positions, each with 2 choices (0 or 1). Product Rule:</p>
+                    <p>2³² = <strong>4,294,967,296</strong> ≈ 4.3 billion addresses</p>
+                    <div class="solution-title" style="margin-top:12px;">Solution (Method 2 — Octets):</div>
+                    <p>4 octets, each with 256 values (0–255). Product Rule:</p>
+                    <p>256⁴ = 256 × 256 × 256 × 256 = <strong>4,294,967,296</strong> ✓</p>
+                    <p>Both methods give the same answer because 256 = 2⁸ and (2⁸)⁴ = 2³².</p>
+                </div>
+            </div>
+
+            <div class="example-box">
+                <div class="ex-title">📝 Example 2.2: Subnet Analysis</div>
+                <p>A /24 subnet (like 192.168.1.0/24) fixes the first 24 bits. How many host addresses are available?</p>
+                <div class="solution">
+                    <div class="solution-title">Solution:</div>
+                    <p>32 − 24 = 8 free bits → 2⁸ = 256 total addresses</p>
+                    <p>Subtract 2 reserved addresses (network address .0 and broadcast .255):</p>
+                    <p>256 − 2 = <strong>254</strong> usable host addresses</p>
+                    <p>General formula for a /n subnet: 2⁽³²⁻ⁿ⁾ − 2 usable hosts</p>
+                </div>
+            </div>
+
+            <h3>IPv6 Addresses</h3>
+
+            <div class="definition-box">
+                <div class="def-title">📘 IPv6 Structure</div>
+                <p>An IPv6 address is a <strong>128-bit</strong> number, displayed as eight groups of four hexadecimal digits (e.g., 2001:0db8:85a3:0000:0000:8a2e:0370:7334).</p>
+            </div>
+
+            <div class="example-box">
+                <div class="ex-title">📝 Example 2.3: IPv6 Address Space</div>
+                <p>How many unique IPv6 addresses exist?</p>
+                <div class="solution">
+                    <div class="solution-title">Solution:</div>
+                    <p>2¹²⁸ ≈ 3.4 × 10³⁸</p>
+                    <p>That's approximately <strong>340 undecillion</strong> addresses — enough to assign about 5 × 10²⁸ addresses to every person on Earth.</p>
+                    <p>For perspective: IPv6 / IPv4 ratio = 2¹²⁸ / 2³² = 2⁹⁶ ≈ 7.9 × 10²⁸. IPv6 has about <strong>79 octillion times</strong> more addresses than IPv4.</p>
+                </div>
+            </div>
+
+            <div class="example-box">
+                <div class="ex-title">📝 Example 2.4: MAC Addresses</div>
+                <p>A MAC (Media Access Control) address is 48 bits. How many unique MAC addresses exist? Is this enough for all devices ever manufactured?</p>
+                <div class="solution">
+                    <div class="solution-title">Solution:</div>
+                    <p>2⁴⁸ = <strong>281,474,976,710,656</strong> ≈ 281 trillion</p>
+                    <p>With an estimated 30+ billion IoT devices projected by 2030, 281 trillion is sufficient for now — but the address space is not unlimited. This is why EUI-64 (64-bit) identifiers were developed.</p>
+                </div>
+            </div>
+
+            <!-- Interactive Subnet Calculator -->
+            <div class="activity-container">
+                <h3>🌐 Interactive: Address Space Calculator</h3>
+                <p>Enter the number of bits to see the address space size and practical context.</p>
+                <div style="display:flex;flex-wrap:wrap;gap:16px;">
+                    <div class="form-group">
+                        <label for="addr-bits">Total address bits:</label>
+                        <input type="number" id="addr-bits" min="1" max="128" value="32">
+                    </div>
+                    <div class="form-group">
+                        <label for="addr-fixed">Fixed prefix bits (0 for full space):</label>
+                        <input type="number" id="addr-fixed" min="0" max="127" value="0">
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="calcAddressSpace()" aria-label="Calculate address space">Calculate</button>
+                <div class="result-display" id="addr-result" role="region" aria-live="polite">
+                    <div id="addr-result-content"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== SECTION 3: HASH COLLISIONS ==================== -->
+        <section class="section" id="section-3" aria-labelledby="sec3-heading">
+            <div class="section-header" onclick="markSectionRead(3)">
+                <div class="section-number" aria-hidden="true">3</div>
+                <h2 id="sec3-heading">Hash Functions and Collisions</h2>
+            </div>
+
+            <p>Hash functions map data of arbitrary size to fixed-size values. Counting tells us <strong>why collisions are inevitable</strong> and helps us analyze collision probability.</p>
+
+            <div class="definition-box">
+                <div class="def-title">📘 Key Definitions</div>
+                <ul class="content-list">
+                    <li><strong>Hash function:</strong> A function h: U → {0, 1, …, m−1} mapping a large universe U to m hash values (buckets)</li>
+                    <li><strong>Collision:</strong> When two distinct inputs x ≠ y produce the same hash: h(x) = h(y)</li>
+                    <li><strong>Load factor:</strong> n/m where n is the number of items stored and m is the number of buckets</li>
+                </ul>
+            </div>
+
+            <h3>The Pigeonhole Principle</h3>
+
+            <div class="theorem-box">
+                <div class="thm-title">📐 Pigeonhole Principle</div>
+                <p>If n items are placed into m containers and n &gt; m, then at least one container holds more than one item.</p>
+                <p><strong>Consequence for hashing:</strong> If the number of possible inputs exceeds the number of hash values, collisions are <strong>guaranteed</strong>.</p>
+            </div>
+
+            <div class="example-box">
+                <div class="ex-title">📝 Example 3.1: Guaranteed Collisions</div>
+                <p>A hash function maps strings to 32-bit values. If we hash 2³² + 1 distinct strings, are collisions guaranteed?</p>
+                <div class="solution">
+                    <div class="solution-title">Solution:</div>
+                    <p>The hash function has 2³² ≈ 4.3 billion possible output values (pigeonholes). With 2³² + 1 distinct inputs (pigeons), by the Pigeonhole Principle, at least two strings must share a hash value.</p>
+                    <p><strong>Yes, collisions are guaranteed.</strong></p>
+                </div>
+            </div>
+
+            <h3>The Birthday Problem and Collision Probability</h3>
+
+            <div class="theorem-box">
+                <div class="thm-title">📐 Birthday Problem Framework</div>
+                <p>If n items are independently and uniformly assigned to m buckets, the probability that <strong>all</strong> items get distinct buckets is:</p>
+                <div class="math-block">P(no collision) = m/m × (m−1)/m × (m−2)/m × … × (m−n+1)/m = P(m, n) / mⁿ</div>
+                <p>The probability of <strong>at least one collision</strong> is: 1 − P(no collision)</p>
+                <p>A collision becomes likely (≥ 50%) when n ≈ 1.2 × √m.</p>
+            </div>
+
+            <div class="example-box">
+                <div class="ex-title">📝 Example 3.2: The Classic Birthday Problem</div>
+                <p>In a room of 23 people, what is the probability that at least two share a birthday? (Assume 365 equally likely birthdays.)</p>
+                <div class="solution">
+                    <div class="solution-title">Solution:</div>
+                    <p>m = 365 (buckets), n = 23 (items).</p>
+                    <p>P(no shared birthday) = P(365, 23) / 365²³</p>
+                    <p>= (365 × 364 × 363 × … × 343) / 365²³</p>
+                    <p>= 365!/342! / 365²³ ≈ 0.4927</p>
+                    <p>P(at least one shared birthday) = 1 − 0.4927 ≈ <strong>0.5073 (50.7%)</strong></p>
+                    <p><strong>Counting techniques:</strong> P(365, 23) counts the no-collision arrangements (permutations without repetition). 365²³ counts all possible arrangements (permutations with repetition). The ratio gives the probability.</p>
+                </div>
+            </div>
+
+            <div class="example-box">
+                <div class="ex-title">📝 Example 3.3: Hash Table Collision Threshold</div>
+                <p>A hash table uses 16-bit hashes (m = 2¹⁶ = 65,536 buckets). Approximately how many items before a collision is likely?</p>
+                <div class="solution">
+                    <div class="solution-title">Solution:</div>
+                    <p>Using the birthday approximation: n ≈ 1.2 × √m = 1.2 × √65,536 = 1.2 × 256 ≈ <strong>307 items</strong></p>
+                    <p>With only ~307 items in a 65,536-bucket table (load factor ≈ 0.5%), there's already a 50% chance of collision! This demonstrates why hash functions need large output spaces.</p>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <div class="warn-title">⚠️ Birthday Attack in Cryptography</div>
+                <p>The birthday problem has serious security implications. A hash function with an n-bit output can be "broken" (collision found) in approximately 2ⁿ/² operations, not 2ⁿ. This is called a <strong>birthday attack</strong>. It's why MD5 (128-bit) and SHA-1 (160-bit) are considered insecure — birthday attacks require only 2⁶⁴ and 2⁸⁰ operations respectively, which are feasible with modern hardware.</p>
+            </div>
+
+            <!-- Interactive Birthday Problem Calculator -->
+            <div class="activity-container">
+                <h3>🎂 Interactive: Birthday / Collision Calculator</h3>
+                <p>Enter the number of possible values (buckets) and items to compute the collision probability.</p>
+                <div style="display:flex;flex-wrap:wrap;gap:16px;">
+                    <div class="form-group">
+                        <label for="bp-buckets">Number of buckets (m):</label>
+                        <input type="number" id="bp-buckets" min="2" max="100000" value="365">
+                    </div>
+                    <div class="form-group">
+                        <label for="bp-items">Number of items (n):</label>
+                        <input type="number" id="bp-items" min="1" max="1000" value="23">
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="calcBirthday()" aria-label="Calculate collision probability">Calculate</button>
+                <div class="result-display" id="bp-result" role="region" aria-live="polite">
+                    <div id="bp-result-content"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== SECTION 4: ALGORITHM INPUTS ==================== -->
+        <section class="section" id="section-4" aria-labelledby="sec4-heading">
+            <div class="section-header" onclick="markSectionRead(4)">
+                <div class="section-number" aria-hidden="true">4</div>
+                <h2 id="sec4-heading">Counting Algorithm Inputs</h2>
+            </div>
+
+            <p>Counting the number of possible inputs to an algorithm is essential for <strong>testing</strong>, <strong>complexity analysis</strong>, and understanding <strong>why brute-force approaches fail</strong> for many problems.</p>
+
+            <h3>Boolean Function Inputs</h3>
+
+            <div class="example-box">
+                <div class="ex-title">📝 Example 4.1: Truth Table Size</div>
+                <p>A boolean function has n input variables. How many rows does its truth table have? How many distinct boolean functions of n variables exist?</p>
+                <div class="solution">
+                    <div class="solution-title">Solution:</div>
+                    <p><strong>Truth table rows:</strong> Each variable has 2 values (T/F). Product Rule: 2ⁿ rows.</p>
+                    <p><strong>Distinct functions:</strong> Each of the 2ⁿ rows can output T or F independently. Product Rule again:</p>
+                    <p>Number of boolean functions = 2^(2ⁿ)</p>
+                    <ul class="content-list">
+                        <li>n = 1: 2² = 4 functions (NOT, identity, always-true, always-false)</li>
+                        <li>n = 2: 2⁴ = 16 functions (AND, OR, XOR, NAND, NOR, …)</li>
+                        <li>n = 3: 2⁸ = 256 functions</li>
+                        <li>n = 10: 2¹⁰²⁴ ≈ 1.8 × 10³⁰⁸ — astronomically more than atoms in the universe</li>
+                    </ul>
+                    <p>This is why exhaustive testing of all boolean functions is infeasible for even moderate n.</p>
+                </div>
+            </div>
+
+            <h3>Sorting Algorithm Inputs</h3>
+
+            <div class="example-box">
+                <div class="ex-title">📝 Example 4.2: Permutations as Sorting Inputs</div>
+                <p>A sorting algorithm receives an array of n distinct elements. How many distinct input orderings exist?</p>
+                <div class="solution">
+                    <div class="solution-title">Solution:</div>
+                    <p>Each input ordering is a <strong>permutation</strong> of the n elements: <strong>n!</strong></p>
+                    <ul class="content-list">
+                        <li>n = 10: 10! = 3,628,800</li>
+                        <li>n = 20: 20! ≈ 2.4 × 10¹⁸</li>
+                        <li>n = 100: 100! ≈ 9.3 × 10¹⁵⁷</li>
+                    </ul>
+                    <p><strong>Lower bound on comparison sorts:</strong> Any comparison-based sorting algorithm must make at least log₂(n!) comparisons in the worst case. By Stirling's approximation: log₂(n!) ≈ n log₂ n − n log₂ e ≈ n log₂ n. This is why comparison sorts are Ω(n log n).</p>
+                </div>
+            </div>
+
+            <h3>Subset Selection Problems</h3>
+
+            <div class="example-box">
+                <div class="ex-title">📝 Example 4.3: The Knapsack Problem</div>
+                <p>In the 0/1 Knapsack problem, you have n items and must decide which to include. How many possible selections exist?</p>
+                <div class="solution">
+                    <div class="solution-title">Solution:</div>
+                    <p>Each item is either included or excluded. Product Rule: <strong>2ⁿ</strong> possible subsets.</p>
+                    <ul class="content-list">
+                        <li>n = 20: 2²⁰ = 1,048,576 (feasible to enumerate)</li>
+                        <li>n = 50: 2⁵⁰ ≈ 1.13 × 10¹⁵ (borderline)</li>
+                        <li>n = 100: 2¹⁰⁰ ≈ 1.27 × 10³⁰ (completely infeasible)</li>
+                    </ul>
+                    <p>This exponential growth is why the Knapsack problem is <strong>NP-hard</strong> — no known polynomial-time algorithm exists.</p>
+                </div>
+            </div>
+
+            <h3>Graph Problems</h3>
+
+            <div class="example-box">
+                <div class="ex-title">📝 Example 4.4: Counting Graphs and Paths</div>
+                <p><strong>(a)</strong> How many simple undirected graphs on n labeled vertices exist?</p>
+                <p><strong>(b)</strong> How many Hamiltonian paths (visiting each vertex exactly once) could exist in a complete graph on n vertices?</p>
+                <div class="solution">
+                    <div class="solution-title">Solution:</div>
+                    <p><strong>(a)</strong> There are C(n, 2) = n(n−1)/2 possible edges. Each edge is either present or absent:</p>
+                    <p>Number of graphs = 2^(C(n,2)) = 2^(n(n−1)/2)</p>
+                    <ul class="content-list">
+                        <li>n = 5: 2¹⁰ = 1,024 graphs</li>
+                        <li>n = 10: 2⁴⁵ ≈ 3.5 × 10¹³ graphs</li>
+                    </ul>
+                    <p><strong>(b)</strong> A Hamiltonian path is a permutation of the n vertices: <strong>n!</strong> possible paths to check. For n = 20, that's 20! ≈ 2.4 × 10¹⁸ — this is why the Hamiltonian path problem is NP-complete.</p>
+                    <p><strong>Counting techniques:</strong> C(n, 2) for edge count (combination), 2^(C(n,2)) for graph count (Product Rule), n! for path count (permutation).</p>
+                </div>
+            </div>
+
+            <h3>Summary: Counting and Complexity Classes</h3>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr><th>Problem</th><th>Input Space Size</th><th>Growth</th><th>Brute-Force Feasible?</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Binary strings of length n</td><td>2ⁿ</td><td>Exponential</td><td>Only for small n</td></tr>
+                        <tr><td>Permutations of n items</td><td>n!</td><td>Factorial</td><td>Only for n ≤ ~12</td></tr>
+                        <tr><td>Subsets of n items</td><td>2ⁿ</td><td>Exponential</td><td>Only for small n</td></tr>
+                        <tr><td>Graphs on n vertices</td><td>2^(n(n−1)/2)</td><td>Super-exponential</td><td>Only for n ≤ ~6</td></tr>
+                        <tr><td>Boolean functions of n vars</td><td>2^(2ⁿ)</td><td>Double-exponential</td><td>Only for n ≤ ~4</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="connection-box">
+                <div class="conn-title">🔗 Connection to Algorithm Analysis (Future Weeks)</div>
+                <p>The counting techniques from this week directly support <strong>algorithm analysis</strong> in later weeks. The number of possible inputs determines the brute-force baseline. Efficient algorithms beat this baseline by exploiting structure — but counting tells us the <strong>minimum</strong> work any algorithm must do (lower bounds). The log₂(n!) lower bound for comparison sorts is a classic example.</p>
+            </div>
+        </section>
+        
+        <!-- ==================== SECTION 5: ACTIVITIES ==================== -->
+        <section class="section" id="section-5" aria-labelledby="sec5-heading">
+            <div class="section-header" onclick="markSectionRead(5)">
+                <div class="section-number" aria-hidden="true">5</div>
+                <h2 id="sec5-heading">Interactive Activities</h2>
+            </div>
+
+            <h3>Activity 1: CS Scenario Analyzer</h3>
+
+            <p>For each real-world computing scenario, identify the counting technique, set up the formula, and compute the answer. Select your answer and check.</p>
+
+            <div class="activity-container">
+                <h3>🎯 Identify the Technique</h3>
+
+                <div class="quiz-question" id="sc-q1">
+                    <h4>Scenario 1: WiFi Passwords</h4>
+                    <p>A WiFi router generates a random 10-character password using lowercase letters and digits (36 characters total). How many possible passwords exist, and which counting technique applies?</p>
+                    <ul class="quiz-options">
+                        <li><label><input type="radio" name="sc1" value="a"> P(36, 10) — permutation without repetition</label></li>
+                        <li><label><input type="radio" name="sc1" value="b"> 36¹⁰ — permutation with repetition (Product Rule)</label></li>
+                        <li><label><input type="radio" name="sc1" value="c"> C(36, 10) — combination</label></li>
+                        <li><label><input type="radio" name="sc1" value="d"> C(45, 10) — combination with repetition</label></li>
+                    </ul>
+                    <button class="btn btn-primary" onclick="checkSC(1,'b','✓ Correct! A password is an ordered sequence where characters can repeat. Product Rule: 36¹⁰ = 3,656,158,440,062,976 ≈ 3.66 × 10¹⁵.','✗ A password is a sequence (order matters: \"abc\" ≠ \"cba\") and characters can repeat (\"aaa\" is valid). This is nʳ = 36¹⁰ ≈ 3.66 × 10¹⁵.')">Check</button>
+                    <div id="sc-fb1" class="feedback" role="alert"></div>
+                </div>
+
+                <div class="quiz-question" id="sc-q2">
+                    <h4>Scenario 2: Network Connections</h4>
+                    <p>A local network has 15 computers. How many direct point-to-point connections are possible (each connection links exactly 2 computers)?</p>
+                    <ul class="quiz-options">
+                        <li><label><input type="radio" name="sc2" value="a"> P(15, 2) = 210</label></li>
+                        <li><label><input type="radio" name="sc2" value="b"> C(15, 2) = 105</label></li>
+                        <li><label><input type="radio" name="sc2" value="c"> 15² = 225</label></li>
+                        <li><label><input type="radio" name="sc2" value="d"> 2¹⁵ = 32,768</label></li>
+                    </ul>
+                    <button class="btn btn-primary" onclick="checkSC(2,'b','✓ Correct! A connection between computers A and B is the same as B and A — order doesn\'t matter, no repetition. C(15, 2) = 105 possible connections.','✗ A connection links two distinct computers, and {A,B} is the same connection as {B,A}. This is an unordered selection of 2 from 15: C(15, 2) = 105.')">Check</button>
+                    <div id="sc-fb2" class="feedback" role="alert"></div>
+                </div>
+
+                <div class="quiz-question" id="sc-q3">
+                    <h4>Scenario 3: Software Testing</h4>
+                    <p>A function has 5 boolean parameters. To test every possible combination of inputs, how many test cases are needed?</p>
+                    <ul class="quiz-options">
+                        <li><label><input type="radio" name="sc3" value="a"> 5! = 120</label></li>
+                        <li><label><input type="radio" name="sc3" value="b"> 2⁵ = 32</label></li>
+                        <li><label><input type="radio" name="sc3" value="c"> C(5, 2) = 10</label></li>
+                        <li><label><input type="radio" name="sc3" value="d"> 5² = 25</label></li>
+                    </ul>
+                    <button class="btn btn-primary" onclick="checkSC(3,'b','✓ Correct! Each parameter has 2 values (true/false), and there are 5 parameters. Product Rule: 2⁵ = 32 test cases. This is also the number of rows in a 5-variable truth table.','✗ Each of 5 parameters has 2 choices (true/false). Product Rule: 2⁵ = 32. This is the same as counting all bit strings of length 5.')">Check</button>
+                    <div id="sc-fb3" class="feedback" role="alert"></div>
+                </div>
+
+                <div class="quiz-question" id="sc-q4">
+                    <h4>Scenario 4: Database Query Results</h4>
+                    <p>A database has 8 optional filter categories. A user can apply any subset of these filters (including none or all). How many different filter configurations exist?</p>
+                    <ul class="quiz-options">
+                        <li><label><input type="radio" name="sc4" value="a"> 8! = 40,320</label></li>
+                        <li><label><input type="radio" name="sc4" value="b"> 2⁸ = 256</label></li>
+                        <li><label><input type="radio" name="sc4" value="c"> C(8, 4) = 70</label></li>
+                        <li><label><input type="radio" name="sc4" value="d"> 8² = 64</label></li>
+                    </ul>
+                    <button class="btn btn-primary" onclick="checkSC(4,'b','✓ Correct! Each filter is either applied or not (2 choices). Product Rule: 2⁸ = 256 configurations. This is also the number of subsets of an 8-element set (from Week 1).','✗ Each filter is independently on or off — 2 choices per filter, 8 filters. Product Rule: 2⁸ = 256. This equals the total number of subsets of the 8 filters.')">Check</button>
+                    <div id="sc-fb4" class="feedback" role="alert"></div>
+                </div>
+
+                <div class="quiz-question" id="sc-q5">
+                    <h4>Scenario 5: Load Balancing</h4>
+                    <p>A load balancer distributes 20 identical requests among 4 servers (each server can handle any number). How many distributions are possible?</p>
+                    <ul class="quiz-options">
+                        <li><label><input type="radio" name="sc5" value="a"> 4²⁰ — each request independently assigned</label></li>
+                        <li><label><input type="radio" name="sc5" value="b"> C(23, 20) = C(23, 3) — Stars and Bars</label></li>
+                        <li><label><input type="radio" name="sc5" value="c"> P(20, 4) — permutation</label></li>
+                        <li><label><input type="radio" name="sc5" value="d"> C(20, 4) — combination</label></li>
+                    </ul>
+                    <button class="btn btn-primary" onclick="checkSC(5,'b','✓ Correct! The requests are identical (only the count per server matters, not which specific request goes where). This is Stars and Bars: distributing 20 identical items into 4 categories. C(4+20−1, 20) = C(23, 3) = 1,771.','✗ Since the requests are identical, we only care about how many go to each server, not which ones. This is distributing identical items into distinct bins — Stars and Bars: C(4+20−1, 20) = C(23, 3) = 1,771. If requests were distinguishable, the answer would be 4²⁰.')">Check</button>
+                    <div id="sc-fb5" class="feedback" role="alert"></div>
+                </div>
+            </div>
+
+            <h3>Activity 2: Technique Mapping Reference</h3>
+
+            <p>This comprehensive table maps common CS scenarios to their counting techniques. Use it as a study reference.</p>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr><th>CS Scenario</th><th>Order?</th><th>Repetition?</th><th>Formula</th><th>Module</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Password/PIN generation</td><td>Yes</td><td>Yes</td><td>nʳ (Product Rule)</td><td>7.1, 7.2</td></tr>
+                        <tr><td>IP/MAC address space</td><td>Yes</td><td>Yes</td><td>2ⁿ (Product Rule)</td><td>7.1</td></tr>
+                        <tr><td>Process scheduling orders</td><td>Yes</td><td>No</td><td>n! (full permutation)</td><td>7.2</td></tr>
+                        <tr><td>Assigning ranked roles</td><td>Yes</td><td>No</td><td>P(n, r)</td><td>7.2</td></tr>
+                        <tr><td>Team/committee selection</td><td>No</td><td>No</td><td>C(n, r)</td><td>7.3</td></tr>
+                        <tr><td>Network edges (undirected)</td><td>No</td><td>No</td><td>C(n, 2)</td><td>7.3</td></tr>
+                        <tr><td>Bit strings of length n</td><td>Yes</td><td>Yes</td><td>2ⁿ</td><td>7.1</td></tr>
+                        <tr><td>Bit strings with k ones</td><td>No</td><td>No</td><td>C(n, k)</td><td>7.3</td></tr>
+                        <tr><td>Distributing identical items</td><td>No</td><td>Yes</td><td>C(n+r−1, r)</td><td>7.3</td></tr>
+                        <tr><td>Subsets of n items</td><td>No</td><td>No</td><td>2ⁿ = Σ C(n,r)</td><td>7.3</td></tr>
+                        <tr><td>Variable-length strings</td><td>—</td><td>—</td><td>Sum of nʳ over lengths</td><td>7.1</td></tr>
+                        <tr><td>"At least one" constraints</td><td>—</td><td>—</td><td>Total − None (complement)</td><td>7.1</td></tr>
+                        <tr><td>Overlapping categories</td><td>—</td><td>—</td><td>Inclusion-Exclusion</td><td>7.1</td></tr>
+                        <tr><td>Hash collision guarantee</td><td>—</td><td>—</td><td>Pigeonhole Principle</td><td>7.4</td></tr>
+                        <tr><td>Collision probability</td><td>—</td><td>—</td><td>Birthday Problem</td><td>7.4</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Activity 3: Week 7 Formula Quick-Reference Builder</h3>
+
+            <div class="activity-container">
+                <h3>📋 Interactive: Formula Quick-Reference</h3>
+                <p>Select a formula to see its definition, when to use it, and a CS example. Use this to build your personal reference sheet (recommended in the Week 7 checklist).</p>
+                <div class="form-group">
+                    <label for="ref-select">Choose a formula:</label>
+                    <select id="ref-select" onchange="showFormulaRef()">
+                        <option value="">— Select —</option>
+                        <option value="sum">Sum Rule (Addition Principle)</option>
+                        <option value="product">Product Rule (Multiplication Principle)</option>
+                        <option value="ie">Inclusion-Exclusion (2 sets)</option>
+                        <option value="perm">P(n, r) — Permutation</option>
+                        <option value="permrep">nʳ — Permutation with Repetition</option>
+                        <option value="comb">C(n, r) — Combination</option>
+                        <option value="combrep">C(n+r−1, r) — Stars and Bars</option>
+                        <option value="pascal">Pascal's Identity</option>
+                        <option value="pigeonhole">Pigeonhole Principle</option>
+                        <option value="birthday">Birthday Problem Approximation</option>
+                    </select>
+                </div>
+                <div class="result-display" id="ref-result" role="region" aria-live="polite" style="display:none;">
+                    <div id="ref-result-content"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== SECTION 6: KNOWLEDGE CHECK ==================== -->
+        <section class="section" id="section-6" aria-labelledby="sec6-heading">
+            <div class="section-header" onclick="markSectionRead(6)">
+                <div class="section-number" aria-hidden="true">6</div>
+                <h2 id="sec6-heading">Knowledge Check</h2>
+            </div>
+
+            <p>Test your ability to apply counting techniques to computer science problems. Answer all questions, then click "Submit Quiz" to see your results.</p>
+
+            <form id="quizForm" onsubmit="return false;">
+
+                <!-- Q1 -->
+                <div class="quiz-question">
+                    <h4>Question 1 of 8</h4>
+                    <p>A password uses 12 characters from the 95 printable ASCII characters. What is the password's entropy in bits?</p>
+                    <ul class="quiz-options">
+                        <li><label><input type="radio" name="q1" value="a"> 12 × log₂(95) ≈ 78.8 bits</label></li>
+                        <li><label><input type="radio" name="q1" value="b"> 95 × log₂(12) ≈ 340.5 bits</label></li>
+                        <li><label><input type="radio" name="q1" value="c"> log₂(12 × 95) ≈ 10.2 bits</label></li>
+                        <li><label><input type="radio" name="q1" value="d"> 12 × 95 = 1,140 bits</label></li>
+                    </ul>
+                    <div id="fb-q1" class="feedback" role="alert"></div>
+                </div>
+
+                <!-- Q2 -->
+                <div class="quiz-question">
+                    <h4>Question 2 of 8</h4>
+                    <p>A /28 IPv4 subnet has how many usable host addresses?</p>
+                    <ul class="quiz-options">
+                        <li><label><input type="radio" name="q2" value="a"> 16</label></li>
+                        <li><label><input type="radio" name="q2" value="b"> 14</label></li>
+                        <li><label><input type="radio" name="q2" value="c"> 28</label></li>
+                        <li><label><input type="radio" name="q2" value="d"> 32</label></li>
+                    </ul>
+                    <div id="fb-q2" class="feedback" role="alert"></div>
+                </div>
+
+                <!-- Q3 -->
+                <div class="quiz-question">
+                    <h4>Question 3 of 8</h4>
+                    <p>A hash function produces 64-bit outputs. Approximately how many items must be hashed before a collision is 50% likely?</p>
+                    <ul class="quiz-options">
+                        <li><label><input type="radio" name="q3" value="a"> 2⁶⁴ ≈ 1.8 × 10¹⁹</label></li>
+                        <li><label><input type="radio" name="q3" value="b"> 2³² ≈ 4.3 × 10⁹</label></li>
+                        <li><label><input type="radio" name="q3" value="c"> 1.2 × 2³² ≈ 5.2 × 10⁹</label></li>
+                        <li><label><input type="radio" name="q3" value="d"> 64</label></li>
+                    </ul>
+                    <div id="fb-q3" class="feedback" role="alert"></div>
+                </div>
+
+                <!-- Q4 -->
+                <div class="quiz-question">
+                    <h4>Question 4 of 8</h4>
+                    <p>How many simple undirected graphs exist on 6 labeled vertices?</p>
+                    <ul class="quiz-options">
+                        <li><label><input type="radio" name="q4" value="a"> 2⁶ = 64</label></li>
+                        <li><label><input type="radio" name="q4" value="b"> 6! = 720</label></li>
+                        <li><label><input type="radio" name="q4" value="c"> 2¹⁵ = 32,768</label></li>
+                        <li><label><input type="radio" name="q4" value="d"> 2³⁰ ≈ 10⁹</label></li>
+                    </ul>
+                    <div id="fb-q4" class="feedback" role="alert"></div>
+                </div>
+
+                <!-- Q5 -->
+                <div class="quiz-question">
+                    <h4>Question 5 of 8</h4>
+                    <p>How many 8-character passwords from a 62-character alphabet contain at least one digit (10 digits available)?</p>
+                    <ul class="quiz-options">
+                        <li><label><input type="radio" name="q5" value="a"> 62⁸</label></li>
+                        <li><label><input type="radio" name="q5" value="b"> 62⁸ − 52⁸</label></li>
+                        <li><label><input type="radio" name="q5" value="c"> 10 × 62⁷</label></li>
+                        <li><label><input type="radio" name="q5" value="d"> C(62, 8) − C(52, 8)</label></li>
+                    </ul>
+                    <div id="fb-q5" class="feedback" role="alert"></div>
+                </div>
+
+                <!-- Q6 -->
+                <div class="quiz-question">
+                    <h4>Question 6 of 8</h4>
+                    <p>A sorting algorithm receives 8 distinct elements. How many possible input orderings must it handle?</p>
+                    <ul class="quiz-options">
+                        <li><label><input type="radio" name="q6" value="a"> 2⁸ = 256</label></li>
+                        <li><label><input type="radio" name="q6" value="b"> 8² = 64</label></li>
+                        <li><label><input type="radio" name="q6" value="c"> 8! = 40,320</label></li>
+                        <li><label><input type="radio" name="q6" value="d"> C(8, 2) = 28</label></li>
+                    </ul>
+                    <div id="fb-q6" class="feedback" role="alert"></div>
+                </div>
+
+                <!-- Q7 -->
+                <div class="quiz-question">
+                    <h4>Question 7 of 8</h4>
+                    <p>A function has 4 boolean parameters and 1 parameter with 5 possible values. How many test cases for exhaustive testing?</p>
+                    <ul class="quiz-options">
+                        <li><label><input type="radio" name="q7" value="a"> 4 + 5 = 9</label></li>
+                        <li><label><input type="radio" name="q7" value="b"> 2⁴ + 5 = 21</label></li>
+                        <li><label><input type="radio" name="q7" value="c"> 2⁴ × 5 = 80</label></li>
+                        <li><label><input type="radio" name="q7" value="d"> 4! × 5 = 120</label></li>
+                    </ul>
+                    <div id="fb-q7" class="feedback" role="alert"></div>
+                </div>
+
+                <!-- Q8 -->
+                <div class="quiz-question">
+                    <h4>Question 8 of 8</h4>
+                    <p>IPv6 has 2¹²⁸ addresses and IPv4 has 2³² addresses. How many times larger is the IPv6 space?</p>
+                    <ul class="quiz-options">
+                        <li><label><input type="radio" name="q8" value="a"> 4 times (128/32)</label></li>
+                        <li><label><input type="radio" name="q8" value="b"> 96 times (128 − 32)</label></li>
+                        <li><label><input type="radio" name="q8" value="c"> 2⁹⁶ ≈ 7.9 × 10²⁸ times</label></li>
+                        <li><label><input type="radio" name="q8" value="d"> 2¹²⁸ times</label></li>
+                    </ul>
+                    <div id="fb-q8" class="feedback" role="alert"></div>
+                </div>
+
+                <div style="text-align: center; margin-top: 20px;">
+                    <button type="button" class="btn btn-success" onclick="submitQuiz()" aria-label="Submit quiz">Submit Quiz</button>
+                    <button type="button" class="btn btn-secondary" onclick="resetQuiz()" aria-label="Reset quiz">Reset</button>
+                </div>
+
+                <div class="score-display" id="quiz-score" role="alert">
+                    <div class="score-label">Your Score</div>
+                    <div class="score-number" id="score-value"></div>
+                    <p id="score-message" style="margin-top: 8px;"></p>
+                </div>
+            </form>
+        </section>
+
+        <!-- ==================== SUMMARY ==================== -->
+        <div class="summary-card" role="region" aria-label="Module summary">
+            <h3>📋 Module 7.4 Summary</h3>
+            <ul>
+                <li><strong>Password Security:</strong> Password space = Aᴸ (Product Rule). Entropy = L × log₂(A) bits. Variable-length passwords use the Sum Rule across lengths. Constraints use complementary counting.</li>
+                <li><strong>IP Addresses:</strong> IPv4 = 2³² ≈ 4.3 billion. IPv6 = 2¹²⁸ ≈ 3.4 × 10³⁸. Subnet hosts = 2⁽³²⁻ⁿ⁾ − 2. All are Product Rule applications on bit strings.</li>
+                <li><strong>Hash Collisions:</strong> Pigeonhole Principle guarantees collisions when inputs exceed outputs. Birthday Problem: collisions become likely at ≈ 1.2√m items. Birthday attacks require only 2ⁿ/² operations for n-bit hashes.</li>
+                <li><strong>Algorithm Inputs:</strong> Boolean inputs: 2ⁿ test cases. Sorting inputs: n! permutations → Ω(n log n) lower bound. Subset problems: 2ⁿ subsets → NP-hard. Graph problems: 2^C(n,2) possible graphs.</li>
+                <li><strong>Key skill:</strong> Translating a CS problem into a counting formula by asking: Does order matter? Is repetition allowed? Are there constraints?</li>
+            </ul>
+        </div>
+
+        <!-- Week 7 Wrap-Up -->
+        <div class="theorem-box" role="region" aria-label="Week 7 complete formula reference">
+            <div class="thm-title">📐 Week 7 Complete Formula Reference</div>
+            <div class="table-wrapper">
+                <table>
+                    <thead><tr><th>Formula</th><th>Expression</th><th>When to Use</th></tr></thead>
+                    <tbody>
+                        <tr><td>Sum Rule</td><td>n₁ + n₂</td><td>Mutually exclusive categories ("or")</td></tr>
+                        <tr><td>Product Rule</td><td>n₁ × n₂</td><td>Sequential independent choices ("and then")</td></tr>
+                        <tr><td>Inclusion-Exclusion</td><td>|A∪B| = |A|+|B|−|A∩B|</td><td>Overlapping categories</td></tr>
+                        <tr><td>Complement</td><td>|Ā| = |U| − |A|</td><td>"At least one" problems</td></tr>
+                        <tr><td>Permutation</td><td>P(n,r) = n!/(n−r)!</td><td>Ordered, no repetition</td></tr>
+                        <tr><td>Perm. with rep.</td><td>nʳ</td><td>Ordered, repetition allowed</td></tr>
+                        <tr><td>Combination</td><td>C(n,r) = n!/(r!(n−r)!)</td><td>Unordered, no repetition</td></tr>
+                        <tr><td>Stars and Bars</td><td>C(n+r−1, r)</td><td>Unordered, repetition allowed</td></tr>
+                        <tr><td>Pascal's Identity</td><td>C(n,r) = C(n−1,r−1)+C(n−1,r)</td><td>Building Pascal's Triangle</td></tr>
+                        <tr><td>Row Sum</td><td>Σ C(n,r) = 2ⁿ</td><td>Total subsets of n-element set</td></tr>
+                        <tr><td>Pigeonhole</td><td>n items, m bins, n>m → collision</td><td>Guaranteed overlap</td></tr>
+                        <tr><td>Birthday threshold</td><td>≈ 1.2√m</td><td>50% collision probability</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="note-box" role="region" aria-label="Week 8 preview">
+            <div class="note-title">📍 Looking Ahead: Week 8 — Advanced Counting and the Binomial Theorem</div>
+            <p>Week 8 builds on everything from this week. You'll study the <strong>Binomial Theorem</strong> — expanding (x + y)ⁿ using the binomial coefficients C(n, r) from Pascal's Triangle. You'll also explore <strong>multinomial coefficients</strong>, <strong>generating functions</strong>, and deeper applications to algorithm analysis. Make sure you've completed <strong>PE-07</strong> (Counting Calculator) and <strong>PS-07</strong> (Problem Set) before moving on. Check the Week 7 Checklist in the learning module plan to confirm you're ready.</p>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="page-footer" role="contentinfo">
+        <p>CSC 240 — Discrete Structures | Mendocino College | Spring 2026</p>
+        <p>Module 7.4: Counting in Computer Science</p>
+        <p>Textbook: <a href="https://learn.saylor.org/course/view.php?id=67" target="_blank" rel="noopener noreferrer">Saylor.org CS202 — Discrete Structures</a></p>
+        <p style="margin-top: 8px; font-size: 0.8rem;">CSLO 2: Apply combinatorics and set theory to counting problems. | CSLO 3: Use graphs and trees to model and solve computational problems.</p>
+    </footer>
+
+    <!-- ==================== ALL JAVASCRIPT ==================== -->
+    <script>
+        // ===== SESSION STORAGE =====
+        var MODULE_KEY = 'csc240_mod74_progress';
+
+        function loadProgress() {
+            try { return JSON.parse(sessionStorage.getItem(MODULE_KEY)) || { sections: {}, quizSubmitted: false, quizScore: 0 }; }
+            catch (e) { return { sections: {}, quizSubmitted: false, quizScore: 0 }; }
+        }
+        function saveProgress(data) {
+            try { sessionStorage.setItem(MODULE_KEY, JSON.stringify(data)); } catch (e) {}
+        }
+        function markSectionRead(num) {
+            var p = loadProgress(); p.sections[num] = true; saveProgress(p); updateTrackers();
+        }
+        function updateTrackers() {
+            var p = loadProgress(); var total = 6;
+            for (var i = 1; i <= total; i++) {
+                var item = document.getElementById('tracker-' + i);
+                if (item) {
+                    if (p.sections[i]) { item.classList.add('completed'); item.querySelector('.tracker-check').textContent = '✓'; }
+                    else { item.classList.remove('completed'); item.querySelector('.tracker-check').textContent = ''; }
+                }
+            }
+            var done = Object.keys(p.sections).filter(function(k) { return p.sections[k]; }).length;
+            var pct = Math.round((done / total) * 100);
+            var bar = document.getElementById('progressBar');
+            if (bar) { bar.style.width = pct + '%'; bar.parentElement.setAttribute('aria-valuenow', pct); }
+        }
+        function handleScroll() {
+            var sections = document.querySelectorAll('.section');
+            for (var i = 0; i < sections.length; i++) {
+                var rect = sections[i].getBoundingClientRect();
+                if (rect.top < window.innerHeight * 0.5 && rect.bottom > 0) markSectionRead(i + 1);
+            }
+        }
+        window.addEventListener('scroll', handleScroll, { passive: true });
+
+        function toggleCollapsible(btn) {
+            var content = btn.nextElementSibling;
+            var expanded = btn.getAttribute('aria-expanded') === 'true';
+            if (expanded) { content.style.maxHeight = null; btn.setAttribute('aria-expanded', 'false'); btn.classList.remove('active'); }
+            else { content.style.maxHeight = content.scrollHeight + 'px'; btn.setAttribute('aria-expanded', 'true'); btn.classList.add('active'); }
+        }
+
+        // ===== MATH HELPERS =====
+        function factorial(n) { if (n <= 1) return 1; var r = 1; for (var i = 2; i <= n; i++) r *= i; return r; }
+        function comb(n, r) {
+            if (r < 0 || r > n) return 0; if (r === 0 || r === n) return 1;
+            if (r > n - r) r = n - r;
+            var result = 1; for (var i = 0; i < r; i++) result = result * (n - i) / (i + 1);
+            return Math.round(result);
+        }
+        function perm(n, r) { if (r < 0 || r > n) return 0; var result = 1; for (var i = 0; i < r; i++) result *= (n - i); return result; }
+
+        function formatBigNumber(n) {
+            if (n < 1e15) return n.toLocaleString();
+            return n.toExponential(4);
+        }
+        function formatTime(seconds) {
+            if (seconds < 0.001) return 'less than 1 millisecond';
+            if (seconds < 1) return (seconds * 1000).toFixed(1) + ' milliseconds';
+            if (seconds < 60) return seconds.toFixed(1) + ' seconds';
+            if (seconds < 3600) return (seconds / 60).toFixed(1) + ' minutes';
+            if (seconds < 86400) return (seconds / 3600).toFixed(1) + ' hours';
+            if (seconds < 31536000) return (seconds / 86400).toFixed(1) + ' days';
+            if (seconds < 31536000 * 1000) return (seconds / 31536000).toFixed(1) + ' years';
+            if (seconds < 31536000 * 1e6) return (seconds / 31536000).toExponential(2) + ' years';
+            return (seconds / 31536000).toExponential(2) + ' years';
+        }
+
+        // ===== SECTION 1: PASSWORD ANALYZER =====
+        function analyzePassword() {
+            var L = parseInt(document.getElementById('pw-length').value);
+            var lower = document.getElementById('pw-lower').checked;
+            var upper = document.getElementById('pw-upper').checked;
+            var digits = document.getElementById('pw-digits').checked;
+            var special = document.getElementById('pw-special').checked;
+            var rd = document.getElementById('pw-result');
+            var cd = document.getElementById('pw-result-content');
+
+            var A = 0; var parts = [];
+            if (lower) { A += 26; parts.push('26 lowercase'); }
+            if (upper) { A += 26; parts.push('26 uppercase'); }
+            if (digits) { A += 10; parts.push('10 digits'); }
+            if (special) { A += 33; parts.push('33 special'); }
+
+            if (A === 0 || L < 1) {
+                cd.innerHTML = '<p style="color:#b71c1c;font-weight:600;">Select at least one character class and length ≥ 1.</p>';
+                rd.style.display = 'block'; rd.style.background = '#fce4ec'; rd.style.borderColor = '#ef5350'; return;
+            }
+            rd.style.background = '#e8f5e9'; rd.style.borderColor = '#4caf50';
+
+            var space = Math.pow(A, L);
+            var entropy = L * Math.log2(A);
+            var bruteSeconds = space / 1e9;
+
+            // Security rating
+            var rating, ratingColor, fillWidth;
+            if (entropy < 28) { rating = 'Very Weak'; ratingColor = '#c62828'; fillWidth = '10%'; }
+            else if (entropy < 36) { rating = 'Weak'; ratingColor = '#e65100'; fillWidth = '25%'; }
+            else if (entropy < 60) { rating = 'Moderate'; ratingColor = '#f9a825'; fillWidth = '50%'; }
+            else if (entropy < 80) { rating = 'Strong'; ratingColor = '#2e7d32'; fillWidth = '75%'; }
+            else { rating = 'Very Strong'; ratingColor = '#1b5e20'; fillWidth = '100%'; }
+
+            cd.innerHTML =
+                '<h4 style="color:#1b5e20;">Password Security Analysis</h4>' +
+                '<div class="step-display">' +
+                '<div class="step"><span class="step-num">Sum Rule:</span> Alphabet = ' + parts.join(' + ') + ' = <strong>' + A + '</strong> characters</div>' +
+                '<div class="step"><span class="step-num">Product Rule:</span> ' + A + '<sup>' + L + '</sup> = <strong>' + formatBigNumber(space) + '</strong> possible passwords</div>' +
+                '<div class="step"><span class="step-num">Entropy:</span> ' + L + ' × log₂(' + A + ') = ' + L + ' × ' + Math.log2(A).toFixed(2) + ' = <strong>' + entropy.toFixed(1) + ' bits</strong></div>' +
+                '<div class="step"><span class="step-num">Brute-force:</span> At 10⁹ guesses/sec: <strong>' + formatTime(bruteSeconds) + '</strong></div>' +
+                '</div>' +
+                '<div class="security-meter"><div class="security-fill" style="width:' + fillWidth + ';background:' + ratingColor + ';"></div></div>' +
+                '<div class="security-label" style="color:' + ratingColor + ';">' + rating + ' (' + entropy.toFixed(1) + ' bits)</div>' +
+                '<p style="text-align:center;color:#616161;font-size:0.85rem;margin-top:8px;">NIST recommends ≥ 80 bits for high-security passwords.</p>';
+            rd.style.display = 'block';
+            markSectionRead(1);
+        }
+
+        // ===== SECTION 2: ADDRESS SPACE CALCULATOR =====
+        function calcAddressSpace() {
+            var totalBits = parseInt(document.getElementById('addr-bits').value);
+            var fixedBits = parseInt(document.getElementById('addr-fixed').value);
+            var rd = document.getElementById('addr-result');
+            var cd = document.getElementById('addr-result-content');
+
+            if (isNaN(totalBits) || isNaN(fixedBits) || totalBits < 1 || fixedBits < 0 || fixedBits >= totalBits) {
+                cd.innerHTML = '<p style="color:#b71c1c;">Enter valid values: total bits ≥ 1, fixed bits < total bits.</p>';
+                rd.style.display = 'block'; rd.style.background = '#fce4ec'; rd.style.borderColor = '#ef5350'; return;
+            }
+            rd.style.background = '#e8f5e9'; rd.style.borderColor = '#4caf50';
+
+            var freeBits = totalBits - fixedBits;
+            var space = Math.pow(2, freeBits);
+            var usable = freeBits >= 2 ? space - 2 : space;
+
+            var context = '';
+            if (totalBits === 32 && fixedBits === 0) context = 'This is the full <strong>IPv4</strong> address space (≈ 4.3 billion addresses).';
+            else if (totalBits === 128 && fixedBits === 0) context = 'This is the full <strong>IPv6</strong> address space (≈ 3.4 × 10³⁸ addresses).';
+            else if (totalBits === 48 && fixedBits === 0) context = 'This is the <strong>MAC address</strong> space (≈ 281 trillion addresses).';
+            else if (totalBits === 32 && fixedBits > 0) context = 'This is an IPv4 <strong>/' + fixedBits + ' subnet</strong> with ' + usable.toLocaleString() + ' usable host addresses.';
+
+            cd.innerHTML =
+                '<h4 style="color:#1b5e20;">Address Space Calculation</h4>' +
+                '<div class="step-display">' +
+                '<div class="step"><span class="step-num">Total bits:</span> ' + totalBits + '</div>' +
+                '<div class="step"><span class="step-num">Fixed prefix:</span> ' + fixedBits + ' bits</div>' +
+                '<div class="step"><span class="step-num">Free bits:</span> ' + totalBits + ' − ' + fixedBits + ' = ' + freeBits + '</div>' +
+                '<div class="step"><span class="step-num">Total addresses:</span> 2<sup>' + freeBits + '</sup> = <strong>' + formatBigNumber(space) + '</strong></div>' +
+                (fixedBits > 0 && freeBits >= 2 ? '<div class="step"><span class="step-num">Usable hosts:</span> ' + formatBigNumber(space) + ' − 2 = <strong>' + formatBigNumber(usable) + '</strong> (minus network + broadcast)</div>' : '') +
+                '</div>' +
+                (context ? '<p style="text-align:center;color:#1b5e20;font-weight:600;margin-top:12px;">' + context + '</p>' : '');
+            rd.style.display = 'block';
+            markSectionRead(2);
+        }
+
+        // ===== SECTION 3: BIRTHDAY CALCULATOR =====
+        function calcBirthday() {
+            var m = parseInt(document.getElementById('bp-buckets').value);
+            var n = parseInt(document.getElementById('bp-items').value);
+            var rd = document.getElementById('bp-result');
+            var cd = document.getElementById('bp-result-content');
+
+            if (isNaN(m) || isNaN(n) || m < 2 || n < 1) {
+                cd.innerHTML = '<p style="color:#b71c1c;">Enter valid values: m ≥ 2, n ≥ 1.</p>';
+                rd.style.display = 'block'; rd.style.background = '#fce4ec'; rd.style.borderColor = '#ef5350'; return;
+            }
+            rd.style.background = '#e8f5e9'; rd.style.borderColor = '#4caf50';
+
+            // Compute P(no collision)
+            var pNoCollision = 1;
+            var steps = [];
+            var maxShow = Math.min(n, 8);
+            for (var i = 0; i < n; i++) {
+                pNoCollision *= (m - i) / m;
+                if (i < maxShow) {
+                    steps.push((m - i) + '/' + m);
+                }
+                if (pNoCollision <= 0) break;
+            }
+            if (n > maxShow) steps.push('…');
+
+            var pCollision = 1 - pNoCollision;
+            var threshold = Math.round(1.2 * Math.sqrt(m));
+
+            // Meter
+            var meterPct = Math.min(pCollision * 100, 100);
+            var meterColor = pCollision < 0.25 ? '#2e7d32' : pCollision < 0.5 ? '#f9a825' : pCollision < 0.75 ? '#e65100' : '#c62828';
+
+            cd.innerHTML =
+                '<h4 style="color:#1b5e20;">Birthday / Collision Analysis</h4>' +
+                '<div class="step-display">' +
+                '<div class="step"><span class="step-num">Buckets (m):</span> ' + m.toLocaleString() + '</div>' +
+                '<div class="step"><span class="step-num">Items (n):</span> ' + n.toLocaleString() + '</div>' +
+                '<div class="step"><span class="step-num">P(no collision):</span> ' + steps.join(' × ') + ' = ' + pNoCollision.toFixed(6) + '</div>' +
+                '<div class="step"><span class="step-num">P(at least one collision):</span> 1 − ' + pNoCollision.toFixed(6) + ' = <strong>' + (pCollision * 100).toFixed(2) + '%</strong></div>' +
+                '</div>' +
+                '<div class="security-meter"><div class="security-fill" style="width:' + meterPct.toFixed(1) + '%;background:' + meterColor + ';"></div></div>' +
+                '<div class="security-label" style="color:' + meterColor + ';">Collision probability: ' + (pCollision * 100).toFixed(2) + '%</div>' +
+                '<p style="text-align:center;color:#616161;font-size:0.9rem;margin-top:8px;">50% collision threshold ≈ 1.2 × √' + m + ' ≈ <strong>' + threshold.toLocaleString() + ' items</strong></p>' +
+                (n > m ? '<p style="text-align:center;color:#c62828;font-weight:700;">⚠️ Pigeonhole Principle: n > m, so collision is GUARANTEED!</p>' : '');
+            rd.style.display = 'block';
+            markSectionRead(3);
+        }
+
+        // ===== SECTION 5: SCENARIO CHECKER =====
+        function checkSC(num, correct, correctMsg, incorrectMsg) {
+            var sel = document.querySelector('input[name="sc' + num + '"]:checked');
+            var fb = document.getElementById('sc-fb' + num);
+            if (!sel) { fb.className = 'feedback info'; fb.textContent = 'Please select an answer.'; fb.style.display = 'block'; return; }
+            if (sel.value === correct) { fb.className = 'feedback correct'; fb.textContent = correctMsg; }
+            else { fb.className = 'feedback incorrect'; fb.textContent = incorrectMsg; }
+            fb.style.display = 'block';
+        }
+
+        // ===== SECTION 5: FORMULA REFERENCE =====
+        var formulaData = {
+            sum: { name: 'Sum Rule (Addition Principle)', formula: 'n₁ + n₂ + … + nₖ', when: 'Task can be done in one of k mutually exclusive ways.', cs: 'Variable-length passwords: total = A⁶ + A⁷ + A⁸ + …', module: '7.1' },
+            product: { name: 'Product Rule (Multiplication Principle)', formula: 'n₁ × n₂ × … × nₖ', when: 'Task requires a sequence of k independent steps.', cs: 'Fixed-length password: A^L (each position has A choices)', module: '7.1' },
+            ie: { name: 'Inclusion-Exclusion (2 sets)', formula: '|A ∪ B| = |A| + |B| − |A ∩ B|', when: 'Counting items in overlapping categories.', cs: 'Bit strings starting with 1 OR ending with 00 (categories overlap)', module: '7.1' },
+            perm: { name: 'P(n, r) — Permutation', formula: 'n! / (n − r)!', when: 'Ordered selection of r from n, no repetition.', cs: 'Assigning gold/silver/bronze medals to runners: P(n, 3)', module: '7.2' },
+            permrep: { name: 'nʳ — Permutation with Repetition', formula: 'n × n × … × n (r times)', when: 'Ordered selection of r from n, repetition allowed.', cs: 'Passwords, PINs, IP addresses, bit strings of length r', module: '7.2' },
+            comb: { name: 'C(n, r) — Combination', formula: 'n! / (r!(n − r)!)', when: 'Unordered selection of r from n, no repetition.', cs: 'Choosing a team, poker hands, network edges C(n,2)', module: '7.3' },
+            combrep: { name: 'C(n+r−1, r) — Stars and Bars', formula: '(n + r − 1)! / (r!(n − 1)!)', when: 'Unordered selection of r from n types, repetition allowed.', cs: 'Distributing identical requests among servers', module: '7.3' },
+            pascal: { name: 'Pascal\'s Identity', formula: 'C(n, r) = C(n−1, r−1) + C(n−1, r)', when: 'Building Pascal\'s Triangle; splitting subsets by include/exclude.', cs: 'Efficient computation of binomial coefficients without large factorials', module: '7.3' },
+            pigeonhole: { name: 'Pigeonhole Principle', formula: 'n items in m bins, n > m → at least one bin has ≥ 2', when: 'Proving existence of collisions or overlaps.', cs: 'Hash collision guarantee when inputs > hash values', module: '7.4' },
+            birthday: { name: 'Birthday Problem Approximation', formula: '50% collision at ≈ 1.2√m items in m buckets', when: 'Estimating when collisions become likely.', cs: 'Hash table sizing; birthday attacks on cryptographic hashes', module: '7.4' }
+        };
+
+        function showFormulaRef() {
+            var sel = document.getElementById('ref-select').value;
+            var rd = document.getElementById('ref-result');
+            var cd = document.getElementById('ref-result-content');
+            if (!sel || !formulaData[sel]) { rd.style.display = 'none'; return; }
+            var d = formulaData[sel];
+            rd.style.background = '#e8f5e9'; rd.style.borderColor = '#4caf50';
+            cd.innerHTML =
+                '<h4 style="color:#1b5e20;">' + d.name + '</h4>' +
+                '<div class="math-block">' + d.formula + '</div>' +
+                '<p><strong>When to use:</strong> ' + d.when + '</p>' +
+                '<p><strong>CS example:</strong> ' + d.cs + '</p>' +
+                '<p style="color:#616161;font-size:0.85rem;">Covered in Module ' + d.module + '</p>';
+            rd.style.display = 'block';
+            markSectionRead(5);
+        }
+
+        // ===== SECTION 6: QUIZ =====
+        var quizAnswers = {
+            q1: 'a', q2: 'b', q3: 'c', q4: 'c',
+            q5: 'b', q6: 'c', q7: 'c', q8: 'c'
+        };
+        var quizExplanations = {
+            q1: {
+                correct: '✓ Correct! Entropy = L × log₂(A) = 12 × log₂(95) ≈ 12 × 6.57 ≈ 78.8 bits.',
+                incorrect: '✗ Entropy = L × log₂(A) = 12 × log₂(95) ≈ 12 × 6.57 ≈ 78.8 bits. This measures the information content of the password space.'
+            },
+            q2: {
+                correct: '✓ Correct! A /28 subnet has 32 − 28 = 4 free bits → 2⁴ = 16 total addresses − 2 reserved = 14 usable hosts.',
+                incorrect: '✗ Free bits = 32 − 28 = 4. Total addresses = 2⁴ = 16. Subtract 2 (network + broadcast) = 14 usable hosts.'
+            },
+            q3: {
+                correct: '✓ Correct! Birthday threshold ≈ 1.2 × √(2⁶⁴) = 1.2 × 2³² ≈ 5.2 × 10⁹. This is why 64-bit hashes are considered weak.',
+                incorrect: '✗ The birthday approximation gives ≈ 1.2 × √m. For m = 2⁶⁴: 1.2 × √(2⁶⁴) = 1.2 × 2³² ≈ 5.2 × 10⁹ items for 50% collision probability.'
+            },
+            q4: {
+                correct: '✓ Correct! C(6, 2) = 15 possible edges. Each is present or absent: 2¹⁵ = 32,768 graphs.',
+                incorrect: '✗ There are C(6, 2) = 15 possible edges between 6 vertices. Each edge is independently present or absent: 2¹⁵ = 32,768 possible graphs.'
+            },
+            q5: {
+                correct: '✓ Correct! Complementary counting: Total − No digits = 62⁸ − 52⁸.',
+                incorrect: '✗ Use complementary counting: at least one digit = total passwords − passwords with NO digits = 62⁸ − 52⁸.'
+            },
+            q6: {
+                correct: '✓ Correct! Each input ordering is a permutation of 8 elements: 8! = 40,320.',
+                incorrect: '✗ Each distinct ordering of the 8 elements is a permutation: 8! = 40,320. This is why comparison sorts need at least log₂(8!) ≈ 15.3 comparisons.'
+            },
+            q7: {
+                correct: '✓ Correct! Product Rule: 2⁴ × 5 = 16 × 5 = 80 test cases. Each boolean has 2 values, the other parameter has 5.',
+                incorrect: '✗ The parameters are independent, so use the Product Rule: 2 × 2 × 2 × 2 × 5 = 2⁴ × 5 = 80 test cases.'
+            },
+            q8: {
+                correct: '✓ Correct! 2¹²⁸ / 2³² = 2⁹⁶ ≈ 7.9 × 10²⁸. When dividing powers of the same base, subtract exponents.',
+                incorrect: '✗ 2¹²⁸ / 2³² = 2¹²⁸⁻³² = 2⁹⁶ ≈ 7.9 × 10²⁸. You subtract exponents when dividing powers of the same base, not divide them.'
+            }
+        };
+
+        function submitQuiz() {
+            var score = 0; var total = Object.keys(quizAnswers).length;
+            for (var qKey in quizAnswers) {
+                if (!quizAnswers.hasOwnProperty(qKey)) continue;
+                var correctVal = quizAnswers[qKey];
+                var selected = document.querySelector('input[name="' + qKey + '"]:checked');
+                var fb = document.getElementById('fb-' + qKey);
+                if (selected && selected.value === correctVal) {
+                    score++; fb.className = 'feedback correct'; fb.textContent = quizExplanations[qKey].correct;
+                } else {
+                    fb.className = 'feedback incorrect'; fb.textContent = quizExplanations[qKey].incorrect;
+                }
+                fb.style.display = 'block';
+            }
+            var scoreDiv = document.getElementById('quiz-score');
+            var scoreVal = document.getElementById('score-value');
+            var scoreMsg = document.getElementById('score-message');
+            scoreVal.textContent = score + ' / ' + total;
+            scoreDiv.style.display = 'block';
+            if (score === total) scoreMsg.textContent = '🎉 Perfect score! You can confidently apply counting to CS problems!';
+            else if (score >= Math.ceil(total * 0.7)) scoreMsg.textContent = '👍 Good work! Review the explanations for any you missed.';
+            else scoreMsg.textContent = '📚 Review the module content, focusing on translating CS problems into counting formulas.';
+            markSectionRead(6);
+            var prog = loadProgress(); prog.quizSubmitted = true; prog.quizScore = score; saveProgress(prog);
+            scoreDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function resetQuiz() {
+            for (var qKey in quizAnswers) {
+                if (!quizAnswers.hasOwnProperty(qKey)) continue;
+                var radios = document.querySelectorAll('input[name="' + qKey + '"]');
+                for (var i = 0; i < radios.length; i++) radios[i].checked = false;
+                var fb = document.getElementById('fb-' + qKey);
+                fb.style.display = 'none'; fb.className = 'feedback';
+            }
+            document.getElementById('quiz-score').style.display = 'none';
+        }
+
+        // ===== INIT =====
+        document.addEventListener('DOMContentLoaded', function () {
+            updateTrackers(); handleScroll();
+        });
+    </script>
+</body>
+</html>

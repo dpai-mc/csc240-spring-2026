@@ -1,0 +1,2720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 7.2: Permutations | CSC 240 - Discrete Structures</title>
+    <style>
+        /* ===== CSS RESET & BASE ===== */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            font-size: 16px;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #ffffff;
+            color: #1a1a2e;
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+
+        /* ===== SKIP LINK (ADA) ===== */
+        .skip-link {
+            position: absolute;
+            top: -100px;
+            left: 0;
+            background: #0d47a1;
+            color: #ffffff;
+            padding: 12px 24px;
+            z-index: 10000;
+            font-size: 1rem;
+            text-decoration: none;
+            border-radius: 0 0 8px 0;
+        }
+
+        .skip-link:focus {
+            top: 0;
+        }
+
+        /* ===== PROGRESS BAR ===== */
+        .progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: #e0e0e0;
+            z-index: 9999;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #1565c0, #42a5f5);
+            transition: width 0.3s ease;
+            border-radius: 0 3px 3px 0;
+        }
+
+        /* ===== HEADER ===== */
+        .course-header {
+            background: linear-gradient(135deg, #0d47a1 0%, #1565c0 50%, #1976d2 100%);
+            color: #ffffff;
+            padding: 32px 24px 28px;
+            text-align: center;
+            margin-top: 6px;
+        }
+
+        .course-header .breadcrumb {
+            font-size: 0.9rem;
+            color: #bbdefb;
+            margin-bottom: 8px;
+        }
+
+        .course-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .course-header .subtitle {
+            font-size: 1.1rem;
+            color: #e3f2fd;
+            font-weight: 400;
+        }
+
+        .module-meta {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 18px;
+            margin-top: 16px;
+        }
+
+        .meta-badge {
+            background: rgba(255,255,255,0.18);
+            color: #ffffff;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* ===== LAYOUT ===== */
+        .page-wrapper {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 32px 20px 60px;
+        }
+
+        /* ===== LEARNING OBJECTIVES BOX ===== */
+        .objectives-box {
+            background: #e8f5e9;
+            border: 2px solid #388e3c;
+            border-radius: 12px;
+            padding: 24px 28px;
+            margin-bottom: 36px;
+        }
+
+        .objectives-box h2 {
+            color: #1b5e20;
+            font-size: 1.3rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .objectives-box ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .objectives-box li {
+            padding: 6px 0 6px 28px;
+            position: relative;
+            color: #1b5e20;
+            font-size: 0.98rem;
+        }
+
+        .objectives-box li::before {
+            content: "✓";
+            position: absolute;
+            left: 4px;
+            color: #388e3c;
+            font-weight: 700;
+        }
+
+        /* ===== SECTION STYLES ===== */
+        .section {
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .section:last-child {
+            border-bottom: none;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 18px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .section-number {
+            background: #0d47a1;
+            color: #ffffff;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .section h2 {
+            font-size: 1.5rem;
+            color: #0d47a1;
+        }
+
+        .section h3 {
+            font-size: 1.2rem;
+            color: #1565c0;
+            margin: 24px 0 12px;
+        }
+
+        .section h4 {
+            font-size: 1.05rem;
+            color: #1a1a2e;
+            margin: 18px 0 10px;
+        }
+
+        .section p {
+            margin-bottom: 14px;
+            font-size: 1rem;
+            color: #212121;
+        }
+
+        /* ===== DEFINITION BOX ===== */
+        .definition-box {
+            background: #e3f2fd;
+            border-left: 5px solid #1565c0;
+            border-radius: 0 10px 10px 0;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .definition-box .def-title {
+            font-weight: 700;
+            color: #0d47a1;
+            font-size: 1.05rem;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .definition-box p {
+            color: #1a1a2e;
+            margin-bottom: 8px;
+        }
+
+        /* ===== THEOREM / PRINCIPLE BOX ===== */
+        .theorem-box {
+            background: #fff3e0;
+            border-left: 5px solid #e65100;
+            border-radius: 0 10px 10px 0;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .theorem-box .thm-title {
+            font-weight: 700;
+            color: #bf360c;
+            font-size: 1.05rem;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .theorem-box p, .theorem-box ul {
+            color: #1a1a2e;
+        }
+
+        /* ===== EXAMPLE BOX ===== */
+        .example-box {
+            background: #f3e5f5;
+            border-left: 5px solid #7b1fa2;
+            border-radius: 0 10px 10px 0;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .example-box .ex-title {
+            font-weight: 700;
+            color: #6a1b9a;
+            font-size: 1.05rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .example-box p, .example-box ul {
+            color: #1a1a2e;
+        }
+
+        .example-box .solution {
+            background: rgba(255,255,255,0.6);
+            border-radius: 8px;
+            padding: 14px 18px;
+            margin-top: 12px;
+        }
+
+        .example-box .solution-title {
+            font-weight: 700;
+            color: #4a148c;
+            margin-bottom: 4px;
+        }
+
+        /* ===== WARNING / NOTE BOX ===== */
+        .warning-box {
+            background: #fce4ec;
+            border-left: 5px solid #c62828;
+            border-radius: 0 10px 10px 0;
+            padding: 18px 24px;
+            margin: 20px 0;
+        }
+
+        .warning-box .warn-title {
+            font-weight: 700;
+            color: #b71c1c;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .warning-box p, .warning-box ul {
+            color: #212121;
+        }
+
+        .note-box {
+            background: #fffde7;
+            border-left: 5px solid #f9a825;
+            border-radius: 0 10px 10px 0;
+            padding: 18px 24px;
+            margin: 20px 0;
+        }
+
+        .note-box .note-title {
+            font-weight: 700;
+            color: #f57f17;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .note-box p, .note-box ul {
+            color: #212121;
+        }
+
+        /* ===== CODE BLOCKS ===== */
+        pre {
+            background: #1e1e2f;
+            color: #e0e0e0;
+            border-radius: 10px;
+            padding: 20px 24px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.92rem;
+            line-height: 1.6;
+            margin: 16px 0;
+            white-space: pre;
+            tab-size: 4;
+            border: 1px solid #333;
+        }
+
+        pre code {
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.92rem;
+            white-space: pre;
+            background: none;
+            color: inherit;
+            padding: 0;
+        }
+
+        .code-label {
+            display: inline-block;
+            background: #0d47a1;
+            color: #ffffff;
+            padding: 3px 12px;
+            border-radius: 6px 6px 0 0;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: -2px;
+        }
+
+        /* inline code */
+        .inline-code {
+            background: #e8eaf6;
+            color: #283593;
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        /* ===== TABLES ===== */
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 16px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+
+        th {
+            background: #0d47a1;
+            color: #ffffff;
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 10px 16px;
+            border-bottom: 1px solid #e0e0e0;
+            color: #212121;
+        }
+
+        tr:nth-child(even) {
+            background: #f5f5f5;
+        }
+
+        tr:hover {
+            background: #e3f2fd;
+        }
+
+        /* ===== INTERACTIVE ACTIVITY ===== */
+        .activity-container {
+            background: #f5f5f5;
+            border: 2px solid #1565c0;
+            border-radius: 12px;
+            padding: 28px;
+            margin: 28px 0;
+        }
+
+        .activity-container h3 {
+            color: #0d47a1;
+            font-size: 1.25rem;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .activity-container p {
+            margin-bottom: 12px;
+        }
+
+        /* ===== FORM ELEMENTS ===== */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #1a1a2e;
+            font-size: 0.95rem;
+        }
+
+        .form-group input[type="number"],
+        .form-group input[type="text"],
+        .form-group select {
+            width: 100%;
+            max-width: 400px;
+            padding: 10px 14px;
+            border: 2px solid #bbdefb;
+            border-radius: 8px;
+            font-size: 1rem;
+            color: #1a1a2e;
+            background: #ffffff;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #1565c0;
+            box-shadow: 0 0 0 3px rgba(21,101,192,0.2);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .btn:active {
+            transform: scale(0.97);
+        }
+
+        .btn-primary {
+            background: #1565c0;
+            color: #ffffff;
+        }
+
+        .btn-primary:hover,
+        .btn-primary:focus {
+            background: #0d47a1;
+            outline: 3px solid #90caf9;
+        }
+
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #1a1a2e;
+            margin-left: 8px;
+        }
+
+        .btn-secondary:hover,
+        .btn-secondary:focus {
+            background: #bdbdbd;
+            outline: 3px solid #90caf9;
+        }
+
+        .btn-success {
+            background: #2e7d32;
+            color: #ffffff;
+        }
+
+        .btn-success:hover,
+        .btn-success:focus {
+            background: #1b5e20;
+            outline: 3px solid #a5d6a7;
+        }
+
+        /* ===== QUIZ STYLES ===== */
+        .quiz-question {
+            background: #ffffff;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px 24px;
+            margin-bottom: 20px;
+        }
+
+        .quiz-question h4 {
+            color: #0d47a1;
+            margin-bottom: 12px;
+        }
+
+        .quiz-options {
+            list-style: none;
+            padding: 0;
+        }
+
+        .quiz-options li {
+            margin-bottom: 8px;
+        }
+
+        .quiz-options label {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 10px 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s;
+            color: #212121;
+            font-size: 0.95rem;
+        }
+
+        .quiz-options label:hover {
+            background: #e3f2fd;
+            border-color: #90caf9;
+        }
+
+        .quiz-options input[type="radio"] {
+            margin-top: 3px;
+            accent-color: #1565c0;
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+
+        .feedback {
+            padding: 14px 18px;
+            border-radius: 8px;
+            margin-top: 12px;
+            font-weight: 600;
+            display: none;
+        }
+
+        .feedback.correct {
+            background: #e8f5e9;
+            color: #1b5e20;
+            border: 1px solid #4caf50;
+            display: block;
+        }
+
+        .feedback.incorrect {
+            background: #fce4ec;
+            color: #b71c1c;
+            border: 1px solid #ef5350;
+            display: block;
+        }
+
+        .feedback.info {
+            background: #e3f2fd;
+            color: #0d47a1;
+            border: 1px solid #42a5f5;
+            display: block;
+        }
+
+        /* ===== COLLAPSIBLE SECTIONS ===== */
+        .collapsible-toggle {
+            background: #e8eaf6;
+            border: 2px solid #c5cae9;
+            border-radius: 8px;
+            padding: 14px 20px;
+            width: 100%;
+            text-align: left;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #283593;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s;
+            margin-top: 12px;
+        }
+
+        .collapsible-toggle:hover,
+        .collapsible-toggle:focus {
+            background: #c5cae9;
+            outline: 3px solid #7986cb;
+        }
+
+        .collapsible-toggle .arrow {
+            transition: transform 0.3s;
+            font-size: 1.1rem;
+        }
+
+        .collapsible-toggle.active .arrow {
+            transform: rotate(180deg);
+        }
+
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+            background: #f5f5f5;
+            border-radius: 0 0 8px 8px;
+        }
+
+        .collapsible-content .inner {
+            padding: 18px 22px;
+        }
+
+        /* ===== STEP-BY-STEP DISPLAY ===== */
+        .step-display {
+            background: #ffffff;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 16px 0;
+        }
+
+        .step {
+            padding: 12px 16px;
+            border-left: 4px solid #1565c0;
+            margin-bottom: 12px;
+            background: #f8f9fa;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .step .step-num {
+            font-weight: 700;
+            color: #0d47a1;
+            margin-right: 8px;
+        }
+
+        /* ===== CALCULATOR RESULT ===== */
+        .result-display {
+            background: #e8f5e9;
+            border: 2px solid #4caf50;
+            border-radius: 10px;
+            padding: 20px 24px;
+            margin: 16px 0;
+            display: none;
+        }
+
+        .result-display h4 {
+            color: #1b5e20;
+            margin-bottom: 10px;
+        }
+
+        .result-display .result-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2e7d32;
+        }
+
+        /* ===== SECTION PROGRESS TRACKER ===== */
+        .section-tracker {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 24px 0;
+            padding: 18px 20px;
+            background: #f5f5f5;
+            border-radius: 10px;
+        }
+
+        .tracker-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            color: #616161;
+        }
+
+        .tracker-item.completed {
+            color: #2e7d32;
+            font-weight: 600;
+        }
+
+        .tracker-check {
+            width: 22px;
+            height: 22px;
+            border: 2px solid #bdbdbd;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            background: #ffffff;
+        }
+
+        .tracker-item.completed .tracker-check {
+            background: #2e7d32;
+            border-color: #2e7d32;
+            color: #ffffff;
+        }
+
+        /* ===== ORDERED / UNORDERED LISTS ===== */
+        .content-list {
+            padding-left: 24px;
+            margin: 10px 0 16px;
+        }
+
+        .content-list li {
+            margin-bottom: 6px;
+            color: #212121;
+        }
+
+        /* ===== MATH DISPLAY ===== */
+        .math-block {
+            text-align: center;
+            font-size: 1.2rem;
+            padding: 16px;
+            margin: 14px 0;
+            background: #fafafa;
+            border-radius: 8px;
+            color: #1a1a2e;
+            font-family: 'Cambria Math', 'Times New Roman', serif;
+            overflow-x: auto;
+        }
+
+        .math-inline {
+            font-family: 'Cambria Math', 'Times New Roman', serif;
+            font-size: 1.05em;
+            color: #1a1a2e;
+        }
+
+        /* ===== FOOTER ===== */
+        .page-footer {
+            background: #0d47a1;
+            color: #ffffff;
+            text-align: center;
+            padding: 24px 20px;
+            font-size: 0.9rem;
+        }
+
+        .page-footer a {
+            color: #90caf9;
+            text-decoration: underline;
+        }
+
+        .page-footer a:hover {
+            color: #ffffff;
+        }
+
+        /* ===== BIG NUMBER ===== */
+        .big-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #0d47a1;
+            text-align: center;
+            margin: 12px 0;
+        }
+
+        /* ===== SUMMARY CARD ===== */
+        .summary-card {
+            background: linear-gradient(135deg, #e3f2fd, #f3e5f5);
+            border: 2px solid #7b1fa2;
+            border-radius: 12px;
+            padding: 24px 28px;
+            margin: 28px 0;
+        }
+
+        .summary-card h3 {
+            color: #4a148c;
+            margin-bottom: 14px;
+        }
+
+        .summary-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .summary-card li {
+            padding: 8px 0 8px 24px;
+            position: relative;
+            color: #1a1a2e;
+        }
+
+        .summary-card li::before {
+            content: "▸";
+            position: absolute;
+            left: 4px;
+            color: #7b1fa2;
+            font-weight: 700;
+        }
+
+        /* ===== TABS ===== */
+        .tab-container {
+            margin: 20px 0;
+        }
+
+        .tab-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-bottom: 0;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            border: 2px solid #c5cae9;
+            border-bottom: none;
+            border-radius: 8px 8px 0 0;
+            background: #e8eaf6;
+            color: #283593;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .tab-btn:hover,
+        .tab-btn:focus {
+            background: #c5cae9;
+        }
+
+        .tab-btn.active {
+            background: #ffffff;
+            border-color: #1565c0;
+            color: #0d47a1;
+            border-bottom: 2px solid #ffffff;
+            position: relative;
+            z-index: 1;
+        }
+
+        .tab-panel {
+            display: none;
+            border: 2px solid #1565c0;
+            border-radius: 0 8px 8px 8px;
+            padding: 22px;
+            background: #ffffff;
+            margin-top: -2px;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        /* ===== PERMUTATION VISUAL BLOCKS ===== */
+        .perm-visual {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            justify-content: center;
+            margin: 16px 0;
+        }
+
+        .perm-slot {
+            width: 52px;
+            height: 52px;
+            border: 3px solid #1565c0;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #0d47a1;
+            background: #e3f2fd;
+            transition: all 0.3s;
+        }
+
+        .perm-slot.filled {
+            background: #1565c0;
+            color: #ffffff;
+        }
+
+        .perm-slot.active {
+            border-color: #e65100;
+            background: #fff3e0;
+            color: #e65100;
+            animation: pulse-slot 1s infinite;
+        }
+
+        @keyframes pulse-slot {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(230,81,0,0.4); }
+            50% { box-shadow: 0 0 0 8px rgba(230,81,0,0); }
+        }
+
+        .perm-arrow {
+            display: flex;
+            align-items: center;
+            font-size: 1.3rem;
+            color: #757575;
+        }
+
+        /* ===== FACTORIAL TABLE ===== */
+        .factorial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 8px;
+            margin: 16px 0;
+        }
+
+        .factorial-cell {
+            background: #e3f2fd;
+            border: 2px solid #90caf9;
+            border-radius: 8px;
+            padding: 10px 8px;
+            text-align: center;
+            font-size: 0.9rem;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        .factorial-cell:hover {
+            background: #bbdefb;
+            transform: scale(1.05);
+        }
+
+        .factorial-cell .fact-n {
+            font-weight: 700;
+            color: #0d47a1;
+            font-size: 1rem;
+        }
+
+        .factorial-cell .fact-val {
+            color: #1a1a2e;
+            font-size: 0.85rem;
+            margin-top: 2px;
+        }
+
+        /* ===== DRAG ITEMS (for arrangement activity) ===== */
+        .arrange-area {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            min-height: 70px;
+            padding: 16px;
+            border: 3px dashed #90caf9;
+            border-radius: 12px;
+            background: #f5f5f5;
+            margin: 12px 0;
+        }
+
+        .arrange-item {
+            background: #1565c0;
+            color: #ffffff;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.2s, transform 0.15s;
+        }
+
+        .arrange-item:hover {
+            background: #0d47a1;
+            transform: scale(1.05);
+        }
+
+        .arrange-item:focus {
+            outline: 3px solid #90caf9;
+        }
+
+        .arrange-item.used {
+            background: #bdbdbd;
+            cursor: default;
+        }
+
+        /* ===== SCORE DISPLAY ===== */
+        .score-display {
+            text-align: center;
+            padding: 20px;
+            background: #e8f5e9;
+            border-radius: 10px;
+            margin-top: 16px;
+            display: none;
+        }
+
+        .score-display .score-number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #2e7d32;
+        }
+
+        .score-display .score-label {
+            color: #1b5e20;
+            font-size: 1rem;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .course-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .module-meta {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .page-wrapper {
+                padding: 20px 14px 40px;
+            }
+
+            pre {
+                font-size: 0.82rem;
+                padding: 14px 12px;
+            }
+
+            .activity-container {
+                padding: 18px;
+            }
+
+            .perm-slot {
+                width: 44px;
+                height: 44px;
+                font-size: 0.95rem;
+            }
+        }
+
+        /* ===== PRINT STYLES ===== */
+        @media print {
+            .progress-container, .skip-link, .btn, .activity-container {
+                display: none;
+            }
+
+            body {
+                font-size: 12pt;
+                color: #000;
+            }
+        }
+
+        /* ===== FOCUS VISIBLE FOR KEYBOARD NAV ===== */
+        *:focus-visible {
+            outline: 3px solid #1565c0;
+            outline-offset: 2px;
+        }
+
+        strong {
+            color: inherit;
+        }
+
+        a {
+            color: #1565c0;
+            text-decoration: underline;
+        }
+
+        a:hover {
+            color: #0d47a1;
+        }
+
+        /* ===== MULTISET HIGHLIGHT ===== */
+        .letter-highlight {
+            display: inline-block;
+            background: #e3f2fd;
+            border: 2px solid #1565c0;
+            border-radius: 6px;
+            padding: 2px 8px;
+            font-weight: 700;
+            font-family: 'Consolas', monospace;
+            color: #0d47a1;
+            margin: 0 2px;
+        }
+
+        .letter-highlight.dup {
+            background: #fff3e0;
+            border-color: #e65100;
+            color: #bf360c;
+        }
+
+        /* ===== CONNECTION BOX ===== */
+        .connection-box {
+            background: #e8eaf6;
+            border-left: 5px solid #3949ab;
+            border-radius: 0 10px 10px 0;
+            padding: 18px 24px;
+            margin: 20px 0;
+        }
+
+        .connection-box .conn-title {
+            font-weight: 700;
+            color: #1a237e;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .connection-box p {
+            color: #1a1a2e;
+        }
+    </style>
+</head>
+<body>
+    <!-- Skip Link -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <!-- Progress Bar -->
+    <div class="progress-container" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Page reading progress">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <!-- Course Header -->
+    <header class="course-header">
+        <div class="breadcrumb" aria-label="Breadcrumb">CSC 240 — Discrete Structures → Week 7 → Module 7.2</div>
+        <h1>Module 7.2: Permutations</h1>
+        <p class="subtitle">Ordered Arrangements — The Factorial, P(n, r), and Counting with Repetition</p>
+        <div class="module-meta">
+            <span class="meta-badge">📅 Week 7 of 17</span>
+            <span class="meta-badge">⏱️ Estimated: 2.0 hours</span>
+            <span class="meta-badge">📖 Saylor.org CS202 Unit 2 §2.2</span>
+            <span class="meta-badge">🎯 CSLO 2</span>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="main-content" class="page-wrapper">
+
+        <!-- Section Progress Tracker -->
+        <div class="section-tracker" aria-label="Section progress tracker">
+            <div class="tracker-item" id="tracker-1"><span class="tracker-check" aria-hidden="true"></span> Factorial</div>
+            <div class="tracker-item" id="tracker-2"><span class="tracker-check" aria-hidden="true"></span> Full Permutations</div>
+            <div class="tracker-item" id="tracker-3"><span class="tracker-check" aria-hidden="true"></span> r-Permutations</div>
+            <div class="tracker-item" id="tracker-4"><span class="tracker-check" aria-hidden="true"></span> With Repetition</div>
+            <div class="tracker-item" id="tracker-5"><span class="tracker-check" aria-hidden="true"></span> Multiset Perms</div>
+            <div class="tracker-item" id="tracker-6"><span class="tracker-check" aria-hidden="true"></span> Activities</div>
+            <div class="tracker-item" id="tracker-7"><span class="tracker-check" aria-hidden="true"></span> Knowledge Check</div>
+        </div>
+
+        <!-- Learning Objectives -->
+        <div class="objectives-box" role="region" aria-label="Learning objectives">
+            <h2>🎯 Learning Objectives</h2>
+            <p>After completing this module, you will be able to:</p>
+            <ul>
+                <li>Define the factorial function and compute factorials for small values</li>
+                <li>Explain why 0! = 1 by convention and by combinatorial argument</li>
+                <li>Calculate the number of permutations of n distinct objects (n!)</li>
+                <li>Calculate r-permutations P(n, r) for partial ordered arrangements</li>
+                <li>Count permutations when repetition is allowed (nʳ)</li>
+                <li>Count permutations of multisets with identical elements</li>
+                <li>Connect permutations to bijections and injective functions (Week 2)</li>
+                <li>Apply permutation formulas to computer science problems</li>
+            </ul>
+        </div>
+
+        <!-- Prerequisite Connection -->
+        <div class="connection-box">
+            <div class="conn-title">🔗 Connection to Module 7.1</div>
+            <p>In Module 7.1 you learned the <strong>Product Rule</strong>: if a procedure has sequential steps with n₁, n₂, …, nₖ choices, the total outcomes are n₁ × n₂ × … × nₖ. Permutations are a direct application of the Product Rule where the number of choices <strong>decreases</strong> at each step because items are used up (no repetition). The Product Rule with <strong>constant</strong> choices at each step gives permutations <strong>with</strong> repetition.</p>
+        </div>
+
+        <!-- ===================== SECTION 1: THE FACTORIAL FUNCTION ===================== -->
+        <section class="section" id="section-1" aria-labelledby="sec1-heading">
+            <div class="section-header" onclick="markSectionRead(1)">
+                <div class="section-number" aria-hidden="true">1</div>
+                <h2 id="sec1-heading">The Factorial Function</h2>
+            </div>
+
+            <p>Before we can count permutations, we need the <strong>factorial function</strong> — one of the most important functions in combinatorics. You may have encountered it in prior math courses, but here we define it rigorously and connect it to counting.</p>
+
+            <div class="definition-box">
+                <div class="def-title">📘 Definition: Factorial</div>
+                <p>For any non-negative integer n, the <strong>factorial</strong> of n, written <strong>n!</strong> (read "n factorial"), is defined as:</p>
+                <div class="math-block">n! = n × (n − 1) × (n − 2) × … × 2 × 1</div>
+                <p>By convention: <strong>0! = 1</strong></p>
+            </div>
+
+            <h3>Recursive Definition</h3>
+
+            <p>The factorial can also be defined <strong>recursively</strong>, which connects directly to the recursion topics you'll study in Week 10:</p>
+
+            <div class="theorem-box">
+                <div class="thm-title">📐 Recursive Definition of Factorial</div>
+                <p><strong>Base case:</strong> 0! = 1</p>
+                <p><strong>Recursive case:</strong> n! = n × (n − 1)! for n ≥ 1</p>
+                <p>This means: to compute 5!, compute 5 × 4!, which requires 4 × 3!, which requires 3 × 2!, which requires 2 × 1!, which requires 1 × 0! = 1.</p>
+            </div>
+
+            <h3>Factorial Values Table</h3>
+
+            <p>Factorials grow <strong>extremely fast</strong> — much faster than exponential functions. Here are the first several values:</p>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th scope="col">n</th>
+                            <th scope="col">n!</th>
+                            <th scope="col">Expansion</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>0</td><td>1</td><td>(by convention)</td></tr>
+                        <tr><td>1</td><td>1</td><td>1</td></tr>
+                        <tr><td>2</td><td>2</td><td>2 × 1</td></tr>
+                        <tr><td>3</td><td>6</td><td>3 × 2 × 1</td></tr>
+                        <tr><td>4</td><td>24</td><td>4 × 3 × 2 × 1</td></tr>
+                        <tr><td>5</td><td>120</td><td>5 × 4 × 3 × 2 × 1</td></tr>
+                        <tr><td>6</td><td>720</td><td>6 × 5 × 4 × 3 × 2 × 1</td></tr>
+                        <tr><td>7</td><td>5,040</td><td>7 × 6!</td></tr>
+                        <tr><td>8</td><td>40,320</td><td>8 × 7!</td></tr>
+                        <tr><td>9</td><td>362,880</td><td>9 × 8!</td></tr>
+                        <tr><td>10</td><td>3,628,800</td><td>10 × 9!</td></tr>
+                        <tr><td>12</td><td>479,001,600</td><td>12 × 11!</td></tr>
+                        <tr><td>15</td><td>1,307,674,368,000</td><td>≈ 1.3 × 10¹²</td></tr>
+                        <tr><td>20</td><td>2,432,902,008,176,640,000</td><td>≈ 2.4 × 10¹⁸</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="warning-box">
+                <div class="warn-title">⚠️ Factorial Growth is Explosive</div>
+                <p>Notice that 20! ≈ 2.4 × 10¹⁸ — that's over 2 <em>quintillion</em>. For comparison, 2⁶⁴ ≈ 1.8 × 10¹⁹. Factorials grow faster than exponentials: for large n, n! ≫ 2ⁿ. This is why brute-force algorithms that check all permutations (like the naive traveling salesman solution) become infeasible very quickly.</p>
+            </div>
+
+            <h3>Why 0! = 1</h3>
+
+            <p>This convention may seem arbitrary, but it has strong justifications:</p>
+
+            <ol class="content-list">
+                <li><strong>Combinatorial argument:</strong> 0! counts the number of ways to arrange 0 objects. There is exactly <strong>one</strong> way to arrange nothing — do nothing. So 0! = 1.</li>
+                <li><strong>Recursive consistency:</strong> Since n! = n × (n − 1)!, we need 1! = 1 × 0!. Since 1! = 1, we get 0! = 1.</li>
+                <li><strong>Formula consistency:</strong> The permutation formula P(n, n) = n!/(n − n)! = n!/0! should equal n!, which requires 0! = 1.</li>
+            </ol>
+
+            <h3>Factorial in Code</h3>
+
+            <div class="code-label">Java</div>
+            <pre><code>/**
+ * Factorial implementations: iterative and recursive
+ */
+public class Factorial {
+
+    // Iterative version
+    public static long factorialIterative(int n) {
+        if (n < 0) throw new IllegalArgumentException("n must be non-negative");
+        long result = 1;
+        for (int i = 2; i <= n; i++) {
+            result *= i;
+        }
+        return result;
+    }
+
+    // Recursive version
+    public static long factorialRecursive(int n) {
+        if (n < 0) throw new IllegalArgumentException("n must be non-negative");
+        if (n == 0) return 1;           // Base case: 0! = 1
+        return n * factorialRecursive(n - 1);  // Recursive case
+    }
+
+    public static void main(String[] args) {
+        for (int i = 0; i <= 12; i++) {
+            System.out.printf("%2d! = %,d%n", i, factorialIterative(i));
+        }
+        // Note: long overflows at 21! (exceeds Long.MAX_VALUE)
+    }
+}</code></pre>
+
+            <div class="note-box">
+                <div class="note-title">💡 Overflow Warning</div>
+                <p>In Java, <span class="inline-code">long</span> can hold values up to 9,223,372,036,854,775,807 (≈ 9.2 × 10¹⁸). Since 20! ≈ 2.4 × 10¹⁸ fits, but 21! ≈ 5.1 × 10¹⁹ does not. For larger factorials, use <span class="inline-code">java.math.BigInteger</span>. This is a real-world consideration when implementing combinatorial algorithms!</p>
+            </div>
+
+            <!-- Interactive Factorial Explorer -->
+            <div class="activity-container">
+                <h3>🔢 Interactive: Factorial Explorer</h3>
+                <p>Enter a value of n to see its factorial computed step by step.</p>
+                <div class="form-group">
+                    <label for="fact-input">Enter n (0 – 20):</label>
+                    <input type="number" id="fact-input" min="0" max="20" value="5">
+                </div>
+                <button class="btn btn-primary" onclick="computeFactorial()" aria-label="Compute factorial">Compute n!</button>
+                <div class="result-display" id="fact-result" role="region" aria-live="polite">
+                    <div id="fact-result-content"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================== SECTION 2: PERMUTATIONS OF n DISTINCT OBJECTS ===================== -->
+        <section class="section" id="section-2" aria-labelledby="sec2-heading">
+            <div class="section-header" onclick="markSectionRead(2)">
+                <div class="section-number" aria-hidden="true">2</div>
+                <h2 id="sec2-heading">Permutations of n Distinct Objects</h2>
+            </div>
+
+            <div class="definition-box">
+                <div class="def-title">📘 Definition: Permutation</div>
+                <p>A <strong>permutation</strong> of a set of distinct objects is an <strong>ordered arrangement</strong> of all those objects. The key word is <em>ordered</em> — the sequence in which objects appear matters.</p>
+                <p>The number of permutations of n distinct objects is <strong>n!</strong></p>
+            </div>
+
+            <h3>Why n! — The Product Rule Derivation</h3>
+
+            <p>Arranging n distinct objects in a line is a sequential decision process:</p>
+
+            <div class="step-display">
+                <div class="step"><span class="step-num">Position 1:</span> Choose any of the n objects → <strong>n</strong> choices</div>
+                <div class="step"><span class="step-num">Position 2:</span> Choose from the remaining n − 1 objects → <strong>n − 1</strong> choices</div>
+                <div class="step"><span class="step-num">Position 3:</span> Choose from the remaining n − 2 objects → <strong>n − 2</strong> choices</div>
+                <div class="step"><span class="step-num">⋮</span></div>
+                <div class="step"><span class="step-num">Position n:</span> Only 1 object remains → <strong>1</strong> choice</div>
+            </div>
+
+            <p>By the <strong>Product Rule</strong> (Module 7.1):</p>
+
+            <div class="math-block">Total arrangements = n × (n − 1) × (n − 2) × … × 2 × 1 = n!</div>
+
+            <div class="connection-box">
+                <div class="conn-title">🔗 Connection to Week 2: Bijections</div>
+                <p>A permutation of a set S = {s₁, s₂, …, sₙ} is equivalent to a <strong>bijection</strong> from S to itself. The function maps each position (1, 2, …, n) to the element placed there. Since the mapping is one-to-one and onto, it's a bijection. The count n! equals the number of bijections from an n-element set to itself.</p>
+            </div>
+
+            <div class="example-box">
+                <div class="ex-title">📝 Example 2.1: Arranging Books on a Shelf</div>
+                <p>How many ways can 8 students line up for a photo?</p>
+                <div class="solution">
+                    <div class="solution-title">Solution:</div>
+                    <p>We need to arrange all 8 students in a line (order matters — who stands where).</p>
+                    <p>Number of arrangements = 8! = 8 × 7 × 6 × 5 × 4 × 3 × 2 × 1 = <strong>40,320</strong></p>
+                </div>
+            </div>
+
+            <div class="example-box">
+                <div class="ex-title">📝 Example 2.2: Scheduling Processes</div>
+                <p>An operating system has 5 processes in the ready queue. How many different execution orders are possible?</p>
+                <div class="solution">
+                    <div class="solution-title">Solution:</div>
+                    <p>Each execution order is a permutation of the 5 processes.</p>
+                    <p>Number of orders = 5! = 120</p>
+                    <p>This is relevant to CPU scheduling algorithms — a brute-force scheduler that checks all orderings would need to evaluate 120 possibilities for just 5 processes. For 20 processes, that's 20! ≈ 2.4 × 10¹⁸ — completely infeasible.</p>
+                </div>
+            </div>
+
+            <div class="example-box">
+                <div class="ex-title">📝 Example 2.3: Seating at a Round Table</div>
+                <p>How many ways can 6 people sit around a circular table?</p>
+                <div class="solution">
+                    <div class="solution-title">Solution:</div>
+                    <p>In a <strong>circular</strong> arrangement, rotations of the same arrangement are considered identical (rotating everyone one seat clockwise gives the same relative seating).</p>
+                    <p>Fix one person's position to break the rotational symmetry. The remaining 5 people can be arranged in 5! ways.</p>
+                    <p>Circular permutations of n objects = <strong>(n − 1)!</strong> = 5! = <strong>120</strong></p>
+                </div>
+            </div>
+
+            <!-- Visual Permutation Builder -->
+            <div class="activity-container">
+                <h3>🧩 Interactive: Build a Permutation</h3>
+                <p>Click the letters below to place them one at a time into the arrangement slots. Notice how the number of available choices decreases with each selection — this is the Product Rule in action!</p>
+
+                <p><strong>Available letters:</strong></p>
+                <div id="available-letters" class="arrange-area" aria-label="Available letters to select">
+                    <!-- Filled by JS -->
+                </div>
+
+                <p><strong>Your arrangement:</strong></p>
+                <div id="arrangement-slots" class="perm-visual" aria-label="Current arrangement">
+                    <!-- Filled by JS -->
+                </div>
+
+                <div id="perm-builder-info" style="text-align: center; margin: 12px 0; font-weight: 600; color: #0d47a1;" role="status" aria-live="polite"></div>
+
+                <div style="text-align: center;">
+                    <button class="btn btn-secondary" onclick="resetPermBuilder()" aria-label="Reset permutation builder">Reset</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================== SECTION 3: r-PERMUTATIONS ===================== -->
+        <section class="section" id="section-3" aria-labelledby="sec3-heading">
+            <div class="section-header" onclick="markSectionRead(3)">
+                <div class="section-number" aria-hidden="true">3</div>
+                <h2 id="sec3-heading">r-Permutations: Partial Arrangements P(n, r)</h2>
+            </div>
+
+            <p>Often we don't arrange <em>all</em> n objects — we select and arrange only <strong>r</strong> of them. This is called an <strong>r-permutation</strong>.</p>
+
+            <div class="definition-box">
+                <div class="def-title">📘 Definition: r-Permutation</div>
+                <p>An <strong>r-permutation</strong> of a set of n distinct elements is an ordered arrangement of r elements chosen from the set (without repetition).</p>
+                <p>The number of r-permutations of n objects is denoted <strong>P(n, r)</strong> (also written ⁿPᵣ or P(n, r)):</p>
+                <div class="math-block">P(n, r) = n! / (n − r)! = n × (n − 1) × (n − 2) × … × (n − r + 1)</div>
+                <p>This is the product of r consecutive descending integers starting from n.</p>
+            </div>
+
+            <h3>Derivation Using the Product Rule</h3>
+
+            <p>Selecting and arranging r objects from n distinct objects:</p>
+
+            <div class="step-display">
+                <div class="step"><span class="step-num">Position 1:</span> n choices</div>
+                <div class="step"><span class="step-num">Position 2:</span> n − 1 choices</div>
+                <div class="step"><span class="step-num">Position 3:</span> n − 2 choices</div>
+                <div class="step"><span class="step-num">⋮</span></div>
+                <div class="step"><span class="step-num">Position r:</span> n − r + 1 choices</div>
+            </div>
+
+            <p>By the Product Rule: n × (n − 1) × … × (n − r + 1)</p>
+
+            <p>This product can be written compactly as n!/(n − r)! because:</p>
+
+            <div class="math-block">
+                n!/(n − r)! = [n × (n−1) × … × (n−r+1) × (n−r) × … × 1] / [(n−r) × … × 1]
+            </div>
+
+            <p>The (n − r)! in the denominator cancels the "tail" of the factorial, leaving exactly the first r factors.</p>
+
+            <div class="note-box">
+                <div class="note-title">💡 Special Case: P(n, n) = n!</div>
+                <p>When r = n (arrange all objects), P(n, n) = n!/(n − n)! = n!/0! = n!/1 = n!. This confirms that full permutations are a special case of r-permutations.</p>
+            </div>
+
+            <h3>Examples</h3>
+
+            <div class="example-box">
+                <div class="ex-title">📝 Example 3.1: Club Officers</div>
+                <p>A club of 12 members elects a president, vice president, and treasurer (all different people). How many outcomes are possible?</p>
+                <div class="solution">
+                    <div class="solution-title">Solution:</div>
+                    <p>We are selecting 3 people from 12 <strong>and the order matters</strong> (president ≠ vice president ≠ treasurer).</p>
+                    <p>P(12, 3) = 12!/(12 − 3)! = 12!/9! = 12 × 11 × 10 = <strong>1,320</strong></p>
+                </div>
+            </div>
+
+            <div class="example-box">
+                <div class="ex-title">📝 Example 3.2: Podium Finishes</div>
+                <p>In a race with 20 runners, how many ways can the gold, silver, and bronze medals be awarded?</p>
+                <div class="solution">
+                    <div class="solution-title">Solution:</div>
+                    <p>P(20, 3) = 20 × 19 × 18 = <strong>6,840</strong></p>
+                </div>
+            </div>
+
+            <div class="example-box">
+                <div class="ex-title">📝 Example 3.3: Injective Functions</div>
+                <p>How many <strong>injective</strong> (one-to-one) functions exist from A = {a, b, c, d} to B = {1, 2, 3, 4, 5, 6}?</p>
+                <div class="solution">
+                    <div class="solution-title">Solution:</div>
+                    <p>An injective function from A to B assigns each element of A a <strong>distinct</strong> element of B. This is equivalent to choosing 4 elements from B and arranging them (assigning one to each element of A).</p>
+                    <p>P(6, 4) = 6!/2! = 6 × 5 × 4 × 3 = <strong>360</strong></p>
+                    <p><em>Connection to Week 2:</em> The number of injective functions from an m-element set to an n-element set (where m ≤ n) is P(n, m).</p>
+                </div>
+            </div>
+
+            <h3>P(n, r) in Code</h3>
+
+            <div class="code-label">Java</div>
+            <pre><code>/**
+ * Compute P(n, r) = n! / (n-r)!
+ * Uses the product form to avoid computing large factorials
+ */
+public class Permutations {
+
+    public static long perm(int n, int r) {
+        if (r < 0 || r > n) {
+            throw new IllegalArgumentException("Requires 0 <= r <= n");
+        }
+        long result = 1;
+        for (int i = 0; i < r; i++) {
+            result *= (n - i);  // n, n-1, n-2, ..., n-r+1
+        }
+        return result;
+    }
+
+    public static void main(String[] args) {
+        System.out.println("P(12, 3) = " + perm(12, 3));  // 1320
+        System.out.println("P(20, 3) = " + perm(20, 3));  // 6840
+        System.out.println("P(6, 4)  = " + perm(6, 4));   // 360
+        System.out.println("P(5, 5)  = " + perm(5, 5));   // 120 = 5!
+        System.out.println("P(5, 0)  = " + perm(5, 0));   // 1
+    }
+}</code></pre>
+
+            <!-- Interactive P(n,r) Calculator -->
+            <div class="activity-container">
+                <h3>🧮 Interactive: P(n, r) Calculator</h3>
+                <p>Enter values of n and r to compute the number of r-permutations with a step-by-step breakdown.</p>
+
+                <div style="display: flex; flex-wrap: wrap; gap: 16px;">
+                    <div class="form-group">
+                        <label for="pnr-n">n (total objects):</label>
+                        <input type="number" id="pnr-n" min="0" max="20" value="12">
+                    </div>
+                    <div class="form-group">
+                        <label for="pnr-r">r (positions to fill):</label>
+                        <input type="number" id="pnr-r" min="0" max="20" value="3">
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" onclick="calculatePnr()" aria-label="Calculate P(n,r)">Calculate P(n, r)</button>
+
+                <div class="result-display" id="pnr-result" role="region" aria-live="polite">
+                    <div id="pnr-result-content"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================== SECTION 4: PERMUTATIONS WITH REPETITION ===================== -->
+        <section class="section" id="section-4" aria-labelledby="sec4-heading">
+            <div class="section-header" onclick="markSectionRead(4)">
+                <div class="section-number" aria-hidden="true">4</div>
+                <h2 id="sec4-heading">Permutations with Repetition Allowed</h2>
+            </div>
+
+            <p>In the permutations we've studied so far, each object can be used <strong>at most once</strong>. But what if repetition is allowed — what if we can reuse objects?</p>
+
+            <div class="definition-box">
+                <div class="def-title">📘 Definition: Permutations with Repetition</div>
+                <p>An <strong>r-permutation with repetition</strong> from a set of n elements is an ordered arrangement of r elements where each element may be used <strong>any number of times</strong>.</p>
+                <p>The number of such arrangements is:</p>
+                <div class="math-block">nʳ (n to the power r)</div>
+            </div>
+
+            <h3>Why nʳ — The Product Rule Again</h3>
+
+            <p>When repetition is allowed, each of the r positions has n choices <strong>independently</strong>:</p>
+
+            <div class="step-display">
+                <div class="step"><span class="step-num">Position 1:</span> n choices</div>
+                <div class="step"><span class="step-num">Position 2:</span> n choices (repetition allowed!)</div>
+                <div class="step"><span class="step-num">Position 3:</span> n choices</div>
+                <div class="step"><span class="step-num">⋮</span></div>
+                <div class="step"><span class="step-num">Position r:</span> n choices</div>
+            </div>
+
+            <p>By the Product Rule: n × n × n × … × n (r times) = nʳ</p>
+
+            <div class="note-box">
+                <div class="note-title">💡 This Is the Product Rule from Module 7.1!</div>
+                <p>Permutations with repetition are exactly the Product Rule with constant choices. The password and bit string examples from Module 7.1 were actually permutations with repetition! A bit string of length n is an n-permutation with repetition from {0, 1}: 2ⁿ possibilities.</p>
+            </div>
+
+            <h3>Comparison: With vs. Without Repetition</h3>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th scope="col">Type</th>
+                            <th scope="col">Formula</th>
+                            <th scope="col">Example (n=5, r=3)</th>
+                            <th scope="col">Count</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Without repetition</strong></td>
+                            <td>P(n, r) = n!/(n−r)!</td>
+                            <td>P(5, 3) = 5 × 4 × 3</td>
+                            <td><strong>60</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong>With repetition</strong></td>
+                            <td>nʳ</td>
+                            <td>5³ = 5 × 5 × 5</td>
+                            <td><strong>125</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <p>Repetition always gives more outcomes because the pool of choices never shrinks.</p>
+
+            <div class="example-box">
+                <div class="ex-title">📝 Example 4.1: Strings from an Alphabet</div>
+                <p>How many 5-character strings can be formed from {a, b, c} if repetition is allowed?</p>
+                <div class="solution">
+                    <div class="solution-title">Solution:</div>
+                    <p>Each of the 5 positions can be a, b, or c (3 choices per position, repetition allowed).</p>
+                    <p>Total = 3⁵ = <strong>243</strong> strings</p>
+                    <p>Examples: aaaaa, aabbc, cbacb, ccccc, …</p>
+                </div>
+            </div>
+
+            <div class="example-box">
+                <div class="ex-title">📝 Example 4.2: PIN Codes</div>
+                <p>A PIN consists of 4 digits (0–9). How many PINs are possible?</p>
+                <div class="solution">
+                    <div class="solution-title">Solution:</div>
+                    <p>10 choices per position, 4 positions, repetition allowed.</p>
+                    <p>Total = 10⁴ = <strong>10,000</strong> PINs (from 0000 to 9999)</p>
+                </div>
+            </div>
+
+            <div class="example-box">
+                <div class="ex-title">📝 Example 4.3: Function Counting</div>
+                <p>How many functions exist from a set A with 4 elements to a set B with 3 elements?</p>
+                <div class="solution">
+                    <div class="solution-title">Solution:</div>
+                    <p>A function assigns each element of A to some element of B. Each of the 4 elements of A has 3 choices (and different elements can map to the same target — repetition is allowed).</p>
+                    <p>Total = 3⁴ = <strong>81</strong> functions</p>
+                    <p><em>Connection to Week 2:</em> The number of functions from an m-element set to an n-element set is nᵐ. Compare this to injective functions: P(n, m). Since P(3, 4) is undefined (can't have an injection from 4 elements to 3), there are 0 injective functions here, but 81 total functions.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================== SECTION 5: MULTISET PERMUTATIONS ===================== -->
+        <section class="section" id="section-5" aria-labelledby="sec5-heading">
+            <div class="section-header" onclick="markSectionRead(5)">
+                <div class="section-number" aria-hidden="true">5</div>
+                <h2 id="sec5-heading">Permutations of Multisets (Identical Items)</h2>
+            </div>
+
+            <p>What if some of the objects we're arranging are <strong>identical</strong>? If we have repeated elements, swapping two identical items doesn't create a new arrangement. We need to divide out the over-counting.</p>
+
+            <div class="definition-box">
+                <div class="def-title">📘 Definition: Multiset Permutation</div>
+                <p>Given n objects where there are n₁ identical objects of type 1, n₂ identical objects of type 2, …, and nₖ identical objects of type k (with n₁ + n₂ + … + nₖ = n), the number of <strong>distinct</strong> arrangements is:</p>
+                <div class="math-block">n! / (n₁! × n₂! × … × nₖ!)</div>
+                <p>This is also called a <strong>multinomial coefficient</strong>.</p>
+            </div>
+
+            <h3>Why We Divide</h3>
+
+            <p>Consider arranging the letters in "BANANA":</p>
+
+            <p>The word has 6 letters:
+                <span class="letter-highlight">B</span>
+                <span class="letter-highlight dup">A</span>
+                <span class="letter-highlight dup">N</span>
+                <span class="letter-highlight dup">A</span>
+                <span class="letter-highlight dup">N</span>
+                <span class="letter-highlight dup">A</span>
+            </p>
+
+            <ul class="content-list">
+                <li>B appears <strong>1</strong> time</li>
+                <li>A appears <strong>3</strong> times</li>
+                <li>N appears <strong>2</strong> times</li>
+            </ul>
+
+            <p>If all 6 letters were distinct, there would be 6! = 720 arrangements. But since the 3 A's are identical, any rearrangement of just the A's among their positions doesn't create a new word. Similarly for the 2 N's.</p>
+
+            <p>We divide by the number of ways to rearrange each group of identical items:</p>
+
+            <div class="math-block">6! / (1! × 3! × 2!) = 720 / (1 × 6 × 2) = 720 / 12 = <strong>60</strong></div>
+
+            <div class="example-box">
+                <div class="ex-title">📝 Example 5.1: Arrangements of "BANANA"</div>
+                <p>How many distinct arrangements of the letters in "BANANA" are there?</p>
+                <div class="solution">
+                    <div class="solution-title">Solution:</div>
+                    <p>n = 6 total letters. B: 1, A: 3, N: 2.</p>
+                    <p>Distinct arrangements = 6! / (1! × 3! × 2!) = 720 / 12 = <strong>60</strong></p>
+                </div>
+            </div>
+
+            <div class="example-box">
+                <div class="ex-title">📝 Example 5.2: Arrangements of "MISSISSIPPI"</div>
+                <p>How many distinct arrangements of the letters in "MISSISSIPPI" are there?</p>
+                <div class="solution">
+                    <div class="solution-title">Solution:</div>
+                    <p>n = 11 total letters. M: 1, I: 4, S: 4, P: 2.</p>
+                    <p>Distinct arrangements = 11! / (1! × 4! × 4! × 2!)</p>
+                    <p>= 39,916,800 / (1 × 24 × 24 × 2)</p>
+                    <p>= 39,916,800 / 1,152 = <strong>34,650</strong></p>
+                </div>
+            </div>
+
+            <div class="example-box">
+                <div class="ex-title">📝 Example 5.3: Binary String Arrangements</div>
+                <p>How many bit strings of length 10 have exactly 4 ones (and 6 zeros)?</p>
+                <div class="solution">
+                    <div class="solution-title">Solution:</div>
+                    <p>We're arranging 10 bits: 4 identical 1's and 6 identical 0's.</p>
+                    <p>Distinct arrangements = 10! / (4! × 6!) = 3,628,800 / (24 × 720) = 3,628,800 / 17,280 = <strong>210</strong></p>
+                    <p><em>Preview:</em> This is also C(10, 4) — a <strong>combination</strong>! We're choosing which 4 of the 10 positions get a 1. You'll study this formula in Module 7.3.</p>
+                </div>
+            </div>
+
+            <h3>Multiset Permutations in Code</h3>
+
+            <div class="code-label">Java</div>
+            <pre><code>/**
+ * Count distinct permutations of a string with repeated characters
+ */
+public class MultisetPermutations {
+
+    public static long factorial(int n) {
+        long result = 1;
+        for (int i = 2; i <= n; i++) result *= i;
+        return result;
+    }
+
+    public static long distinctPermutations(String s) {
+        // Count frequency of each character
+        java.util.Map&lt;Character, Integer&gt; freq = new java.util.HashMap&lt;&gt;();
+        for (char c : s.toCharArray()) {
+            freq.put(c, freq.getOrDefault(c, 0) + 1);
+        }
+
+        // Compute n! / (n1! * n2! * ... * nk!)
+        long numerator = factorial(s.length());
+        long denominator = 1;
+        for (int count : freq.values()) {
+            denominator *= factorial(count);
+        }
+
+        return numerator / denominator;
+    }
+
+    public static void main(String[] args) {
+        System.out.println("BANANA:      " + distinctPermutations("BANANA"));
+        // Output: 60
+        System.out.println("MISSISSIPPI: " + distinctPermutations("MISSISSIPPI"));
+        // Output: 34650
+        System.out.println("ABCDE:       " + distinctPermutations("ABCDE"));
+        // Output: 120 (all distinct, so 5!)
+    }
+}</code></pre>
+
+            <!-- Interactive Multiset Calculator -->
+            <div class="activity-container">
+                <h3>🔤 Interactive: Multiset Permutation Calculator</h3>
+                <p>Enter a word to compute the number of distinct arrangements of its letters.</p>
+
+                <div class="form-group">
+                    <label for="multiset-input">Enter a word (letters only, up to 15 characters):</label>
+                    <input type="text" id="multiset-input" maxlength="15" value="BANANA" style="text-transform: uppercase;" aria-describedby="multiset-help">
+                </div>
+                <p id="multiset-help" style="font-size: 0.85rem; color: #616161;">Only alphabetic characters are counted. Spaces and punctuation are ignored.</p>
+
+                <button class="btn btn-primary" onclick="calculateMultiset()" aria-label="Calculate multiset permutations">Calculate</button>
+
+                <div class="result-display" id="multiset-result" role="region" aria-live="polite">
+                    <div id="multiset-result-content"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================== SECTION 6: COMPREHENSIVE ACTIVITIES ===================== -->
+        <section class="section" id="section-6" aria-labelledby="sec6-heading">
+            <div class="section-header" onclick="markSectionRead(6)">
+                <div class="section-number" aria-hidden="true">6</div>
+                <h2 id="sec6-heading">Interactive Activities</h2>
+            </div>
+
+            <h3>Activity 1: Permutation Type Identifier</h3>
+
+            <p>For each scenario, identify which type of permutation formula applies. Select your answer and check.</p>
+
+            <div class="activity-container">
+                <h3>🎯 Which Formula?</h3>
+
+                <div class="quiz-question" id="type-q1">
+                    <h4>Scenario A</h4>
+                    <p>How many ways can 6 books be arranged on a shelf?</p>
+                    <ul class="quiz-options">
+                        <li><label><input type="radio" name="type1" value="a"> n! (full permutation)</label></li>
+                        <li><label><input type="radio" name="type1" value="b"> P(n, r) (r-permutation)</label></li>
+                        <li><label><input type="radio" name="type1" value="c"> nʳ (with repetition)</label></li>
+                        <li><label><input type="radio" name="type1" value="d"> n!/(n₁!n₂!…nₖ!) (multiset)</label></li>
+                    </ul>
+                    <button class="btn btn-primary" onclick="checkTypeQ(1, 'a', '✓ Correct! Arranging all 6 distinct books → 6! = 720.', '✗ We are arranging ALL 6 distinct books in order. That is a full permutation: n! = 6! = 720.')">Check</button>
+                    <div id="type-fb1" class="feedback" role="alert"></div>
+                </div>
+
+                <div class="quiz-question" id="type-q2">
+                    <h4>Scenario B</h4>
+                    <p>A lock has 4 dials, each with digits 0–9. How many combinations?</p>
+                    <ul class="quiz-options">
+                        <li><label><input type="radio" name="type2" value="a"> n! (full permutation)</label></li>
+                        <li><label><input type="radio" name="type2" value="b"> P(n, r) (r-permutation)</label></li>
+                        <li><label><input type="radio" name="type2" value="c"> nʳ (with repetition)</label></li>
+                        <li><label><input type="radio" name="type2" value="d"> n!/(n₁!n₂!…nₖ!) (multiset)</label></li>
+                    </ul>
+                    <button class="btn btn-primary" onclick="checkTypeQ(2, 'c', '✓ Correct! Each dial independently has 10 choices, and digits can repeat: 10⁴ = 10,000.', '✗ Each of 4 dials has 10 choices and digits CAN repeat (e.g., 1111 is valid). This is nʳ = 10⁴ = 10,000.')">Check</button>
+                    <div id="type-fb2" class="feedback" role="alert"></div>
+                </div>
+
+                <div class="quiz-question" id="type-q3">
+                    <h4>Scenario C</h4>
+                    <p>A committee selects a chair, secretary, and spokesperson from 15 members (all different roles).</p>
+                    <ul class="quiz-options">
+                        <li><label><input type="radio" name="type3" value="a"> n! (full permutation)</label></li>
+                        <li><label><input type="radio" name="type3" value="b"> P(n, r) (r-permutation)</label></li>
+                        <li><label><input type="radio" name="type3" value="c"> nʳ (with repetition)</label></li>
+                        <li><label><input type="radio" name="type3" value="d"> n!/(n₁!n₂!…nₖ!) (multiset)</label></li>
+                    </ul>
+                    <button class="btn btn-primary" onclick="checkTypeQ(3, 'b', '✓ Correct! Selecting 3 from 15 where order matters (different roles) → P(15, 3) = 15 × 14 × 13 = 2,730.', '✗ We choose 3 people from 15 for DISTINCT roles (order matters, no repetition). This is P(15, 3) = 2,730.')">Check</button>
+                    <div id="type-fb3" class="feedback" role="alert"></div>
+                </div>
+
+                <div class="quiz-question" id="type-q4">
+                    <h4>Scenario D</h4>
+                    <p>How many distinct arrangements of the letters in "COMMITTEE" exist?</p>
+                    <ul class="quiz-options">
+                        <li><label><input type="radio" name="type4" value="a"> n! (full permutation)</label></li>
+                        <li><label><input type="radio" name="type4" value="b"> P(n, r) (r-permutation)</label></li>
+                        <li><label><input type="radio" name="type4" value="c"> nʳ (with repetition)</label></li>
+                        <li><label><input type="radio" name="type4" value="d"> n!/(n₁!n₂!…nₖ!) (multiset)</label></li>
+                    </ul>
+                    <button class="btn btn-primary" onclick="checkTypeQ(4, 'd', '✓ Correct! COMMITTEE has repeated letters (M:1, C:1, O:1, I:1, T:2, E:2) → 9!/(2!×2!) = 90,720.', '✗ COMMITTEE has 9 letters with repeats: T appears 2 times, E appears 2 times. Use the multiset formula: 9!/(2!×2!) = 90,720.')">Check</button>
+                    <div id="type-fb4" class="feedback" role="alert"></div>
+                </div>
+            </div>
+
+            <h3>Activity 2: Comprehensive Permutation Calculator</h3>
+
+            <div class="activity-container">
+                <h3>🧮 All-in-One Permutation Calculator</h3>
+
+                <div class="tab-container">
+                    <div class="tab-buttons" role="tablist">
+                        <button class="tab-btn active" role="tab" aria-selected="true" aria-controls="tab-full" id="tab-btn-full" onclick="switchTab('full')">n! Full</button>
+                        <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-partial" id="tab-btn-partial" onclick="switchTab('partial')">P(n,r) Partial</button>
+                        <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-rep" id="tab-btn-rep" onclick="switchTab('rep')">nʳ With Rep</button>
+                        <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-multi" id="tab-btn-multi" onclick="switchTab('multi')">Multiset</button>
+                    </div>
+
+                    <!-- Full Permutation Tab -->
+                    <div class="tab-panel active" role="tabpanel" id="tab-full" aria-labelledby="tab-btn-full">
+                        <h4>Full Permutation: n!</h4>
+                        <p>Arrange all n distinct objects in order.</p>
+                        <div class="form-group">
+                            <label for="full-n">n:</label>
+                            <input type="number" id="full-n" min="0" max="20" value="7">
+                        </div>
+                        <button class="btn btn-primary" onclick="calcFull()">Calculate n!</button>
+                        <div class="result-display" id="full-result" role="region" aria-live="polite">
+                            <div id="full-result-content"></div>
+                        </div>
+                    </div>
+
+                    <!-- Partial Permutation Tab -->
+                    <div class="tab-panel" role="tabpanel" id="tab-partial" aria-labelledby="tab-btn-partial">
+                        <h4>r-Permutation: P(n, r)</h4>
+                        <p>Choose and arrange r objects from n distinct objects (no repetition).</p>
+                        <div style="display: flex; flex-wrap: wrap; gap: 16px;">
+                            <div class="form-group">
+                                <label for="partial-n">n:</label>
+                                <input type="number" id="partial-n" min="0" max="20" value="10">
+                            </div>
+                            <div class="form-group">
+                                <label for="partial-r">r:</label>
+                                <input type="number" id="partial-r" min="0" max="20" value="4">
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" onclick="calcPartial()">Calculate P(n, r)</button>
+                        <div class="result-display" id="partial-result" role="region" aria-live="polite">
+                            <div id="partial-result-content"></div>
+                        </div>
+                    </div>
+
+                    <!-- With Repetition Tab -->
+                    <div class="tab-panel" role="tabpanel" id="tab-rep" aria-labelledby="tab-btn-rep">
+                        <h4>Permutations with Repetition: nʳ</h4>
+                        <p>Fill r positions from n choices, repetition allowed.</p>
+                        <div style="display: flex; flex-wrap: wrap; gap: 16px;">
+                            <div class="form-group">
+                                <label for="rep-n">n (choices per position):</label>
+                                <input type="number" id="rep-n" min="1" max="100" value="26">
+                            </div>
+                            <div class="form-group">
+                                <label for="rep-r">r (number of positions):</label>
+                                <input type="number" id="rep-r" min="1" max="30" value="5">
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" onclick="calcRep()">Calculate nʳ</button>
+                        <div class="result-display" id="rep-result" role="region" aria-live="polite">
+                            <div id="rep-result-content"></div>
+                        </div>
+                    </div>
+
+                    <!-- Multiset Tab -->
+                    <div class="tab-panel" role="tabpanel" id="tab-multi" aria-labelledby="tab-btn-multi">
+                        <h4>Multiset Permutation: n! / (n₁! × n₂! × … × nₖ!)</h4>
+                        <p>Enter a word to count its distinct letter arrangements.</p>
+                        <div class="form-group">
+                            <label for="multi-word">Word:</label>
+                            <input type="text" id="multi-word" maxlength="15" value="MISSISSIPPI" style="text-transform: uppercase;">
+                        </div>
+                        <button class="btn btn-primary" onclick="calcMultiTab()">Calculate</button>
+                        <div class="result-display" id="multi-result" role="region" aria-live="polite">
+                            <div id="multi-result-content"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================== SECTION 7: KNOWLEDGE CHECK ===================== -->
+        <section class="section" id="section-7" aria-labelledby="sec7-heading">
+            <div class="section-header" onclick="markSectionRead(7)">
+                <div class="section-number" aria-hidden="true">7</div>
+                <h2 id="sec7-heading">Knowledge Check</h2>
+            </div>
+
+            <p>Test your understanding of permutations. Answer all questions, then click "Submit Quiz" to see your results.</p>
+
+            <form id="quizForm" onsubmit="return false;">
+
+                <!-- Q1 -->
+                <div class="quiz-question">
+                    <h4>Question 1 of 7</h4>
+                    <p>What is 7!?</p>
+                    <ul class="quiz-options">
+                        <li><label><input type="radio" name="q1" value="a"> 720</label></li>
+                        <li><label><input type="radio" name="q1" value="b"> 5,040</label></li>
+                        <li><label><input type="radio" name="q1" value="c"> 40,320</label></li>
+                        <li><label><input type="radio" name="q1" value="d"> 362,880</label></li>
+                    </ul>
+                    <div id="fb-q1" class="feedback" role="alert"></div>
+                </div>
+
+                <!-- Q2 -->
+                <div class="quiz-question">
+                    <h4>Question 2 of 7</h4>
+                    <p>How many ways can a president, vice president, and secretary be chosen from a club of 10 members?</p>
+                    <ul class="quiz-options">
+                        <li><label><input type="radio" name="q2" value="a"> 120</label></li>
+                        <li><label><input type="radio" name="q2" value="b"> 720</label></li>
+                        <li><label><input type="radio" name="q2" value="c"> 1,000</label></li>
+                        <li><label><input type="radio" name="q2" value="d"> 30</label></li>
+                    </ul>
+                    <div id="fb-q2" class="feedback" role="alert"></div>
+                </div>
+
+                <!-- Q3 -->
+                <div class="quiz-question">
+                    <h4>Question 3 of 7</h4>
+                    <p>How many 4-character strings can be formed from {a, b, c, d, e} if repetition is allowed?</p>
+                    <ul class="quiz-options">
+                        <li><label><input type="radio" name="q3" value="a"> 120</label></li>
+                        <li><label><input type="radio" name="q3" value="b"> 625</label></li>
+                        <li><label><input type="radio" name="q3" value="c"> 20</label></li>
+                        <li><label><input type="radio" name="q3" value="d"> 256</label></li>
+                    </ul>
+                    <div id="fb-q3" class="feedback" role="alert"></div>
+                </div>
+
+                <!-- Q4 -->
+                <div class="quiz-question">
+                    <h4>Question 4 of 7</h4>
+                    <p>How many distinct arrangements of the letters in "LEVEL" are there?</p>
+                    <ul class="quiz-options">
+                        <li><label><input type="radio" name="q4" value="a"> 120</label></li>
+                        <li><label><input type="radio" name="q4" value="b"> 60</label></li>
+                        <li><label><input type="radio" name="q4" value="c"> 30</label></li>
+                        <li><label><input type="radio" name="q4" value="d"> 20</label></li>
+                    </ul>
+                    <div id="fb-q4" class="feedback" role="alert"></div>
+                </div>
+
+                <!-- Q5 -->
+                <div class="quiz-question">
+                    <h4>Question 5 of 7</h4>
+                    <p>The number of injective functions from a 3-element set to a 7-element set is:</p>
+                    <ul class="quiz-options">
+                        <li><label><input type="radio" name="q5" value="a"> 7³ = 343</label></li>
+                        <li><label><input type="radio" name="q5" value="b"> P(7, 3) = 210</label></li>
+                        <li><label><input type="radio" name="q5" value="c"> 3! = 6</label></li>
+                        <li><label><input type="radio" name="q5" value="d"> C(7, 3) = 35</label></li>
+                    </ul>
+                    <div id="fb-q5" class="feedback" role="alert"></div>
+                </div>
+
+                <!-- Q6 -->
+                <div class="quiz-question">
+                    <h4>Question 6 of 7</h4>
+                    <p>Why is 0! defined to be 1?</p>
+                    <ul class="quiz-options">
+                        <li><label><input type="radio" name="q6" value="a"> Because 0 × 1 = 0, and we round up</label></li>
+                        <li><label><input type="radio" name="q6" value="b"> There is exactly one way to arrange zero objects (do nothing)</label></li>
+                        <li><label><input type="radio" name="q6" value="c"> It is undefined; 0! = 1 is just a programming convention</label></li>
+                        <li><label><input type="radio" name="q6" value="d"> Because 1! = 1, and 0 is close to 1</label></li>
+                    </ul>
+                    <div id="fb-q6" class="feedback" role="alert"></div>
+                </div>
+
+                <!-- Q7 -->
+                <div class="quiz-question">
+                    <h4>Question 7 of 7</h4>
+                    <p>Which expression equals P(n, r)?</p>
+                    <ul class="quiz-options">
+                        <li><label><input type="radio" name="q7" value="a"> n! / r!</label></li>
+                        <li><label><input type="radio" name="q7" value="b"> n! / (n − r)!</label></li>
+                        <li><label><input type="radio" name="q7" value="c"> nʳ</label></li>
+                        <li><label><input type="radio" name="q7" value="d"> n! / (r! × (n − r)!)</label></li>
+                    </ul>
+                    <div id="fb-q7" class="feedback" role="alert"></div>
+                </div>
+
+                <div style="text-align: center; margin-top: 20px;">
+                    <button type="button" class="btn btn-success" onclick="submitQuiz()" aria-label="Submit quiz for grading">Submit Quiz</button>
+                    <button type="button" class="btn btn-secondary" onclick="resetQuiz()" aria-label="Reset quiz answers">Reset</button>
+                </div>
+
+                <div class="score-display" id="quiz-score" role="alert">
+                    <div class="score-label">Your Score</div>
+                    <div class="score-number" id="score-value"></div>
+                    <p id="score-message" style="margin-top: 8px;"></p>
+                </div>
+            </form>
+        </section>
+
+        <!-- ===================== SUMMARY ===================== -->
+        <div class="summary-card" role="region" aria-label="Module summary">
+            <h3>📋 Module 7.2 Summary</h3>
+            <ul>
+                <li><strong>Factorial:</strong> n! = n × (n−1) × … × 1, with 0! = 1. Grows explosively — faster than exponentials.</li>
+                <li><strong>Full permutation (n!):</strong> The number of ways to arrange all n distinct objects. Equivalent to counting bijections from a set to itself.</li>
+                <li><strong>r-Permutation P(n, r) = n!/(n−r)!:</strong> The number of ways to select and arrange r objects from n distinct objects without repetition. Counts injective functions.</li>
+                <li><strong>Permutations with repetition (nʳ):</strong> r positions, each with n independent choices. Equivalent to the Product Rule with constant step sizes. Counts all functions from an r-set to an n-set.</li>
+                <li><strong>Multiset permutations n!/(n₁!n₂!…nₖ!):</strong> Arrangements when some objects are identical. Divide out the over-counting from swapping identical items.</li>
+                <li><strong>Key decision:</strong> Does order matter? → Yes: permutation. Can items repeat? → Determines which formula.</li>
+            </ul>
+        </div>
+
+        <!-- Formula Reference Card -->
+        <div class="theorem-box" role="region" aria-label="Formula reference">
+            <div class="thm-title">📐 Quick Formula Reference</div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th scope="col">Type</th>
+                            <th scope="col">Formula</th>
+                            <th scope="col">When to Use</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Full permutation</td>
+                            <td><strong>n!</strong></td>
+                            <td>Arrange ALL n distinct objects</td>
+                        </tr>
+                        <tr>
+                            <td>r-permutation</td>
+                            <td><strong>P(n, r) = n!/(n−r)!</strong></td>
+                            <td>Choose and arrange r from n, no repetition</td>
+                        </tr>
+                        <tr>
+                            <td>With repetition</td>
+                            <td><strong>nʳ</strong></td>
+                            <td>r positions, n choices each, repetition OK</td>
+                        </tr>
+                        <tr>
+                            <td>Multiset</td>
+                            <td><strong>n!/(n₁!n₂!…nₖ!)</strong></td>
+                            <td>Arrange n objects with identical groups</td>
+                        </tr>
+                        <tr>
+                            <td>Circular</td>
+                            <td><strong>(n−1)!</strong></td>
+                            <td>Arrange n objects in a circle</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- What's Next -->
+        <div class="note-box" role="region" aria-label="Next module preview">
+            <div class="note-title">📍 Up Next: Module 7.3 — Combinations and Pascal's Triangle</div>
+            <p>In the next module, we shift from <strong>ordered</strong> arrangements to <strong>unordered</strong> selections. When we choose a committee (where roles are equal), order doesn't matter — that's a <strong>combination</strong>. You'll learn the formula C(n, r) = n!/(r!(n−r)!), discover its connection to permutations (C(n,r) = P(n,r)/r!), explore Pascal's Triangle, and see Pascal's Identity in action. The permutation concepts from this module are essential preparation.</p>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="page-footer" role="contentinfo">
+        <p>CSC 240 — Discrete Structures | Mendocino College | Spring 2026</p>
+        <p>Module 7.2: Permutations</p>
+        <p>Textbook: <a href="https://learn.saylor.org/course/view.php?id=67" target="_blank" rel="noopener noreferrer">Saylor.org CS202 — Discrete Structures</a></p>
+        <p style="margin-top: 8px; font-size: 0.8rem;">CSLO 2: Apply combinatorics and set theory to counting problems.</p>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // ===== SESSION STORAGE FOR PROGRESS =====
+        const MODULE_KEY = 'csc240_mod72_progress';
+
+        function loadProgress() {
+            try {
+                const data = JSON.parse(sessionStorage.getItem(MODULE_KEY));
+                return data || { sections: {}, quizSubmitted: false, quizScore: 0 };
+            } catch (e) {
+                return { sections: {}, quizSubmitted: false, quizScore: 0 };
+            }
+        }
+
+        function saveProgress(data) {
+            try {
+                sessionStorage.setItem(MODULE_KEY, JSON.stringify(data));
+            } catch (e) { }
+        }
+
+        function markSectionRead(num) {
+            const progress = loadProgress();
+            progress.sections[num] = true;
+            saveProgress(progress);
+            updateTrackers();
+        }
+
+        function updateTrackers() {
+            const progress = loadProgress();
+            const totalSections = 7;
+            for (let i = 1; i <= totalSections; i++) {
+                const item = document.getElementById('tracker-' + i);
+                if (item) {
+                    if (progress.sections[i]) {
+                        item.classList.add('completed');
+                        item.querySelector('.tracker-check').textContent = '✓';
+                    } else {
+                        item.classList.remove('completed');
+                        item.querySelector('.tracker-check').textContent = '';
+                    }
+                }
+            }
+            const completed = Object.keys(progress.sections).filter(k => progress.sections[k]).length;
+            const pct = Math.round((completed / totalSections) * 100);
+            const bar = document.getElementById('progressBar');
+            if (bar) {
+                bar.style.width = pct + '%';
+                bar.parentElement.setAttribute('aria-valuenow', pct);
+            }
+        }
+
+        // ===== SCROLL-BASED SECTION TRACKING =====
+        function handleScroll() {
+            const sections = document.querySelectorAll('.section');
+            sections.forEach((sec, idx) => {
+                const rect = sec.getBoundingClientRect();
+                if (rect.top < window.innerHeight * 0.5 && rect.bottom > 0) {
+                    markSectionRead(idx + 1);
+                }
+            });
+        }
+
+        window.addEventListener('scroll', handleScroll, { passive: true });
+
+        // ===== COLLAPSIBLE SECTIONS =====
+        function toggleCollapsible(btn) {
+            const content = btn.nextElementSibling;
+            const expanded = btn.getAttribute('aria-expanded') === 'true';
+            if (expanded) {
+                content.style.maxHeight = null;
+                btn.setAttribute('aria-expanded', 'false');
+                btn.classList.remove('active');
+            } else {
+                content.style.maxHeight = content.scrollHeight + 'px';
+                btn.setAttribute('aria-expanded', 'true');
+                btn.classList.add('active');
+            }
+        }
+
+        // ===== HELPER: FACTORIAL =====
+        function factorial(n) {
+            if (n < 0) return NaN;
+            if (n === 0 || n === 1) return 1;
+            let result = 1;
+            for (let i = 2; i <= n; i++) result *= i;
+            return result;
+        }
+
+        // ===== FACTORIAL EXPLORER =====
+        function computeFactorial() {
+            const n = parseInt(document.getElementById('fact-input').value);
+            const resultDiv = document.getElementById('fact-result');
+            const contentDiv = document.getElementById('fact-result-content');
+
+            if (isNaN(n) || n < 0 || n > 20) {
+                contentDiv.innerHTML = '<p style="color: #b71c1c; font-weight: 600;">Please enter a value between 0 and 20.</p>';
+                resultDiv.style.display = 'block';
+                resultDiv.style.background = '#fce4ec';
+                resultDiv.style.borderColor = '#ef5350';
+                return;
+            }
+
+            resultDiv.style.background = '#e8f5e9';
+            resultDiv.style.borderColor = '#4caf50';
+
+            let stepsHtml = '<div class="step-display">';
+            if (n === 0) {
+                stepsHtml += '<div class="step"><span class="step-num">Convention:</span> 0! = 1 (one way to arrange nothing)</div>';
+            } else {
+                let parts = [];
+                let running = 1;
+                for (let i = n; i >= 1; i--) {
+                    parts.push(i);
+                }
+                let expansion = parts.join(' × ');
+
+                // Show step-by-step multiplication
+                let cumulative = parts[0];
+                stepsHtml += '<div class="step"><span class="step-num">Expansion:</span> ' + n + '! = ' + expansion + '</div>';
+
+                if (n > 1) {
+                    let runningVal = parts[0];
+                    for (let i = 1; i < parts.length; i++) {
+                        let prev = runningVal;
+                        runningVal *= parts[i];
+                        stepsHtml += '<div class="step"><span class="step-num">Step ' + i + ':</span> ' + prev + ' × ' + parts[i] + ' = ' + runningVal.toLocaleString() + '</div>';
+                    }
+                }
+            }
+            stepsHtml += '</div>';
+
+            const result = factorial(n);
+            contentDiv.innerHTML =
+                '<h4 style="color: #1b5e20;">Factorial Computation</h4>' +
+                stepsHtml +
+                '<div class="big-number">' + n + '! = ' + result.toLocaleString() + '</div>';
+
+            resultDiv.style.display = 'block';
+            markSectionRead(1);
+        }
+
+        // ===== PERMUTATION BUILDER =====
+        const permLetters = ['A', 'B', 'C', 'D'];
+        let permArrangement = [];
+        let permAvailable = [];
+
+        function initPermBuilder() {
+            permArrangement = [];
+            permAvailable = [...permLetters];
+            renderPermBuilder();
+        }
+
+        function renderPermBuilder() {
+            const availDiv = document.getElementById('available-letters');
+            const slotsDiv = document.getElementById('arrangement-slots');
+            const infoDiv = document.getElementById('perm-builder-info');
+
+            // Render available
+            availDiv.innerHTML = '';
+            permAvailable.forEach((letter, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'arrange-item';
+                btn.textContent = letter;
+                btn.setAttribute('aria-label', 'Select letter ' + letter);
+                btn.onclick = function () { selectPermLetter(idx); };
+                availDiv.appendChild(btn);
+            });
+
+            if (permAvailable.length === 0 && permArrangement.length < permLetters.length) {
+                availDiv.innerHTML = '<span style="color: #616161; font-style: italic;">No letters remaining</span>';
+            }
+
+            // Render slots
+            slotsDiv.innerHTML = '';
+            for (let i = 0; i < permLetters.length; i++) {
+                const slot = document.createElement('div');
+                slot.className = 'perm-slot';
+                if (i < permArrangement.length) {
+                    slot.classList.add('filled');
+                    slot.textContent = permArrangement[i];
+                } else if (i === permArrangement.length) {
+                    slot.classList.add('active');
+                    slot.textContent = '?';
+                } else {
+                    slot.textContent = '_';
+                }
+
+                if (i < permLetters.length - 1) {
+                    slotsDiv.appendChild(slot);
+                    const arrow = document.createElement('span');
+                    arrow.className = 'perm-arrow';
+                    arrow.textContent = '→';
+                    arrow.setAttribute('aria-hidden', 'true');
+                    slotsDiv.appendChild(arrow);
+                } else {
+                    slotsDiv.appendChild(slot);
+                }
+            }
+
+            // Info text
+            const placed = permArrangement.length;
+            const remaining = permAvailable.length;
+
+            if (placed === 0) {
+                infoDiv.textContent = 'Position 1: ' + permLetters.length + ' choices available. Click a letter to begin.';
+            } else if (placed < permLetters.length) {
+                infoDiv.textContent = 'Position ' + (placed + 1) + ': ' + remaining + ' choice' + (remaining !== 1 ? 's' : '') + ' remaining.';
+            } else {
+                // Calculate which permutation number this is
+                let choicesUsed = [];
+                for (let i = 0; i < permLetters.length; i++) {
+                    choicesUsed.push(permLetters.length - i);
+                }
+                infoDiv.innerHTML = '✓ Complete! You built the permutation: <strong>' + permArrangement.join('') + '</strong><br>Choices made: ' + choicesUsed.join(' × ') + ' = ' + factorial(permLetters.length) + ' total permutations possible.';
+                markSectionRead(2);
+            }
+        }
+
+        function selectPermLetter(idx) {
+            if (permArrangement.length >= permLetters.length) return;
+            const letter = permAvailable[idx];
+            permArrangement.push(letter);
+            permAvailable.splice(idx, 1);
+            renderPermBuilder();
+        }
+
+        function resetPermBuilder() {
+            initPermBuilder();
+        }
+
+        // ===== P(n,r) CALCULATOR =====
+        function calculatePnr() {
+            const n = parseInt(document.getElementById('pnr-n').value);
+            const r = parseInt(document.getElementById('pnr-r').value);
+            const resultDiv = document.getElementById('pnr-result');
+            const contentDiv = document.getElementById('pnr-result-content');
+
+            if (isNaN(n) || isNaN(r) || n < 0 || r < 0) {
+                contentDiv.innerHTML = '<p style="color: #b71c1c;">Please enter valid non-negative integers.</p>';
+                resultDiv.style.display = 'block';
+                resultDiv.style.background = '#fce4ec';
+                resultDiv.style.borderColor = '#ef5350';
+                return;
+            }
+
+            if (r > n) {
+                contentDiv.innerHTML = '<p style="color: #b71c1c; font-weight: 600;">P(' + n + ', ' + r + ') = 0 — Cannot choose more items than available without repetition.</p>';
+                resultDiv.style.display = 'block';
+                resultDiv.style.background = '#fce4ec';
+                resultDiv.style.borderColor = '#ef5350';
+                return;
+            }
+
+            resultDiv.style.background = '#e8f5e9';
+            resultDiv.style.borderColor = '#4caf50';
+
+            let factors = [];
+            let result = 1;
+            for (let i = 0; i < r; i++) {
+                factors.push(n - i);
+                result *= (n - i);
+            }
+
+            let stepsHtml = '<div class="step-display">';
+            stepsHtml += '<div class="step"><span class="step-num">Formula:</span> P(' + n + ', ' + r + ') = ' + n + '! / (' + n + ' − ' + r + ')! = ' + n + '! / ' + (n - r) + '!</div>';
+
+            if (r === 0) {
+                stepsHtml += '<div class="step"><span class="step-num">Result:</span> P(' + n + ', 0) = 1 (empty arrangement)</div>';
+            } else {
+                stepsHtml += '<div class="step"><span class="step-num">Product form:</span> ' + factors.join(' × ') + '</div>';
+
+                if (r > 1) {
+                    let running = factors[0];
+                    for (let i = 1; i < factors.length; i++) {
+                        running *= factors[i];
+                        stepsHtml += '<div class="step"><span class="step-num">Step ' + (i) + ':</span> … = ' + running.toLocaleString() + '</div>';
+                    }
+                }
+            }
+            stepsHtml += '</div>';
+
+            contentDiv.innerHTML =
+                '<h4 style="color: #1b5e20;">P(' + n + ', ' + r + ') Calculation</h4>' +
+                stepsHtml +
+                '<div class="big-number">P(' + n + ', ' + r + ') = ' + result.toLocaleString() + '</div>';
+
+            resultDiv.style.display = 'block';
+            markSectionRead(3);
+        }
+
+        // ===== MULTISET CALCULATOR =====
+        function calculateMultiset() {
+            const word = document.getElementById('multiset-input').value.toUpperCase().replace(/[^A-Z]/g, '');
+            const resultDiv = document.getElementById('multiset-result');
+            const contentDiv = document.getElementById('multiset-result-content');
+
+            if (!word || word.length === 0) {
+                contentDiv.innerHTML = '<p style="color: #b71c1c;">Please enter at least one letter.</p>';
+                resultDiv.style.display = 'block';
+                resultDiv.style.background = '#fce4ec';
+                resultDiv.style.borderColor = '#ef5350';
+                return;
+            }
+
+            if (word.length > 15) {
+                contentDiv.innerHTML = '<p style="color: #b71c1c;">Please limit to 15 characters to avoid overflow.</p>';
+                resultDiv.style.display = 'block';
+                resultDiv.style.background = '#fce4ec';
+                resultDiv.style.borderColor = '#ef5350';
+                return;
+            }
+
+            resultDiv.style.background = '#e8f5e9';
+            resultDiv.style.borderColor = '#4caf50';
+
+            // Count frequencies
+            const freq = {};
+            for (const ch of word) {
+                freq[ch] = (freq[ch] || 0) + 1;
+            }
+
+            const n = word.length;
+            const numerator = factorial(n);
+            let denominator = 1;
+            let denomParts = [];
+            const freqEntries = Object.entries(freq).sort();
+
+            for (const [letter, count] of freqEntries) {
+                denominator *= factorial(count);
+                denomParts.push(count + '!');
+            }
+
+            const result = numerator / denominator;
+
+            // Build frequency display
+            let freqHtml = freqEntries.map(([l, c]) => '<span class="letter-highlight' + (c > 1 ? ' dup' : '') + '">' + l + '</span>: ' + c).join(', ');
+
+            contentDiv.innerHTML =
+                '<h4 style="color: #1b5e20;">Multiset Permutation of "' + word + '"</h4>' +
+                '<p><strong>Letter frequencies:</strong> ' + freqHtml + '</p>' +
+                '<div class="step-display">' +
+                '<div class="step"><span class="step-num">Formula:</span> ' + n + '! / (' + denomParts.join(' × ') + ')</div>' +
+                '<div class="step"><span class="step-num">Numerator:</span> ' + n + '! = ' + numerator.toLocaleString() + '</div>' +
+                '<div class="step"><span class="step-num">Denominator:</span> ' + denomParts.join(' × ') + ' = ' + denominator.toLocaleString() + '</div>' +
+                '<div class="step"><span class="step-num">Result:</span> ' + numerator.toLocaleString() + ' / ' + denominator.toLocaleString() + ' = ' + result.toLocaleString() + '</div>' +
+                '</div>' +
+                '<div class="big-number">' + result.toLocaleString() + '</div>' +
+                '<p style="text-align: center; color: #1b5e20;">distinct arrangements</p>';
+
+            resultDiv.style.display = 'block';
+            markSectionRead(5);
+        }
+
+        // ===== TAB SWITCHING =====
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+                btn.setAttribute('aria-selected', 'false');
+            });
+            document.querySelectorAll('.tab-panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+            document.getElementById('tab-btn-' + tabName).classList.add('active');
+            document.getElementById('tab-btn-' + tabName).setAttribute('aria-selected', 'true');
+            document.getElementById('tab-' + tabName).classList.add('active');
+        }
+
+        // ===== TAB CALCULATORS =====
+        function calcFull() {
+            const n = parseInt(document.getElementById('full-n').value);
+            const resultDiv = document.getElementById('full-result');
+            const contentDiv = document.getElementById('full-result-content');
+
+            if (isNaN(n) || n < 0 || n > 20) {
+                contentDiv.innerHTML = '<p style="color: #b71c1c;">Enter n between 0 and 20.</p>';
+                resultDiv.style.display = 'block';
+                resultDiv.style.background = '#fce4ec';
+                resultDiv.style.borderColor = '#ef5350';
+                return;
+            }
+
+            resultDiv.style.background = '#e8f5e9';
+            resultDiv.style.borderColor = '#4caf50';
+
+            const result = factorial(n);
+            let parts = [];
+            for (let i = n; i >= 1; i--) parts.push(i);
+            const expansion = n === 0 ? '1 (by convention)' : parts.join(' × ');
+
+            contentDiv.innerHTML =
+                '<h4 style="color: #1b5e20;">' + n + '! = ' + expansion + '</h4>' +
+                '<div class="big-number">' + result.toLocaleString() + '</div>';
+
+            resultDiv.style.display = 'block';
+            markSectionRead(6);
+        }
+
+        function calcPartial() {
+            const n = parseInt(document.getElementById('partial-n').value);
+            const r = parseInt(document.getElementById('partial-r').value);
+            const resultDiv = document.getElementById('partial-result');
+            const contentDiv = document.getElementById('partial-result-content');
+
+            if (isNaN(n) || isNaN(r) || n < 0 || r < 0 || r > n || n > 20) {
+                contentDiv.innerHTML = '<p style="color: #b71c1c;">Enter valid values where 0 ≤ r ≤ n ≤ 20.</p>';
+                resultDiv.style.display = 'block';
+                resultDiv.style.background = '#fce4ec';
+                resultDiv.style.borderColor = '#ef5350';
+                return;
+            }
+
+            resultDiv.style.background = '#e8f5e9';
+            resultDiv.style.borderColor = '#4caf50';
+
+            let factors = [];
+            let result = 1;
+            for (let i = 0; i < r; i++) {
+                factors.push(n - i);
+                result *= (n - i);
+            }
+
+            contentDiv.innerHTML =
+                '<h4 style="color: #1b5e20;">P(' + n + ', ' + r + ') = ' + (factors.length > 0 ? factors.join(' × ') : '1') + '</h4>' +
+                '<div class="big-number">' + result.toLocaleString() + '</div>';
+
+            resultDiv.style.display = 'block';
+            markSectionRead(6);
+        }
+
+        function calcRep() {
+            const n = parseInt(document.getElementById('rep-n').value);
+            const r = parseInt(document.getElementById('rep-r').value);
+            const resultDiv = document.getElementById('rep-result');
+            const contentDiv = document.getElementById('rep-result-content');
+
+            if (isNaN(n) || isNaN(r) || n < 1 || r < 1) {
+                contentDiv.innerHTML = '<p style="color: #b71c1c;">Enter valid positive integers.</p>';
+                resultDiv.style.display = 'block';
+                resultDiv.style.background = '#fce4ec';
+                resultDiv.style.borderColor = '#ef5350';
+                return;
+            }
+
+            resultDiv.style.background = '#e8f5e9';
+            resultDiv.style.borderColor = '#4caf50';
+
+            const result = Math.pow(n, r);
+            const resultFormatted = result < 1e15 ? result.toLocaleString() : result.toExponential(4);
+
+            contentDiv.innerHTML =
+                '<h4 style="color: #1b5e20;">' + n + '<sup>' + r + '</sup> = ' + n + ' × '.repeat(r).slice(0, -3) + ' (' + r + ' positions)</h4>' +
+                '<div class="big-number">' + resultFormatted + '</div>';
+
+            resultDiv.style.display = 'block';
+            markSectionRead(6);
+        }
+
+        function calcMultiTab() {
+            const word = document.getElementById('multi-word').value.toUpperCase().replace(/[^A-Z]/g, '');
+            const resultDiv = document.getElementById('multi-result');
+            const contentDiv = document.getElementById('multi-result-content');
+
+            if (!word) {
+                contentDiv.innerHTML = '<p style="color: #b71c1c;">Enter a word.</p>';
+                resultDiv.style.display = 'block';
+                resultDiv.style.background = '#fce4ec';
+                resultDiv.style.borderColor = '#ef5350';
+                return;
+            }
+
+            resultDiv.style.background = '#e8f5e9';
+            resultDiv.style.borderColor = '#4caf50';
+
+            const freq = {};
+            for (const ch of word) freq[ch] = (freq[ch] || 0) + 1;
+
+            const n = word.length;
+            const num = factorial(n);
+            let den = 1;
+            let denParts = [];
+            for (const [l, c] of Object.entries(freq).sort()) {
+                den *= factorial(c);
+                denParts.push(c + '!');
+            }
+
+            const result = num / den;
+
+            contentDiv.innerHTML =
+                '<h4 style="color: #1b5e20;">"' + word + '": ' + n + '! / (' + denParts.join(' × ') + ')</h4>' +
+                '<div class="big-number">' + result.toLocaleString() + '</div>';
+
+            resultDiv.style.display = 'block';
+            markSectionRead(6);
+        }
+
+        // ===== TYPE IDENTIFIER CHECKER =====
+        function checkTypeQ(num, correct, correctMsg, incorrectMsg) {
+            const selected = document.querySelector('input[name="type' + num + '"]:checked');
+            const fb = document.getElementById('type-fb' + num);
+
+            if (!selected) {
+                fb.className = 'feedback info';
+                fb.textContent = 'Please select an answer first.';
+                fb.style.display = 'block';
+                return;
+            }
+
+            if (selected.value === correct) {
+                fb.className = 'feedback correct';
+                fb.textContent = correctMsg;
+            } else {
+                fb.className = 'feedback incorrect';
+                fb.textContent = incorrectMsg;
+            }
+            fb.style.display = 'block';
+        }
+
+        // ===== QUIZ =====
+        const quizAnswers = {
+            q1: 'b', // 7! = 5040
+            q2: 'b', // P(10,3) = 720
+            q3: 'b', // 5^4 = 625
+            q4: 'c', // LEVEL: L:2, E:2, V:1 → 5!/(2!2!1!) = 120/4 = 30
+            q5: 'b', // P(7,3) = 210
+            q6: 'b', // combinatorial argument
+            q7: 'b'  // n!/(n-r)!
+        };
+
+        const quizExplanations = {
+            q1: {
+                correct: '✓ Correct! 7! = 7 × 6 × 5 × 4 × 3 × 2 × 1 = 5,040.',
+                incorrect: '✗ 7! = 7 × 6 × 5 × 4 × 3 × 2 × 1 = 5,040. Remember: 6! = 720, so 7! = 7 × 720 = 5,040.'
+            },
+            q2: {
+                correct: '✓ Correct! P(10, 3) = 10 × 9 × 8 = 720. Three distinct roles from 10 people.',
+                incorrect: '✗ Three distinct roles (order matters, no repetition): P(10, 3) = 10 × 9 × 8 = 720.'
+            },
+            q3: {
+                correct: '✓ Correct! With repetition: 5⁴ = 5 × 5 × 5 × 5 = 625.',
+                incorrect: '✗ Repetition is allowed, so each of 4 positions has 5 choices: 5⁴ = 625.'
+            },
+            q4: {
+                correct: '✓ Correct! LEVEL has L:2, E:2, V:1. So 5!/(2! × 2! × 1!) = 120/4 = 30.',
+                incorrect: '✗ LEVEL: L appears 2 times, E appears 2 times, V appears 1 time. Multiset formula: 5!/(2! × 2! × 1!) = 120/4 = 30.'
+            },
+            q5: {
+                correct: '✓ Correct! Injective functions from a 3-element set to a 7-element set = P(7, 3) = 7 × 6 × 5 = 210.',
+                incorrect: '✗ An injective function assigns distinct outputs. This is P(7, 3) = 7 × 6 × 5 = 210. Total functions (with repetition) would be 7³ = 343.'
+            },
+            q6: {
+                correct: '✓ Correct! There is exactly one way to arrange zero objects: do nothing. This also ensures formula consistency (e.g., P(n,n) = n!/0! = n!).',
+                incorrect: '✗ 0! = 1 because there is exactly one way to arrange zero objects (the "empty arrangement"). This also ensures formulas like P(n,n) = n!/0! work correctly.'
+            },
+            q7: {
+                correct: '✓ Correct! P(n, r) = n!/(n − r)!. Note: n!/(r!(n−r)!) is C(n,r), a combination (Module 7.3).',
+                incorrect: '✗ P(n, r) = n!/(n − r)!. Be careful: n!/(r!(n−r)!) is the combination formula C(n,r), which you\'ll learn in Module 7.3.'
+            }
+        };
+
+        function submitQuiz() {
+            let score = 0;
+            const total = Object.keys(quizAnswers).length;
+
+            for (const [qKey, correctVal] of Object.entries(quizAnswers)) {
+                const selected = document.querySelector('input[name="' + qKey + '"]:checked');
+                const fb = document.getElementById('fb-' + qKey);
+
+                if (selected && selected.value === correctVal) {
+                    score++;
+                    fb.className = 'feedback correct';
+                    fb.textContent = quizExplanations[qKey].correct;
+                } else {
+                    fb.className = 'feedback incorrect';
+                    fb.textContent = quizExplanations[qKey].incorrect;
+                }
+                fb.style.display = 'block';
+            }
+
+            const scoreDiv = document.getElementById('quiz-score');
+            const scoreVal = document.getElementById('score-value');
+            const scoreMsg = document.getElementById('score-message');
+
+            scoreVal.textContent = score + ' / ' + total;
+            scoreDiv.style.display = 'block';
+
+            if (score === total) {
+                scoreMsg.textContent = '🎉 Perfect score! You have an excellent grasp of permutations!';
+            } else if (score >= Math.ceil(total * 0.7)) {
+                scoreMsg.textContent = '👍 Good work! Review the explanations for any questions you missed.';
+            } else {
+                scoreMsg.textContent = '📚 Review the module content, paying special attention to the differences between permutation types. Then try again.';
+            }
+
+            markSectionRead(7);
+
+            const progress = loadProgress();
+            progress.quizSubmitted = true;
+            progress.quizScore = score;
+            saveProgress(progress);
+
+            scoreDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function resetQuiz() {
+            for (const qKey of Object.keys(quizAnswers)) {
+                const radios = document.querySelectorAll('input[name="' + qKey + '"]');
+                radios.forEach(r => r.checked = false);
+                const fb = document.getElementById('fb-' + qKey);
+                fb.style.display = 'none';
+                fb.className = 'feedback';
+            }
+            document.getElementById('quiz-score').style.display = 'none';
+        }
+
+        // ===== INITIALIZATION =====
+        document.addEventListener('DOMContentLoaded', function () {
+            updateTrackers();
+            handleScroll();
+            initPermBuilder();
+        });
+    </script>
+</body>
+</html>

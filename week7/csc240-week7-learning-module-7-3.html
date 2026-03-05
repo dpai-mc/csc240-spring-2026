@@ -1,0 +1,1933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 7.3: Combinations and Pascal's Triangle | CSC 240 - Discrete Structures</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { font-size: 16px; scroll-behavior: smooth; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #ffffff; color: #1a1a2e;
+            line-height: 1.7; min-height: 100vh;
+        }
+        .skip-link {
+            position: absolute; top: -100px; left: 0;
+            background: #0d47a1; color: #ffffff;
+            padding: 12px 24px; z-index: 10000;
+            font-size: 1rem; text-decoration: none; border-radius: 0 0 8px 0;
+        }
+        .skip-link:focus { top: 0; }
+        .progress-container {
+            position: fixed; top: 0; left: 0; width: 100%;
+            height: 6px; background: #e0e0e0; z-index: 9999;
+        }
+        .progress-bar {
+            height: 100%; width: 0%;
+            background: linear-gradient(90deg, #1565c0, #42a5f5);
+            transition: width 0.3s ease; border-radius: 0 3px 3px 0;
+        }
+        .course-header {
+            background: linear-gradient(135deg, #0d47a1 0%, #1565c0 50%, #1976d2 100%);
+            color: #ffffff; padding: 32px 24px 28px; text-align: center; margin-top: 6px;
+        }
+        .course-header .breadcrumb { font-size: 0.9rem; color: #bbdefb; margin-bottom: 8px; }
+        .course-header h1 { font-size: 2rem; font-weight: 700; margin-bottom: 6px; }
+        .course-header .subtitle { font-size: 1.1rem; color: #e3f2fd; font-weight: 400; }
+        .module-meta {
+            display: flex; flex-wrap: wrap; justify-content: center;
+            gap: 18px; margin-top: 16px;
+        }
+        .meta-badge {
+            background: rgba(255,255,255,0.18); color: #ffffff;
+            padding: 6px 16px; border-radius: 20px; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .page-wrapper { max-width: 960px; margin: 0 auto; padding: 32px 20px 60px; }
+        .objectives-box {
+            background: #e8f5e9; border: 2px solid #388e3c;
+            border-radius: 12px; padding: 24px 28px; margin-bottom: 36px;
+        }
+        .objectives-box h2 {
+            color: #1b5e20; font-size: 1.3rem; margin-bottom: 12px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .objectives-box ul { list-style: none; padding: 0; }
+        .objectives-box li {
+            padding: 6px 0 6px 28px; position: relative;
+            color: #1b5e20; font-size: 0.98rem;
+        }
+        .objectives-box li::before {
+            content: "✓"; position: absolute; left: 4px;
+            color: #388e3c; font-weight: 700;
+        }
+        .section {
+            margin-bottom: 40px; padding-bottom: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .section:last-child { border-bottom: none; }
+        .section-header {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 18px; cursor: pointer; user-select: none;
+        }
+        .section-number {
+            background: #0d47a1; color: #ffffff; width: 40px; height: 40px;
+            border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; font-weight: 700; font-size: 1.1rem; flex-shrink: 0;
+        }
+        .section h2 { font-size: 1.5rem; color: #0d47a1; }
+        .section h3 { font-size: 1.2rem; color: #1565c0; margin: 24px 0 12px; }
+        .section h4 { font-size: 1.05rem; color: #1a1a2e; margin: 18px 0 10px; }
+        .section p { margin-bottom: 14px; font-size: 1rem; color: #212121; }
+        .definition-box {
+            background: #e3f2fd; border-left: 5px solid #1565c0;
+            border-radius: 0 10px 10px 0; padding: 20px 24px; margin: 20px 0;
+        }
+        .definition-box .def-title {
+            font-weight: 700; color: #0d47a1; font-size: 1.05rem;
+            margin-bottom: 6px; display: flex; align-items: center; gap: 8px;
+        }
+        .definition-box p, .definition-box ul { color: #1a1a2e; margin-bottom: 8px; }
+        .theorem-box {
+            background: #fff3e0; border-left: 5px solid #e65100;
+            border-radius: 0 10px 10px 0; padding: 20px 24px; margin: 20px 0;
+        }
+        .theorem-box .thm-title {
+            font-weight: 700; color: #bf360c; font-size: 1.05rem;
+            margin-bottom: 6px; display: flex; align-items: center; gap: 8px;
+        }
+        .theorem-box p, .theorem-box ul { color: #1a1a2e; }
+        .proof-box {
+            background: #f1f8e9; border-left: 5px solid #558b2f;
+            border-radius: 0 10px 10px 0; padding: 20px 24px; margin: 20px 0;
+        }
+        .proof-box .proof-title {
+            font-weight: 700; color: #33691e; font-size: 1.05rem;
+            margin-bottom: 6px; display: flex; align-items: center; gap: 8px;
+        }
+        .proof-box p { color: #1a1a2e; margin-bottom: 8px; }
+        .proof-box .qed { text-align: right; font-weight: 700; color: #33691e; }
+        .example-box {
+            background: #f3e5f5; border-left: 5px solid #7b1fa2;
+            border-radius: 0 10px 10px 0; padding: 20px 24px; margin: 20px 0;
+        }
+        .example-box .ex-title {
+            font-weight: 700; color: #6a1b9a; font-size: 1.05rem;
+            margin-bottom: 8px; display: flex; align-items: center; gap: 8px;
+        }
+        .example-box p, .example-box ul { color: #1a1a2e; }
+        .example-box .solution {
+            background: rgba(255,255,255,0.6); border-radius: 8px;
+            padding: 14px 18px; margin-top: 12px;
+        }
+        .example-box .solution-title { font-weight: 700; color: #4a148c; margin-bottom: 4px; }
+        .warning-box {
+            background: #fce4ec; border-left: 5px solid #c62828;
+            border-radius: 0 10px 10px 0; padding: 18px 24px; margin: 20px 0;
+        }
+        .warning-box .warn-title {
+            font-weight: 700; color: #b71c1c; margin-bottom: 4px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .warning-box p, .warning-box ul { color: #212121; }
+        .note-box {
+            background: #fffde7; border-left: 5px solid #f9a825;
+            border-radius: 0 10px 10px 0; padding: 18px 24px; margin: 20px 0;
+        }
+        .note-box .note-title {
+            font-weight: 700; color: #f57f17; margin-bottom: 4px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .note-box p, .note-box ul { color: #212121; }
+        .connection-box {
+            background: #e8eaf6; border-left: 5px solid #3949ab;
+            border-radius: 0 10px 10px 0; padding: 18px 24px; margin: 20px 0;
+        }
+        .connection-box .conn-title {
+            font-weight: 700; color: #1a237e; margin-bottom: 6px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .connection-box p { color: #1a1a2e; }
+        pre {
+            background: #1e1e2f; color: #e0e0e0; border-radius: 10px;
+            padding: 20px 24px; overflow-x: auto;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.92rem; line-height: 1.6; margin: 16px 0;
+            white-space: pre; tab-size: 4; border: 1px solid #333;
+        }
+        pre code {
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.92rem; white-space: pre;
+            background: none; color: inherit; padding: 0;
+        }
+        .code-label {
+            display: inline-block; background: #0d47a1; color: #ffffff;
+            padding: 3px 12px; border-radius: 6px 6px 0 0;
+            font-size: 0.8rem; font-weight: 600; margin-bottom: -2px;
+        }
+        .inline-code {
+            background: #e8eaf6; color: #283593; padding: 2px 7px;
+            border-radius: 4px; font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        .table-wrapper { overflow-x: auto; margin: 16px 0; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+        th {
+            background: #0d47a1; color: #ffffff; padding: 12px 16px;
+            text-align: left; font-weight: 600;
+        }
+        td { padding: 10px 16px; border-bottom: 1px solid #e0e0e0; color: #212121; }
+        tr:nth-child(even) { background: #f5f5f5; }
+        tr:hover { background: #e3f2fd; }
+        .activity-container {
+            background: #f5f5f5; border: 2px solid #1565c0;
+            border-radius: 12px; padding: 28px; margin: 28px 0;
+        }
+        .activity-container h3 {
+            color: #0d47a1; font-size: 1.25rem; margin-bottom: 16px;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .activity-container p { margin-bottom: 12px; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label {
+            display: block; font-weight: 600; margin-bottom: 6px;
+            color: #1a1a2e; font-size: 0.95rem;
+        }
+        .form-group input[type="number"],
+        .form-group input[type="text"],
+        .form-group select {
+            width: 100%; max-width: 400px; padding: 10px 14px;
+            border: 2px solid #bbdefb; border-radius: 8px;
+            font-size: 1rem; color: #1a1a2e; background: #ffffff;
+            transition: border-color 0.2s;
+        }
+        .form-group input:focus, .form-group select:focus {
+            outline: none; border-color: #1565c0;
+            box-shadow: 0 0 0 3px rgba(21,101,192,0.2);
+        }
+        .btn {
+            display: inline-block; padding: 10px 24px; border: none;
+            border-radius: 8px; font-size: 1rem; font-weight: 600;
+            cursor: pointer; transition: background 0.2s, transform 0.1s;
+        }
+        .btn:active { transform: scale(0.97); }
+        .btn-primary { background: #1565c0; color: #ffffff; }
+        .btn-primary:hover, .btn-primary:focus { background: #0d47a1; outline: 3px solid #90caf9; }
+        .btn-secondary { background: #e0e0e0; color: #1a1a2e; margin-left: 8px; }
+        .btn-secondary:hover, .btn-secondary:focus { background: #bdbdbd; outline: 3px solid #90caf9; }
+        .btn-success { background: #2e7d32; color: #ffffff; }
+        .btn-success:hover, .btn-success:focus { background: #1b5e20; outline: 3px solid #a5d6a7; }
+        .feedback {
+            padding: 14px 18px; border-radius: 8px; margin-top: 12px;
+            font-weight: 600; display: none;
+        }
+        .feedback.correct { background: #e8f5e9; color: #1b5e20; border: 1px solid #4caf50; display: block; }
+        .feedback.incorrect { background: #fce4ec; color: #b71c1c; border: 1px solid #ef5350; display: block; }
+        .feedback.info { background: #e3f2fd; color: #0d47a1; border: 1px solid #42a5f5; display: block; }
+        .collapsible-toggle {
+            background: #e8eaf6; border: 2px solid #c5cae9; border-radius: 8px;
+            padding: 14px 20px; width: 100%; text-align: left;
+            font-size: 1rem; font-weight: 600; color: #283593;
+            cursor: pointer; display: flex; justify-content: space-between;
+            align-items: center; transition: background 0.2s; margin-top: 12px;
+        }
+        .collapsible-toggle:hover, .collapsible-toggle:focus { background: #c5cae9; outline: 3px solid #7986cb; }
+        .collapsible-toggle .arrow { transition: transform 0.3s; font-size: 1.1rem; }
+        .collapsible-toggle.active .arrow { transform: rotate(180deg); }
+        .collapsible-content {
+            max-height: 0; overflow: hidden; transition: max-height 0.4s ease;
+            background: #f5f5f5; border-radius: 0 0 8px 8px;
+        }
+        .collapsible-content .inner { padding: 18px 22px; }
+        .step-display {
+            background: #ffffff; border: 2px solid #e0e0e0;
+            border-radius: 10px; padding: 20px; margin: 16px 0;
+        }
+        .step {
+            padding: 12px 16px; border-left: 4px solid #1565c0;
+            margin-bottom: 12px; background: #f8f9fa; border-radius: 0 8px 8px 0;
+        }
+        .step .step-num { font-weight: 700; color: #0d47a1; margin-right: 8px; }
+        .result-display {
+            background: #e8f5e9; border: 2px solid #4caf50;
+            border-radius: 10px; padding: 20px 24px; margin: 16px 0; display: none;
+        }
+        .result-display h4 { color: #1b5e20; margin-bottom: 10px; }
+        .section-tracker {
+            display: flex; flex-wrap: wrap; gap: 10px; margin: 24px 0;
+            padding: 18px 20px; background: #f5f5f5; border-radius: 10px;
+        }
+        .tracker-item {
+            display: flex; align-items: center; gap: 6px;
+            font-size: 0.85rem; color: #616161;
+        }
+        .tracker-item.completed { color: #2e7d32; font-weight: 600; }
+        .tracker-check {
+            width: 22px; height: 22px; border: 2px solid #bdbdbd;
+            border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; font-size: 0.75rem; background: #ffffff;
+        }
+        .tracker-item.completed .tracker-check {
+            background: #2e7d32; border-color: #2e7d32; color: #ffffff;
+        }
+        .content-list { padding-left: 24px; margin: 10px 0 16px; }
+        .content-list li { margin-bottom: 6px; color: #212121; }
+        .math-block {
+            text-align: center; font-size: 1.2rem; padding: 16px;
+            margin: 14px 0; background: #fafafa; border-radius: 8px;
+            color: #1a1a2e; font-family: 'Cambria Math', 'Times New Roman', serif;
+            overflow-x: auto;
+        }
+        .big-number {
+            font-size: 2.5rem; font-weight: 800; color: #0d47a1;
+            text-align: center; margin: 12px 0;
+        }
+        .summary-card {
+            background: linear-gradient(135deg, #e3f2fd, #f3e5f5);
+            border: 2px solid #7b1fa2; border-radius: 12px;
+            padding: 24px 28px; margin: 28px 0;
+        }
+        .summary-card h3 { color: #4a148c; margin-bottom: 14px; }
+        .summary-card ul { list-style: none; padding: 0; }
+        .summary-card li {
+            padding: 8px 0 8px 24px; position: relative; color: #1a1a2e;
+        }
+        .summary-card li::before {
+            content: "▸"; position: absolute; left: 4px;
+            color: #7b1fa2; font-weight: 700;
+        }
+        .pascal-container { text-align: center; padding: 20px 10px; overflow-x: auto; }
+        .pascal-row { display: flex; justify-content: center; gap: 4px; margin: 3px 0; }
+        .pascal-cell {
+            width: 48px; height: 40px; display: inline-flex;
+            align-items: center; justify-content: center; border-radius: 8px;
+            font-weight: 700; font-size: 0.88rem;
+            background: #e3f2fd; color: #0d47a1;
+            border: 2px solid #90caf9; transition: all 0.3s; cursor: default;
+        }
+        .pascal-cell:hover { background: #1565c0; color: #ffffff; transform: scale(1.1); }
+        .pascal-cell.highlighted { background: #e65100; color: #ffffff; border-color: #bf360c; }
+        .pascal-cell.sum-hl { background: #2e7d32; color: #ffffff; border-color: #1b5e20; }
+        .stars-bars-visual {
+            display: flex; align-items: center; justify-content: center;
+            gap: 6px; flex-wrap: wrap; padding: 16px; background: #fafafa;
+            border-radius: 10px; border: 2px solid #e0e0e0; margin: 16px 0;
+            min-height: 60px; font-size: 1.5rem;
+        }
+        .star-icon { color: #f9a825; }
+        .bar-icon { color: #c62828; font-weight: 900; }
+        .flowchart {
+            background: #fafafa; border: 2px solid #e0e0e0;
+            border-radius: 12px; padding: 24px; margin: 20px 0;
+        }
+        .flow-node {
+            background: #e3f2fd; border: 2px solid #1565c0;
+            border-radius: 10px; padding: 14px 20px; margin: 8px auto;
+            max-width: 480px; text-align: center; font-weight: 600; color: #0d47a1;
+        }
+        .flow-node.decision { background: #fff3e0; border-color: #e65100; color: #bf360c; }
+        .flow-node.answer { background: #e8f5e9; border-color: #388e3c; color: #1b5e20; }
+        .flow-branches {
+            display: flex; gap: 20px; justify-content: center;
+            flex-wrap: wrap; margin-top: 8px;
+        }
+        .flow-branch { flex: 1; min-width: 200px; max-width: 300px; }
+        .flow-branch-label { text-align: center; font-weight: 700; font-size: 0.9rem; margin-bottom: 4px; }
+        .flow-branch-label.yes { color: #2e7d32; }
+        .flow-branch-label.no { color: #c62828; }
+        .quiz-question {
+            background: #ffffff; border: 2px solid #e0e0e0;
+            border-radius: 10px; padding: 20px 24px; margin-bottom: 20px;
+        }
+        .quiz-question h4 { color: #0d47a1; margin-bottom: 12px; }
+        .quiz-options { list-style: none; padding: 0; }
+        .quiz-options li { margin-bottom: 8px; }
+        .quiz-options label {
+            display: flex; align-items: flex-start; gap: 10px;
+            padding: 10px 14px; border: 2px solid #e0e0e0;
+            border-radius: 8px; cursor: pointer;
+            transition: background 0.2s, border-color 0.2s;
+            color: #212121; font-size: 0.95rem;
+        }
+        .quiz-options label:hover { background: #e3f2fd; border-color: #90caf9; }
+        .quiz-options input[type="radio"] {
+            margin-top: 3px; accent-color: #1565c0;
+            width: 18px; height: 18px; flex-shrink: 0;
+        }
+        .score-display {
+            text-align: center; padding: 20px; background: #e8f5e9;
+            border-radius: 10px; margin-top: 16px; display: none;
+        }
+        .score-display .score-number { font-size: 2rem; font-weight: 800; color: #2e7d32; }
+        .score-display .score-label { color: #1b5e20; font-size: 1rem; }
+        .page-footer {
+            background: #0d47a1; color: #ffffff; text-align: center;
+            padding: 24px 20px; font-size: 0.9rem;
+        }
+        .page-footer a { color: #90caf9; text-decoration: underline; }
+        .page-footer a:hover { color: #ffffff; }
+        strong { color: inherit; }
+        a { color: #1565c0; text-decoration: underline; }
+        a:hover { color: #0d47a1; }
+        *:focus-visible { outline: 3px solid #1565c0; outline-offset: 2px; }
+        @media (max-width: 768px) {
+            .course-header h1 { font-size: 1.5rem; }
+            .module-meta { flex-direction: column; align-items: center; }
+            .page-wrapper { padding: 20px 14px 40px; }
+            pre { font-size: 0.82rem; padding: 14px 12px; }
+            .activity-container { padding: 18px; }
+            .pascal-cell { width: 38px; height: 34px; font-size: 0.78rem; }
+        }
+        @media print {
+            .progress-container, .skip-link, .btn, .activity-container { display: none; }
+            body { font-size: 12pt; color: #000; }
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <div class="progress-container" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Page reading progress">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <header class="course-header">
+        <div class="breadcrumb" aria-label="Breadcrumb">CSC 240 — Discrete Structures → Week 7 → Module 7.3</div>
+        <h1>Module 7.3: Combinations and Pascal's Triangle</h1>
+        <p class="subtitle">Unordered Selections, Binomial Coefficients, Stars and Bars, and Pascal's Identity</p>
+        <div class="module-meta">
+            <span class="meta-badge">📅 Week 7 of 17</span>
+            <span class="meta-badge">⏱️ Estimated: 2.5 hours</span>
+            <span class="meta-badge">📖 Saylor CS202 §2.3–2.4</span>
+            <span class="meta-badge">🎯 CSLO 2</span>
+        </div>
+    </header>
+
+    <main id="main-content" class="page-wrapper">
+
+        <div class="section-tracker" aria-label="Section progress tracker">
+            <div class="tracker-item" id="tracker-1"><span class="tracker-check" aria-hidden="true"></span> Combinations</div>
+            <div class="tracker-item" id="tracker-2"><span class="tracker-check" aria-hidden="true"></span> Perm vs Comb</div>
+            <div class="tracker-item" id="tracker-3"><span class="tracker-check" aria-hidden="true"></span> Stars & Bars</div>
+            <div class="tracker-item" id="tracker-4"><span class="tracker-check" aria-hidden="true"></span> Pascal's △</div>
+            <div class="tracker-item" id="tracker-5"><span class="tracker-check" aria-hidden="true"></span> Pascal's Identity</div>
+            <div class="tracker-item" id="tracker-6"><span class="tracker-check" aria-hidden="true"></span> Properties</div>
+            <div class="tracker-item" id="tracker-7"><span class="tracker-check" aria-hidden="true"></span> Activities</div>
+            <div class="tracker-item" id="tracker-8"><span class="tracker-check" aria-hidden="true"></span> Knowledge Check</div>
+        </div>
+
+        <div class="objectives-box" role="region" aria-label="Learning objectives">
+            <h2>🎯 Learning Objectives</h2>
+            <p>After completing this module, you will be able to:</p>
+            <ul>
+                <li>Calculate combinations using the formula C(n, r) = n! / (r!(n − r)!)</li>
+                <li>Explain the relationship between permutations and combinations: C(n, r) = P(n, r) / r!</li>
+                <li>Apply a decision framework to determine whether a problem requires permutations or combinations</li>
+                <li>Calculate combinations with repetition using the stars-and-bars formula</li>
+                <li>Construct Pascal's Triangle and use it to find binomial coefficients</li>
+                <li>State and prove Pascal's Identity using a combinatorial argument</li>
+                <li>Verify properties of binomial coefficients (symmetry, row sums, boundary values)</li>
+                <li>Connect combinations to subsets (Week 1) and preview the Binomial Theorem (Week 8)</li>
+            </ul>
+        </div>
+
+        <div class="connection-box">
+            <div class="conn-title">🔗 Connection to Module 7.2</div>
+            <p>In Module 7.2 you learned that <strong>P(n, r) = n!/(n − r)!</strong> counts ordered arrangements of r items from n. But what if order <strong>doesn't matter</strong>? Choosing {A, B, C} is the same as choosing {C, A, B} when forming a committee. Combinations remove the ordering — every unordered group of r items corresponds to exactly <strong>r!</strong> ordered arrangements. So we divide: <strong>C(n, r) = P(n, r) / r!</strong>.</p>
+        </div>
+
+        <!-- ==================== SECTION 1 ==================== -->
+        <section class="section" id="section-1" aria-labelledby="sec1-heading">
+            <div class="section-header" onclick="markSectionRead(1)">
+                <div class="section-number" aria-hidden="true">1</div>
+                <h2 id="sec1-heading">Combinations — Unordered Selections</h2>
+            </div>
+
+            <p>A <strong>combination</strong> answers the question: "How many ways can I <em>choose</em> r items from n items when the <strong>order doesn't matter</strong>?"</p>
+
+            <div class="definition-box">
+                <div class="def-title">📘 Definition: r-Combination (Binomial Coefficient)</div>
+                <p>An <strong>r-combination</strong> of a set of n distinct elements is an <strong>unordered</strong> selection of r elements. The count is denoted <strong>C(n, r)</strong>, also written (<sup>n</sup><sub>r</sub>) or ⁿCᵣ:</p>
+                <div class="math-block">C(n, r) = n! / (r! × (n − r)!)</div>
+                <p>where 0 ≤ r ≤ n. If r &gt; n or r &lt; 0, then C(n, r) = 0.</p>
+            </div>
+
+            <h3>Derivation from Permutations</h3>
+            <div class="step-display">
+                <div class="step"><span class="step-num">Observation:</span> Every unordered group of r items can be arranged in <strong>r!</strong> different orders.</div>
+                <div class="step"><span class="step-num">Therefore:</span> P(n, r) counts each unordered group <strong>r!</strong> times (once per internal arrangement).</div>
+                <div class="step"><span class="step-num">To get unordered count:</span> Divide out the redundant orderings.</div>
+                <div class="step"><span class="step-num">Formula:</span> C(n, r) = P(n, r) / r! = [n!/(n − r)!] / r! = n! / (r! × (n − r)!)</div>
+            </div>
+
+            <div class="example-box">
+                <div class="ex-title">📝 Example 1.1: Seeing the Division in Action</div>
+                <p>From {A, B, C, D}, how many ways can we choose 2 elements?</p>
+                <div class="solution">
+                    <div class="solution-title">Solution:</div>
+                    <p><strong>Permutations</strong> (ordered): P(4, 2) = 4 × 3 = <strong>12</strong></p>
+                    <p>All 12: AB, AC, AD, BA, BC, BD, CA, CB, CD, DA, DB, DC</p>
+                    <p>Each pair appears <strong>twice</strong> (e.g., AB and BA). Since 2! = 2:</p>
+                    <p><strong>Combinations</strong>: C(4, 2) = 12 / 2 = <strong>6</strong></p>
+                    <p>The 6 combinations: {A,B}, {A,C}, {A,D}, {B,C}, {B,D}, {C,D}</p>
+                </div>
+            </div>
+
+            <div class="example-box">
+                <div class="ex-title">📝 Example 1.2: Team Selection</div>
+                <p>How many ways can a 4-person team be selected from 20 students?</p>
+                <div class="solution">
+                    <div class="solution-title">Solution:</div>
+                    <p>Order doesn't matter — {Alice, Bob, Carol, Dave} = {Dave, Carol, Alice, Bob}.</p>
+                    <p>C(20, 4) = (20 × 19 × 18 × 17) / (4 × 3 × 2 × 1) = 116,280 / 24 = <strong>4,845</strong></p>
+                </div>
+            </div>
+
+            <div class="example-box">
+                <div class="ex-title">📝 Example 1.3: Bit Strings with Exactly k Ones</div>
+                <p>How many bit strings of length 10 have exactly 4 ones?</p>
+                <div class="solution">
+                    <div class="solution-title">Solution:</div>
+                    <p>Choose which 4 of 10 positions get a 1. Order of selection doesn't matter.</p>
+                    <p>C(10, 4) = 10! / (4! × 6!) = 5,040 / 24 = <strong>210</strong></p>
+                </div>
+            </div>
+
+            <div class="example-box">
+                <div class="ex-title">📝 Example 1.4: Poker Hands</div>
+                <p>How many 5-card hands from a standard 52-card deck?</p>
+                <div class="solution">
+                    <div class="solution-title">Solution:</div>
+                    <p>C(52, 5) = (52 × 51 × 50 × 49 × 48) / (5!) = 311,875,200 / 120 = <strong>2,598,960</strong></p>
+                </div>
+            </div>
+
+            <div class="example-box">
+                <div class="ex-title">📝 Example 1.5: Complementary Counting</div>
+                <p>How many 5-card hands contain <strong>at least one ace</strong>?</p>
+                <div class="solution">
+                    <div class="solution-title">Solution:</div>
+                    <p>At least one ace = Total − No aces = C(52, 5) − C(48, 5) = 2,598,960 − 1,712,304 = <strong>886,656</strong></p>
+                </div>
+            </div>
+
+            <h3>Combination Formula in Code</h3>
+            <div class="code-label">Java</div>
+            <pre><code>public class Combinations {
+    public static long comb(int n, int r) {
+        if (r < 0 || r > n) return 0;
+        if (r == 0 || r == n) return 1;
+        if (r > n - r) r = n - r;  // Symmetry optimization
+        long result = 1;
+        for (int i = 0; i < r; i++) {
+            result = result * (n - i) / (i + 1);
+        }
+        return result;
+    }
+
+    public static void main(String[] args) {
+        System.out.println("C(20, 4)  = " + comb(20, 4));   // 4845
+        System.out.println("C(10, 4)  = " + comb(10, 4));   // 210
+        System.out.println("C(52, 5)  = " + comb(52, 5));   // 2598960
+        System.out.println("C(10, 0)  = " + comb(10, 0));   // 1
+        System.out.println("C(10, 10) = " + comb(10, 10));  // 1
+    }
+}</code></pre>
+
+            <div class="connection-box">
+                <div class="conn-title">🔗 Connection to Week 1: Subsets</div>
+                <p>C(n, r) counts the number of <strong>r-element subsets</strong> of an n-element set. A set with n elements has 2ⁿ total subsets. The connection: C(n,0) + C(n,1) + … + C(n,n) = 2ⁿ. We'll prove this in Section 6.</p>
+            </div>
+
+            <div class="activity-container">
+                <h3>🧮 Interactive: C(n, r) Calculator</h3>
+                <p>Enter values of n and r to compute the combination with a step-by-step breakdown.</p>
+                <div style="display:flex;flex-wrap:wrap;gap:16px;">
+                    <div class="form-group">
+                        <label for="cnr-n">n (total items):</label>
+                        <input type="number" id="cnr-n" min="0" max="30" value="20">
+                    </div>
+                    <div class="form-group">
+                        <label for="cnr-r">r (items to choose):</label>
+                        <input type="number" id="cnr-r" min="0" max="30" value="4">
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="calculateCnr()" aria-label="Calculate C(n,r)">Calculate C(n, r)</button>
+                <div class="result-display" id="cnr-result" role="region" aria-live="polite">
+                    <div id="cnr-result-content"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== SECTION 2 ==================== -->
+        <section class="section" id="section-2" aria-labelledby="sec2-heading">
+            <div class="section-header" onclick="markSectionRead(2)">
+                <div class="section-number" aria-hidden="true">2</div>
+                <h2 id="sec2-heading">Permutations vs. Combinations — Decision Framework</h2>
+            </div>
+
+            <p>The single most important question in counting: <strong>Does order matter?</strong></p>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th scope="col">Feature</th>
+                            <th scope="col">Permutation P(n, r)</th>
+                            <th scope="col">Combination C(n, r)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><strong>Order matters?</strong></td><td>Yes</td><td>No</td></tr>
+                        <tr><td><strong>Keywords</strong></td><td>arrange, order, sequence, rank, assign roles</td><td>choose, select, team, committee, group, hand</td></tr>
+                        <tr><td><strong>Formula</strong></td><td>n! / (n − r)!</td><td>n! / (r!(n − r)!)</td></tr>
+                        <tr><td><strong>Relationship</strong></td><td>P(n, r) = C(n, r) × r!</td><td>C(n, r) = P(n, r) / r!</td></tr>
+                        <tr><td><strong>Result size</strong></td><td>Larger</td><td>Smaller</td></tr>
+                        <tr><td><strong>Example</strong></td><td>Electing president, VP, secretary</td><td>Choosing a 3-person committee</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Decision Flowchart</h3>
+            <div class="flowchart" role="img" aria-label="Decision flowchart for counting formulas">
+                <div class="flow-node decision">Does the ORDER of selection matter?</div>
+                <div class="flow-branches">
+                    <div class="flow-branch">
+                        <div class="flow-branch-label yes">↓ YES (Permutation)</div>
+                        <div class="flow-node decision">Is repetition allowed?</div>
+                        <div class="flow-branches">
+                            <div class="flow-branch"><div class="flow-branch-label yes">↓ YES</div><div class="flow-node answer">nʳ</div></div>
+                            <div class="flow-branch"><div class="flow-branch-label no">↓ NO</div><div class="flow-node answer">P(n, r) = n!/(n−r)!</div></div>
+                        </div>
+                    </div>
+                    <div class="flow-branch">
+                        <div class="flow-branch-label no">↓ NO (Combination)</div>
+                        <div class="flow-node decision">Is repetition allowed?</div>
+                        <div class="flow-branches">
+                            <div class="flow-branch"><div class="flow-branch-label yes">↓ YES</div><div class="flow-node answer">C(n+r−1, r)</div></div>
+                            <div class="flow-branch"><div class="flow-branch-label no">↓ NO</div><div class="flow-node answer">C(n, r) = n!/(r!(n−r)!)</div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <div class="warn-title">⚠️ The "Swap Test"</div>
+                <p>Unsure whether order matters? Swap two items in your selection. If the swap creates a <strong>different</strong> outcome → permutation. If the swap gives the <strong>same</strong> outcome → combination.</p>
+            </div>
+
+            <div class="example-box">
+                <div class="ex-title">📝 Example 2.1: Same Scenario, Different Questions</div>
+                <p>A club has 12 members.</p>
+                <p><strong>(a)</strong> Choose president, VP, secretary → P(12, 3) = 12 × 11 × 10 = <strong>1,320</strong></p>
+                <p><strong>(b)</strong> Choose a 3-person committee → C(12, 3) = 1,320 / 6 = <strong>220</strong></p>
+                <div class="solution">
+                    <div class="solution-title">Verification:</div>
+                    <p>P(12, 3) = C(12, 3) × 3! → 1,320 = 220 × 6 ✓</p>
+                </div>
+            </div>
+
+            <div class="activity-container">
+                <h3>🧭 Interactive: Permutation or Combination?</h3>
+                <div class="quiz-question" id="pc-q1">
+                    <h4>Scenario A</h4>
+                    <p>Choosing 5 students from 30 to form a study group.</p>
+                    <ul class="quiz-options">
+                        <li><label><input type="radio" name="pc1" value="p"> Permutation</label></li>
+                        <li><label><input type="radio" name="pc1" value="c"> Combination</label></li>
+                    </ul>
+                    <button class="btn btn-primary" onclick="checkPC(1,'c','✓ A study group has no ranked positions. C(30, 5) = 142,506.','✗ Swapping two members doesn\'t change the group. Use C(30, 5).')">Check</button>
+                    <div id="pc-fb1" class="feedback" role="alert"></div>
+                </div>
+                <div class="quiz-question" id="pc-q2">
+                    <h4>Scenario B</h4>
+                    <p>Assigning 3 different prizes (1st, 2nd, 3rd) to contestants from 10.</p>
+                    <ul class="quiz-options">
+                        <li><label><input type="radio" name="pc2" value="p"> Permutation</label></li>
+                        <li><label><input type="radio" name="pc2" value="c"> Combination</label></li>
+                    </ul>
+                    <button class="btn btn-primary" onclick="checkPC(2,'p','✓ Prizes are distinct — who gets 1st matters. P(10, 3) = 720.','✗ Getting 1st ≠ getting 3rd. Swap changes outcome. Use P(10, 3).')">Check</button>
+                    <div id="pc-fb2" class="feedback" role="alert"></div>
+                </div>
+                <div class="quiz-question" id="pc-q3">
+                    <h4>Scenario C</h4>
+                    <p>Selecting 4 toppings for a pizza from 12 options (each used at most once).</p>
+                    <ul class="quiz-options">
+                        <li><label><input type="radio" name="pc3" value="p"> Permutation</label></li>
+                        <li><label><input type="radio" name="pc3" value="c"> Combination</label></li>
+                    </ul>
+                    <button class="btn btn-primary" onclick="checkPC(3,'c','✓ Toppings have no order — mushrooms + peppers = peppers + mushrooms. C(12, 4) = 495.','✗ A pizza is the same regardless of selection order. Use C(12, 4).')">Check</button>
+                    <div id="pc-fb3" class="feedback" role="alert"></div>
+                </div>
+                <div class="quiz-question" id="pc-q4">
+                    <h4>Scenario D</h4>
+                    <p>Creating a 4-digit PIN where digits can repeat.</p>
+                    <ul class="quiz-options">
+                        <li><label><input type="radio" name="pc4" value="p"> Permutation with repetition (nʳ)</label></li>
+                        <li><label><input type="radio" name="pc4" value="c"> Combination</label></li>
+                    </ul>
+                    <button class="btn btn-primary" onclick="checkPC(4,'p','✓ A PIN is a sequence (1234 ≠ 4321) with repetition allowed. 10⁴ = 10,000.','✗ Position matters in a PIN. 1234 ≠ 4321. Use nʳ = 10⁴.')">Check</button>
+                    <div id="pc-fb4" class="feedback" role="alert"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== SECTION 3 ==================== -->
+        <section class="section" id="section-3" aria-labelledby="sec3-heading">
+            <div class="section-header" onclick="markSectionRead(3)">
+                <div class="section-number" aria-hidden="true">3</div>
+                <h2 id="sec3-heading">Combinations with Repetition — Stars and Bars</h2>
+            </div>
+
+            <p>What if we make an unordered selection where we <strong>can choose the same item more than once</strong>?</p>
+
+            <div class="definition-box">
+                <div class="def-title">📘 Definition: Combination with Repetition</div>
+                <p>A <strong>combination with repetition</strong> selects r items from n types where each type may be chosen <strong>multiple times</strong> and order does not matter:</p>
+                <div class="math-block">C(n + r − 1, r) = (n + r − 1)! / (r! × (n − 1)!)</div>
+            </div>
+
+            <h3>The Stars and Bars Method</h3>
+            <ul class="content-list">
+                <li><strong>Stars (★)</strong> represent the r items being chosen</li>
+                <li><strong>Bars (|)</strong> separate items into n categories — we need n − 1 bars</li>
+                <li>Total symbols: r + (n − 1) = n + r − 1</li>
+                <li>Choose which positions are stars (or bars): C(n + r − 1, r)</li>
+            </ul>
+
+            <div class="theorem-box">
+                <div class="thm-title">📐 Stars and Bars Theorem</div>
+                <p>The number of ways to place r identical items into n distinct categories is:</p>
+                <div class="math-block">C(n + r − 1, r) = C(n + r − 1, n − 1)</div>
+            </div>
+
+            <div class="example-box">
+                <div class="ex-title">📝 Example 3.1: Ice Cream Scoops</div>
+                <p>5 flavors, buying 3 scoops, can repeat. How many selections?</p>
+                <div class="solution">
+                    <div class="solution-title">Solution:</div>
+                    <p>C(5 + 3 − 1, 3) = C(7, 3) = 35</p>
+                    <p>★ ★ | | ★ | | means: 2 of flavor 1, 0 of flavor 2, 1 of flavor 3, 0 of flavors 4–5.</p>
+                </div>
+            </div>
+
+            <div class="example-box">
+                <div class="ex-title">📝 Example 3.2: Distributing Identical Cookies</div>
+                <p>12 identical cookies distributed among 4 children?</p>
+                <div class="solution">
+                    <div class="solution-title">Solution:</div>
+                    <p>Stars = cookies (r = 12), categories = children (n = 4).</p>
+                    <p>C(4 + 12 − 1, 12) = C(15, 3) = (15 × 14 × 13) / 6 = <strong>455</strong></p>
+                </div>
+            </div>
+
+            <div class="example-box">
+                <div class="ex-title">📝 Example 3.3: Solutions to an Equation</div>
+                <p>How many non-negative integer solutions to x₁ + x₂ + x₃ = 10?</p>
+                <div class="solution">
+                    <div class="solution-title">Solution:</div>
+                    <p>Distributing 10 units into 3 variables: C(3 + 10 − 1, 10) = C(12, 2) = <strong>66</strong></p>
+                </div>
+            </div>
+
+            <div class="activity-container">
+                <h3>⭐ Interactive: Stars and Bars Visualizer</h3>
+                <p>Configure a problem and see a random arrangement visualized.</p>
+                <div style="display:flex;flex-wrap:wrap;gap:16px;">
+                    <div class="form-group">
+                        <label for="sb-types">n (types/categories):</label>
+                        <input type="number" id="sb-types" min="2" max="8" value="5">
+                    </div>
+                    <div class="form-group">
+                        <label for="sb-items">r (items to choose):</label>
+                        <input type="number" id="sb-items" min="1" max="12" value="3">
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="visualizeStarsBars()">Visualize</button>
+                <button class="btn btn-secondary" onclick="visualizeStarsBars()">Another Arrangement</button>
+                <div class="result-display" id="sb-result" role="region" aria-live="polite">
+                    <div id="sb-result-content"></div>
+                </div>
+            </div>
+
+            <h3>Complete Counting Formulas Summary</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead><tr><th>Order?</th><th>Repetition?</th><th>Name</th><th>Formula</th></tr></thead>
+                    <tbody>
+                        <tr><td>Yes</td><td>No</td><td>r-Permutation</td><td><strong>P(n,r) = n!/(n−r)!</strong></td></tr>
+                        <tr><td>Yes</td><td>Yes</td><td>Perm. with rep.</td><td><strong>nʳ</strong></td></tr>
+                        <tr><td>No</td><td>No</td><td>r-Combination</td><td><strong>C(n,r) = n!/(r!(n−r)!)</strong></td></tr>
+                        <tr><td>No</td><td>Yes</td><td>Comb. with rep.</td><td><strong>C(n+r−1, r)</strong></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ==================== SECTION 4 ==================== -->
+        <section class="section" id="section-4" aria-labelledby="sec4-heading">
+            <div class="section-header" onclick="markSectionRead(4)">
+                <div class="section-number" aria-hidden="true">4</div>
+                <h2 id="sec4-heading">Pascal's Triangle</h2>
+            </div>
+
+            <p><strong>Pascal's Triangle</strong> is a triangular array where each entry is a binomial coefficient C(n, r). It provides a visual, computation-free way to find combinations and reveals deep patterns.</p>
+
+            <div class="definition-box">
+                <div class="def-title">📘 Definition: Pascal's Triangle</div>
+                <ul class="content-list">
+                    <li><strong>Row n</strong> contains C(n, 0), C(n, 1), …, C(n, n)</li>
+                    <li>Boundary entries are 1: C(n, 0) = C(n, n) = 1</li>
+                    <li>Each interior entry = sum of the two entries directly above it</li>
+                </ul>
+            </div>
+
+            <h3>The First 8 Rows</h3>
+            <div class="pascal-container" id="pascal-static" role="img" aria-label="Pascal's Triangle rows 0 through 7"></div>
+
+            <h3>Patterns in Pascal's Triangle</h3>
+            <ol class="content-list">
+                <li><strong>Boundary values:</strong> Edges are always 1</li>
+                <li><strong>Symmetry:</strong> Each row reads the same forwards and backwards</li>
+                <li><strong>Row sums:</strong> Sum of row n = 2ⁿ (e.g., row 4: 1+4+6+4+1 = 16 = 2⁴)</li>
+                <li><strong>Diagonals:</strong> Column 1 = natural numbers; Column 2 = triangular numbers</li>
+                <li><strong>Powers of 11:</strong> First rows give 1, 11, 121, 1331, 14641</li>
+            </ol>
+
+            <button class="collapsible-toggle" aria-expanded="false" onclick="toggleCollapsible(this)">
+                <span>📖 Historical Note: Pascal, Khayyám, and Yang Hui</span>
+                <span class="arrow" aria-hidden="true">▼</span>
+            </button>
+            <div class="collapsible-content">
+                <div class="inner">
+                    <p>Although named after <strong>Blaise Pascal</strong> (1623–1662), this triangle was known centuries earlier. Persian mathematician <strong>Omar Khayyám</strong> (1048–1131) described it, Chinese mathematician <strong>Yang Hui</strong> published it in 1261, and Indian mathematician <strong>Pingala</strong> (2nd century BCE) had related ideas. Pascal's contribution was a systematic study of its properties and application to probability.</p>
+                </div>
+            </div>
+
+            <h3>Building Pascal's Triangle in Code</h3>
+            <div class="code-label">Java</div>
+            <pre><code>public class PascalTriangle {
+    public static int[][] buildTriangle(int numRows) {
+        int[][] triangle = new int[numRows][];
+        for (int n = 0; n < numRows; n++) {
+            triangle[n] = new int[n + 1];
+            triangle[n][0] = 1;          // C(n, 0) = 1
+            triangle[n][n] = 1;          // C(n, n) = 1
+            for (int r = 1; r < n; r++) {
+                // Pascal's Identity
+                triangle[n][r] = triangle[n-1][r-1] + triangle[n-1][r];
+            }
+        }
+        return triangle;
+    }
+
+    public static void main(String[] args) {
+        int[][] tri = buildTriangle(8);
+        for (int n = 0; n < tri.length; n++) {
+            System.out.print(" ".repeat((tri.length - n - 1) * 3));
+            for (int r = 0; r <= n; r++)
+                System.out.printf("%5d ", tri[n][r]);
+            System.out.println();
+        }
+    }
+}</code></pre>
+
+            <div class="activity-container">
+                <h3>🔺 Interactive: Pascal's Triangle Builder</h3>
+                <p>Choose rows to display. Click any cell to see Pascal's Identity — the two cells above that sum to it.</p>
+                <div class="form-group">
+                    <label for="pascal-rows">Number of rows (1–12):</label>
+                    <input type="number" id="pascal-rows" min="1" max="12" value="8">
+                </div>
+                <button class="btn btn-primary" onclick="buildPascalInteractive()">Build Triangle</button>
+                <div id="pascal-interactive" class="pascal-container" role="region" aria-live="polite" aria-label="Interactive Pascal's Triangle"></div>
+                <div id="pascal-info" style="text-align:center;margin-top:8px;font-weight:600;color:#0d47a1;min-height:24px;" role="status" aria-live="polite"></div>
+            </div>
+        </section>
+        
+        <!-- ==================== SECTION 5: PASCAL'S IDENTITY ==================== -->
+        <section class="section" id="section-5" aria-labelledby="sec5-heading">
+            <div class="section-header" onclick="markSectionRead(5)">
+                <div class="section-number" aria-hidden="true">5</div>
+                <h2 id="sec5-heading">Pascal's Identity</h2>
+            </div>
+
+            <p>The addition rule that builds Pascal's Triangle is not just a computational trick — it is a deep identity with a beautiful combinatorial proof. <strong>Pascal's Identity</strong> is the single most important property of binomial coefficients.</p>
+
+            <div class="theorem-box">
+                <div class="thm-title">📐 Theorem: Pascal's Identity</div>
+                <p>For integers n and r with 1 ≤ r ≤ n − 1:</p>
+                <div class="math-block">C(n, r) = C(n − 1, r − 1) + C(n − 1, r)</div>
+                <p>In words: each interior entry of Pascal's Triangle equals the sum of the two entries directly above it.</p>
+            </div>
+
+            <h3>Algebraic Proof</h3>
+
+            <p>We can verify the identity by expanding both sides using the factorial formula:</p>
+
+            <div class="proof-box">
+                <div class="proof-title">📜 Proof (Algebraic)</div>
+                <p>Starting with the right-hand side:</p>
+                <p>C(n−1, r−1) + C(n−1, r)</p>
+                <p>= (n−1)! / ((r−1)!(n−r)!) + (n−1)! / (r!(n−1−r)!)</p>
+                <p>Finding a common denominator of r!(n−r)!:</p>
+                <p>= (n−1)! × r / (r!(n−r)!) + (n−1)! × (n−r) / (r!(n−r)!)</p>
+                <p>= (n−1)! × [r + (n − r)] / (r!(n−r)!)</p>
+                <p>= (n−1)! × n / (r!(n−r)!)</p>
+                <p>= n! / (r!(n−r)!)</p>
+                <p>= C(n, r) ✓</p>
+                <p class="qed">■</p>
+            </div>
+
+            <h3>Combinatorial Proof</h3>
+
+            <p>The combinatorial proof is more elegant and gives <em>intuitive understanding</em> of why the identity is true. This is the style of proof emphasized in the Saylor CS202 textbook.</p>
+
+            <div class="proof-box">
+                <div class="proof-title">📜 Proof (Combinatorial — Double Counting)</div>
+                <p><strong>Goal:</strong> Show that C(n, r) = C(n−1, r−1) + C(n−1, r).</p>
+                <p><strong>Setup:</strong> Consider a set S with n elements. We want to count the number of r-element subsets of S. By definition, this is C(n, r). We will count the same quantity a different way.</p>
+                <p><strong>Key idea:</strong> Fix one specific element x ∈ S. Every r-element subset of S either <strong>contains x</strong> or <strong>does not contain x</strong>. These two cases are mutually exclusive and exhaustive.</p>
+                <p><strong>Case 1 — x is included:</strong> If x is in the subset, we need to choose the remaining r − 1 elements from the other n − 1 elements (everything in S except x). The number of such subsets is <strong>C(n − 1, r − 1)</strong>.</p>
+                <p><strong>Case 2 — x is excluded:</strong> If x is not in the subset, we need to choose all r elements from the other n − 1 elements. The number of such subsets is <strong>C(n − 1, r)</strong>.</p>
+                <p><strong>Conclusion:</strong> By the Sum Rule (Module 7.1), since every r-element subset falls into exactly one case:</p>
+                <p style="text-align:center; font-weight:700;">C(n, r) = C(n − 1, r − 1) + C(n − 1, r)</p>
+                <p class="qed">■</p>
+            </div>
+
+            <div class="note-box">
+                <div class="note-title">💡 Why Combinatorial Proofs Matter</div>
+                <p>A <strong>combinatorial proof</strong> (also called a "proof by counting" or "bijective proof") counts the same set in two different ways. If both methods count the same set, the results must be equal. This technique is powerful because it provides <em>understanding</em>, not just verification. You'll encounter it frequently in discrete mathematics and theoretical computer science.</p>
+            </div>
+
+            <div class="example-box">
+                <div class="ex-title">📝 Example 5.1: Verifying Pascal's Identity</div>
+                <p>Verify Pascal's Identity for C(6, 2).</p>
+                <div class="solution">
+                    <div class="solution-title">Solution:</div>
+                    <p><strong>Left side:</strong> C(6, 2) = 6! / (2! × 4!) = 720 / (2 × 24) = <strong>15</strong></p>
+                    <p><strong>Right side:</strong> C(5, 1) + C(5, 2) = 5 + 10 = <strong>15</strong> ✓</p>
+                    <p><strong>Combinatorial interpretation:</strong> From {a, b, c, d, e, f}, choose 2. Fix element f:</p>
+                    <ul class="content-list">
+                        <li>Subsets containing f: {f, a}, {f, b}, {f, c}, {f, d}, {f, e} → C(5, 1) = 5</li>
+                        <li>Subsets not containing f: {a,b}, {a,c}, {a,d}, {a,e}, {b,c}, {b,d}, {b,e}, {c,d}, {c,e}, {d,e} → C(5, 2) = 10</li>
+                    </ul>
+                    <p>Total: 5 + 10 = 15 = C(6, 2) ✓</p>
+                </div>
+            </div>
+
+            <div class="example-box">
+                <div class="ex-title">📝 Example 5.2: Using Pascal's Identity for Computation</div>
+                <p>Compute C(8, 3) using Pascal's Identity (without the factorial formula).</p>
+                <div class="solution">
+                    <div class="solution-title">Solution:</div>
+                    <p>C(8, 3) = C(7, 2) + C(7, 3)</p>
+                    <p>C(7, 2) = C(6, 1) + C(6, 2) = 6 + 15 = 21</p>
+                    <p>C(7, 3) = C(6, 2) + C(6, 3) = 15 + 20 = 35</p>
+                    <p>C(8, 3) = 21 + 35 = <strong>56</strong></p>
+                    <p>Check: 8!/(3! × 5!) = 40320/(6 × 120) = 40320/720 = 56 ✓</p>
+                </div>
+            </div>
+
+            <!-- Interactive Pascal's Identity Verifier -->
+            <div class="activity-container">
+                <h3>🔍 Interactive: Pascal's Identity Verifier</h3>
+                <p>Enter values of n and r to verify Pascal's Identity by computing both sides independently.</p>
+                <div style="display:flex;flex-wrap:wrap;gap:16px;">
+                    <div class="form-group">
+                        <label for="pi-n">n (2 ≤ n ≤ 20):</label>
+                        <input type="number" id="pi-n" min="2" max="20" value="6">
+                    </div>
+                    <div class="form-group">
+                        <label for="pi-r">r (1 ≤ r ≤ n−1):</label>
+                        <input type="number" id="pi-r" min="1" max="19" value="2">
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="verifyPascalIdentity()" aria-label="Verify Pascal's Identity">Verify Identity</button>
+                <div class="result-display" id="pi-result" role="region" aria-live="polite">
+                    <div id="pi-result-content"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== SECTION 6: PROPERTIES ==================== -->
+        <section class="section" id="section-6" aria-labelledby="sec6-heading">
+            <div class="section-header" onclick="markSectionRead(6)">
+                <div class="section-number" aria-hidden="true">6</div>
+                <h2 id="sec6-heading">Properties of Binomial Coefficients</h2>
+            </div>
+
+            <p>Binomial coefficients satisfy many elegant properties. Understanding these helps you simplify calculations and verify results.</p>
+
+            <h3>Property 1: Boundary Values</h3>
+
+            <div class="theorem-box">
+                <div class="thm-title">📐 Boundary Values</div>
+                <p>For any non-negative integer n:</p>
+                <div class="math-block">C(n, 0) = 1 &nbsp;&nbsp;&nbsp; and &nbsp;&nbsp;&nbsp; C(n, n) = 1</div>
+                <p><strong>Interpretation:</strong> There is exactly one way to choose nothing (the empty set), and exactly one way to choose everything (the entire set).</p>
+            </div>
+
+            <h3>Property 2: Symmetry</h3>
+
+            <div class="theorem-box">
+                <div class="thm-title">📐 Symmetry Property</div>
+                <p>For 0 ≤ r ≤ n:</p>
+                <div class="math-block">C(n, r) = C(n, n − r)</div>
+                <p><strong>Interpretation:</strong> Choosing r items to <em>include</em> is the same as choosing n − r items to <em>exclude</em>. Every selection of items determines a complementary non-selection.</p>
+            </div>
+
+            <div class="proof-box">
+                <div class="proof-title">📜 Proof (Algebraic)</div>
+                <p>C(n, n − r) = n! / ((n − r)! × (n − (n − r))!) = n! / ((n − r)! × r!) = C(n, r) ✓</p>
+                <p class="qed">■</p>
+            </div>
+
+            <div class="example-box">
+                <div class="ex-title">📝 Example 6.1: Symmetry in Practice</div>
+                <p>C(100, 97) looks intimidating, but by symmetry: C(100, 97) = C(100, 3) = (100 × 99 × 98) / 6 = <strong>161,700</strong></p>
+                <p>This is why the Java code in Section 1 includes the optimization <span class="inline-code">if (r > n - r) r = n - r;</span></p>
+            </div>
+
+            <h3>Property 3: Row Sum</h3>
+
+            <div class="theorem-box">
+                <div class="thm-title">📐 Row Sum Property</div>
+                <p>For any non-negative integer n:</p>
+                <div class="math-block">C(n, 0) + C(n, 1) + C(n, 2) + … + C(n, n) = 2ⁿ</div>
+                <p>The sum of all entries in row n of Pascal's Triangle equals 2ⁿ.</p>
+            </div>
+
+            <div class="proof-box">
+                <div class="proof-title">📜 Proof (Combinatorial)</div>
+                <p><strong>Left side:</strong> Σ C(n, r) for r = 0 to n counts all subsets of an n-element set, grouped by size. C(n, 0) counts 0-element subsets, C(n, 1) counts 1-element subsets, …, C(n, n) counts n-element subsets.</p>
+                <p><strong>Right side:</strong> 2ⁿ is the total number of subsets of an n-element set (from Week 1 — each element is either in or out, giving 2 choices per element, so 2ⁿ total).</p>
+                <p>Since both sides count the same thing (all subsets of an n-element set), they are equal.</p>
+                <p class="qed">■</p>
+            </div>
+
+            <div class="example-box">
+                <div class="ex-title">📝 Example 6.2: Verifying the Row Sum</div>
+                <p>Row 5 of Pascal's Triangle: 1, 5, 10, 10, 5, 1</p>
+                <div class="solution">
+                    <div class="solution-title">Verification:</div>
+                    <p>1 + 5 + 10 + 10 + 5 + 1 = <strong>32</strong> = 2⁵ ✓</p>
+                    <p>This means a 5-element set has 32 total subsets: 1 empty set + 5 singletons + 10 pairs + 10 triples + 5 four-element subsets + 1 full set.</p>
+                </div>
+            </div>
+
+            <h3>Property 4: Alternating Sum</h3>
+
+            <div class="theorem-box">
+                <div class="thm-title">📐 Alternating Row Sum</div>
+                <p>For any positive integer n:</p>
+                <div class="math-block">C(n, 0) − C(n, 1) + C(n, 2) − C(n, 3) + … + (−1)ⁿ C(n, n) = 0</div>
+                <p><strong>Proof sketch:</strong> Substitute x = −1 into the Binomial Theorem (Week 8): (1 + (−1))ⁿ = 0ⁿ = 0.</p>
+            </div>
+
+            <h3>Property 5: Vandermonde's Identity (Preview)</h3>
+
+            <div class="theorem-box">
+                <div class="thm-title">📐 Vandermonde's Identity</div>
+                <p>For non-negative integers m, n, r with r ≤ m + n:</p>
+                <div class="math-block">C(m + n, r) = Σ C(m, k) × C(n, r − k) for k = 0 to r</div>
+                <p><strong>Interpretation:</strong> Choosing r items from two groups (m items and n items) can be done by choosing k from the first group and r − k from the second, summed over all valid k.</p>
+            </div>
+
+            <h3>Summary of Properties</h3>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th scope="col">Property</th>
+                            <th scope="col">Formula</th>
+                            <th scope="col">Intuition</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Boundary values</td><td>C(n, 0) = C(n, n) = 1</td><td>One way to choose nothing or everything</td></tr>
+                        <tr><td>Symmetry</td><td>C(n, r) = C(n, n−r)</td><td>Choosing = excluding the complement</td></tr>
+                        <tr><td>Pascal's Identity</td><td>C(n, r) = C(n−1, r−1) + C(n−1, r)</td><td>Include or exclude a fixed element</td></tr>
+                        <tr><td>Row sum</td><td>Σ C(n, r) = 2ⁿ</td><td>Total subsets of an n-element set</td></tr>
+                        <tr><td>Alternating sum</td><td>Σ (−1)ʳ C(n, r) = 0</td><td>Binomial theorem with x = −1</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Interactive Row Sum Verifier -->
+            <div class="activity-container">
+                <h3>🔢 Interactive: Row Sum Verifier</h3>
+                <p>Enter a row number n to see all C(n, r) values and verify the row sum equals 2ⁿ.</p>
+                <div class="form-group">
+                    <label for="rs-n">Row n (0 – 15):</label>
+                    <input type="number" id="rs-n" min="0" max="15" value="5">
+                </div>
+                <button class="btn btn-primary" onclick="verifyRowSum()" aria-label="Verify row sum">Verify Row Sum</button>
+                <div class="result-display" id="rs-result" role="region" aria-live="polite">
+                    <div id="rs-result-content"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== SECTION 7: ACTIVITIES ==================== -->
+        <section class="section" id="section-7" aria-labelledby="sec7-heading">
+            <div class="section-header" onclick="markSectionRead(7)">
+                <div class="section-number" aria-hidden="true">7</div>
+                <h2 id="sec7-heading">Interactive Activities</h2>
+            </div>
+
+            <h3>Activity 1: Master Counting Calculator</h3>
+
+            <p>Use this all-in-one calculator to explore any of the four counting formulas from the complete summary table.</p>
+
+            <div class="activity-container">
+                <h3>🧮 All-in-One Counting Calculator</h3>
+                <div class="form-group">
+                    <label for="calc-type">Select formula type:</label>
+                    <select id="calc-type" onchange="updateCalcInputs()">
+                        <option value="perm">P(n, r) — Permutation (no repetition)</option>
+                        <option value="perm-rep">nʳ — Permutation with repetition</option>
+                        <option value="comb" selected>C(n, r) — Combination (no repetition)</option>
+                        <option value="comb-rep">C(n+r−1, r) — Combination with repetition</option>
+                    </select>
+                </div>
+                <div style="display:flex;flex-wrap:wrap;gap:16px;">
+                    <div class="form-group">
+                        <label for="calc-n" id="calc-n-label">n:</label>
+                        <input type="number" id="calc-n" min="0" max="30" value="10">
+                    </div>
+                    <div class="form-group">
+                        <label for="calc-r" id="calc-r-label">r:</label>
+                        <input type="number" id="calc-r" min="0" max="30" value="3">
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="runMasterCalc()" aria-label="Calculate">Calculate</button>
+                <div class="result-display" id="calc-result" role="region" aria-live="polite">
+                    <div id="calc-result-content"></div>
+                </div>
+            </div>
+
+            <h3>Activity 2: Formula Identification Challenge</h3>
+
+            <p>Read each problem and select the correct counting formula.</p>
+
+            <div class="activity-container">
+                <h3>🎯 Which Formula?</h3>
+
+                <div class="quiz-question" id="fi-q1">
+                    <h4>Problem 1</h4>
+                    <p>How many 5-card poker hands can be dealt from 52 cards?</p>
+                    <ul class="quiz-options">
+                        <li><label><input type="radio" name="fi1" value="a"> P(52, 5)</label></li>
+                        <li><label><input type="radio" name="fi1" value="b"> C(52, 5)</label></li>
+                        <li><label><input type="radio" name="fi1" value="c"> 52⁵</label></li>
+                        <li><label><input type="radio" name="fi1" value="d"> C(56, 5)</label></li>
+                    </ul>
+                    <button class="btn btn-primary" onclick="checkFI(1,'b','✓ A hand is an unordered selection without repetition. C(52, 5) = 2,598,960.','✗ A poker hand has no order (getting the same 5 cards in different order is the same hand) and no repetition. Use C(52, 5).')">Check</button>
+                    <div id="fi-fb1" class="feedback" role="alert"></div>
+                </div>
+
+                <div class="quiz-question" id="fi-q2">
+                    <h4>Problem 2</h4>
+                    <p>How many ways can 10 identical donuts be distributed among 4 people?</p>
+                    <ul class="quiz-options">
+                        <li><label><input type="radio" name="fi2" value="a"> P(10, 4)</label></li>
+                        <li><label><input type="radio" name="fi2" value="b"> C(10, 4)</label></li>
+                        <li><label><input type="radio" name="fi2" value="c"> 4¹⁰</label></li>
+                        <li><label><input type="radio" name="fi2" value="d"> C(13, 10) — Stars and Bars</label></li>
+                    </ul>
+                    <button class="btn btn-primary" onclick="checkFI(2,'d','✓ Identical items into distinct categories = Stars and Bars. C(4+10−1, 10) = C(13, 10) = C(13, 3) = 286.','✗ The donuts are identical (unordered) and a person can get more than one (repetition). Stars and Bars: C(n+r−1, r) = C(13, 10) = 286.')">Check</button>
+                    <div id="fi-fb2" class="feedback" role="alert"></div>
+                </div>
+
+                <div class="quiz-question" id="fi-q3">
+                    <h4>Problem 3</h4>
+                    <p>How many 6-character passwords using lowercase letters (a–z), repetition allowed?</p>
+                    <ul class="quiz-options">
+                        <li><label><input type="radio" name="fi3" value="a"> P(26, 6)</label></li>
+                        <li><label><input type="radio" name="fi3" value="b"> C(26, 6)</label></li>
+                        <li><label><input type="radio" name="fi3" value="c"> 26⁶</label></li>
+                        <li><label><input type="radio" name="fi3" value="d"> C(31, 6)</label></li>
+                    </ul>
+                    <button class="btn btn-primary" onclick="checkFI(3,'c','✓ A password is ordered (abc ≠ cba) with repetition allowed. nʳ = 26⁶ = 308,915,776.','✗ A password is a sequence (order matters) and letters can repeat. Use nʳ = 26⁶.')">Check</button>
+                    <div id="fi-fb3" class="feedback" role="alert"></div>
+                </div>
+
+                <div class="quiz-question" id="fi-q4">
+                    <h4>Problem 4</h4>
+                    <p>How many ways can a gold, silver, and bronze medal be awarded to 3 runners from a field of 15?</p>
+                    <ul class="quiz-options">
+                        <li><label><input type="radio" name="fi4" value="a"> P(15, 3)</label></li>
+                        <li><label><input type="radio" name="fi4" value="b"> C(15, 3)</label></li>
+                        <li><label><input type="radio" name="fi4" value="c"> 15³</label></li>
+                        <li><label><input type="radio" name="fi4" value="d"> C(17, 3)</label></li>
+                    </ul>
+                    <button class="btn btn-primary" onclick="checkFI(4,'a','✓ Medals are distinct roles (gold ≠ silver), no repetition. P(15, 3) = 15 × 14 × 13 = 2,730.','✗ The medals are different (order matters) and one person can\'t win two medals (no repetition). Use P(15, 3) = 2,730.')">Check</button>
+                    <div id="fi-fb4" class="feedback" role="alert"></div>
+                </div>
+
+                <div class="quiz-question" id="fi-q5">
+                    <h4>Problem 5</h4>
+                    <p>How many bit strings of length 12 contain exactly 5 ones?</p>
+                    <ul class="quiz-options">
+                        <li><label><input type="radio" name="fi5" value="a"> P(12, 5)</label></li>
+                        <li><label><input type="radio" name="fi5" value="b"> C(12, 5)</label></li>
+                        <li><label><input type="radio" name="fi5" value="c"> 2¹²</label></li>
+                        <li><label><input type="radio" name="fi5" value="d"> C(16, 5)</label></li>
+                    </ul>
+                    <button class="btn btn-primary" onclick="checkFI(5,'b','✓ Choose which 5 of 12 positions get a 1. Order of selection doesn\'t matter. C(12, 5) = 792.','✗ We choose which positions get a 1 — the selection is unordered, no repetition. C(12, 5) = 792.')">Check</button>
+                    <div id="fi-fb5" class="feedback" role="alert"></div>
+                </div>
+            </div>
+
+            <h3>Activity 3: Pascal's Triangle Row Explorer</h3>
+
+            <div class="activity-container">
+                <h3>🔺 Row Explorer with Properties</h3>
+                <p>Enter a row number to see all values, verify symmetry, and check the row sum.</p>
+                <div class="form-group">
+                    <label for="re-n">Row n (0 – 12):</label>
+                    <input type="number" id="re-n" min="0" max="12" value="6">
+                </div>
+                <button class="btn btn-primary" onclick="exploreRow()" aria-label="Explore row">Explore Row</button>
+                <div class="result-display" id="re-result" role="region" aria-live="polite">
+                    <div id="re-result-content"></div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- ==================== SECTION 8: KNOWLEDGE CHECK ==================== -->
+        <section class="section" id="section-8" aria-labelledby="sec8-heading">
+            <div class="section-header" onclick="markSectionRead(8)">
+                <div class="section-number" aria-hidden="true">8</div>
+                <h2 id="sec8-heading">Knowledge Check</h2>
+            </div>
+
+            <p>Test your understanding of combinations, Pascal's Triangle, and binomial coefficient properties. Answer all questions, then click "Submit Quiz" to see your results with detailed explanations.</p>
+
+            <form id="quizForm" onsubmit="return false;">
+
+                <!-- Q1 -->
+                <div class="quiz-question">
+                    <h4>Question 1 of 8</h4>
+                    <p>What is C(10, 3)?</p>
+                    <ul class="quiz-options">
+                        <li><label><input type="radio" name="q1" value="a"> 720</label></li>
+                        <li><label><input type="radio" name="q1" value="b"> 120</label></li>
+                        <li><label><input type="radio" name="q1" value="c"> 210</label></li>
+                        <li><label><input type="radio" name="q1" value="d"> 30</label></li>
+                    </ul>
+                    <div id="fb-q1" class="feedback" role="alert"></div>
+                </div>
+
+                <!-- Q2 -->
+                <div class="quiz-question">
+                    <h4>Question 2 of 8</h4>
+                    <p>Which expression correctly relates permutations and combinations?</p>
+                    <ul class="quiz-options">
+                        <li><label><input type="radio" name="q2" value="a"> C(n, r) = P(n, r) × r!</label></li>
+                        <li><label><input type="radio" name="q2" value="b"> C(n, r) = P(n, r) / r!</label></li>
+                        <li><label><input type="radio" name="q2" value="c"> P(n, r) = C(n, r) / r!</label></li>
+                        <li><label><input type="radio" name="q2" value="d"> C(n, r) = P(n, r) / n!</label></li>
+                    </ul>
+                    <div id="fb-q2" class="feedback" role="alert"></div>
+                </div>
+
+                <!-- Q3 -->
+                <div class="quiz-question">
+                    <h4>Question 3 of 8</h4>
+                    <p>How many non-negative integer solutions exist for x₁ + x₂ + x₃ + x₄ = 8?</p>
+                    <ul class="quiz-options">
+                        <li><label><input type="radio" name="q3" value="a"> C(8, 4) = 70</label></li>
+                        <li><label><input type="radio" name="q3" value="b"> C(11, 8) = 165</label></li>
+                        <li><label><input type="radio" name="q3" value="c"> C(11, 3) = 165</label></li>
+                        <li><label><input type="radio" name="q3" value="d"> Both b and c</label></li>
+                    </ul>
+                    <div id="fb-q3" class="feedback" role="alert"></div>
+                </div>
+
+                <!-- Q4 -->
+                <div class="quiz-question">
+                    <h4>Question 4 of 8</h4>
+                    <p>What does Pascal's Identity state?</p>
+                    <ul class="quiz-options">
+                        <li><label><input type="radio" name="q4" value="a"> C(n, r) = C(n, n − r)</label></li>
+                        <li><label><input type="radio" name="q4" value="b"> C(n, r) = C(n − 1, r − 1) + C(n − 1, r)</label></li>
+                        <li><label><input type="radio" name="q4" value="c"> C(n, r) = C(n − 1, r − 1) × C(n − 1, r)</label></li>
+                        <li><label><input type="radio" name="q4" value="d"> C(n, 0) + C(n, 1) + … + C(n, n) = 2ⁿ</label></li>
+                    </ul>
+                    <div id="fb-q4" class="feedback" role="alert"></div>
+                </div>
+
+                <!-- Q5 -->
+                <div class="quiz-question">
+                    <h4>Question 5 of 8</h4>
+                    <p>The sum of all entries in Row 7 of Pascal's Triangle is:</p>
+                    <ul class="quiz-options">
+                        <li><label><input type="radio" name="q5" value="a"> 64</label></li>
+                        <li><label><input type="radio" name="q5" value="b"> 128</label></li>
+                        <li><label><input type="radio" name="q5" value="c"> 256</label></li>
+                        <li><label><input type="radio" name="q5" value="d"> 49</label></li>
+                    </ul>
+                    <div id="fb-q5" class="feedback" role="alert"></div>
+                </div>
+
+                <!-- Q6 -->
+                <div class="quiz-question">
+                    <h4>Question 6 of 8</h4>
+                    <p>C(100, 98) equals:</p>
+                    <ul class="quiz-options">
+                        <li><label><input type="radio" name="q6" value="a"> 100</label></li>
+                        <li><label><input type="radio" name="q6" value="b"> 4,950</label></li>
+                        <li><label><input type="radio" name="q6" value="c"> 9,900</label></li>
+                        <li><label><input type="radio" name="q6" value="d"> 100!</label></li>
+                    </ul>
+                    <div id="fb-q6" class="feedback" role="alert"></div>
+                </div>
+
+                <!-- Q7 -->
+                <div class="quiz-question">
+                    <h4>Question 7 of 8</h4>
+                    <p>In the combinatorial proof of Pascal's Identity, what is the "key idea"?</p>
+                    <ul class="quiz-options">
+                        <li><label><input type="radio" name="q7" value="a"> Use the factorial formula and simplify algebraically</label></li>
+                        <li><label><input type="radio" name="q7" value="b"> Fix one element and split subsets into those that contain it and those that don't</label></li>
+                        <li><label><input type="radio" name="q7" value="c"> Count the number of permutations and divide by r!</label></li>
+                        <li><label><input type="radio" name="q7" value="d"> Use mathematical induction on n</label></li>
+                    </ul>
+                    <div id="fb-q7" class="feedback" role="alert"></div>
+                </div>
+
+                <!-- Q8 -->
+                <div class="quiz-question">
+                    <h4>Question 8 of 8</h4>
+                    <p>A bakery has 6 types of bagels. You buy a dozen (12) bagels and can pick any type any number of times. How many different selections are possible?</p>
+                    <ul class="quiz-options">
+                        <li><label><input type="radio" name="q8" value="a"> C(6, 12) — undefined since 12 &gt; 6</label></li>
+                        <li><label><input type="radio" name="q8" value="b"> 6¹² = 2,176,782,336</label></li>
+                        <li><label><input type="radio" name="q8" value="c"> C(17, 12) = 6,188</label></li>
+                        <li><label><input type="radio" name="q8" value="d"> P(6, 12) — undefined</label></li>
+                    </ul>
+                    <div id="fb-q8" class="feedback" role="alert"></div>
+                </div>
+
+                <div style="text-align: center; margin-top: 20px;">
+                    <button type="button" class="btn btn-success" onclick="submitQuiz()" aria-label="Submit quiz for grading">Submit Quiz</button>
+                    <button type="button" class="btn btn-secondary" onclick="resetQuiz()" aria-label="Reset quiz answers">Reset</button>
+                </div>
+
+                <div class="score-display" id="quiz-score" role="alert">
+                    <div class="score-label">Your Score</div>
+                    <div class="score-number" id="score-value"></div>
+                    <p id="score-message" style="margin-top: 8px;"></p>
+                </div>
+            </form>
+        </section>
+
+        <!-- ==================== SUMMARY ==================== -->
+        <div class="summary-card" role="region" aria-label="Module summary">
+            <h3>📋 Module 7.3 Summary</h3>
+            <ul>
+                <li><strong>Combination C(n, r) = n!/(r!(n−r)!):</strong> Counts unordered selections of r items from n. Derived from permutations: C(n, r) = P(n, r)/r!. Also counts r-element subsets.</li>
+                <li><strong>Permutation vs. Combination:</strong> Does order matter? Yes → permutation. No → combination. Use the "swap test" to decide. The flowchart covers all four formula types.</li>
+                <li><strong>Stars and Bars:</strong> Combinations with repetition = C(n+r−1, r). Distributing r identical items into n categories. Equivalent to non-negative integer solutions of x₁ + x₂ + … + xₙ = r.</li>
+                <li><strong>Pascal's Triangle:</strong> Row n contains C(n, 0) through C(n, n). Each interior entry = sum of two entries above. Visual tool for finding binomial coefficients.</li>
+                <li><strong>Pascal's Identity:</strong> C(n, r) = C(n−1, r−1) + C(n−1, r). Combinatorial proof: fix one element, split into "include" and "exclude" cases.</li>
+                <li><strong>Key Properties:</strong> Boundary values (C(n,0)=C(n,n)=1), Symmetry (C(n,r)=C(n,n−r)), Row Sum (Σ C(n,r)=2ⁿ), Alternating Sum (= 0).</li>
+            </ul>
+        </div>
+
+        <!-- Formula Reference -->
+        <div class="theorem-box" role="region" aria-label="Formula reference card">
+            <div class="thm-title">📐 Complete Counting Formula Reference</div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr><th>Order?</th><th>Repetition?</th><th>Name</th><th>Formula</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Yes</td><td>No</td><td>r-Permutation</td><td><strong>P(n,r) = n!/(n−r)!</strong></td></tr>
+                        <tr><td>Yes</td><td>Yes</td><td>Perm. with repetition</td><td><strong>nʳ</strong></td></tr>
+                        <tr><td>No</td><td>No</td><td>r-Combination</td><td><strong>C(n,r) = n!/(r!(n−r)!)</strong></td></tr>
+                        <tr><td>No</td><td>Yes</td><td>Comb. with repetition</td><td><strong>C(n+r−1, r)</strong></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- What's Next -->
+        <div class="note-box" role="region" aria-label="Next module preview">
+            <div class="note-title">📍 Up Next: Module 7.4 — The Binomial Theorem</div>
+            <p>In the next module, we bring everything together with the <strong>Binomial Theorem</strong>, which expands (x + y)ⁿ using the binomial coefficients from Pascal's Triangle. You'll see why C(n, r) is called a "binomial coefficient," prove the theorem using induction and Pascal's Identity, and apply it to problems in combinatorics and computer science. The combination skills and Pascal's Triangle knowledge from this module are essential preparation.</p>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="page-footer" role="contentinfo">
+        <p>CSC 240 — Discrete Structures | Mendocino College | Spring 2026</p>
+        <p>Module 7.3: Combinations and Pascal's Triangle</p>
+        <p>Textbook: <a href="https://learn.saylor.org/course/view.php?id=67" target="_blank" rel="noopener noreferrer">Saylor.org CS202 — Discrete Structures</a></p>
+        <p style="margin-top: 8px; font-size: 0.8rem;">CSLO 2: Apply combinatorics and set theory to counting problems.</p>
+    </footer>
+
+    <!-- ==================== ALL JAVASCRIPT ==================== -->
+    <script>
+        // ===== SESSION STORAGE =====
+        const MODULE_KEY = 'csc240_mod73_progress';
+
+        function loadProgress() {
+            try {
+                return JSON.parse(sessionStorage.getItem(MODULE_KEY)) || { sections: {}, quizSubmitted: false, quizScore: 0 };
+            } catch (e) { return { sections: {}, quizSubmitted: false, quizScore: 0 }; }
+        }
+
+        function saveProgress(data) {
+            try { sessionStorage.setItem(MODULE_KEY, JSON.stringify(data)); } catch (e) {}
+        }
+
+        function markSectionRead(num) {
+            var p = loadProgress();
+            p.sections[num] = true;
+            saveProgress(p);
+            updateTrackers();
+        }
+
+        function updateTrackers() {
+            var p = loadProgress();
+            var total = 8;
+            for (var i = 1; i <= total; i++) {
+                var item = document.getElementById('tracker-' + i);
+                if (item) {
+                    if (p.sections[i]) {
+                        item.classList.add('completed');
+                        item.querySelector('.tracker-check').textContent = '✓';
+                    } else {
+                        item.classList.remove('completed');
+                        item.querySelector('.tracker-check').textContent = '';
+                    }
+                }
+            }
+            var done = Object.keys(p.sections).filter(function(k) { return p.sections[k]; }).length;
+            var pct = Math.round((done / total) * 100);
+            var bar = document.getElementById('progressBar');
+            if (bar) {
+                bar.style.width = pct + '%';
+                bar.parentElement.setAttribute('aria-valuenow', pct);
+            }
+        }
+
+        function handleScroll() {
+            var sections = document.querySelectorAll('.section');
+            for (var idx = 0; idx < sections.length; idx++) {
+                var rect = sections[idx].getBoundingClientRect();
+                if (rect.top < window.innerHeight * 0.5 && rect.bottom > 0) {
+                    markSectionRead(idx + 1);
+                }
+            }
+        }
+        window.addEventListener('scroll', handleScroll, { passive: true });
+
+        function toggleCollapsible(btn) {
+            var content = btn.nextElementSibling;
+            var expanded = btn.getAttribute('aria-expanded') === 'true';
+            if (expanded) {
+                content.style.maxHeight = null;
+                btn.setAttribute('aria-expanded', 'false');
+                btn.classList.remove('active');
+            } else {
+                content.style.maxHeight = content.scrollHeight + 'px';
+                btn.setAttribute('aria-expanded', 'true');
+                btn.classList.add('active');
+            }
+        }
+
+        // ===== MATH HELPERS =====
+        function factorial(n) {
+            if (n <= 1) return 1;
+            var r = 1;
+            for (var i = 2; i <= n; i++) r *= i;
+            return r;
+        }
+
+        function comb(n, r) {
+            if (r < 0 || r > n) return 0;
+            if (r === 0 || r === n) return 1;
+            if (r > n - r) r = n - r;
+            var result = 1;
+            for (var i = 0; i < r; i++) {
+                result = result * (n - i) / (i + 1);
+            }
+            return Math.round(result);
+        }
+
+        function perm(n, r) {
+            if (r < 0 || r > n) return 0;
+            var result = 1;
+            for (var i = 0; i < r; i++) result *= (n - i);
+            return result;
+        }
+
+        // ===== SECTION 1: C(n,r) CALCULATOR =====
+        function calculateCnr() {
+            var n = parseInt(document.getElementById('cnr-n').value);
+            var r = parseInt(document.getElementById('cnr-r').value);
+            var rd = document.getElementById('cnr-result');
+            var cd = document.getElementById('cnr-result-content');
+
+            if (isNaN(n) || isNaN(r) || n < 0 || r < 0) {
+                cd.innerHTML = '<p style="color:#b71c1c;font-weight:600;">Enter valid non-negative integers.</p>';
+                rd.style.display = 'block'; rd.style.background = '#fce4ec'; rd.style.borderColor = '#ef5350'; return;
+            }
+            if (r > n) {
+                cd.innerHTML = '<p style="color:#b71c1c;font-weight:600;">C(' + n + ', ' + r + ') = 0 — Cannot choose more items than available.</p>';
+                rd.style.display = 'block'; rd.style.background = '#fce4ec'; rd.style.borderColor = '#ef5350'; return;
+            }
+
+            rd.style.background = '#e8f5e9'; rd.style.borderColor = '#4caf50';
+            var result = comb(n, r);
+            var permVal = perm(n, r);
+            var rFact = factorial(r);
+            var numF = []; for (var i = 0; i < r; i++) numF.push(n - i);
+            var denF = []; for (var i = 1; i <= r; i++) denF.push(i);
+
+            cd.innerHTML =
+                '<h4 style="color:#1b5e20;">C(' + n + ', ' + r + ') Calculation</h4>' +
+                '<div class="step-display">' +
+                '<div class="step"><span class="step-num">Formula:</span> C(' + n + ', ' + r + ') = ' + n + '! / (' + r + '! × ' + (n - r) + '!)</div>' +
+                '<div class="step"><span class="step-num">Numerator:</span> ' + (numF.length > 0 ? numF.join(' × ') : '1') + ' = ' + permVal.toLocaleString() + '</div>' +
+                '<div class="step"><span class="step-num">Denominator:</span> ' + r + '! = ' + (denF.length > 0 ? denF.join(' × ') : '1') + ' = ' + rFact.toLocaleString() + '</div>' +
+                '<div class="step"><span class="step-num">Result:</span> ' + permVal.toLocaleString() + ' / ' + rFact.toLocaleString() + ' = ' + result.toLocaleString() + '</div>' +
+                '</div>' +
+                '<div class="big-number">' + result.toLocaleString() + '</div>' +
+                '<p style="text-align:center;color:#1b5e20;">C(' + n + ', ' + r + ') = P(' + n + ', ' + r + ') / ' + r + '! = ' + permVal.toLocaleString() + ' / ' + rFact + ' = ' + result.toLocaleString() + '</p>';
+            rd.style.display = 'block';
+            markSectionRead(1);
+        }
+
+        // ===== SECTION 2: PERM vs COMB CHECKER =====
+        function checkPC(num, correct, correctMsg, incorrectMsg) {
+            var sel = document.querySelector('input[name="pc' + num + '"]:checked');
+            var fb = document.getElementById('pc-fb' + num);
+            if (!sel) { fb.className = 'feedback info'; fb.textContent = 'Please select an answer.'; fb.style.display = 'block'; return; }
+            if (sel.value === correct) { fb.className = 'feedback correct'; fb.textContent = correctMsg; }
+            else { fb.className = 'feedback incorrect'; fb.textContent = incorrectMsg; }
+            fb.style.display = 'block';
+        }
+
+        // ===== SECTION 3: STARS AND BARS =====
+        function visualizeStarsBars() {
+            var n = parseInt(document.getElementById('sb-types').value);
+            var r = parseInt(document.getElementById('sb-items').value);
+            var rd = document.getElementById('sb-result');
+            var cd = document.getElementById('sb-result-content');
+
+            if (isNaN(n) || isNaN(r) || n < 2 || r < 1) {
+                cd.innerHTML = '<p style="color:#b71c1c;">Enter valid values (n ≥ 2, r ≥ 1).</p>';
+                rd.style.display = 'block'; rd.style.background = '#fce4ec'; rd.style.borderColor = '#ef5350'; return;
+            }
+            rd.style.background = '#e8f5e9'; rd.style.borderColor = '#4caf50';
+
+            var dist = []; for (var i = 0; i < n; i++) dist.push(0);
+            for (var i = 0; i < r; i++) dist[Math.floor(Math.random() * n)]++;
+
+            var symbols = '';
+            for (var cat = 0; cat < n; cat++) {
+                for (var s = 0; s < dist[cat]; s++) symbols += '<span class="star-icon" aria-hidden="true">★</span> ';
+                if (cat < n - 1) symbols += '<span class="bar-icon" aria-hidden="true">|</span> ';
+            }
+            var distText = [];
+            for (var i = 0; i < dist.length; i++) distText.push('Type ' + (i + 1) + ': ' + dist[i]);
+            var total = comb(n + r - 1, r);
+
+            cd.innerHTML =
+                '<h4 style="color:#1b5e20;">Stars and Bars: ' + r + ' items into ' + n + ' types</h4>' +
+                '<div class="stars-bars-visual" aria-label="' + distText.join(', ') + '">' + symbols + '</div>' +
+                '<p style="text-align:center;"><strong>This arrangement:</strong> ' + distText.join(', ') + '</p>' +
+                '<div class="step-display">' +
+                '<div class="step"><span class="step-num">Setup:</span> ' + r + ' stars + ' + (n - 1) + ' bars = ' + (n + r - 1) + ' total positions</div>' +
+                '<div class="step"><span class="step-num">Formula:</span> C(' + (n + r - 1) + ', ' + r + ') = C(' + (n + r - 1) + ', ' + (n - 1) + ')</div>' +
+                '</div>' +
+                '<div class="big-number">' + total.toLocaleString() + '</div>' +
+                '<p style="text-align:center;color:#1b5e20;">total possible selections</p>';
+            rd.style.display = 'block';
+            markSectionRead(3);
+        }
+
+        // ===== SECTION 4: PASCAL'S TRIANGLE (STATIC) =====
+        function buildPascalStatic() {
+            var container = document.getElementById('pascal-static');
+            if (!container) return;
+            var rows = 8;
+            var html = '';
+            for (var n = 0; n < rows; n++) {
+                html += '<div class="pascal-row">';
+                for (var r = 0; r <= n; r++) {
+                    var val = comb(n, r);
+                    html += '<div class="pascal-cell" title="C(' + n + ', ' + r + ') = ' + val + '" aria-label="C(' + n + ', ' + r + ') equals ' + val + '">' + val + '</div>';
+                }
+                html += '</div>';
+            }
+            container.innerHTML = html;
+        }
+
+        // ===== SECTION 4: PASCAL'S TRIANGLE (INTERACTIVE) =====
+        function buildPascalInteractive() {
+            var numRows = parseInt(document.getElementById('pascal-rows').value);
+            var container = document.getElementById('pascal-interactive');
+            var info = document.getElementById('pascal-info');
+
+            if (isNaN(numRows) || numRows < 1 || numRows > 12) {
+                container.innerHTML = '<p style="color:#b71c1c;">Enter a value between 1 and 12.</p>'; return;
+            }
+            var html = '';
+            for (var n = 0; n < numRows; n++) {
+                html += '<div class="pascal-row">';
+                for (var r = 0; r <= n; r++) {
+                    var val = comb(n, r);
+                    html += '<div class="pascal-cell" id="pc-' + n + '-' + r + '" ' +
+                        'onclick="highlightPascalCell(' + n + ',' + r + ')" ' +
+                        'title="C(' + n + ', ' + r + ')" ' +
+                        'aria-label="C(' + n + ', ' + r + ') equals ' + val + '" ' +
+                        'tabindex="0" ' +
+                        'onkeydown="if(event.key===\'Enter\')highlightPascalCell(' + n + ',' + r + ')">' +
+                        val + '</div>';
+                }
+                html += '</div>';
+            }
+            container.innerHTML = html;
+            info.textContent = 'Click any cell to see Pascal\'s Identity in action.';
+            markSectionRead(4);
+        }
+
+        function highlightPascalCell(n, r) {
+            var cells = document.querySelectorAll('#pascal-interactive .pascal-cell');
+            for (var i = 0; i < cells.length; i++) {
+                cells[i].classList.remove('highlighted', 'sum-hl');
+            }
+            var info = document.getElementById('pascal-info');
+            var cell = document.getElementById('pc-' + n + '-' + r);
+            if (!cell) return;
+            cell.classList.add('sum-hl');
+
+            if (n > 0 && r > 0 && r < n) {
+                var p1 = document.getElementById('pc-' + (n - 1) + '-' + (r - 1));
+                var p2 = document.getElementById('pc-' + (n - 1) + '-' + r);
+                if (p1) p1.classList.add('highlighted');
+                if (p2) p2.classList.add('highlighted');
+                var v = comb(n, r); var v1 = comb(n - 1, r - 1); var v2 = comb(n - 1, r);
+                info.innerHTML = 'C(' + n + ', ' + r + ') = C(' + (n - 1) + ', ' + (r - 1) + ') + C(' + (n - 1) + ', ' + r + ') = ' + v1 + ' + ' + v2 + ' = <strong>' + v + '</strong>  (Pascal\'s Identity)';
+            } else if (n > 0 && r === 0) {
+                info.innerHTML = 'C(' + n + ', 0) = <strong>1</strong>  (boundary — choosing nothing)';
+            } else if (n > 0 && r === n) {
+                info.innerHTML = 'C(' + n + ', ' + n + ') = <strong>1</strong>  (boundary — choosing everything)';
+            } else {
+                info.innerHTML = 'C(0, 0) = <strong>1</strong>  (apex of the triangle)';
+            }
+        }
+
+        // ===== SECTION 5: PASCAL'S IDENTITY VERIFIER =====
+        function verifyPascalIdentity() {
+            var n = parseInt(document.getElementById('pi-n').value);
+            var r = parseInt(document.getElementById('pi-r').value);
+            var rd = document.getElementById('pi-result');
+            var cd = document.getElementById('pi-result-content');
+
+            if (isNaN(n) || isNaN(r) || n < 2 || r < 1 || r >= n) {
+                cd.innerHTML = '<p style="color:#b71c1c;font-weight:600;">Enter n ≥ 2 and 1 ≤ r ≤ n−1.</p>';
+                rd.style.display = 'block'; rd.style.background = '#fce4ec'; rd.style.borderColor = '#ef5350'; return;
+            }
+            rd.style.background = '#e8f5e9'; rd.style.borderColor = '#4caf50';
+
+            var lhs = comb(n, r);
+            var rhs1 = comb(n - 1, r - 1);
+            var rhs2 = comb(n - 1, r);
+            var rhsSum = rhs1 + rhs2;
+            var match = lhs === rhsSum;
+
+            cd.innerHTML =
+                '<h4 style="color:#1b5e20;">Pascal\'s Identity Verification</h4>' +
+                '<div class="step-display">' +
+                '<div class="step"><span class="step-num">Left side:</span> C(' + n + ', ' + r + ') = ' + lhs.toLocaleString() + '</div>' +
+                '<div class="step"><span class="step-num">Right side:</span> C(' + (n - 1) + ', ' + (r - 1) + ') + C(' + (n - 1) + ', ' + r + ') = ' + rhs1.toLocaleString() + ' + ' + rhs2.toLocaleString() + ' = ' + rhsSum.toLocaleString() + '</div>' +
+                '<div class="step"><span class="step-num">Match:</span> ' + lhs.toLocaleString() + ' = ' + rhsSum.toLocaleString() + (match ? ' ✓ Identity holds!' : ' ✗ Error!') + '</div>' +
+                '</div>' +
+                '<p style="text-align:center;color:#1b5e20;font-weight:700;font-size:1.1rem;">' +
+                'C(' + n + ', ' + r + ') = C(' + (n - 1) + ', ' + (r - 1) + ') + C(' + (n - 1) + ', ' + r + ')' +
+                '</p>' +
+                '<p style="text-align:center;color:#1b5e20;">Combinatorial meaning: From ' + n + ' items, choose ' + r + '. Fix one item: ' + rhs1 + ' subsets include it + ' + rhs2 + ' subsets exclude it = ' + lhs + ' total.</p>';
+            rd.style.display = 'block';
+            markSectionRead(5);
+        }
+
+        // ===== SECTION 6: ROW SUM VERIFIER =====
+        function verifyRowSum() {
+            var n = parseInt(document.getElementById('rs-n').value);
+            var rd = document.getElementById('rs-result');
+            var cd = document.getElementById('rs-result-content');
+
+            if (isNaN(n) || n < 0 || n > 15) {
+                cd.innerHTML = '<p style="color:#b71c1c;">Enter n between 0 and 15.</p>';
+                rd.style.display = 'block'; rd.style.background = '#fce4ec'; rd.style.borderColor = '#ef5350'; return;
+            }
+            rd.style.background = '#e8f5e9'; rd.style.borderColor = '#4caf50';
+
+            var values = []; var sum = 0;
+            for (var r = 0; r <= n; r++) {
+                var v = comb(n, r);
+                values.push('C(' + n + ',' + r + ')=' + v);
+                sum += v;
+            }
+            var expected = Math.pow(2, n);
+
+            // Check symmetry
+            var symPairs = [];
+            for (var r = 0; r <= Math.floor(n / 2); r++) {
+                var v1 = comb(n, r); var v2 = comb(n, n - r);
+                if (r !== n - r) {
+                    symPairs.push('C(' + n + ',' + r + ') = C(' + n + ',' + (n - r) + ') = ' + v1);
+                }
+            }
+
+            var valsOnly = [];
+            for (var r = 0; r <= n; r++) valsOnly.push(comb(n, r));
+
+            cd.innerHTML =
+                '<h4 style="color:#1b5e20;">Row ' + n + ' of Pascal\'s Triangle</h4>' +
+                '<p><strong>Values:</strong> ' + valsOnly.join(', ') + '</p>' +
+                '<div class="step-display">' +
+                '<div class="step"><span class="step-num">Row Sum:</span> ' + valsOnly.join(' + ') + ' = <strong>' + sum.toLocaleString() + '</strong></div>' +
+                '<div class="step"><span class="step-num">Expected:</span> 2<sup>' + n + '</sup> = <strong>' + expected.toLocaleString() + '</strong></div>' +
+                '<div class="step"><span class="step-num">Match:</span> ' + (sum === expected ? '✓ Row sum = 2ⁿ confirmed!' : '✗ Error') + '</div>' +
+                '</div>' +
+                (symPairs.length > 0 ? '<p><strong>Symmetry verified:</strong> ' + symPairs.join(' &nbsp;|&nbsp; ') + '</p>' : '') +
+                '<p style="text-align:center;color:#1b5e20;">A set with ' + n + ' elements has <strong>' + expected.toLocaleString() + '</strong> subsets total.</p>';
+            rd.style.display = 'block';
+            markSectionRead(6);
+        }
+
+        // ===== SECTION 7: FORMULA IDENTIFICATION =====
+        function checkFI(num, correct, correctMsg, incorrectMsg) {
+            var sel = document.querySelector('input[name="fi' + num + '"]:checked');
+            var fb = document.getElementById('fi-fb' + num);
+            if (!sel) { fb.className = 'feedback info'; fb.textContent = 'Please select an answer.'; fb.style.display = 'block'; return; }
+            if (sel.value === correct) { fb.className = 'feedback correct'; fb.textContent = correctMsg; }
+            else { fb.className = 'feedback incorrect'; fb.textContent = incorrectMsg; }
+            fb.style.display = 'block';
+        }
+
+        // ===== SECTION 7: MASTER CALCULATOR =====
+        function updateCalcInputs() {
+            var type = document.getElementById('calc-type').value;
+            var nLabel = document.getElementById('calc-n-label');
+            var rLabel = document.getElementById('calc-r-label');
+            if (type === 'perm') { nLabel.textContent = 'n (total):'; rLabel.textContent = 'r (arrange):'; }
+            else if (type === 'perm-rep') { nLabel.textContent = 'n (choices per position):'; rLabel.textContent = 'r (positions):'; }
+            else if (type === 'comb') { nLabel.textContent = 'n (total):'; rLabel.textContent = 'r (choose):'; }
+            else { nLabel.textContent = 'n (types):'; rLabel.textContent = 'r (items):'; }
+        }
+
+        function runMasterCalc() {
+            var type = document.getElementById('calc-type').value;
+            var n = parseInt(document.getElementById('calc-n').value);
+            var r = parseInt(document.getElementById('calc-r').value);
+            var rd = document.getElementById('calc-result');
+            var cd = document.getElementById('calc-result-content');
+
+            if (isNaN(n) || isNaN(r) || n < 0 || r < 0) {
+                cd.innerHTML = '<p style="color:#b71c1c;">Enter valid non-negative integers.</p>';
+                rd.style.display = 'block'; rd.style.background = '#fce4ec'; rd.style.borderColor = '#ef5350'; return;
+            }
+            rd.style.background = '#e8f5e9'; rd.style.borderColor = '#4caf50';
+
+            var result, formula, name;
+            if (type === 'perm') {
+                if (r > n) { cd.innerHTML = '<p style="color:#b71c1c;">P(' + n + ', ' + r + ') = 0 (r > n).</p>'; rd.style.display = 'block'; return; }
+                result = perm(n, r); formula = 'P(' + n + ', ' + r + ') = ' + n + '!/(' + n + '−' + r + ')!'; name = 'r-Permutation';
+            } else if (type === 'perm-rep') {
+                result = Math.pow(n, r); formula = n + '<sup>' + r + '</sup>'; name = 'Permutation with Repetition';
+            } else if (type === 'comb') {
+                if (r > n) { cd.innerHTML = '<p style="color:#b71c1c;">C(' + n + ', ' + r + ') = 0 (r > n).</p>'; rd.style.display = 'block'; return; }
+                result = comb(n, r); formula = 'C(' + n + ', ' + r + ') = ' + n + '!/(' + r + '!(' + n + '−' + r + ')!)'; name = 'r-Combination';
+            } else {
+                var nn = n + r - 1;
+                result = comb(nn, r); formula = 'C(' + n + '+' + r + '−1, ' + r + ') = C(' + nn + ', ' + r + ')'; name = 'Combination with Repetition';
+            }
+
+            var formatted = result < 1e15 ? result.toLocaleString() : result.toExponential(6);
+            cd.innerHTML =
+                '<h4 style="color:#1b5e20;">' + name + '</h4>' +
+                '<p><strong>Formula:</strong> ' + formula + '</p>' +
+                '<div class="big-number">' + formatted + '</div>';
+            rd.style.display = 'block';
+            markSectionRead(7);
+        }
+
+        // ===== SECTION 7: ROW EXPLORER =====
+        function exploreRow() {
+            var n = parseInt(document.getElementById('re-n').value);
+            var rd = document.getElementById('re-result');
+            var cd = document.getElementById('re-result-content');
+
+            if (isNaN(n) || n < 0 || n > 12) {
+                cd.innerHTML = '<p style="color:#b71c1c;">Enter n between 0 and 12.</p>';
+                rd.style.display = 'block'; rd.style.background = '#fce4ec'; rd.style.borderColor = '#ef5350'; return;
+            }
+            rd.style.background = '#e8f5e9'; rd.style.borderColor = '#4caf50';
+
+            var vals = []; var sum = 0;
+            for (var r = 0; r <= n; r++) { var v = comb(n, r); vals.push(v); sum += v; }
+
+            // Build Pascal row visual
+            var rowHtml = '<div class="pascal-row" style="margin:16px 0;">';
+            for (var r = 0; r <= n; r++) {
+                rowHtml += '<div class="pascal-cell">' + vals[r] + '</div>';
+            }
+            rowHtml += '</div>';
+
+            // Symmetry check
+            var symHtml = '<p><strong>Symmetry check:</strong> ';
+            var symParts = [];
+            for (var r = 0; r <= Math.floor(n / 2); r++) {
+                symParts.push('C(' + n + ',' + r + ')=' + vals[r] + ' = C(' + n + ',' + (n - r) + ')=' + vals[n - r] + (vals[r] === vals[n - r] ? ' ✓' : ' ✗'));
+            }
+            symHtml += symParts.join(' &nbsp;&nbsp; ') + '</p>';
+
+            // Pascal's Identity check for interior elements
+            var piHtml = '';
+            if (n >= 2) {
+                piHtml = '<p><strong>Pascal\'s Identity check (interior entries):</strong></p><ul class="content-list">';
+                for (var r = 1; r < n; r++) {
+                    var lhs = vals[r];
+                    var rhs1 = comb(n - 1, r - 1);
+                    var rhs2 = comb(n - 1, r);
+                    piHtml += '<li>C(' + n + ',' + r + ')=' + lhs + ' = C(' + (n - 1) + ',' + (r - 1) + ')+C(' + (n - 1) + ',' + r + ') = ' + rhs1 + '+' + rhs2 + ' = ' + (rhs1 + rhs2) + ' ✓</li>';
+                }
+                piHtml += '</ul>';
+            }
+
+            cd.innerHTML =
+                '<h4 style="color:#1b5e20;">Row ' + n + ' Explorer</h4>' +
+                rowHtml +
+                '<p><strong>Values:</strong> ' + vals.join(', ') + '</p>' +
+                '<p><strong>Row sum:</strong> ' + vals.join(' + ') + ' = <strong>' + sum + '</strong> = 2<sup>' + n + '</sup> = ' + Math.pow(2, n) + ' ✓</p>' +
+                symHtml + piHtml;
+            rd.style.display = 'block';
+            markSectionRead(7);
+        }
+
+        // ===== SECTION 8: QUIZ =====
+        var quizAnswers = {
+            q1: 'b',
+            q2: 'b',
+            q3: 'd',
+            q4: 'b',
+            q5: 'b',
+            q6: 'b',
+            q7: 'b',
+            q8: 'c'
+        };
+
+        var quizExplanations = {
+            q1: {
+                correct: '✓ Correct! C(10, 3) = (10 × 9 × 8) / (3 × 2 × 1) = 720/6 = 120.',
+                incorrect: '✗ C(10, 3) = 10!/(3! × 7!) = (10 × 9 × 8)/(3 × 2 × 1) = 720/6 = 120. Note: P(10, 3) = 720 is the permutation; C(10, 3) = P(10, 3)/3! = 720/6 = 120.'
+            },
+            q2: {
+                correct: '✓ Correct! C(n, r) = P(n, r) / r!. We divide the permutation count by r! to remove the redundant orderings within each group.',
+                incorrect: '✗ C(n, r) = P(n, r) / r!. Each unordered group of r items corresponds to r! ordered arrangements, so we divide. Equivalently, P(n, r) = C(n, r) × r!.'
+            },
+            q3: {
+                correct: '✓ Correct! Stars and Bars: C(n+r−1, r) = C(4+8−1, 8) = C(11, 8). By symmetry, C(11, 8) = C(11, 3) = 165. Both b and c are the same value.',
+                incorrect: '✗ This is a Stars and Bars problem: n=4 variables, r=8 total. C(4+8−1, 8) = C(11, 8) = C(11, 3) = 165. Since C(11, 8) = C(11, 3) by symmetry, both b and c give 165.'
+            },
+            q4: {
+                correct: '✓ Correct! Pascal\'s Identity: C(n, r) = C(n−1, r−1) + C(n−1, r). This is the addition rule that builds Pascal\'s Triangle.',
+                incorrect: '✗ Pascal\'s Identity states C(n, r) = C(n−1, r−1) + C(n−1, r). Option (a) is the symmetry property, and (d) is the row sum property — both are true but are not Pascal\'s Identity.'
+            },
+            q5: {
+                correct: '✓ Correct! Row sum of row n = 2ⁿ. Row 7: 2⁷ = 128.',
+                incorrect: '✗ The sum of all entries in row n of Pascal\'s Triangle equals 2ⁿ. For row 7: 2⁷ = 128. (Row 6 would be 2⁶ = 64; row 8 would be 2⁸ = 256.)'
+            },
+            q6: {
+                correct: '✓ Correct! By symmetry, C(100, 98) = C(100, 2) = (100 × 99)/2 = 4,950.',
+                incorrect: '✗ Use the symmetry property: C(100, 98) = C(100, 2) = (100 × 99)/(2 × 1) = 4,950. Always simplify using C(n, r) = C(n, n−r) when r is close to n.'
+            },
+            q7: {
+                correct: '✓ Correct! The combinatorial proof fixes one element x, then partitions all r-element subsets into two disjoint groups: those containing x (counted by C(n−1, r−1)) and those not containing x (counted by C(n−1, r)).',
+                incorrect: '✗ The combinatorial proof works by fixing one element and splitting subsets into two cases: those that include the element (C(n−1, r−1)) and those that exclude it (C(n−1, r)). The Sum Rule gives the total.'
+            },
+            q8: {
+                correct: '✓ Correct! Unordered selection with repetition = Stars and Bars. C(6+12−1, 12) = C(17, 12) = C(17, 5) = 6,188.',
+                incorrect: '✗ Buying bagels: order doesn\'t matter (a bag of bagels is unordered) and repetition is allowed (you can pick the same type multiple times). Stars and Bars: C(6+12−1, 12) = C(17, 12) = 6,188.'
+            }
+        };
+
+        function submitQuiz() {
+            var score = 0;
+            var total = Object.keys(quizAnswers).length;
+
+            for (var qKey in quizAnswers) {
+                if (!quizAnswers.hasOwnProperty(qKey)) continue;
+                var correctVal = quizAnswers[qKey];
+                var selected = document.querySelector('input[name="' + qKey + '"]:checked');
+                var fb = document.getElementById('fb-' + qKey);
+
+                if (selected && selected.value === correctVal) {
+                    score++;
+                    fb.className = 'feedback correct';
+                    fb.textContent = quizExplanations[qKey].correct;
+                } else {
+                    fb.className = 'feedback incorrect';
+                    fb.textContent = quizExplanations[qKey].incorrect;
+                }
+                fb.style.display = 'block';
+            }
+
+            var scoreDiv = document.getElementById('quiz-score');
+            var scoreVal = document.getElementById('score-value');
+            var scoreMsg = document.getElementById('score-message');
+
+            scoreVal.textContent = score + ' / ' + total;
+            scoreDiv.style.display = 'block';
+
+            if (score === total) {
+                scoreMsg.textContent = '🎉 Perfect score! You have mastered combinations and Pascal\'s Triangle!';
+            } else if (score >= Math.ceil(total * 0.7)) {
+                scoreMsg.textContent = '👍 Good work! Review the explanations for any questions you missed.';
+            } else {
+                scoreMsg.textContent = '📚 Review the module content, especially the decision framework and Stars and Bars. Then try again.';
+            }
+
+            markSectionRead(8);
+            var progress = loadProgress();
+            progress.quizSubmitted = true;
+            progress.quizScore = score;
+            saveProgress(progress);
+            scoreDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function resetQuiz() {
+            for (var qKey in quizAnswers) {
+                if (!quizAnswers.hasOwnProperty(qKey)) continue;
+                var radios = document.querySelectorAll('input[name="' + qKey + '"]');
+                for (var i = 0; i < radios.length; i++) radios[i].checked = false;
+                var fb = document.getElementById('fb-' + qKey);
+                fb.style.display = 'none';
+                fb.className = 'feedback';
+            }
+            document.getElementById('quiz-score').style.display = 'none';
+        }
+
+        // ===== INITIALIZATION =====
+        document.addEventListener('DOMContentLoaded', function () {
+            updateTrackers();
+            handleScroll();
+            buildPascalStatic();
+            buildPascalInteractive();
+        });
+    </script>
+</body>
+</html>
