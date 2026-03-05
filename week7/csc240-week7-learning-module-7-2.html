@@ -15,6 +15,7 @@
         html {
             font-size: 16px;
             scroll-behavior: smooth;
+            scroll-padding-top: 58px;
         }
 
         body {
@@ -33,7 +34,7 @@
             background: #0d47a1;
             color: #ffffff;
             padding: 12px 24px;
-            z-index: 10000;
+            z-index: 10002;
             font-size: 1rem;
             text-decoration: none;
             border-radius: 0 0 8px 0;
@@ -62,13 +63,99 @@
             border-radius: 0 3px 3px 0;
         }
 
+        /* ===== MODULE NAV ===== */
+        .module-nav {
+            position: fixed;
+            top: 6px;
+            left: 0;
+            width: 100%;
+            height: 44px;
+            background: #0d47a1;
+            z-index: 9500;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scrollbar-width: none;
+        }
+
+        .module-nav::-webkit-scrollbar {
+            display: none;
+        }
+
+        .module-nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0 12px;
+            display: flex;
+            align-items: center;
+            height: 100%;
+            gap: 2px;
+            white-space: nowrap;
+        }
+
+        .module-nav a {
+            display: inline-block;
+            padding: 5px 11px;
+            color: #bbdefb;
+            font-size: 0.83rem;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 4px;
+            border-bottom: 2px solid transparent;
+            transition: color 0.2s, border-color 0.2s;
+        }
+
+        .module-nav a:hover,
+        .module-nav a:focus {
+            color: #ffffff;
+            outline: 2px solid #90caf9;
+            outline-offset: 2px;
+        }
+
+        .module-nav a[aria-current="true"] {
+            color: #ffffff;
+            border-bottom-color: #42a5f5;
+        }
+
+        @media (max-width: 768px) {
+            .module-nav {
+                scrollbar-width: thin;
+                scrollbar-color: #42a5f5 #0d47a1;
+            }
+            .module-nav::-webkit-scrollbar {
+                display: block;
+                height: 3px;
+            }
+            .module-nav::-webkit-scrollbar-track {
+                background: #0d47a1;
+            }
+            .module-nav::-webkit-scrollbar-thumb {
+                background: #42a5f5;
+                border-radius: 3px;
+            }
+            .module-nav ul {
+                padding: 0 8px;
+                gap: 1px;
+            }
+            .module-nav a {
+                font-size: 0.78rem;
+                padding: 4px 8px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .module-nav a {
+                font-size: 0.73rem;
+                padding: 4px 6px;
+            }
+        }
+
         /* ===== HEADER ===== */
         .course-header {
             background: linear-gradient(135deg, #0d47a1 0%, #1565c0 50%, #1976d2 100%);
             color: #ffffff;
             padding: 32px 24px 28px;
             text-align: center;
-            margin-top: 6px;
+            margin-top: 50px;
         }
 
         .course-header .breadcrumb {
@@ -158,6 +245,7 @@
             margin-bottom: 40px;
             padding-bottom: 20px;
             border-bottom: 1px solid #e0e0e0;
+            scroll-margin-top: 58px;
         }
 
         .section:last-child {
@@ -1050,7 +1138,7 @@
 
         /* ===== PRINT STYLES ===== */
         @media print {
-            .progress-container, .skip-link, .btn, .activity-container {
+            .progress-container, .skip-link, .module-nav, .btn, .activity-container {
                 display: none;
             }
 
@@ -1129,6 +1217,20 @@
     <div class="progress-container" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Page reading progress">
         <div class="progress-bar" id="progressBar"></div>
     </div>
+
+    <!-- Module Section Navigation -->
+    <nav class="module-nav" id="moduleNav" aria-label="Module sections">
+        <ul>
+            <li><a href="#" aria-label="Return to top of page">↑ Top</a></li>
+            <li><a href="#section-1">§1 Factorial</a></li>
+            <li><a href="#section-2">§2 All Perms.</a></li>
+            <li><a href="#section-3">§3 P(n,r)</a></li>
+            <li><a href="#section-4">§4 With Repetition</a></li>
+            <li><a href="#section-5">§5 Multisets</a></li>
+            <li><a href="#section-6">§6 Activities</a></li>
+            <li><a href="#section-7">§7 Quiz</a></li>
+        </ul>
+    </nav>
 
     <!-- Course Header -->
     <header class="course-header">
@@ -2146,6 +2248,26 @@ public class MultisetPermutations {
             }
         }
 
+        // ===== STICKY NAV ACTIVE LINK =====
+        function updateActiveNavLink() {
+            const THRESHOLD = 66; // 6px progress + 44px nav + 16px buffer
+            const sections = document.querySelectorAll('.section');
+            const navLinks = document.querySelectorAll('.module-nav a');
+            let activeIdx = 0;
+            sections.forEach((sec, idx) => {
+                if (sec.getBoundingClientRect().top <= THRESHOLD) {
+                    activeIdx = idx;
+                }
+            });
+            navLinks.forEach((link, idx) => {
+                if (idx === activeIdx) {
+                    link.setAttribute('aria-current', 'true');
+                } else {
+                    link.removeAttribute('aria-current');
+                }
+            });
+        }
+
         // ===== SCROLL-BASED SECTION TRACKING =====
         function handleScroll() {
             const sections = document.querySelectorAll('.section');
@@ -2155,6 +2277,7 @@ public class MultisetPermutations {
                     markSectionRead(idx + 1);
                 }
             });
+            updateActiveNavLink();
         }
 
         window.addEventListener('scroll', handleScroll, { passive: true });
@@ -2713,6 +2836,7 @@ public class MultisetPermutations {
         document.addEventListener('DOMContentLoaded', function () {
             updateTrackers();
             handleScroll();
+            updateActiveNavLink();
             initPermBuilder();
         });
     </script>
