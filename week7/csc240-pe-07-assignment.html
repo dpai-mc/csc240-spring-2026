@@ -1,0 +1,1818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PE-07: Counting Calculator | CSC 240 Week 7</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { font-size: 16px; scroll-behavior: smooth; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5; color: #1a1a2e;
+            line-height: 1.7; min-height: 100vh;
+        }
+
+        .skip-link {
+            position: absolute; top: -100px; left: 0;
+            background: #0d47a1; color: #ffffff;
+            padding: 12px 24px; z-index: 10000;
+            font-size: 1rem; text-decoration: none; border-radius: 0 0 8px 0;
+        }
+        .skip-link:focus { top: 0; }
+
+        .page-column {
+            max-width: 800px; margin: 0 auto;
+            background: #ffffff; min-height: 100vh;
+            box-shadow: 0 0 20px rgba(0,0,0,0.08);
+        }
+
+        /* Header */
+        .assignment-header {
+            background: linear-gradient(135deg, #1a237e 0%, #283593 50%, #3949ab 100%);
+            color: #ffffff; padding: 32px 28px 28px; text-align: center;
+        }
+        .assignment-header .course-tag {
+            display: inline-block; background: rgba(255,255,255,0.15);
+            padding: 4px 14px; border-radius: 16px;
+            font-size: 0.85rem; margin-bottom: 10px; color: #c5cae9;
+        }
+        .assignment-header h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 6px; }
+        .assignment-header .subtitle { font-size: 1.05rem; color: #c5cae9; }
+        .header-meta {
+            display: flex; flex-wrap: wrap; justify-content: center;
+            gap: 14px; margin-top: 18px;
+        }
+        .header-badge {
+            background: rgba(255,255,255,0.15); color: #ffffff;
+            padding: 5px 14px; border-radius: 18px; font-size: 0.82rem;
+            display: flex; align-items: center; gap: 6px;
+        }
+
+        /* Content area */
+        .content { padding: 28px 28px 40px; }
+
+        /* Section nav */
+        .section-nav {
+            display: flex; flex-wrap: wrap; gap: 6px;
+            padding: 16px 28px; background: #fafafa;
+            border-bottom: 1px solid #e0e0e0;
+            position: sticky; top: 0; z-index: 100;
+        }
+        .section-nav a {
+            padding: 6px 14px; border-radius: 16px;
+            font-size: 0.82rem; font-weight: 600;
+            text-decoration: none; color: #3949ab;
+            background: #e8eaf6; transition: background 0.2s;
+        }
+        .section-nav a:hover, .section-nav a:focus {
+            background: #3949ab; color: #ffffff;
+            outline: 2px solid #7986cb;
+        }
+
+        /* Sections */
+        .section { margin-bottom: 32px; }
+        .section h2 {
+            font-size: 1.35rem; color: #1a237e;
+            padding-bottom: 8px; border-bottom: 3px solid #3949ab;
+            margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+        }
+        .section h3 {
+            font-size: 1.1rem; color: #283593; margin: 20px 0 10px;
+        }
+        .section h4 {
+            font-size: 1rem; color: #1a1a2e; margin: 16px 0 8px;
+        }
+        .section p { margin-bottom: 12px; color: #212121; }
+
+        /* Info boxes */
+        .info-box {
+            border-radius: 10px; padding: 18px 22px; margin: 16px 0;
+        }
+        .info-box.objective {
+            background: #e8f5e9; border-left: 5px solid #2e7d32;
+        }
+        .info-box.objective .box-title { color: #1b5e20; }
+        .info-box.warning {
+            background: #fff3e0; border-left: 5px solid #e65100;
+        }
+        .info-box.warning .box-title { color: #bf360c; }
+        .info-box.important {
+            background: #fce4ec; border-left: 5px solid #c62828;
+        }
+        .info-box.important .box-title { color: #b71c1c; }
+        .info-box.tip {
+            background: #e3f2fd; border-left: 5px solid #1565c0;
+        }
+        .info-box.tip .box-title { color: #0d47a1; }
+        .info-box.note {
+            background: #f3e5f5; border-left: 5px solid #7b1fa2;
+        }
+        .info-box.note .box-title { color: #6a1b9a; }
+        .box-title {
+            font-weight: 700; font-size: 1rem; margin-bottom: 6px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .info-box p { color: #212121; margin-bottom: 6px; }
+        .info-box ul { padding-left: 20px; margin: 6px 0; }
+        .info-box li { margin-bottom: 4px; color: #212121; }
+
+        /* Code blocks */
+        pre {
+            background: #1e1e2f; color: #e0e0e0; border-radius: 10px;
+            padding: 18px 22px; overflow-x: auto;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.88rem; line-height: 1.6; margin: 14px 0;
+            white-space: pre; tab-size: 4; border: 1px solid #333;
+        }
+        pre code {
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.88rem; white-space: pre;
+            background: none; color: inherit; padding: 0;
+        }
+        .code-label {
+            display: inline-block; background: #1a237e; color: #ffffff;
+            padding: 3px 12px; border-radius: 6px 6px 0 0;
+            font-size: 0.78rem; font-weight: 600; margin-bottom: -2px;
+        }
+        .inline-code {
+            background: #e8eaf6; color: #283593; padding: 2px 7px;
+            border-radius: 4px; font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.88em;
+        }
+
+        /* Tables */
+        .table-wrapper { overflow-x: auto; margin: 14px 0; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+        th {
+            background: #1a237e; color: #ffffff; padding: 10px 14px;
+            text-align: left; font-weight: 600;
+        }
+        td {
+            padding: 9px 14px; border-bottom: 1px solid #e0e0e0; color: #212121;
+        }
+        tr:nth-child(even) { background: #f5f5f5; }
+        tr:hover { background: #e8eaf6; }
+
+        /* Lists */
+        .content-list { padding-left: 22px; margin: 8px 0 14px; }
+        .content-list li { margin-bottom: 5px; color: #212121; }
+
+        /* Buttons */
+        .btn {
+            display: inline-block; padding: 9px 22px; border: none;
+            border-radius: 8px; font-size: 0.95rem; font-weight: 600;
+            cursor: pointer; transition: background 0.2s, transform 0.1s;
+        }
+        .btn:active { transform: scale(0.97); }
+        .btn-primary { background: #3949ab; color: #ffffff; }
+        .btn-primary:hover, .btn-primary:focus { background: #1a237e; outline: 3px solid #7986cb; }
+        .btn-secondary { background: #e0e0e0; color: #1a1a2e; margin-left: 8px; }
+        .btn-secondary:hover, .btn-secondary:focus { background: #bdbdbd; outline: 3px solid #9e9e9e; }
+        .btn-success { background: #2e7d32; color: #ffffff; }
+        .btn-success:hover, .btn-success:focus { background: #1b5e20; outline: 3px solid #a5d6a7; }
+
+        /* Form elements */
+        .form-group { margin-bottom: 14px; }
+        .form-group label {
+            display: block; font-weight: 600; margin-bottom: 5px;
+            color: #1a1a2e; font-size: 0.92rem;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 9px 12px;
+            border: 2px solid #c5cae9; border-radius: 8px;
+            font-size: 0.95rem; color: #1a1a2e; background: #ffffff;
+            transition: border-color 0.2s;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none; border-color: #3949ab;
+            box-shadow: 0 0 0 3px rgba(57,73,171,0.2);
+        }
+
+        /* Result display */
+        .result-display {
+            background: #e8f5e9; border: 2px solid #4caf50;
+            border-radius: 10px; padding: 18px 22px; margin: 14px 0; display: none;
+        }
+        .result-display h4 { color: #1b5e20; margin-bottom: 8px; }
+        .result-display.error {
+            background: #fce4ec; border-color: #ef5350;
+        }
+        .result-display.error h4 { color: #b71c1c; }
+
+        /* Collapsible */
+        .collapsible-toggle {
+            background: #e8eaf6; border: 2px solid #c5cae9; border-radius: 8px;
+            padding: 12px 18px; width: 100%; text-align: left;
+            font-size: 0.95rem; font-weight: 600; color: #283593;
+            cursor: pointer; display: flex; justify-content: space-between;
+            align-items: center; transition: background 0.2s; margin-top: 10px;
+        }
+        .collapsible-toggle:hover, .collapsible-toggle:focus {
+            background: #c5cae9; outline: 3px solid #7986cb;
+        }
+        .collapsible-toggle .arrow { transition: transform 0.3s; }
+        .collapsible-toggle.active .arrow { transform: rotate(180deg); }
+        .collapsible-content {
+            max-height: 0; overflow: hidden; transition: max-height 0.4s ease;
+            background: #fafafa; border-radius: 0 0 8px 8px;
+        }
+        .collapsible-content .inner { padding: 16px 20px; }
+
+        /* Rubric bars */
+        .rubric-bar {
+            display: flex; align-items: center; gap: 10px; margin: 8px 0;
+        }
+        .rubric-bar-label {
+            min-width: 160px; font-weight: 600; font-size: 0.9rem; color: #1a1a2e;
+        }
+        .rubric-bar-track {
+            flex: 1; height: 24px; background: #e0e0e0;
+            border-radius: 12px; overflow: hidden;
+        }
+        .rubric-bar-fill {
+            height: 100%; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.78rem; font-weight: 700; color: #ffffff;
+        }
+
+        /* Step cards */
+        .step-card {
+            display: flex; gap: 14px; margin: 12px 0;
+            padding: 14px 18px; background: #fafafa;
+            border-radius: 10px; border: 1px solid #e0e0e0;
+        }
+        .step-num {
+            background: #3949ab; color: #ffffff; width: 32px; height: 32px;
+            border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; font-weight: 700; font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+        .step-content { flex: 1; }
+        .step-content strong { color: #1a237e; }
+
+        /* Checklist */
+        .checklist { list-style: none; padding: 0; margin: 10px 0; }
+        .checklist li {
+            padding: 8px 0 8px 32px; position: relative;
+            border-bottom: 1px solid #f0f0f0; color: #212121;
+        }
+        .checklist li::before {
+            content: "☐"; position: absolute; left: 4px;
+            font-size: 1.1rem; color: #3949ab;
+        }
+
+        /* Demo area */
+        .demo-container {
+            background: #f5f5f5; border: 2px solid #3949ab;
+            border-radius: 12px; padding: 24px; margin: 20px 0;
+        }
+        .demo-container h3 {
+            color: #1a237e; margin-bottom: 14px;
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        /* Test case cards */
+        .test-case {
+            background: #ffffff; border: 2px solid #e0e0e0;
+            border-radius: 8px; padding: 14px 16px; margin: 10px 0;
+        }
+        .test-case.pass { border-color: #4caf50; }
+        .test-case.fail { border-color: #ef5350; }
+        .test-case .tc-header {
+            display: flex; justify-content: space-between;
+            align-items: center; margin-bottom: 6px;
+        }
+        .test-case .tc-label { font-weight: 700; color: #1a237e; font-size: 0.9rem; }
+        .test-case .tc-status {
+            padding: 2px 10px; border-radius: 12px;
+            font-size: 0.78rem; font-weight: 700;
+        }
+        .test-case .tc-status.pass { background: #e8f5e9; color: #1b5e20; }
+        .test-case .tc-status.fail { background: #fce4ec; color: #b71c1c; }
+
+        /* Footer */
+        .page-footer {
+            background: #1a237e; color: #ffffff; text-align: center;
+            padding: 20px; font-size: 0.85rem;
+        }
+        .page-footer a { color: #9fa8da; text-decoration: underline; }
+        .page-footer a:hover { color: #ffffff; }
+
+        /* Progress tracker */
+        .progress-tracker {
+            padding: 14px 28px; background: #e8eaf6;
+            border-bottom: 1px solid #c5cae9;
+            display: flex; align-items: center; gap: 12px;
+            font-size: 0.88rem; color: #283593;
+        }
+        .progress-tracker .prog-bar {
+            flex: 1; height: 8px; background: #c5cae9;
+            border-radius: 4px; overflow: hidden;
+        }
+        .progress-tracker .prog-fill {
+            height: 100%; background: #3949ab;
+            border-radius: 4px; transition: width 0.3s;
+        }
+
+        strong { color: inherit; }
+        a { color: #3949ab; text-decoration: underline; }
+        a:hover { color: #1a237e; }
+        *:focus-visible { outline: 3px solid #3949ab; outline-offset: 2px; }
+
+        @media (max-width: 768px) {
+            .assignment-header h1 { font-size: 1.4rem; }
+            .content { padding: 20px 16px 32px; }
+            .section-nav { padding: 12px 16px; }
+            pre { font-size: 0.8rem; padding: 14px; }
+        }
+        @media print {
+            .section-nav, .skip-link, .btn, .demo-container, .progress-tracker { display: none; }
+            body { font-size: 11pt; color: #000; background: #fff; }
+            .page-column { box-shadow: none; }
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <div class="page-column">
+
+        <!-- Header -->
+        <header class="assignment-header">
+            <div class="course-tag">CSC 240 — Discrete Structures</div>
+            <h1>PE-07: Counting Calculator</h1>
+            <p class="subtitle">Programming Exercise — Week 7: Basics of Counting</p>
+            <div class="header-meta">
+                <span class="header-badge">📅 Due: End of Week 7</span>
+                <span class="header-badge">⏱️ Estimated: 2–3 hours</span>
+                <span class="header-badge">💯 Points: 100</span>
+                <span class="header-badge">🎯 CSLO 2</span>
+            </div>
+        </header>
+
+        <!-- Progress Tracker -->
+        <div class="progress-tracker" role="status" aria-label="Assignment progress">
+            <span>Progress:</span>
+            <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+            <span id="progLabel">0 / 7 sections viewed</span>
+        </div>
+
+        <!-- Section Nav -->
+        <nav class="section-nav" aria-label="Assignment sections">
+            <a href="#overview">Overview</a>
+            <a href="#requirements">Requirements</a>
+            <a href="#specifications">Specifications</a>
+            <a href="#starter-code">Starter Code</a>
+            <a href="#demo">Demo Tool</a>
+            <a href="#rubric">Rubric</a>
+            <a href="#submission">Submission</a>
+        </nav>
+
+        <!-- Main Content -->
+        <main id="main-content" class="content">
+
+            <!-- ==================== OVERVIEW ==================== -->
+            <section class="section" id="overview" aria-labelledby="overview-heading">
+                <h2 id="overview-heading">📋 Assignment Overview</h2>
+
+                <div class="info-box objective">
+                    <div class="box-title">🎯 Objective</div>
+                    <p>Implement a <strong>counting toolkit</strong> in Java or C++ that computes fundamental combinatorial quantities. Your program will calculate factorials, permutations, combinations, and multiset permutations — the same formulas you studied in Modules 7.1–7.3.</p>
+                </div>
+
+                <p>This exercise bridges the gap between <strong>mathematical formulas</strong> and <strong>working code</strong>. By implementing these functions yourself, you'll deepen your understanding of how counting formulas work, handle edge cases, and deal with the practical challenge of large numbers in computation.</p>
+
+                <div class="info-box tip">
+                    <div class="box-title">💡 Getting Started Tips</div>
+                    <ul>
+                        <li><strong>Start early:</strong> This assignment takes 2–3 hours. Don't wait until the deadline!</li>
+                        <li><strong>Review Modules 7.1–7.3:</strong> Make sure you understand the formulas before coding</li>
+                        <li><strong>Test incrementally:</strong> Get <span class="inline-code">factorial()</span> working first, then build on it</li>
+                        <li><strong>Use the demo tool below:</strong> Verify your expected outputs before coding</li>
+                        <li><strong>Ask questions:</strong> Use office hours and discussion forums if you get stuck</li>
+                    </ul>
+                </div>
+
+                <div class="info-box important">
+                    <div class="box-title">⚠️ Important Notes</div>
+                    <ul>
+                        <li><strong>Language choice:</strong> Java or C++ (your choice)</li>
+                        <li><strong>IDE requirement:</strong> Use Visual Studio Code (VS Code) for consistency</li>
+                        <li><strong>Academic integrity:</strong> This must be your own work. Collaboration on concepts is fine; sharing code is not.</li>
+                        <li><strong>Submission format:</strong> ZIP file containing source code and README</li>
+                        <li><strong>Late policy:</strong> 10% deduction per day, up to 3 days maximum</li>
+                    </ul>
+                </div>
+
+                <h3>Time Breakdown</h3>
+                <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>Phase</th><th>Estimated Time</th><th>Tasks</th></tr></thead>
+                        <tbody>
+                            <tr><td>Planning</td><td>20 minutes</td><td>Review formulas, plan function signatures</td></tr>
+                            <tr><td>Core Implementation</td><td>60 minutes</td><td>Implement all 6 required functions</td></tr>
+                            <tr><td>Menu &amp; Interface</td><td>20 minutes</td><td>Build menu-driven interface</td></tr>
+                            <tr><td>Testing</td><td>30 minutes</td><td>Write and run test cases</td></tr>
+                            <tr><td>Documentation</td><td>20 minutes</td><td>Code comments, README file</td></tr>
+                            <tr><td><strong>Total</strong></td><td><strong>~2.5 hours</strong></td><td></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="info-box note">
+                    <div class="box-title">🔗 Connection to Course Content</div>
+                    <p><strong>CSLO 2:</strong> Apply combinatorics and set theory to counting problems.</p>
+                    <p>This exercise directly implements the counting formulas from Modules 7.1–7.3. Each function corresponds to a specific formula:</p>
+                    <ul>
+                        <li><span class="inline-code">factorial(n)</span> → Module 7.2 (the foundation for all formulas)</li>
+                        <li><span class="inline-code">permutation(n, r)</span> → Module 7.2 (ordered, no repetition)</li>
+                        <li><span class="inline-code">combination(n, r)</span> → Module 7.3 (unordered, no repetition)</li>
+                        <li><span class="inline-code">permWithRepetition(n, r)</span> → Module 7.2 (ordered, repetition)</li>
+                        <li><span class="inline-code">combWithRepetition(n, r)</span> → Module 7.3 (Stars and Bars)</li>
+                        <li><span class="inline-code">multisetPermutation(n, groups[])</span> → Module 7.2 (identical items)</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- ==================== REQUIREMENTS ==================== -->
+            <section class="section" id="requirements" aria-labelledby="req-heading">
+                <h2 id="req-heading">📝 Required Functions</h2>
+
+                <p>Your program must implement the following <strong>six functions</strong>. Each function must match the specified signature and behavior exactly.</p>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr><th>#</th><th>Function</th><th>Formula</th><th>Description</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td><span class="inline-code">factorial(n)</span></td>
+                                <td>n!</td>
+                                <td>Product of all positive integers up to n</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td><span class="inline-code">permutation(n, r)</span></td>
+                                <td>P(n, r) = n!/(n−r)!</td>
+                                <td>Ordered arrangements, no repetition</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td><span class="inline-code">combination(n, r)</span></td>
+                                <td>C(n, r) = n!/(r!(n−r)!)</td>
+                                <td>Unordered selections, no repetition</td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td><span class="inline-code">permWithRepetition(n, r)</span></td>
+                                <td>nʳ</td>
+                                <td>Ordered arrangements, repetition allowed</td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td><span class="inline-code">combWithRepetition(n, r)</span></td>
+                                <td>C(n+r−1, r)</td>
+                                <td>Unordered selections, repetition allowed</td>
+                            </tr>
+                            <tr>
+                                <td>6</td>
+                                <td><span class="inline-code">multisetPermutation(n, groups[])</span></td>
+                                <td>n!/(n₁!×n₂!×…×nₖ!)</td>
+                                <td>Arrangements with identical items</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Detailed Function Specifications</h3>
+
+                <h4>Function 1: <span class="inline-code">factorial(n)</span></h4>
+                <div class="info-box tip">
+                    <div class="box-title">n! — Factorial</div>
+                    <p><strong>Input:</strong> Non-negative integer n (0 ≤ n ≤ 20)</p>
+                    <p><strong>Output:</strong> n! = n × (n−1) × (n−2) × … × 2 × 1</p>
+                    <p><strong>Edge cases:</strong></p>
+                    <ul>
+                        <li>0! = 1 (by convention)</li>
+                        <li>1! = 1</li>
+                        <li>Negative input → error message</li>
+                        <li>n &gt; 20 → warning about overflow (20! is the max for <span class="inline-code">long</span>)</li>
+                    </ul>
+                </div>
+
+                <h4>Function 2: <span class="inline-code">permutation(n, r)</span></h4>
+                <div class="info-box tip">
+                    <div class="box-title">P(n, r) — r-Permutation</div>
+                    <p><strong>Input:</strong> Non-negative integers n, r where 0 ≤ r ≤ n</p>
+                    <p><strong>Output:</strong> P(n, r) = n!/(n−r)!</p>
+                    <p><strong>Edge cases:</strong></p>
+                    <ul>
+                        <li>P(n, 0) = 1 for any n</li>
+                        <li>P(n, n) = n!</li>
+                        <li>r &gt; n → error message (cannot arrange more items than available)</li>
+                        <li>Negative inputs → error message</li>
+                    </ul>
+                    <p><strong>Implementation tip:</strong> Use the product form n × (n−1) × … × (n−r+1) to avoid computing large factorials.</p>
+                </div>
+
+                <h4>Function 3: <span class="inline-code">combination(n, r)</span></h4>
+                <div class="info-box tip">
+                    <div class="box-title">C(n, r) — r-Combination</div>
+                    <p><strong>Input:</strong> Non-negative integers n, r where 0 ≤ r ≤ n</p>
+                    <p><strong>Output:</strong> C(n, r) = n!/(r!(n−r)!)</p>
+                    <p><strong>Edge cases:</strong></p>
+                    <ul>
+                        <li>C(n, 0) = C(n, n) = 1</li>
+                        <li>r &gt; n → error message</li>
+                        <li>Negative inputs → error message</li>
+                    </ul>
+                    <p><strong>Implementation tip:</strong> Use the symmetry property C(n, r) = C(n, n−r) to minimize computation. Use iterative multiplication/division to avoid overflow.</p>
+                </div>
+
+                <h4>Function 4: <span class="inline-code">permWithRepetition(n, r)</span></h4>
+                <div class="info-box tip">
+                    <div class="box-title">nʳ — Permutation with Repetition</div>
+                    <p><strong>Input:</strong> Positive integer n, non-negative integer r</p>
+                    <p><strong>Output:</strong> nʳ (n raised to the power r)</p>
+                    <p><strong>Edge cases:</strong></p>
+                    <ul>
+                        <li>n⁰ = 1 for any positive n</li>
+                        <li>0⁰ = 1 (by convention in combinatorics)</li>
+                        <li>0ʳ = 0 for r &gt; 0</li>
+                        <li>Negative inputs → error message</li>
+                    </ul>
+                </div>
+
+                <h4>Function 5: <span class="inline-code">combWithRepetition(n, r)</span></h4>
+                <div class="info-box tip">
+                    <div class="box-title">C(n+r−1, r) — Combination with Repetition (Stars and Bars)</div>
+                    <p><strong>Input:</strong> Positive integer n (types), non-negative integer r (items)</p>
+                    <p><strong>Output:</strong> C(n+r−1, r)</p>
+                    <p><strong>Edge cases:</strong></p>
+                    <ul>
+                        <li>r = 0 → 1 (one way to choose nothing)</li>
+                        <li>n = 1 → 1 (only one type, must take r of it)</li>
+                        <li>Negative inputs → error message</li>
+                    </ul>
+                    <p><strong>Implementation tip:</strong> Reuse your <span class="inline-code">combination()</span> function: <span class="inline-code">combWithRepetition(n, r) = combination(n + r - 1, r)</span></p>
+                </div>
+
+                <h4>Function 6: <span class="inline-code">multisetPermutation(n, groups[])</span></h4>
+                <div class="info-box tip">
+                    <div class="box-title">n!/(n₁!×n₂!×…×nₖ!) — Multiset Permutation</div>
+                    <p><strong>Input:</strong> Total count n, array of group sizes [n₁, n₂, …, nₖ]</p>
+                    <p><strong>Output:</strong> n! / (n₁! × n₂! × … × nₖ!)</p>
+                    <p><strong>Edge cases:</strong></p>
+                    <ul>
+                        <li>Sum of groups must equal n → error if not</li>
+                        <li>All groups of size 1 → result is n!</li>
+                        <li>Single group of size n → result is 1</li>
+                        <li>Empty groups array → error message</li>
+                    </ul>
+                </div>
+
+                <h3>General Requirements</h3>
+                <ul class="content-list">
+                    <li><strong>Input validation:</strong> All functions must validate inputs and display meaningful error messages</li>
+                    <li><strong>Data types:</strong> Use <span class="inline-code">long</span> (Java) or <span class="inline-code">long long</span> (C++) at minimum. Consider <span class="inline-code">BigInteger</span> (Java) for extra credit.</li>
+                    <li><strong>Menu interface:</strong> Provide a menu-driven console interface for testing each function</li>
+                    <li><strong>Test cases:</strong> Include at least <strong>5 test cases per function</strong> (30 total minimum)</li>
+                    <li><strong>Documentation:</strong> Comment all functions with purpose, parameters, return value, and edge cases</li>
+                </ul>
+            </section>
+
+            <!-- ==================== SPECIFICATIONS ==================== -->
+            <section class="section" id="specifications" aria-labelledby="spec-heading">
+                <h2 id="spec-heading">⚙️ Program Specifications</h2>
+
+                <h3>Menu Interface</h3>
+                <p>Your program must display a menu that lets the user select which function to test. Here is the expected menu format:</p>
+
+                <div class="code-label">Expected Console Output</div>
+                <pre><code>=== Counting Calculator (PE-07) ===
+Student: [Your Name]
+CSC 240 - Discrete Structures
+
+Select a function:
+  1. Factorial (n!)
+  2. Permutation P(n, r)
+  3. Combination C(n, r)
+  4. Permutation with Repetition (n^r)
+  5. Combination with Repetition C(n+r-1, r)
+  6. Multiset Permutation n!/(n1!*n2!*...*nk!)
+  7. Run All Test Cases
+  0. Exit
+
+Enter choice: </code></pre>
+
+                <h3>Sample Interaction</h3>
+                <div class="code-label">Sample Run</div>
+                <pre><code>Enter choice: 1
+
+--- Factorial ---
+Enter n: 5
+5! = 120
+
+Enter choice: 2
+
+--- Permutation P(n, r) ---
+Enter n: 10
+Enter r: 3
+P(10, 3) = 720
+
+Enter choice: 3
+
+--- Combination C(n, r) ---
+Enter n: 52
+Enter r: 5
+C(52, 5) = 2598960
+
+Enter choice: 6
+
+--- Multiset Permutation ---
+Enter total n: 11
+Enter number of groups: 4
+Enter group sizes (space-separated): 1 4 4 2
+11! / (1!*4!*4!*2!) = 34650
+(Example: arrangements of MISSISSIPPI)</code></pre>
+
+                <h3>Error Handling Examples</h3>
+                <div class="code-label">Error Cases</div>
+                <pre><code>--- Factorial ---
+Enter n: -3
+Error: n must be a non-negative integer.
+
+--- Permutation P(n, r) ---
+Enter n: 5
+Enter r: 8
+Error: r cannot be greater than n for permutations without repetition.
+
+--- Multiset Permutation ---
+Enter total n: 10
+Enter number of groups: 3
+Enter group sizes: 3 4 5
+Error: Sum of group sizes (12) does not equal n (10).</code></pre>
+
+                <h3>Test Case Output Format</h3>
+                <p>When the user selects option 7 (Run All Test Cases), your program should run all predefined test cases and display results:</p>
+
+                <div class="code-label">Test Case Output</div>
+                <pre><code>=== Running All Test Cases ===
+
+--- factorial() tests ---
+Test 1: factorial(0) = 1          [PASS] Expected: 1
+Test 2: factorial(1) = 1          [PASS] Expected: 1
+Test 3: factorial(5) = 120        [PASS] Expected: 120
+Test 4: factorial(10) = 3628800   [PASS] Expected: 3628800
+Test 5: factorial(20) = 2432902008176640000 [PASS]
+
+--- permutation() tests ---
+Test 1: P(5, 0) = 1              [PASS] Expected: 1
+Test 2: P(5, 5) = 120            [PASS] Expected: 120
+Test 3: P(10, 3) = 720           [PASS] Expected: 720
+Test 4: P(20, 4) = 116280        [PASS] Expected: 116280
+Test 5: P(12, 3) = 1320          [PASS] Expected: 1320
+
+...
+
+=== Test Results: 30/30 passed ===</code></pre>
+            </section>
+
+            <!-- ==================== STARTER CODE ==================== -->
+            <section class="section" id="starter-code" aria-labelledby="starter-heading">
+                <h2 id="starter-heading">💻 Starter Code</h2>
+
+                <p>Use one of the following starter templates. You must complete all <span class="inline-code">TODO</span> sections.</p>
+
+                <button class="collapsible-toggle" aria-expanded="false" onclick="toggleCollapsible(this)">
+                    <span>☕ Java Starter Code — CountingCalculator.java</span>
+                    <span class="arrow" aria-hidden="true">▼</span>
+                </button>
+                <div class="collapsible-content">
+                    <div class="inner">
+                        <div class="code-label">Java — CountingCalculator.java</div>
+                        <pre><code>import java.util.Scanner;
+
+/**
+ * PE-07: Counting Calculator
+ * CSC 240 - Discrete Structures
+ * 
+ * Student: [YOUR NAME]
+ * Date:    [DATE]
+ * 
+ * Implements fundamental counting functions:
+ * factorial, permutation, combination,
+ * permutation with repetition, combination with repetition,
+ * and multiset permutation.
+ */
+public class CountingCalculator {
+
+    /**
+     * Computes n! (n factorial)
+     * @param n non-negative integer (0 <= n <= 20)
+     * @return n! as a long
+     * @throws IllegalArgumentException if n < 0 or n > 20
+     */
+    public static long factorial(int n) {
+        // TODO: Validate input
+        // TODO: Implement factorial computation
+        // Hint: 0! = 1, and use a loop for n >= 1
+        return -1; // Replace with your implementation
+    }
+
+    /**
+     * Computes P(n, r) = n! / (n-r)!
+     * @param n total items (non-negative)
+     * @param r items to arrange (0 <= r <= n)
+     * @return P(n, r) as a long
+     * @throws IllegalArgumentException if inputs invalid
+     */
+    public static long permutation(int n, int r) {
+        // TODO: Validate inputs (n >= 0, r >= 0, r <= n)
+        // TODO: Implement using product form: n * (n-1) * ... * (n-r+1)
+        // Tip: Avoid computing full factorials to prevent overflow
+        return -1; // Replace with your implementation
+    }
+
+    /**
+     * Computes C(n, r) = n! / (r! * (n-r)!)
+     * @param n total items (non-negative)
+     * @param r items to choose (0 <= r <= n)
+     * @return C(n, r) as a long
+     * @throws IllegalArgumentException if inputs invalid
+     */
+    public static long combination(int n, int r) {
+        // TODO: Validate inputs
+        // TODO: Use symmetry: if r > n-r, set r = n-r
+        // TODO: Use iterative multiply/divide to avoid overflow
+        // Hint: result = result * (n - i) / (i + 1) for i = 0..r-1
+        return -1; // Replace with your implementation
+    }
+
+    /**
+     * Computes n^r (n raised to power r)
+     * @param n base (non-negative)
+     * @param r exponent (non-negative)
+     * @return n^r as a long
+     * @throws IllegalArgumentException if inputs invalid
+     */
+    public static long permWithRepetition(int n, int r) {
+        // TODO: Validate inputs
+        // TODO: Handle special cases: n^0 = 1, 0^r = 0 (r>0)
+        // TODO: Implement power computation
+        return -1; // Replace with your implementation
+    }
+
+    /**
+     * Computes C(n+r-1, r) for combinations with repetition
+     * @param n number of types (positive)
+     * @param r number of items to choose (non-negative)
+     * @return C(n+r-1, r) as a long
+     * @throws IllegalArgumentException if inputs invalid
+     */
+    public static long combWithRepetition(int n, int r) {
+        // TODO: Validate inputs (n >= 1, r >= 0)
+        // TODO: Reuse combination() function
+        return -1; // Replace with your implementation
+    }
+
+    /**
+     * Computes n! / (n1! * n2! * ... * nk!)
+     * @param n total items
+     * @param groups array of group sizes
+     * @return multiset permutation count as a long
+     * @throws IllegalArgumentException if sum of groups != n
+     */
+    public static long multisetPermutation(int n, int[] groups) {
+        // TODO: Validate that sum of groups equals n
+        // TODO: Compute n! / (product of group factorials)
+        return -1; // Replace with your implementation
+    }
+
+    // ==================== TEST CASES ====================
+
+    /**
+     * Runs all test cases and reports results
+     */
+    public static void runAllTests() {
+        int passed = 0;
+        int total = 0;
+
+        System.out.println("=== Running All Test Cases ===\n");
+
+        // --- factorial tests ---
+        System.out.println("--- factorial() tests ---");
+        // TODO: Add at least 5 test cases
+        // Example:
+        // total++; if (factorial(0) == 1) { passed++; print PASS } else { print FAIL }
+
+        // --- permutation tests ---
+        System.out.println("\n--- permutation() tests ---");
+        // TODO: Add at least 5 test cases
+
+        // --- combination tests ---
+        System.out.println("\n--- combination() tests ---");
+        // TODO: Add at least 5 test cases
+
+        // --- permWithRepetition tests ---
+        System.out.println("\n--- permWithRepetition() tests ---");
+        // TODO: Add at least 5 test cases
+
+        // --- combWithRepetition tests ---
+        System.out.println("\n--- combWithRepetition() tests ---");
+        // TODO: Add at least 5 test cases
+
+        // --- multisetPermutation tests ---
+        System.out.println("\n--- multisetPermutation() tests ---");
+        // TODO: Add at least 5 test cases
+
+        System.out.println("\n=== Test Results: " 
+            + passed + "/" + total + " passed ===");
+    }
+
+    // ==================== MENU ====================
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        boolean running = true;
+
+        System.out.println("=== Counting Calculator (PE-07) ===");
+        System.out.println("Student: [YOUR NAME]");
+        System.out.println("CSC 240 - Discrete Structures\n");
+
+        while (running) {
+            System.out.println("Select a function:");
+            System.out.println("  1. Factorial (n!)");
+            System.out.println("  2. Permutation P(n, r)");
+            System.out.println("  3. Combination C(n, r)");
+            System.out.println("  4. Permutation with Repetition (n^r)");
+            System.out.println("  5. Combination with Repetition");
+            System.out.println("  6. Multiset Permutation");
+            System.out.println("  7. Run All Test Cases");
+            System.out.println("  0. Exit");
+            System.out.print("\nEnter choice: ");
+
+            int choice = scanner.nextInt();
+
+            switch (choice) {
+                case 0:
+                    running = false;
+                    System.out.println("Goodbye!");
+                    break;
+                case 1:
+                    System.out.println("\n--- Factorial ---");
+                    System.out.print("Enter n: ");
+                    // TODO: Read input and call factorial()
+                    break;
+                case 2:
+                    System.out.println("\n--- Permutation P(n, r) ---");
+                    // TODO: Read n and r, call permutation()
+                    break;
+                case 3:
+                    System.out.println("\n--- Combination C(n, r) ---");
+                    // TODO: Read n and r, call combination()
+                    break;
+                case 4:
+                    System.out.println("\n--- Perm with Repetition ---");
+                    // TODO: Read n and r, call permWithRepetition()
+                    break;
+                case 5:
+                    System.out.println("\n--- Comb with Repetition ---");
+                    // TODO: Read n and r, call combWithRepetition()
+                    break;
+                case 6:
+                    System.out.println("\n--- Multiset Permutation ---");
+                    // TODO: Read n, group count, group sizes
+                    break;
+                case 7:
+                    runAllTests();
+                    break;
+                default:
+                    System.out.println("Invalid choice.");
+            }
+            System.out.println();
+        }
+        scanner.close();
+    }
+}</code></pre>
+                    </div>
+                </div>
+
+                <button class="collapsible-toggle" aria-expanded="false" onclick="toggleCollapsible(this)">
+                    <span>⚡ C++ Starter Code — counting_calculator.cpp</span>
+                    <span class="arrow" aria-hidden="true">▼</span>
+                </button>
+                <div class="collapsible-content">
+                    <div class="inner">
+                        <div class="code-label">C++ — counting_calculator.cpp</div>
+                        <pre><code>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;cmath&gt;
+#include &lt;string&gt;
+
+using namespace std;
+
+/**
+ * PE-07: Counting Calculator
+ * CSC 240 - Discrete Structures
+ * 
+ * Student: [YOUR NAME]
+ * Date:    [DATE]
+ */
+
+// Function prototypes
+long long factorial(int n);
+long long permutation(int n, int r);
+long long combination(int n, int r);
+long long permWithRepetition(int n, int r);
+long long combWithRepetition(int n, int r);
+long long multisetPermutation(int n, vector&lt;int&gt; groups);
+void runAllTests();
+
+/**
+ * Computes n!
+ * @param n non-negative integer (0 <= n <= 20)
+ * @return n! as long long, or -1 on error
+ */
+long long factorial(int n) {
+    // TODO: Validate input
+    // TODO: Implement factorial
+    return -1;
+}
+
+/**
+ * Computes P(n, r) = n! / (n-r)!
+ */
+long long permutation(int n, int r) {
+    // TODO: Validate and implement
+    return -1;
+}
+
+/**
+ * Computes C(n, r) = n! / (r! * (n-r)!)
+ */
+long long combination(int n, int r) {
+    // TODO: Validate and implement
+    return -1;
+}
+
+/**
+ * Computes n^r
+ */
+long long permWithRepetition(int n, int r) {
+    // TODO: Validate and implement
+    return -1;
+}
+
+/**
+ * Computes C(n+r-1, r)
+ */
+long long combWithRepetition(int n, int r) {
+    // TODO: Validate and implement using combination()
+    return -1;
+}
+
+/**
+ * Computes n! / (n1! * n2! * ... * nk!)
+ */
+long long multisetPermutation(int n, vector&lt;int&gt; groups) {
+    // TODO: Validate sum of groups == n
+    // TODO: Implement
+    return -1;
+}
+
+void runAllTests() {
+    int passed = 0, total = 0;
+    cout &lt;&lt; "=== Running All Test Cases ===" &lt;&lt; endl;
+
+    // TODO: Add at least 5 test cases per function (30 total)
+    // Example:
+    // total++;
+    // long long result = factorial(0);
+    // if (result == 1) { passed++; cout &lt;&lt; "PASS"; }
+    // else { cout &lt;&lt; "FAIL"; }
+
+    cout &lt;&lt; "\n=== Results: " &lt;&lt; passed &lt;&lt; "/" 
+         &lt;&lt; total &lt;&lt; " passed ===" &lt;&lt; endl;
+}
+
+int main() {
+    int choice;
+    bool running = true;
+
+    cout &lt;&lt; "=== Counting Calculator (PE-07) ===" &lt;&lt; endl;
+    cout &lt;&lt; "Student: [YOUR NAME]" &lt;&lt; endl;
+    cout &lt;&lt; "CSC 240 - Discrete Structures" &lt;&lt; endl;
+
+    while (running) {
+        cout &lt;&lt; "\nSelect a function:" &lt;&lt; endl;
+        cout &lt;&lt; "  1. Factorial (n!)" &lt;&lt; endl;
+        cout &lt;&lt; "  2. Permutation P(n, r)" &lt;&lt; endl;
+        cout &lt;&lt; "  3. Combination C(n, r)" &lt;&lt; endl;
+        cout &lt;&lt; "  4. Perm with Repetition (n^r)" &lt;&lt; endl;
+        cout &lt;&lt; "  5. Comb with Repetition" &lt;&lt; endl;
+        cout &lt;&lt; "  6. Multiset Permutation" &lt;&lt; endl;
+        cout &lt;&lt; "  7. Run All Test Cases" &lt;&lt; endl;
+        cout &lt;&lt; "  0. Exit" &lt;&lt; endl;
+        cout &lt;&lt; "\nEnter choice: ";
+        cin &gt;&gt; choice;
+
+        switch (choice) {
+            case 0:
+                running = false;
+                cout &lt;&lt; "Goodbye!" &lt;&lt; endl;
+                break;
+            case 1: {
+                cout &lt;&lt; "\n--- Factorial ---" &lt;&lt; endl;
+                // TODO: Read n and call factorial()
+                break;
+            }
+            // TODO: Cases 2-6
+            case 7:
+                runAllTests();
+                break;
+            default:
+                cout &lt;&lt; "Invalid choice." &lt;&lt; endl;
+        }
+    }
+    return 0;
+}</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== DEMO TOOL ==================== -->
+            <section class="section" id="demo" aria-labelledby="demo-heading">
+                <h2 id="demo-heading">🧮 Interactive Demo Tool</h2>
+
+                <p>Use this tool to <strong>verify expected outputs</strong> before and during your coding. Enter inputs and see the correct results for each function. Your program should produce the same values.</p>
+
+                <div class="demo-container">
+                    <h3>🔢 Counting Calculator Demo</h3>
+
+                    <div class="form-group">
+                        <label for="demo-func">Select function:</label>
+                        <select id="demo-func" onchange="updateDemoInputs()">
+                            <option value="factorial">1. Factorial (n!)</option>
+                            <option value="permutation">2. Permutation P(n, r)</option>
+                            <option value="combination">3. Combination C(n, r)</option>
+                            <option value="permrep">4. Perm with Repetition (nʳ)</option>
+                            <option value="combrep">5. Comb with Repetition C(n+r−1, r)</option>
+                            <option value="multiset">6. Multiset Permutation</option>
+                        </select>
+                    </div>
+
+                    <div id="demo-inputs">
+                        <div class="form-group" id="demo-n-group">
+                            <label for="demo-n">n:</label>
+                            <input type="number" id="demo-n" min="0" max="20" value="5">
+                        </div>
+                        <div class="form-group" id="demo-r-group" style="display:none;">
+                            <label for="demo-r">r:</label>
+                            <input type="number" id="demo-r" min="0" max="20" value="3">
+                        </div>
+                        <div class="form-group" id="demo-groups-group" style="display:none;">
+                            <label for="demo-groups">Group sizes (comma-separated):</label>
+                            <input type="text" id="demo-groups" value="1,4,4,2" placeholder="e.g., 1,4,4,2">
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="runDemo()" aria-label="Calculate result">Calculate</button>
+
+                    <div class="result-display" id="demo-result" role="region" aria-live="polite">
+                        <div id="demo-result-content"></div>
+                    </div>
+                </div>
+
+                <h3>Pre-computed Reference Values</h3>
+                <p>Use these values to verify your test cases:</p>
+
+                <button class="collapsible-toggle" aria-expanded="false" onclick="toggleCollapsible(this)">
+                    <span>📊 Factorial Reference Values</span>
+                    <span class="arrow" aria-hidden="true">▼</span>
+                </button>
+                <div class="collapsible-content">
+                    <div class="inner">
+                        <div class="table-wrapper">
+                            <table>
+                                <thead><tr><th>n</th><th>n!</th></tr></thead>
+                                <tbody>
+                                    <tr><td>0</td><td>1</td></tr>
+                                    <tr><td>1</td><td>1</td></tr>
+                                    <tr><td>5</td><td>120</td></tr>
+                                    <tr><td>10</td><td>3,628,800</td></tr>
+                                    <tr><td>15</td><td>1,307,674,368,000</td></tr>
+                                    <tr><td>20</td><td>2,432,902,008,176,640,000</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="collapsible-toggle" aria-expanded="false" onclick="toggleCollapsible(this)">
+                    <span>📊 Permutation &amp; Combination Reference Values</span>
+                    <span class="arrow" aria-hidden="true">▼</span>
+                </button>
+                <div class="collapsible-content">
+                    <div class="inner">
+                        <div class="table-wrapper">
+                            <table>
+                                <thead><tr><th>Expression</th><th>Value</th></tr></thead>
+                                <tbody>
+                                    <tr><td>P(5, 0)</td><td>1</td></tr>
+                                    <tr><td>P(5, 5)</td><td>120</td></tr>
+                                    <tr><td>P(10, 3)</td><td>720</td></tr>
+                                    <tr><td>P(12, 3)</td><td>1,320</td></tr>
+                                    <tr><td>P(20, 4)</td><td>116,280</td></tr>
+                                    <tr><td>C(4, 2)</td><td>6</td></tr>
+                                    <tr><td>C(10, 3)</td><td>120</td></tr>
+                                    <tr><td>C(10, 5)</td><td>252</td></tr>
+                                    <tr><td>C(20, 10)</td><td>184,756</td></tr>
+                                    <tr><td>C(52, 5)</td><td>2,598,960</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="collapsible-toggle" aria-expanded="false" onclick="toggleCollapsible(this)">
+                    <span>📊 Repetition &amp; Multiset Reference Values</span>
+                    <span class="arrow" aria-hidden="true">▼</span>
+                </button>
+                <div class="collapsible-content">
+                    <div class="inner">
+                        <div class="table-wrapper">
+                            <table>
+                                <thead><tr><th>Expression</th><th>Value</th></tr></thead>
+                                <tbody>
+                                    <tr><td>2⁸ (8-bit strings)</td><td>256</td></tr>
+                                    <tr><td>26³ (3-letter codes)</td><td>17,576</td></tr>
+                                    <tr><td>10⁴ (4-digit PINs)</td><td>10,000</td></tr>
+                                    <tr><td>62⁸ (passwords)</td><td>218,340,105,584,896</td></tr>
+                                    <tr><td>C(5+3−1, 3) = C(7, 3)</td><td>35</td></tr>
+                                    <tr><td>C(4+12−1, 12) = C(15, 3)</td><td>455</td></tr>
+                                    <tr><td>BANANA: 6!/(3!2!1!)</td><td>60</td></tr>
+                                    <tr><td>MISSISSIPPI: 11!/(4!4!2!1!)</td><td>34,650</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- ==================== RUBRIC ==================== -->
+            <section class="section" id="rubric" aria-labelledby="rubric-heading">
+                <h2 id="rubric-heading">📊 Grading Rubric</h2>
+
+                <p>This assignment is worth <strong>100 points</strong>, distributed across three categories as specified in the course outline.</p>
+
+                <h3>Score Breakdown</h3>
+
+                <div class="rubric-bar">
+                    <span class="rubric-bar-label">Correctness (60%)</span>
+                    <div class="rubric-bar-track">
+                        <div class="rubric-bar-fill" style="width:60%;background:#2e7d32;">60 pts</div>
+                    </div>
+                </div>
+                <div class="rubric-bar">
+                    <span class="rubric-bar-label">Style &amp; Docs (20%)</span>
+                    <div class="rubric-bar-track">
+                        <div class="rubric-bar-fill" style="width:20%;background:#1565c0;">20 pts</div>
+                    </div>
+                </div>
+                <div class="rubric-bar">
+                    <span class="rubric-bar-label">Test Cases (20%)</span>
+                    <div class="rubric-bar-track">
+                        <div class="rubric-bar-fill" style="width:20%;background:#7b1fa2;">20 pts</div>
+                    </div>
+                </div>
+
+                <h3>Detailed Rubric</h3>
+
+                <h4>Correctness — 60 points</h4>
+                <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>Criterion</th><th>Points</th><th>Description</th></tr></thead>
+                        <tbody>
+                            <tr><td><span class="inline-code">factorial(n)</span></td><td>10</td><td>Correct for n = 0..20, handles 0! = 1, validates input</td></tr>
+                            <tr><td><span class="inline-code">permutation(n, r)</span></td><td>10</td><td>Correct P(n,r), handles r=0, r=n, r&gt;n error</td></tr>
+                            <tr><td><span class="inline-code">combination(n, r)</span></td><td>10</td><td>Correct C(n,r), uses symmetry optimization, avoids overflow</td></tr>
+                            <tr><td><span class="inline-code">permWithRepetition(n, r)</span></td><td>8</td><td>Correct nʳ, handles 0⁰ = 1, 0ʳ = 0</td></tr>
+                            <tr><td><span class="inline-code">combWithRepetition(n, r)</span></td><td>8</td><td>Correct C(n+r−1, r), reuses combination()</td></tr>
+                            <tr><td><span class="inline-code">multisetPermutation()</span></td><td>8</td><td>Correct n!/(n₁!…nₖ!), validates sum = n</td></tr>
+                            <tr><td>Input validation</td><td>3</td><td>All functions reject invalid inputs with clear messages</td></tr>
+                            <tr><td>Menu interface</td><td>3</td><td>Menu works correctly, loops until exit, handles bad input</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h4>Style &amp; Documentation — 20 points</h4>
+                <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>Criterion</th><th>Points</th><th>Description</th></tr></thead>
+                        <tbody>
+                            <tr><td>Code comments</td><td>6</td><td>Each function has Javadoc/Doxygen comment with purpose, params, return, edge cases</td></tr>
+                            <tr><td>Naming conventions</td><td>4</td><td>Meaningful variable/function names following Java or C++ conventions</td></tr>
+                            <tr><td>Code organization</td><td>4</td><td>Clean structure, proper indentation, logical grouping</td></tr>
+                            <tr><td>README file</td><td>6</td><td>Complete README with all required sections (see Submission below)</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h4>Test Cases — 20 points</h4>
+                <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>Criterion</th><th>Points</th><th>Description</th></tr></thead>
+                        <tbody>
+                            <tr><td>Quantity</td><td>6</td><td>At least 5 test cases per function (30 minimum total)</td></tr>
+                            <tr><td>Edge cases</td><td>6</td><td>Tests include boundary values: 0, 1, max values, r=0, r=n</td></tr>
+                            <tr><td>Error cases</td><td>4</td><td>Tests include invalid inputs: negatives, r&gt;n, mismatched sums</td></tr>
+                            <tr><td>Output format</td><td>4</td><td>Test results clearly show input, expected, actual, PASS/FAIL</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Grade Scale</h3>
+                <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>Score</th><th>Grade</th><th>Description</th></tr></thead>
+                        <tbody>
+                            <tr><td>90–100</td><td>A</td><td>Excellent — all functions correct, well-documented, thorough tests</td></tr>
+                            <tr><td>80–89</td><td>B</td><td>Good — most functions correct, adequate documentation and tests</td></tr>
+                            <tr><td>70–79</td><td>C</td><td>Satisfactory — core functions work, some edge cases missed</td></tr>
+                            <tr><td>60–69</td><td>D</td><td>Below average — several functions incomplete or incorrect</td></tr>
+                            <tr><td>Below 60</td><td>F</td><td>Insufficient — major functions missing or non-functional</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="info-box warning">
+                    <div class="box-title">🌟 Extra Credit Opportunities (+10 points max)</div>
+                    <ul>
+                        <li><strong>+3 points:</strong> Use <span class="inline-code">BigInteger</span> (Java) or equivalent to handle n &gt; 20</li>
+                        <li><strong>+3 points:</strong> Implement Pascal's Identity verification: show C(n,r) = C(n−1,r−1) + C(n−1,r)</li>
+                        <li><strong>+2 points:</strong> Add a "word permutation" mode that accepts a string (like "MISSISSIPPI") and computes its distinct arrangements</li>
+                        <li><strong>+2 points:</strong> Implement step-by-step output showing the computation process</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- ==================== SUBMISSION ==================== -->
+            <section class="section" id="submission" aria-labelledby="sub-heading">
+                <h2 id="sub-heading">📤 Submission Requirements</h2>
+
+                <h3>What to Submit</h3>
+
+                <p>Submit a single <strong>ZIP file</strong> to Canvas containing the following:</p>
+
+                <div class="step-card">
+                    <div class="step-num">1</div>
+                    <div class="step-content">
+                        <strong>Source Code File</strong>
+                        <p><span class="inline-code">CountingCalculator.java</span> or <span class="inline-code">counting_calculator.cpp</span> — your complete, compilable source code with all 6 functions implemented, menu interface, and embedded test cases.</p>
+                    </div>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-num">2</div>
+                    <div class="step-content">
+                        <strong>README.txt</strong>
+                        <p>A plain text file with all required sections (see template below).</p>
+                    </div>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-num">3</div>
+                    <div class="step-content">
+                        <strong>Sample Output (optional but recommended)</strong>
+                        <p><span class="inline-code">output.txt</span> — a copy of your program's console output showing the menu, at least one interactive computation per function, and the full test case run.</p>
+                    </div>
+                </div>
+
+                <h3>ZIP File Naming Convention</h3>
+                <div class="code-label">File Name Format</div>
+                <pre><code>LastName_FirstName_PE07.zip
+
+Example: Smith_Jane_PE07.zip</code></pre>
+
+                <h3>ZIP File Contents</h3>
+                <div class="code-label">Expected Structure</div>
+                <pre><code>Smith_Jane_PE07.zip
+├── CountingCalculator.java    (or counting_calculator.cpp)
+├── README.txt
+└── output.txt                 (optional)</code></pre>
+
+                <h3>README Template</h3>
+
+                <button class="collapsible-toggle" aria-expanded="false" onclick="toggleCollapsible(this)">
+                    <span>📄 README.txt Template — Click to Expand</span>
+                    <span class="arrow" aria-hidden="true">▼</span>
+                </button>
+                <div class="collapsible-content">
+                    <div class="inner">
+                        <div class="code-label">README.txt</div>
+                        <pre><code>============================================
+PE-07: Counting Calculator
+CSC 240 - Discrete Structures
+============================================
+
+STUDENT INFORMATION
+--------------------
+Name:       [Your Full Name]
+Course:     CSC 240 - Discrete Structures
+Assignment: PE-07 Counting Calculator
+Date:       [Date Submitted]
+Language:   [Java / C++]
+
+COMPILATION INSTRUCTIONS
+-------------------------
+[Provide exact commands to compile your program]
+
+For Java:
+  javac CountingCalculator.java
+
+For C++:
+  g++ -o counting_calculator counting_calculator.cpp -std=c++17
+
+Compiler version used: [e.g., javac 17.0.2 / g++ 12.2.0]
+
+RUNNING INSTRUCTIONS
+---------------------
+For Java:
+  java CountingCalculator
+
+For C++:
+  ./counting_calculator
+
+The program presents a menu. Enter 1-6 to test individual
+functions interactively, 7 to run all automated test cases,
+or 0 to exit.
+
+FEATURES IMPLEMENTED
+---------------------
+Required Functions:
+  [x] factorial(n)           - Computes n!
+  [x] permutation(n, r)     - Computes P(n, r)
+  [x] combination(n, r)     - Computes C(n, r)
+  [x] permWithRepetition(n, r) - Computes n^r
+  [x] combWithRepetition(n, r) - Computes C(n+r-1, r)
+  [x] multisetPermutation(n, groups[]) - Computes n!/(n1!*...*nk!)
+
+Additional Features:
+  [x] Menu-driven interface
+  [x] Input validation with error messages
+  [x] Automated test suite (30+ test cases)
+  [ ] BigInteger support (extra credit)
+  [ ] Pascal's Identity verification (extra credit)
+  [ ] Word permutation mode (extra credit)
+  [ ] Step-by-step computation output (extra credit)
+
+IMPLEMENTATION NOTES
+---------------------
+[Describe any important design decisions]
+
+Example:
+- Used iterative multiply/divide in combination() to avoid
+  overflow instead of computing full factorials
+- Applied symmetry optimization C(n,r) = C(n,n-r)
+- combWithRepetition() delegates to combination() function
+
+TEST CASES SUMMARY
+-------------------
+Total test cases: [number, minimum 30]
+
+factorial() tests:
+  1. factorial(0)  = 1          (base case: 0! = 1)
+  2. factorial(1)  = 1          (base case)
+  3. factorial(5)  = 120        (standard case)
+  4. factorial(10) = 3628800    (medium value)
+  5. factorial(20) = 2432902008176640000 (max for long)
+
+permutation() tests:
+  1. P(5, 0)  = 1               (r = 0 edge case)
+  2. P(5, 5)  = 120             (r = n, full permutation)
+  3. P(10, 3) = 720             (standard case)
+  4. P(20, 4) = 116280          (larger values)
+  5. P(12, 3) = 1320            (standard case)
+
+combination() tests:
+  1. C(5, 0)  = 1               (r = 0 edge case)
+  2. C(5, 5)  = 1               (r = n edge case)
+  3. C(10, 3) = 120             (standard case)
+  4. C(52, 5) = 2598960         (poker hands)
+  5. C(20, 10) = 184756         (symmetry test)
+
+permWithRepetition() tests:
+  1. 2^0  = 1                   (exponent 0)
+  2. 2^8  = 256                 (byte values)
+  3. 10^4 = 10000               (PIN codes)
+  4. 26^3 = 17576               (letter codes)
+  5. 0^5  = 0                   (base 0)
+
+combWithRepetition() tests:
+  1. C(5+3-1, 3)  = C(7, 3) = 35   (ice cream scoops)
+  2. C(4+12-1, 12) = C(15, 3) = 455 (cookies)
+  3. C(3+10-1, 10) = C(12, 2) = 66  (equation solutions)
+  4. C(2+5-1, 5) = C(6, 5) = 6     (small case)
+  5. C(6+0-1, 0) = C(5, 0) = 1     (r = 0 edge case)
+
+multisetPermutation() tests:
+  1. BANANA: 6!/(3!2!1!) = 60
+  2. MISSISSIPPI: 11!/(4!4!2!1!) = 34650
+  3. ABC: 3!/(1!1!1!) = 6       (all distinct)
+  4. AAA: 3!/(3!) = 1            (all identical)
+  5. AABB: 4!/(2!2!) = 6
+
+CHALLENGES FACED
+-----------------
+[Optional: Describe 1-2 challenges and how you solved them]
+
+Challenge 1: [Description]
+Solution:   [How you solved it]
+
+Challenge 2: [Description]
+Solution:   [How you solved it]
+
+TIME SPENT
+-----------
+Planning:        [X hours]
+Implementation:  [X hours]
+Testing:         [X hours]
+Documentation:   [X hours]
+Total:           [X hours]
+
+RESOURCES CONSULTED
+--------------------
+- CSC 240 Week 7 Learning Materials (Modules 7.1-7.4)
+- Saylor.org CS202 Unit 2: Counting Theory
+- Java/C++ Documentation for [specific features]
+- [Any other legitimate resources]
+
+ACADEMIC INTEGRITY STATEMENT
+------------------------------
+I certify that this is my original work. I have not copied
+code from any other source except as noted in the references
+above. I understand that submitting plagiarized work will
+result in a zero on this assignment and possible further
+academic consequences.
+
+Signature: [Your Name]
+Date:      [Date]</code></pre>
+                    </div>
+                </div>
+
+                <h3>Submission Checklist</h3>
+
+                <ul class="checklist" role="list" aria-label="Submission checklist">
+                    <li>All 6 required functions are implemented and working</li>
+                    <li>Input validation with meaningful error messages for all functions</li>
+                    <li>Menu-driven interface works correctly and loops until exit</li>
+                    <li>At least 5 test cases per function (30 total minimum)</li>
+                    <li>Test case output shows input, expected value, actual value, PASS/FAIL</li>
+                    <li>Code compiles without errors or warnings</li>
+                    <li>All functions have documentation comments (purpose, params, return, edge cases)</li>
+                    <li>README.txt is complete with all required sections</li>
+                    <li>ZIP file follows naming convention: LastName_FirstName_PE07.zip</li>
+                    <li>ZIP contains source code file and README.txt</li>
+                    <li>Tested on your system — program runs correctly end to end</li>
+                </ul>
+
+                <h3>How to Submit</h3>
+
+                <div class="step-card">
+                    <div class="step-num">1</div>
+                    <div class="step-content">
+                        <strong>Prepare your files</strong>
+                        <p>Ensure your code compiles, all tests pass, and README is complete.</p>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-num">2</div>
+                    <div class="step-content">
+                        <strong>Create the ZIP file</strong>
+                        <p>Compress your source code, README.txt, and optional output.txt into a single ZIP file using the naming convention above.</p>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-num">3</div>
+                    <div class="step-content">
+                        <strong>Upload to Canvas</strong>
+                        <p>Navigate to <strong>Canvas → Assignments → PE-07: Counting Calculator</strong> and upload your ZIP file.</p>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-num">4</div>
+                    <div class="step-content">
+                        <strong>Verify your submission</strong>
+                        <p>After uploading, click on your submission to confirm the correct file was uploaded and it is not corrupted.</p>
+                    </div>
+                </div>
+
+                <div class="info-box important">
+                    <div class="box-title">⚠️ Late Policy</div>
+                    <p><strong>10% deduction per day</strong>, up to a maximum of 3 days late. After 3 days, the assignment will not be accepted. If you need an extension due to extenuating circumstances, contact your instructor <strong>before</strong> the deadline.</p>
+                </div>
+            </section>
+
+            <!-- ==================== FINAL NOTES ==================== -->
+            <div class="info-box objective" role="region" aria-label="Getting started checklist">
+                <div class="box-title">🚀 Ready to Start?</div>
+                <p>You've reviewed all the assignment information. Now it's time to start coding!</p>
+                <p><strong>✅ Next Steps:</strong></p>
+                <ul>
+                    <li>Set up your development environment (VS Code + Java/C++)</li>
+                    <li>Review Modules 7.1–7.3 formulas and edge cases</li>
+                    <li>Use the interactive demo tool above to verify expected outputs</li>
+                    <li>Start with <span class="inline-code">factorial()</span> — it's the foundation for everything else</li>
+                    <li>Build and test one function at a time</li>
+                    <li>Implement <span class="inline-code">combination()</span> carefully — reuse it in <span class="inline-code">combWithRepetition()</span></li>
+                    <li>Write test cases as you implement each function</li>
+                    <li>Complete your README and submit before the deadline!</li>
+                </ul>
+                <p style="margin-top:12px;font-weight:700;color:#1b5e20;">Good luck! 🚀</p>
+            </div>
+
+        </main>
+
+        <!-- Footer -->
+        <footer class="page-footer" role="contentinfo">
+            <p>CSC 240 — Discrete Structures | Mendocino College | Spring 2026</p>
+            <p>PE-07: Counting Calculator | Week 7: Basics of Counting</p>
+            <p>Textbook: <a href="https://learn.saylor.org/course/view.php?id=67" target="_blank" rel="noopener noreferrer">Saylor.org CS202 — Discrete Structures</a></p>
+            <p style="margin-top:8px;font-size:0.78rem;">CSLO 2: Apply combinatorics and set theory to counting problems.</p>
+        </footer>
+
+    </div><!-- end page-column -->
+
+    <!-- ==================== ALL JAVASCRIPT ==================== -->
+    <script>
+        // ===== SESSION STORAGE =====
+        var PE_KEY = 'csc240_pe07_progress';
+
+        function loadProgress() {
+            try { return JSON.parse(sessionStorage.getItem(PE_KEY)) || { viewed: {} }; }
+            catch (e) { return { viewed: {} }; }
+        }
+        function saveProgress(data) {
+            try { sessionStorage.setItem(PE_KEY, JSON.stringify(data)); } catch (e) {}
+        }
+
+        function markViewed(id) {
+            var p = loadProgress();
+            p.viewed[id] = true;
+            saveProgress(p);
+            updateProgress();
+        }
+
+        var sectionIds = ['overview', 'requirements', 'specifications', 'starter-code', 'demo', 'rubric', 'submission'];
+
+        function updateProgress() {
+            var p = loadProgress();
+            var count = 0;
+            for (var i = 0; i < sectionIds.length; i++) {
+                if (p.viewed[sectionIds[i]]) count++;
+            }
+            var pct = Math.round((count / sectionIds.length) * 100);
+            var fill = document.getElementById('progFill');
+            var label = document.getElementById('progLabel');
+            if (fill) fill.style.width = pct + '%';
+            if (label) label.textContent = count + ' / ' + sectionIds.length + ' sections viewed';
+        }
+
+        function handleScroll() {
+            var sections = document.querySelectorAll('.section');
+            for (var i = 0; i < sections.length; i++) {
+                var rect = sections[i].getBoundingClientRect();
+                if (rect.top < window.innerHeight * 0.6 && rect.bottom > 0) {
+                    var id = sections[i].id;
+                    if (id) markViewed(id);
+                }
+            }
+        }
+        window.addEventListener('scroll', handleScroll, { passive: true });
+
+        // ===== COLLAPSIBLE =====
+        function toggleCollapsible(btn) {
+            var content = btn.nextElementSibling;
+            var expanded = btn.getAttribute('aria-expanded') === 'true';
+            if (expanded) {
+                content.style.maxHeight = null;
+                btn.setAttribute('aria-expanded', 'false');
+                btn.classList.remove('active');
+            } else {
+                content.style.maxHeight = content.scrollHeight + 'px';
+                btn.setAttribute('aria-expanded', 'true');
+                btn.classList.add('active');
+            }
+        }
+
+        // ===== MATH HELPERS =====
+        function factorial(n) {
+            if (n < 0) return -1;
+            if (n > 20) return -2;
+            if (n <= 1) return 1;
+            var r = 1;
+            for (var i = 2; i <= n; i++) r *= i;
+            return r;
+        }
+
+        function permutation(n, r) {
+            if (n < 0 || r < 0) return -1;
+            if (r > n) return -3;
+            var result = 1;
+            for (var i = 0; i < r; i++) result *= (n - i);
+            return result;
+        }
+
+        function combination(n, r) {
+            if (n < 0 || r < 0) return -1;
+            if (r > n) return -3;
+            if (r === 0 || r === n) return 1;
+            if (r > n - r) r = n - r;
+            var result = 1;
+            for (var i = 0; i < r; i++) {
+                result = result * (n - i) / (i + 1);
+            }
+            return Math.round(result);
+        }
+
+        function permWithRep(n, r) {
+            if (n < 0 || r < 0) return -1;
+            if (r === 0) return 1;
+            if (n === 0) return 0;
+            return Math.pow(n, r);
+        }
+
+        function combWithRep(n, r) {
+            if (n < 1 || r < 0) return -1;
+            return combination(n + r - 1, r);
+        }
+
+        function multisetPerm(n, groups) {
+            if (!groups || groups.length === 0) return -1;
+            var sum = 0;
+            for (var i = 0; i < groups.length; i++) {
+                if (groups[i] < 0) return -1;
+                sum += groups[i];
+            }
+            if (sum !== n) return -4;
+            var num = factorial(n);
+            if (num < 0) return num;
+            var den = 1;
+            for (var i = 0; i < groups.length; i++) {
+                den *= factorial(groups[i]);
+            }
+            return num / den;
+        }
+
+        function formatNum(n) {
+            if (n < 1e15) return n.toLocaleString();
+            return n.toExponential(6);
+        }
+
+        // ===== DEMO TOOL =====
+        function updateDemoInputs() {
+            var func = document.getElementById('demo-func').value;
+            var nGroup = document.getElementById('demo-n-group');
+            var rGroup = document.getElementById('demo-r-group');
+            var gGroup = document.getElementById('demo-groups-group');
+            var nInput = document.getElementById('demo-n');
+            var nLabel = nGroup.querySelector('label');
+
+            // Reset
+            nGroup.style.display = 'block';
+            rGroup.style.display = 'none';
+            gGroup.style.display = 'none';
+            nLabel.textContent = 'n:';
+
+            if (func === 'factorial') {
+                nInput.max = 20; nInput.value = 5;
+            } else if (func === 'permutation') {
+                rGroup.style.display = 'block';
+                nInput.max = 20; nInput.value = 10;
+                document.getElementById('demo-r').value = 3;
+            } else if (func === 'combination') {
+                rGroup.style.display = 'block';
+                nInput.max = 30; nInput.value = 52;
+                document.getElementById('demo-r').value = 5;
+            } else if (func === 'permrep') {
+                rGroup.style.display = 'block';
+                nLabel.textContent = 'n (base):';
+                nInput.max = 100; nInput.value = 26;
+                document.getElementById('demo-r').value = 3;
+                document.getElementById('demo-r-group').querySelector('label').textContent = 'r (exponent):';
+            } else if (func === 'combrep') {
+                rGroup.style.display = 'block';
+                nLabel.textContent = 'n (types):';
+                nInput.max = 30; nInput.value = 5;
+                document.getElementById('demo-r').value = 3;
+                document.getElementById('demo-r-group').querySelector('label').textContent = 'r (items):';
+            } else if (func === 'multiset') {
+                gGroup.style.display = 'block';
+                nLabel.textContent = 'n (total):';
+                nInput.max = 20; nInput.value = 11;
+                document.getElementById('demo-groups').value = '1,4,4,2';
+            }
+
+            // Reset r label for non-special cases
+            if (func === 'permutation' || func === 'combination') {
+                document.getElementById('demo-r-group').querySelector('label').textContent = 'r:';
+            }
+
+            document.getElementById('demo-result').style.display = 'none';
+        }
+
+        function runDemo() {
+            var func = document.getElementById('demo-func').value;
+            var n = parseInt(document.getElementById('demo-n').value);
+            var r = parseInt(document.getElementById('demo-r').value);
+            var rd = document.getElementById('demo-result');
+            var cd = document.getElementById('demo-result-content');
+
+            var result, formula, steps;
+
+            if (func === 'factorial') {
+                result = factorial(n);
+                if (result === -1) { showDemoError(rd, cd, 'Error: n must be non-negative.'); return; }
+                if (result === -2) { showDemoError(rd, cd, 'Error: n > 20 causes overflow with long. Max n = 20.'); return; }
+                formula = n + '!';
+                var parts = [];
+                for (var i = n; i >= 1; i--) parts.push(i);
+                steps = n === 0 ? '0! = 1 (by convention)' : formula + ' = ' + (parts.length > 0 ? parts.join(' × ') : '1') + ' = ' + formatNum(result);
+            } else if (func === 'permutation') {
+                result = permutation(n, r);
+                if (result === -1) { showDemoError(rd, cd, 'Error: inputs must be non-negative.'); return; }
+                if (result === -3) { showDemoError(rd, cd, 'Error: r cannot be greater than n.'); return; }
+                formula = 'P(' + n + ', ' + r + ')';
+                var factors = [];
+                for (var i = 0; i < r; i++) factors.push(n - i);
+                steps = formula + ' = ' + (factors.length > 0 ? factors.join(' × ') : '1') + ' = ' + formatNum(result);
+            } else if (func === 'combination') {
+                result = combination(n, r);
+                if (result === -1) { showDemoError(rd, cd, 'Error: inputs must be non-negative.'); return; }
+                if (result === -3) { showDemoError(rd, cd, 'Error: r cannot be greater than n.'); return; }
+                formula = 'C(' + n + ', ' + r + ')';
+                var pVal = permutation(n, Math.min(r, n - r));
+                var rFact = factorial(Math.min(r, n - r));
+                steps = formula + ' = ' + n + '! / (' + r + '! × ' + (n - r) + '!) = ' + formatNum(result);
+            } else if (func === 'permrep') {
+                result = permWithRep(n, r);
+                if (result === -1) { showDemoError(rd, cd, 'Error: inputs must be non-negative.'); return; }
+                formula = n + '^' + r;
+                steps = formula + ' = ' + formatNum(result);
+            } else if (func === 'combrep') {
+                result = combWithRep(n, r);
+                if (result === -1) { showDemoError(rd, cd, 'Error: n must be positive, r non-negative.'); return; }
+                formula = 'C(' + n + '+' + r + '−1, ' + r + ') = C(' + (n + r - 1) + ', ' + r + ')';
+                steps = formula + ' = ' + formatNum(result);
+            } else if (func === 'multiset') {
+                var groupStr = document.getElementById('demo-groups').value.trim();
+                var groups = groupStr.split(/[,\s]+/).map(function(s) { return parseInt(s.trim()); });
+                groups = groups.filter(function(g) { return !isNaN(g); });
+                if (groups.length === 0) { showDemoError(rd, cd, 'Error: enter at least one group size.'); return; }
+                result = multisetPerm(n, groups);
+                if (result === -1) { showDemoError(rd, cd, 'Error: invalid input values.'); return; }
+                if (result === -2) { showDemoError(rd, cd, 'Error: n too large (max 20).'); return; }
+                if (result === -4) {
+                    var sum = 0; for (var i = 0; i < groups.length; i++) sum += groups[i];
+                    showDemoError(rd, cd, 'Error: sum of groups (' + sum + ') does not equal n (' + n + ').');
+                    return;
+                }
+                var denParts = groups.map(function(g) { return g + '!'; });
+                formula = n + '! / (' + denParts.join(' × ') + ')';
+                steps = formula + ' = ' + factorial(n).toLocaleString() + ' / ' +
+                    groups.map(function(g) { return factorial(g); }).join(' × ') +
+                    ' = ' + formatNum(result);
+            }
+
+            rd.classList.remove('error');
+            rd.style.display = 'block';
+            cd.innerHTML =
+                '<h4>✓ Result</h4>' +
+                '<p><strong>Formula:</strong> ' + formula + '</p>' +
+                '<p><strong>Computation:</strong> ' + steps + '</p>' +
+                '<p style="font-size:1.4rem;font-weight:800;color:#2e7d32;text-align:center;margin-top:10px;">' + formatNum(result) + '</p>' +
+                '<p style="text-align:center;color:#616161;font-size:0.85rem;">Your program should output this value.</p>';
+
+            markViewed('demo');
+        }
+
+        function showDemoError(rd, cd, msg) {
+            rd.classList.add('error');
+            rd.style.display = 'block';
+            cd.innerHTML = '<h4>⚠️ Input Error</h4><p style="color:#b71c1c;font-weight:600;">' + msg + '</p><p>Your program should display a similar error message for this input.</p>';
+        }
+
+        // ===== INIT =====
+        document.addEventListener('DOMContentLoaded', function () {
+            updateProgress();
+            handleScroll();
+            updateDemoInputs();
+        });
+    </script>
+</body>
+</html>
