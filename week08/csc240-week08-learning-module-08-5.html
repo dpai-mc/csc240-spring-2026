@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 8.5 – Generating Functions and Algorithm Analysis | CSC 240</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'\$$',right:'\$$',display:true},{left:'\$$',right:'\$$',display:false}],throwOnError:false});"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; font-size: 16px; }
+  body {
+    font-family: Georgia, 'Times New Roman', serif;
+    background: #f9f8f5;
+    color: #1a1a1a;
+    line-height: 1.7;
+  }
+
+  .skip-link {
+    position: absolute; top: -999px; left: 6px;
+    background: #1a4f8a; color: #fff; padding: 8px 14px;
+    border-radius: 0 0 6px 6px; font-size: .9rem;
+    text-decoration: none; z-index: 9999;
+  }
+  .skip-link:focus { top: 0; }
+
+  nav#topnav {
+    position: sticky; top: 0; z-index: 100;
+    background: #1a4f8a; color: #fff;
+    padding: 0 1rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,.25);
+  }
+  nav#topnav .nav-inner {
+    max-width: 960px; margin: 0 auto;
+    display: flex; align-items: center; flex-wrap: wrap;
+    gap: 0; min-height: 48px;
+  }
+  nav#topnav .nav-brand {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: .8rem; font-weight: 700;
+    color: #c8d9f0; margin-right: 1rem;
+    white-space: nowrap; padding: .5rem 0;
+  }
+  nav#topnav ul {
+    list-style: none; display: flex; flex-wrap: wrap; gap: 0;
+  }
+  nav#topnav ul li a {
+    display: flex; align-items: center; justify-content: center;
+    color: #d6e8ff; text-decoration: none;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: .85rem; font-weight: 700;
+    width: 2rem; height: 2rem;
+    border-radius: 4px;
+    transition: background .15s, color .15s;
+  }
+  nav#topnav ul li a:hover { background: #2d6ab8; color: #fff; }
+  nav#topnav ul li a:focus {
+    outline: 3px solid #ffd966; outline-offset: 2px;
+    background: #2d6ab8; color: #fff;
+  }
+
+  main { max-width: 960px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+
+  section[id], h2[id] { scroll-margin-top: 58px; }
+
+  .module-header {
+    background: linear-gradient(135deg, #1a4f8a 0%, #2d6ab8 100%);
+    color: #fff; border-radius: 10px;
+    padding: 2rem 2rem 1.6rem; margin-bottom: 2rem;
+  }
+  .module-header .badge {
+    display: inline-block;
+    background: rgba(255,255,255,.18);
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: .75rem; font-weight: 700; letter-spacing: .08em;
+    text-transform: uppercase; padding: .25rem .7rem;
+    border-radius: 20px; margin-bottom: .7rem;
+  }
+  .module-header h1 {
+    font-size: 1.75rem; font-weight: 700;
+    line-height: 1.25; margin-bottom: .5rem;
+  }
+  .module-header p {
+    font-size: .95rem; color: #c8d9f0; margin-bottom: .3rem;
+  }
+  .obj-pills { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .8rem; }
+  .obj-pill {
+    background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.3);
+    border-radius: 20px; font-size: .75rem;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    padding: .2rem .65rem; color: #e8f0fb;
+  }
+
+  h2.section-title {
+    font-size: 1.35rem; color: #1a4f8a;
+    border-left: 5px solid #1a4f8a;
+    padding-left: .75rem; margin: 2.4rem 0 1rem;
+    font-family: 'Segoe UI', Arial, sans-serif;
+  }
+  h3.subsection {
+    font-size: 1.05rem; color: #1a3a5c;
+    margin: 1.4rem 0 .5rem;
+    font-family: 'Segoe UI', Arial, sans-serif;
+  }
+
+  p { margin-bottom: .9rem; }
+  ul, ol { margin: .5rem 0 .9rem 1.5rem; }
+  li { margin-bottom: .3rem; }
+
+  .math-block {
+    overflow-x: auto;
+    background: #f0f4fa;
+    border-left: 4px solid #1a4f8a;
+    border-radius: 0 6px 6px 0;
+    padding: 1rem 1.25rem;
+    margin: 1rem 0 1.2rem;
+    font-size: 1.05rem;
+    text-align: center;
+  }
+
+  .callout {
+    border-radius: 8px; padding: 1rem 1.2rem;
+    margin: 1.2rem 0; border-left: 5px solid;
+  }
+  .callout-title {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-weight: 700; font-size: .9rem;
+    text-transform: uppercase; letter-spacing: .05em;
+    margin-bottom: .4rem;
+  }
+  .callout.green  { background: #edfaf3; border-color: #27a060; }
+  .callout.green .callout-title  { color: #1a7045; }
+  .callout.blue   { background: #e8f2fc; border-color: #1a6dbd; }
+  .callout.blue .callout-title   { color: #1a4f8a; }
+  .callout.yellow { background: #fffbea; border-color: #d4a017; }
+  .callout.yellow .callout-title { color: #7a5c00; }
+  .callout.purple { background: #f3eeff; border-color: #7c3aed; }
+  .callout.purple .callout-title { color: #5b21b6; }
+  .callout.orange { background: #fff7ed; border-color: #ea7c1a; }
+  .callout.orange .callout-title { color: #7c3d00; }
+
+  .expand-group { margin: 1rem 0; }
+  .expand-btn {
+    width: 100%; text-align: left;
+    background: #e8f0fb; border: 1.5px solid #a8c0e0;
+    border-radius: 8px; padding: .7rem 1rem;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: .92rem; font-weight: 700; color: #1a3a5c;
+    cursor: pointer; display: flex; align-items: center;
+    justify-content: space-between;
+    transition: background .15s;
+  }
+  .expand-btn:hover { background: #d0e2f5; }
+  .expand-btn:focus { outline: 3px solid #ffd966; outline-offset: 2px; }
+  .expand-btn .chevron {
+    font-size: 1rem; transition: transform .3s;
+    display: inline-block;
+  }
+  .expand-btn[aria-expanded="true"] .chevron { transform: rotate(180deg); }
+  .expand-content {
+    display: none;
+    background: #f7f9fd;
+    border: 1.5px solid #a8c0e0; border-top: none;
+    border-radius: 0 0 8px 8px;
+    padding: 1rem 1.2rem;
+  }
+  .expand-content.open { display: block; }
+
+  .step-list { list-style: none; margin: .5rem 0 1rem; padding: 0; }
+  .step-list li {
+    display: flex; gap: .8rem; margin-bottom: .7rem; align-items: flex-start;
+  }
+  .step-num {
+    background: #1a4f8a; color: #fff;
+    border-radius: 50%; min-width: 1.6rem; height: 1.6rem;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: .8rem; font-weight: 700; flex-shrink: 0;
+    margin-top: .1rem;
+  }
+
+  /* Generating function diagram */
+  .gf-diagram {
+    background: #fff; border: 2px solid #1a4f8a;
+    border-radius: 10px; padding: 1.4rem 1.6rem;
+    margin: 1rem 0;
+  }
+  .gf-diagram .gf-label {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: .78rem; font-weight: 700; color: #1a4f8a;
+    text-transform: uppercase; letter-spacing: .06em;
+    margin-bottom: .6rem;
+  }
+  .gf-row {
+    display: flex; flex-wrap: wrap; gap: .5rem;
+    align-items: center; margin-bottom: .5rem;
+  }
+  .gf-cell {
+    background: #e8f0fb; border: 1.5px solid #a8c0e0;
+    border-radius: 6px; padding: .35rem .7rem;
+    font-family: Georgia, serif; font-size: .88rem;
+    text-align: center; min-width: 3.2rem;
+    color: #1a1a1a;
+  }
+  .gf-cell.highlight { background: #ffd966; border-color: #c8a000; font-weight: 700; }
+  .gf-cell .sub { font-size: .7rem; color: #555; display: block; }
+  .gf-arrow { font-size: 1.1rem; color: #1a4f8a; }
+
+  /* Growth table */
+  table {
+    width: 100%; border-collapse: collapse;
+    font-size: .88rem; margin: .8rem 0 1rem;
+  }
+  th {
+    background: #1a4f8a; color: #fff;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    padding: .5rem .75rem; text-align: left;
+  }
+  td { padding: .45rem .75rem; border-bottom: 1px solid #d0dcea; }
+  tr:nth-child(even) td { background: #f0f4fa; }
+  td.big { color: #c0392b; font-weight: 700; }
+
+  /* Week summary grid */
+  .week-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: .9rem; margin: 1.2rem 0;
+  }
+  .week-card {
+    background: #fff; border: 1.5px solid #c5d5ea;
+    border-radius: 8px; padding: .9rem 1rem;
+    border-top: 4px solid #1a4f8a;
+  }
+  .week-card .wc-label {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: .72rem; font-weight: 700; color: #1a4f8a;
+    text-transform: uppercase; letter-spacing: .06em;
+    margin-bottom: .3rem;
+  }
+  .week-card .wc-title {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: .88rem; font-weight: 700; color: #1a3a5c;
+    margin-bottom: .3rem;
+  }
+  .week-card .wc-body {
+    font-size: .8rem; color: #444; line-height: 1.45;
+  }
+
+  /* Checklist */
+  .checklist { list-style: none; padding: 0; margin: .5rem 0 1rem; }
+  .checklist li {
+    display: flex; align-items: flex-start; gap: .6rem;
+    margin-bottom: .5rem; font-size: .9rem;
+  }
+  .checklist li input[type="checkbox"] {
+    margin-top: .22rem; accent-color: #1a4f8a; flex-shrink: 0;
+    width: 1rem; height: 1rem;
+  }
+
+  /* Knowledge Check */
+  .kc-section {
+    background: #1a3a5c; color: #e8f0fb;
+    border-radius: 12px; padding: 1.5rem 1.5rem 1.8rem;
+    margin: 2rem 0;
+  }
+  .kc-section h2 {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 1.2rem; color: #ffd966;
+    margin-bottom: .3rem;
+  }
+  .kc-section .kc-subtitle {
+    font-size: .85rem; color: #a8c4e8; margin-bottom: 1.2rem;
+  }
+  .kc-card {
+    background: #fff; color: #1a1a1a;
+    border-radius: 8px; padding: 1.1rem 1.2rem;
+    margin-bottom: 1rem;
+  }
+  .kc-card .kc-q {
+    font-weight: 700; margin-bottom: .8rem;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: .95rem;
+  }
+  .kc-options { list-style: none; padding: 0; margin: 0 0 .8rem; }
+  .kc-options li { margin-bottom: .4rem; }
+  .kc-options label {
+    display: flex; align-items: flex-start; gap: .5rem;
+    cursor: pointer; font-size: .9rem; line-height: 1.4;
+  }
+  .kc-options input[type="radio"] {
+    margin-top: .2rem; accent-color: #1a4f8a; flex-shrink: 0;
+  }
+  .kc-options label:hover { color: #1a4f8a; }
+  .kc-btn {
+    background: #1a4f8a; color: #fff;
+    border: none; border-radius: 6px;
+    padding: .5rem 1.2rem; cursor: pointer;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: .88rem; font-weight: 700;
+    transition: background .15s;
+  }
+  .kc-btn:hover { background: #2d6ab8; }
+  .kc-btn:focus { outline: 3px solid #ffd966; outline-offset: 2px; }
+  .kc-feedback {
+    display: none; margin-top: .7rem;
+    border-radius: 6px; padding: .7rem .9rem;
+    font-size: .88rem; line-height: 1.5;
+    font-family: 'Segoe UI', Arial, sans-serif;
+  }
+  .kc-feedback.correct  { background: #edfaf3; border-left: 4px solid #27a060; color: #14532d; }
+  .kc-feedback.incorrect{ background: #fef2f2; border-left: 4px solid #dc2626; color: #7f1d1d; }
+  .kc-feedback.show     { display: block; }
+
+  /* Assignment support table */
+  .assign-table { width: 100%; border-collapse: collapse; font-size: .87rem; margin: .8rem 0 1rem; }
+  .assign-table th {
+    background: #1a4f8a; color: #fff;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    padding: .5rem .75rem; text-align: left;
+  }
+  .assign-table td { padding: .45rem .75rem; border-bottom: 1px solid #d0dcea; vertical-align: top; }
+  .assign-table tr:nth-child(even) td { background: #f0f4fa; }
+  .part-badge {
+    display: inline-block; background: #1a4f8a; color: #fff;
+    border-radius: 4px; padding: .1rem .45rem;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: .75rem; font-weight: 700;
+  }
+
+  hr.section-divider {
+    border: none; border-top: 2px solid #d0dcea;
+    margin: 2.5rem 0;
+  }
+
+  footer {
+    max-width: 960px; margin: 0 auto;
+    padding: 1.5rem 1.25rem;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: .8rem; color: #666;
+    border-top: 1px solid #d0dcea;
+    display: flex; flex-wrap: wrap; gap: .5rem;
+    justify-content: space-between;
+  }
+
+  @media (max-width: 600px) {
+    .module-header h1 { font-size: 1.35rem; }
+    .week-summary-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<!-- ── Top Navigation ── -->
+<nav id="topnav" aria-label="Module sections">
+  <div class="nav-inner">
+    <span class="nav-brand">CSC 240 · 8.5</span>
+    <ul>
+      <li><a href="#sec-gf-intro"    title="1 · What Is a Generating Function?"      aria-label="Section 1: What Is a Generating Function?">1</a></li>
+      <li><a href="#sec-gf-examples" title="2 · Two Fundamental Examples"            aria-label="Section 2: Two Fundamental Examples">2</a></li>
+      <li><a href="#sec-binomial-gf" title="3 · Connection to the Binomial Theorem"  aria-label="Section 3: Connection to the Binomial Theorem">3</a></li>
+      <li><a href="#sec-algo"        title="4 · Algorithm Analysis"                  aria-label="Section 4: Algorithm Analysis">4</a></li>
+      <li><a href="#sec-wrapup"      title="5 · Week 8 Wrap-Up"                      aria-label="Section 5: Week 8 Wrap-Up">5</a></li>
+      <li><a href="#sec-kc"          title="6 · Knowledge Check"                     aria-label="Section 6: Knowledge Check">6</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ── Main Content ── -->
+<main id="main-content">
+
+  <!-- Module Header -->
+  <header class="module-header">
+    <div class="badge">Week 8 · Module 8.5 · Final Module</div>
+    <h1>Generating Functions and Algorithm Analysis</h1>
+    <p>CSC 240 – Discrete Structures &nbsp;|&nbsp; Spring 2026 &nbsp;|&nbsp; Mendocino College</p>
+    <p>Estimated time: <strong>2.0 hours</strong> &nbsp;|&nbsp; CSLO 2: Apply combinatorics and set theory to counting problems.</p>
+    <div class="obj-pills">
+      <span class="obj-pill">Objective 6 – Generating functions as formal power series</span>
+      <span class="obj-pill">Objective 7 – Counting techniques in algorithm analysis</span>
+      <span class="obj-pill">Week 8 Wrap-Up &amp; Midterm Prep</span>
+    </div>
+  </header>
+
+  <!-- Opening Narrative -->
+  <section aria-label="Module introduction">
+    <p>
+      You have now completed four modules of Week 8. You can state and apply the Binomial
+      Theorem, prove key binomial coefficient identities, compute multinomial coefficients,
+      and use the stars and bars method for distribution counting. This final module does
+      two things: it introduces <strong>generating functions</strong> — a powerful algebraic
+      way to encode entire counting sequences in a single expression — and then puts all of
+      Week 8's tools to work in <strong>algorithm analysis</strong>, showing why exponential
+      growth is unavoidable for certain computational tasks.
+    </p>
+    <p>
+      This module also closes the Week 8 content arc and prepares you for the Midterm Exam
+      (Week 9) and for Week 9's Discrete Probability unit, where the counting you have
+      practiced this week becomes the numerator in probability calculations.
+    </p>
+    <div class="callout blue">
+      <div class="callout-title">📌 Scope Note — Generating Functions</div>
+      This module is a <strong>first exposure only</strong>. You will learn what a generating
+      function is, how to read its coefficients, and how the Binomial Theorem fits into this
+      framework. The full toolkit — multiplying, dividing, and shifting generating functions
+      to solve recurrence relations — is covered in <strong>Week 11 (Recurrence Relations)</strong>.
+      Your goal here is recognition and coefficient-reading, not manipulation.
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ══════════════════════════════════════════════════════════
+       SECTION 1 — WHAT IS A GENERATING FUNCTION?
+       ══════════════════════════════════════════════════════════ -->
+  <section id="sec-gf-intro" aria-labelledby="h2-gf-intro">
+    <h2 class="section-title" id="h2-gf-intro">1 · What Is a Generating Function?</h2>
+
+    <h3 class="subsection">Motivation: One Expression, Infinitely Many Answers</h3>
+    <p>
+      Suppose you are asked a whole family of related counting questions: "How many
+      $$k$$-element subsets does an $$n$$-element set have?" for every possible value of
+      $$k$$. You already know the answer for each individual $$k$$: it is $$\binom{n}{k}$$.
+      But what if you could package <em>all</em> of those answers — for every $$k$$ at
+      once — into a single algebraic expression?
+    </p>
+    <p>
+      That is exactly what a <strong>generating function</strong> does. Think of it as a
+      numbered filing cabinet: drawer 0 holds the answer for size 0, drawer 1 holds the
+      answer for size 1, drawer 2 for size 2, and so on. The generating function is the
+      label on the entire cabinet, and you retrieve an individual answer by looking at the
+      coefficient of a particular power of $$x$$.
+    </p>
+
+    <h3 class="subsection">Formal Definition</h3>
+    <div class="callout purple">
+      <div class="callout-title">Definition — Ordinary Generating Function</div>
+      <p>
+        Let $$\{a_0, a_1, a_2, \ldots\}$$ be a sequence of numbers (often counting answers).
+        The <strong>ordinary generating function</strong> of this sequence is the formal
+        power series:
+      </p>
+      $$G(x) = \sum_{n=0}^{\infty} a_n \, x^n = a_0 + a_1 x + a_2 x^2 + a_3 x^3 + \cdots$$
+      <p style="margin-bottom:0;">
+        The variable $$x$$ is a <em>formal placeholder</em> — we are not substituting a
+        number into it. Its only role is to keep track of which coefficient belongs to which
+        position in the sequence.
+      </p>
+    </div>
+
+    <h3 class="subsection">How to Read a Generating Function</h3>
+    <div class="callout green">
+      <div class="callout-title">✅ The Reading Rule</div>
+      <p style="margin-bottom:0;">
+        The answer to the counting question for size $$n$$ is the
+        <strong>coefficient of $$x^n$$</strong> in $$G(x)$$. We write this as
+        $$[x^n]\,G(x) = a_n$$.
+      </p>
+    </div>
+    <p>
+      For example, if $$G(x) = 3 + 7x + 2x^2 + 5x^3 + \cdots$$, then:
+    </p>
+    <ul>
+      <li>$$[x^0]\,G(x) = 3$$ — the answer for size 0 is 3</li>
+      <li>$$[x^1]\,G(x) = 7$$ — the answer for size 1 is 7</li>
+      <li>$$[x^2]\,G(x) = 2$$ — the answer for size 2 is 2</li>
+      <li>$$[x^3]\,G(x) = 5$$ — the answer for size 3 is 5</li>
+    </ul>
+
+    <!-- Visual filing-cabinet diagram -->
+    <h3 class="subsection">The "Filing Cabinet" Picture</h3>
+    <p>The diagram below shows how a generating function stores a sequence of counts.</p>
+    <div class="gf-diagram" role="img" aria-label="Generating function as a filing cabinet: each drawer labeled x^n holds coefficient a_n">
+      <div class="gf-label">G(x) = a₀ + a₁x + a₂x² + a₃x³ + ···</div>
+      <div class="gf-row">
+        <div class="gf-cell highlight">
+          $$a_0$$
+          <span class="sub">coeff of $$x^0$$</span>
+        </div>
+        <span class="gf-arrow" aria-hidden="true">+</span>
+        <div class="gf-cell highlight">
+          $$a_1 x$$
+          <span class="sub">coeff of $$x^1$$</span>
+        </div>
+        <span class="gf-arrow" aria-hidden="true">+</span>
+        <div class="gf-cell">
+          $$a_2 x^2$$
+          <span class="sub">coeff of $$x^2$$</span>
+        </div>
+        <span class="gf-arrow" aria-hidden="true">+</span>
+        <div class="gf-cell">
+          $$a_3 x^3$$
+          <span class="sub">coeff of $$x^3$$</span>
+        </div>
+        <span class="gf-arrow" aria-hidden="true">+</span>
+        <div class="gf-cell">
+          $$\cdots$$
+          <span class="sub">&nbsp;</span>
+        </div>
+      </div>
+      <div style="font-family:'Segoe UI',Arial,sans-serif;font-size:.8rem;color:#555;margin-top:.5rem;">
+        To find the count for size <em>n</em>: locate the $$x^n$$ term and read off its coefficient.
+      </div>
+    </div>
+
+    <div class="callout yellow">
+      <div class="callout-title">⚠️ Important: x Is Not a Number</div>
+      Unlike the $$x$$ in a polynomial equation that you might solve for, the $$x$$ in a
+      generating function is a <strong>formal variable</strong> — a bookkeeping device.
+      We never "plug in" a value for $$x$$ (at least not in this first-exposure module).
+      The power of $$x$$ simply tells us <em>which position</em> in the sequence we are
+      looking at.
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ══════════════════════════════════════════════════════════
+       SECTION 2 — TWO FUNDAMENTAL EXAMPLES
+       ══════════════════════════════════════════════════════════ -->
+  <section id="sec-gf-examples" aria-labelledby="h2-gf-examples">
+    <h2 class="section-title" id="h2-gf-examples">2 · Two Fundamental Examples</h2>
+    <p>
+      Two generating functions appear throughout discrete mathematics and computer science
+      so frequently that you should recognize them on sight. Both are direct consequences
+      of ideas you have already studied this week.
+    </p>
+
+    <!-- Example 1: (1+x)^n -->
+    <h3 class="subsection">Example 1 — $$G(x) = (1+x)^n$$: Encoding Binomial Coefficients</h3>
+
+    <div class="expand-group">
+      <button class="expand-btn" aria-expanded="true" aria-controls="ex1-gf-body"
+              onclick="toggleExpand(this)">
+        Full Worked Explanation: $$G(x) = (1+x)^n$$
+        <span class="chevron" aria-hidden="true">▼</span>
+      </button>
+      <div class="expand-content open" id="ex1-gf-body" role="region">
+        <p>
+          By the Binomial Theorem (Module 8.1), we can expand $$(1+x)^n$$ as:
+        </p>
+        $$(1+x)^n = \sum_{k=0}^{n} \binom{n}{k} x^k = \binom{n}{0} + \binom{n}{1}x + \binom{n}{2}x^2 + \cdots + \binom{n}{n}x^n$$
+        <p>
+          Comparing this with the definition $$G(x) = \sum_{k=0}^{\infty} a_k x^k$$, we
+          can read off the sequence that $$G(x) = (1+x)^n$$ encodes:
+        </p>
+        <table>
+          <thead>
+            <tr><th>Position $$k$$</th><th>Term in $$(1+x)^n$$</th><th>Coefficient $$a_k$$</th><th>Counting Meaning</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>$$k=0$$</td><td>$$\binom{n}{0}$$</td><td>$$1$$</td><td>Number of 0-element subsets of an $$n$$-set</td></tr>
+            <tr><td>$$k=1$$</td><td>$$\binom{n}{1}x$$</td><td>$$n$$</td><td>Number of 1-element subsets</td></tr>
+            <tr><td>$$k=2$$</td><td>$$\binom{n}{2}x^2$$</td><td>$$\frac{n(n-1)}{2}$$</td><td>Number of 2-element subsets</td></tr>
+            <tr><td>$$\vdots$$</td><td>$$\vdots$$</td><td>$$\vdots$$</td><td>$$\vdots$$</td></tr>
+            <tr><td>$$k=n$$</td><td>$$\binom{n}{n}x^n$$</td><td>$$1$$</td><td>Number of $$n$$-element subsets</td></tr>
+          </tbody>
+        </table>
+        <div class="callout green">
+          <div class="callout-title">✅ Key Reading Rule for This Example</div>
+          <p style="margin-bottom:0;">
+            The coefficient of $$x^k$$ in $$(1+x)^n$$ is $$\binom{n}{k}$$ — the number
+            of $$k$$-element subsets of an $$n$$-element set.
+          </p>
+        </div>
+        <p><strong>Concrete example with $$n = 5$$:</strong></p>
+        $$(1+x)^5 = 1 + 5x + 10x^2 + 10x^3 + 5x^4 + x^5$$
+        <p>
+          Reading the coefficients: there is 1 subset of size 0 (the empty set), 5 subsets
+          of size 1, 10 of size 2, 10 of size 3, 5 of size 4, and 1 of size 5. These are
+          exactly the entries of row 5 in Pascal's triangle.
+        </p>
+        <p>
+          Notice also: the coefficients sum to $$1+5+10+10+5+1 = 32 = 2^5$$, confirming
+          that a 5-element set has $$2^5$$ total subsets — the row-sum identity from Module 8.1.
+        </p>
+      </div>
+    </div>
+
+    <!-- Example 2: Geometric Series -->
+    <h3 class="subsection">Example 2 — $$G(x) = \dfrac{1}{1-x}$$: Encoding the All-Ones Sequence</h3>
+
+    <div class="expand-group">
+      <button class="expand-btn" aria-expanded="true" aria-controls="ex2-gf-body"
+              onclick="toggleExpand(this)">
+        Full Worked Explanation: $$G(x) = \dfrac{1}{1-x}$$
+        <span class="chevron" aria-hidden="true">▼</span>
+      </button>
+      <div class="expand-content open" id="ex2-gf-body" role="region">
+        <p>
+          Recall the geometric series formula: for $$|r| < 1$$,
+          $$\sum_{n=0}^{\infty} r^n = \frac{1}{1-r}$$. In the generating-function
+          setting we treat this as a <em>formal identity</em> — a relationship between
+          power series that holds regardless of convergence concerns:
+        </p>
+        $$\frac{1}{1-x} = \sum_{n=0}^{\infty} x^n = 1 + x + x^2 + x^3 + x^4 + \cdots$$
+        <p>
+          The coefficient of every $$x^n$$ is <strong>1</strong>. So the sequence encoded
+          by $$G(x) = \frac{1}{1-x}$$ is $$\{1, 1, 1, 1, \ldots\}$$.
+        </p>
+        <div class="callout blue">
+          <div class="callout-title">💡 Counting Interpretation</div>
+          <p style="margin-bottom:0;">
+            "The number of ways to choose exactly $$n$$ identical items from an unlimited
+            supply is always 1." There is only one way to pick 0 items, one way to pick 1,
+            one way to pick 2, and so on — because the items are indistinguishable. The
+            generating function $$\frac{1}{1-x}$$ packages all these trivial answers
+            into one compact expression.
+          </p>
+        </div>
+        <p><strong>Reading coefficients:</strong></p>
+        <ul>
+          <li>$$[x^0]\,\frac{1}{1-x} = 1$$</li>
+          <li>$$[x^5]\,\frac{1}{1-x} = 1$$</li>
+          <li>$$[x^{100}]\,\frac{1}{1-x} = 1$$</li>
+        </ul>
+        <p>
+          The geometric series generating function will become much more powerful in
+          Week 11, where shifting and multiplying such series lets us solve recurrence
+          relations. For now, simply recognize it and know how to read its coefficients.
+        </p>
+      </div>
+    </div>
+
+    <!-- Side-by-side comparison -->
+    <h3 class="subsection">Side-by-Side Comparison</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Generating Function</th>
+          <th>Sequence Encoded</th>
+          <th>Coefficient of $$x^k$$</th>
+          <th>Counting Meaning</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>$$(1+x)^n$$</td>
+          <td>$$\binom{n}{0}, \binom{n}{1}, \ldots, \binom{n}{n}, 0, 0, \ldots$$</td>
+          <td>$$\binom{n}{k}$$</td>
+          <td># of $$k$$-subsets of an $$n$$-set</td>
+        </tr>
+        <tr>
+          <td>$$\dfrac{1}{1-x}$$</td>
+          <td>$$1, 1, 1, 1, \ldots$$</td>
+          <td>$$1$$ for all $$k \geq 0$$</td>
+          <td># of ways to choose $$k$$ identical items from unlimited supply</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Coefficient extraction practice -->
+    <h3 class="subsection">Coefficient Extraction Practice</h3>
+    <p>
+      The following three examples are worked in full. Read each one carefully — extracting
+      coefficients is the core skill for this module.
+    </p>
+
+    <div class="expand-group">
+      <button class="expand-btn" aria-expanded="false" aria-controls="coeff1-body"
+              onclick="toggleExpand(this)">
+        Practice 1 — What is the coefficient of $$x^3$$ in $$(1+x)^7$$?
+        <span class="chevron" aria-hidden="true">▼</span>
+      </button>
+      <div class="expand-content" id="coeff1-body" role="region">
+        <ol class="step-list">
+          <li><span class="step-num">1</span>
+            <span>Identify: $$G(x) = (1+x)^7$$, so $$n = 7$$. We want $$[x^3]\,G(x)$$.</span></li>
+          <li><span class="step-num">2</span>
+            <span>By the Binomial Theorem, the coefficient of $$x^k$$ in $$(1+x)^n$$ is $$\binom{n}{k}$$.</span></li>
+          <li><span class="step-num">3</span>
+            <span>So $$[x^3]\,(1+x)^7 = \binom{7}{3} = \dfrac{7!}{3!\,4!} = \dfrac{7 \cdot 6 \cdot 5}{3 \cdot 2 \cdot 1} = 35$$.</span></li>
+        </ol>
+        <div class="callout green">
+          <div class="callout-title">Answer</div>
+          The coefficient of $$x^3$$ in $$(1+x)^7$$ is $$\binom{7}{3} = \mathbf{35}$$.
+          This is the number of 3-element subsets of a 7-element set.
+        </div>
+      </div>
+    </div>
+
+    <div class="expand-group">
+      <button class="expand-btn" aria-expanded="false" aria-controls="coeff2-body"
+              onclick="toggleExpand(this)">
+        Practice 2 — What is the coefficient of $$x^4$$ in $$\dfrac{1}{1-x}$$?
+        <span class="chevron" aria-hidden="true">▼</span>
+      </button>
+      <div class="expand-content" id="coeff2-body" role="region">
+        <ol class="step-list">
+          <li><span class="step-num">1</span>
+            <span>Expand: $$\dfrac{1}{1-x} = 1 + x + x^2 + x^3 + x^4 + \cdots$$</span></li>
+          <li><span class="step-num">2</span>
+            <span>Every coefficient is 1, so $$[x^4]\,\dfrac{1}{1-x} = 1$$.</span></li>
+        </ol>
+        <div class="callout green">
+          <div class="callout-title">Answer</div>
+          The coefficient of $$x^4$$ in $$\dfrac{1}{1-x}$$ is $$\mathbf{1}$$.
+        </div>
+      </div>
+    </div>
+
+    <div class="expand-group">
+      <button class="expand-btn" aria-expanded="false" aria-controls="coeff3-body"
+              onclick="toggleExpand(this)">
+        Practice 3 — What generating function encodes the sequence $$1, 2, 4, 8, 16, \ldots$$?
+        <span class="chevron" aria-hidden="true">▼</span>
+      </button>
+      <div class="expand-content" id="coeff3-body" role="region">
+        <p>
+          The sequence is $$a_n = 2^n$$. We need $$G(x) = \sum_{n=0}^{\infty} 2^n x^n$$.
+        </p>
+        <ol class="step-list">
+          <li><span class="step-num">1</span>
+            <span>Rewrite: $$\sum_{n=0}^{\infty} 2^n x^n = \sum_{n=0}^{\infty} (2x)^n$$.</span></li>
+          <li><span class="step-num">2</span>
+            <span>This is a geometric series with ratio $$2x$$. By the geometric series formula: $$\sum_{n=0}^{\infty} (2x)^n = \dfrac{1}{1-2x}$$.</span></li>
+        </ol>
+        <div class="callout green">
+          <div class="callout-title">Answer</div>
+          $$G(x) = \frac{1}{1-2x}$$
+          The coefficient of $$x^n$$ in $$\dfrac{1}{1-2x}$$ is $$2^n$$.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ══════════════════════════════════════════════════════════
+       SECTION 3 — CONNECTION TO THE BINOMIAL THEOREM
+       ══════════════════════════════════════════════════════════ -->
+  <section id="sec-binomial-gf" aria-labelledby="h2-binomial-gf">
+    <h2 class="section-title" id="h2-binomial-gf">3 · Connection to the Binomial Theorem</h2>
+
+    <p>
+      Now that you have seen both the Binomial Theorem (Module 8.1) and the definition of
+      a generating function (Section 1), we can state precisely how they are related.
+    </p>
+
+    <div class="callout purple">
+      <div class="callout-title">The Binomial Theorem Is a Generating-Function Statement</div>
+      <p>
+        The Binomial Theorem says:
+      </p>
+      $$(1+x)^n = \sum_{k=0}^{n} \binom{n}{k} x^k$$
+      <p>
+        Viewed through the lens of generating functions, this equation says:
+        <strong>$$(1+x)^n$$ is the generating function for the sequence of binomial
+        coefficients $$\binom{n}{0}, \binom{n}{1}, \ldots, \binom{n}{n}$$</strong>.
+      </p>
+      <p style="margin-bottom:0;">
+        In other words, the Binomial Theorem is not just an algebraic expansion rule — it
+        is a <em>generating-function identity</em> that packages the entire row $$n$$ of
+        Pascal's triangle into a single expression.
+      </p>
+    </div>
+
+    <h3 class="subsection">Reading the Binomial Theorem as a Generating Function</h3>
+    <p>
+      The table below translates each part of the Binomial Theorem into generating-function
+      language. Notice that the two perspectives say exactly the same thing — just with
+      different vocabulary.
+    </p>
+    <table>
+      <thead>
+        <tr><th>Binomial Theorem Language</th><th>Generating Function Language</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>"Expand $$(1+x)^n$$"</td>
+          <td>"Find the generating function for the row-$$n$$ binomial coefficients"</td>
+        </tr>
+        <tr>
+          <td>"The coefficient of $$x^k$$ in the expansion is $$\binom{n}{k}$$"</td>
+          <td>"$$[x^k]\,(1+x)^n = \binom{n}{k}$$"</td>
+        </tr>
+        <tr>
+          <td>"Setting $$x=1$$ gives $$\sum_{k=0}^n \binom{n}{k} = 2^n$$"</td>
+          <td>"The sum of all coefficients of $$(1+x)^n$$ equals $$2^n$$"</td>
+        </tr>
+        <tr>
+          <td>"The $$k$$-th term is $$\binom{n}{k}x^k$$"</td>
+          <td>"The $$x^k$$ term of the generating function has coefficient $$\binom{n}{k}$$"</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 class="subsection">The Subset-Counting Identity Revisited</h3>
+    <p>
+      The row-sum identity $$\sum_{k=0}^{n} \binom{n}{k} = 2^n$$ (Corollary 1 from
+      Module 8.1) now has a natural generating-function interpretation:
+    </p>
+    $$\text{Sum of all coefficients of } (1+x)^n = (1+1)^n = 2^n$$
+    <p>
+      The total number of subsets of an $$n$$-element set is the sum of all coefficients
+      of the generating function $$(1+x)^n$$, obtained by evaluating at $$x = 1$$. This
+      is a preview of how generating functions connect algebra to combinatorics.
+    </p>
+
+    <div class="callout orange">
+      <div class="callout-title">🔭 Looking Ahead: Week 11</div>
+      <p>
+        In <strong>Week 11 (Recurrence Relations)</strong>, you will learn to
+        <em>manipulate</em> generating functions — multiplying them, shifting them, and
+        using partial fractions — to solve recurrences like the Fibonacci sequence. For
+        example, you will show that the generating function $$G(x) = \frac{x}{1-x-x^2}$$
+        encodes the Fibonacci numbers, and use it to derive a closed-form formula.
+      </p>
+      <p style="margin-bottom:0;">
+        <strong>For now</strong>, your only goals are: (1) recognize what a generating
+        function is, (2) identify the sequence it encodes, and (3) extract a specific
+        coefficient. Full manipulation techniques wait until Week 11.
+      </p>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ══════════════════════════════════════════════════════════
+       SECTION 4 — ALGORITHM ANALYSIS
+       ══════════════════════════════════════════════════════════ -->
+  <section id="sec-algo" aria-labelledby="h2-algo">
+    <h2 class="section-title" id="h2-algo">4 · Algorithm Analysis Applications</h2>
+    <p>
+      The counting tools from Weeks 7 and 8 are not just abstract mathematics — they
+      directly determine how long algorithms must run. This section connects the Binomial
+      Theorem, stars and bars, and multinomial coefficients to concrete questions about
+      computational complexity.
+    </p>
+
+    <!-- 4A: Bit strings and 2^n -->
+    <h3 class="subsection">4A — Counting Bit Strings: Why $$2^n$$ Is Unavoidable</h3>
+    <p>
+      A <strong>bit string of length $$n$$</strong> is a sequence of $$n$$ symbols, each
+      either 0 or 1. By the product rule, there are exactly $$2^n$$ such strings.
+    </p>
+    <p>
+      The Binomial Theorem gives us a second way to count the same thing. A bit string of
+      length $$n$$ with exactly $$k$$ ones corresponds to choosing which $$k$$ of the
+      $$n$$ positions hold a 1 — that is, $$\binom{n}{k}$$ strings. Summing over all
+      possible values of $$k$$:
+    </p>
+    $$2^n = \sum_{k=0}^{n} \binom{n}{k}$$
+    <p>
+      This is the row-sum identity, now interpreted as: <em>the total number of bit strings
+      of length $$n$$ equals the sum of the number of strings of each possible Hamming
+      weight $$k$$</em>.
+    </p>
+    <div class="callout blue">
+      <div class="callout-title">💡 Algorithm Implication: Exponential Lower Bound</div>
+      <p>
+        Suppose an algorithm must examine every subset of an $$n$$-element set — for
+        example, a brute-force algorithm testing all possible subsets for some property.
+        Since there are $$2^n$$ subsets, the algorithm must perform at least $$2^n$$ steps.
+        We write this as a <strong>lower bound</strong>:
+      </p>
+      $$\text{Any subset-enumeration algorithm requires at least } \Omega(2^n) \text{ time.}$$
+      <p style="margin-bottom:0;">
+        This is why brute-force subset search is considered intractable for large $$n$$.
+        No matter how clever the implementation, the exponential count of subsets creates
+        a floor on the running time.
+      </p>
+    </div>
+
+    <!-- Growth table -->
+    <h3 class="subsection">Exponential Growth in Practice</h3>
+    <p>
+      The table below compares $$2^n$$ (total subsets / bit strings) with $$\binom{n}{10}$$
+      (subsets of exactly size 10) for selected values of $$n$$. Notice how $$2^n$$ grows
+      far faster than any fixed-size binomial coefficient.
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th>$$n$$</th>
+          <th>$$2^n$$ (total subsets)</th>
+          <th>$$\binom{n}{10}$$ (size-10 subsets)</th>
+          <th>Note</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>10</td><td>1,024</td><td>1</td><td>Only one size-10 subset when $$n=10$$</td></tr>
+        <tr><td>15</td><td>32,768</td><td>3,003</td><td></td></tr>
+        <tr><td>20</td><td>1,048,576</td><td>184,756</td><td></td></tr>
+        <tr><td>30</td><td class="big">1,073,741,824</td><td>30,045,015</td><td>Over 1 billion subsets</td></tr>
+        <tr><td>40</td><td class="big">1,099,511,627,776</td><td>847,660,528</td><td>Over 1 trillion subsets</td></tr>
+        <tr><td>64</td><td class="big">$$\approx 1.8 \times 10^{19}$$</td><td>$$\approx 1.5 \times 10^{13}$$</td><td>Exceeds 64-bit integer range</td></tr>
+      </tbody>
+    </table>
+    <p>
+      Even if a computer could check one billion subsets per second, checking all subsets
+      of a 64-element set would take roughly 585 years.
+    </p>
+
+    <!-- 4B: Stars and bars in computing -->
+    <h3 class="subsection">4B — Stars and Bars in Computing: Resource Allocation</h3>
+    <p>
+      The stars and bars method from Module 8.3 models many real computing scenarios
+      directly. Here are two worked examples.
+    </p>
+
+    <div class="expand-group">
+      <button class="expand-btn" aria-expanded="false" aria-controls="sb-cpu-body"
+              onclick="toggleExpand(this)">
+        Worked Example: CPU Time-Slice Allocation
+        <span class="chevron" aria-hidden="true">▼</span>
+      </button>
+      <div class="expand-content" id="sb-cpu-body" role="region">
+        <p>
+          <strong>Scenario:</strong> An operating system scheduler has $$n = 12$$ identical
+          CPU time slices to distribute among $$k = 4$$ processes. A process may receive
+          zero slices (it will simply wait). How many distinct allocations are possible?
+        </p>
+        <ol class="step-list">
+          <li><span class="step-num">1</span>
+            <span><strong>Identify stars and bars:</strong> the 12 time slices are the
+            stars; the 4 processes are the bins.</span></li>
+          <li><span class="step-num">2</span>
+            <span><strong>Constraint:</strong> bins may be empty (a process can receive 0
+            slices), so use the unrestricted formula.</span></li>
+          <li><span class="step-num">3</span>
+            <span><strong>Apply:</strong> Number of ways $$= \binom{n + k - 1}{k - 1} = \binom{12 + 4 - 1}{4 - 1} = \binom{15}{3}$$.</span></li>
+          <li><span class="step-num">4</span>
+            <span><strong>Compute:</strong> $$\binom{15}{3} = \dfrac{15 \cdot 14 \cdot 13}{3 \cdot 2 \cdot 1} = 455$$.</span></li>
+        </ol>
+        <div class="callout green">
+          <div class="callout-title">Answer</div>
+          There are <strong>455</strong> distinct ways to allocate 12 identical CPU time
+          slices across 4 processes when empty allocation is permitted.
+        </div>
+      </div>
+    </div>
+
+    <div class="expand-group">
+      <button class="expand-btn" aria-expanded="false" aria-controls="sb-ram-body"
+              onclick="toggleExpand(this)">
+        Worked Example: Memory Segmentation
+        <span class="chevron" aria-hidden="true">▼</span>
+      </button>
+      <div class="expand-content" id="sb-ram-body" role="region">
+        <p>
+          <strong>Scenario:</strong> A system must partition $$n = 16$$ identical memory
+          blocks across $$k = 4$$ segments, and each segment must receive at least 1 block
+          (no empty segments allowed). How many ways can this be done?
+        </p>
+        <ol class="step-list">
+          <li><span class="step-num">1</span>
+            <span><strong>Stars and bars:</strong> 16 blocks (stars), 4 segments (bins),
+            each bin gets $$\geq 1$$.</span></li>
+          <li><span class="step-num">2</span>
+            <span><strong>Use the restricted formula:</strong> $$\binom{n-1}{k-1} = \binom{16-1}{4-1} = \binom{15}{3}$$.</span></li>
+          <li><span class="step-num">3</span>
+            <span><strong>Compute:</strong> $$\binom{15}{3} = 455$$.</span></li>
+        </ol>
+        <div class="callout green">
+          <div class="callout-title">Answer</div>
+          There are <strong>455</strong> distinct ways to partition 16 identical memory
+          blocks into 4 non-empty segments.
+        </div>
+        <div class="callout yellow">
+          <div class="callout-title">🔍 Interesting Coincidence?</div>
+          Both examples gave 455. This is not always the case — it happened here because
+          the unrestricted problem with $$(n, k) = (12, 4)$$ and the restricted problem
+          with $$(n, k) = (16, 4)$$ both reduce to $$\binom{15}{3}$$. In general the two
+          formulas give different answers.
+        </div>
+      </div>
+    </div>
+
+    <!-- 4C: Multinomial coefficients in hashing -->
+    <h3 class="subsection">4C — Multinomial Coefficients in Hashing</h3>
+    <p>
+      A hash table with $$k$$ buckets distributes $$n$$ keys across those buckets. If we
+      want to count the number of ways exactly $$k_1$$ keys land in bucket 1, $$k_2$$ in
+      bucket 2, …, $$k_r$$ in bucket $$r$$ (where $$k_1 + k_2 + \cdots + k_r = n$$ and
+      the keys are <em>distinguishable</em>), the answer is the multinomial coefficient:
+    </p>
+    $$\binom{n}{k_1,\, k_2,\, \ldots,\, k_r} = \frac{n!}{k_1!\, k_2!\, \cdots\, k_r!}$$
+
+    <div class="expand-group">
+      <button class="expand-btn" aria-expanded="false" aria-controls="hash-body"
+              onclick="toggleExpand(this)">
+        Worked Example: Hash Bucket Distribution
+        <span class="chevron" aria-hidden="true">▼</span>
+      </button>
+      <div class="expand-content" id="hash-body" role="region">
+        <p>
+          <strong>Scenario:</strong> A hash table has $$r = 3$$ buckets. We insert
+          $$n = 9$$ distinct keys. How many ways can the keys be distributed so that
+          bucket 1 gets 4 keys, bucket 2 gets 3 keys, and bucket 3 gets 2 keys?
+        </p>
+        <ol class="step-list">
+          <li><span class="step-num">1</span>
+            <span><strong>Set up:</strong> $$n = 9$$, $$k_1 = 4$$, $$k_2 = 3$$, $$k_3 = 2$$.
+            Verify: $$4 + 3 + 2 = 9$$. ✓</span></li>
+          <li><span class="step-num">2</span>
+            <span><strong>Apply the multinomial coefficient:</strong>
+            $$\dbinom{9}{4,\,3,\,2} = \dfrac{9!}{4!\,3!\,2!}$$.</span></li>
+          <li><span class="step-num">3</span>
+            <span><strong>Compute:</strong>
+            $$\dfrac{362880}{24 \cdot 6 \cdot 2} = \dfrac{362880}{288} = 1260$$.</span></li>
+        </ol>
+        <div class="callout green">
+          <div class="callout-title">Answer</div>
+          There are <strong>1,260</strong> distinct ways to distribute 9 distinct keys
+          into 3 buckets with the specified load distribution.
+        </div>
+        <p style="margin-top:.7rem;">
+          <strong>Why this matters for CS:</strong> Hash table performance depends on how
+          evenly keys are distributed. Multinomial coefficients let us count how many
+          input arrangements produce a given load profile — a foundation for analyzing
+          hash function quality probabilistically (a topic you will revisit in Week 9).
+        </p>
+      </div>
+    </div>
+
+    <!-- 4D: Preview of Week 9 probability connection -->
+    <h3 class="subsection">4D — Preview: The Probability Connection (Week 9)</h3>
+    <div class="callout orange">
+      <div class="callout-title">🔭 Bridge to Week 9 — Discrete Probability</div>
+      <p>
+        In Week 9 you will study the <strong>Binomial Distribution</strong>: the probability
+        of exactly $$k$$ successes in $$n$$ independent binary trials (think coin flips,
+        packet error events, or random bit generation). The formula is:
+      </p>
+      $$P(X = k) = \binom{n}{k} p^k (1-p)^{n-k}$$
+      <p>
+        Notice that $$\binom{n}{k}$$ — the binomial coefficient you have been computing
+        all week — is the core of this formula. It counts the number of ways to arrange
+        exactly $$k$$ successes among $$n$$ trials. <strong>The counting you practiced
+        this week becomes the numerator in Week 9 probability calculations.</strong>
+      </p>
+      <p style="margin-bottom:0;">
+        The generating function $$(1+x)^n$$ also connects directly: if you replace $$x$$
+        with $$\frac{p}{1-p}$$ (formally), the coefficients of the resulting expression
+        encode the binomial probabilities. This is a glimpse of the power of generating
+        functions that you will develop further in Week 11.
+      </p>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ══════════════════════════════════════════════════════════
+       SECTION 5 — WEEK 8 WRAP-UP
+       ══════════════════════════════════════════════════════════ -->
+  <section id="sec-wrapup" aria-labelledby="h2-wrapup">
+    <h2 class="section-title" id="h2-wrapup">5 · Week 8 Wrap-Up</h2>
+    <p>
+      You have completed all five modules of Week 8. Below is a consolidated summary of
+      what each module covered, followed by midterm preparation guidance.
+    </p>
+
+    <h3 class="subsection">Five-Module Summary</h3>
+    <div class="week-summary-grid">
+      <div class="week-card">
+        <div class="wc-label">Module 8.1</div>
+        <div class="wc-title">Bridge Review &amp; Binomial Theorem</div>
+        <div class="wc-body">
+          Activated Week 7 knowledge. Stated and applied the Binomial Theorem.
+          Identified specific terms. Proved the row-sum and alternating-sum corollaries.
+        </div>
+      </div>
+      <div class="week-card">
+        <div class="wc-label">Module 8.2</div>
+        <div class="wc-title">Binomial Coefficient Identities</div>
+        <div class="wc-body">
+          Symmetry, Pascal's, Vandermonde's, and Hockey Stick identities — each with
+          combinatorial proof. Double-counting technique. Computing $$\binom{n}{k}$$
+          in code without overflow.
+        </div>
+      </div>
+      <div class="week-card">
+        <div class="wc-label">Module 8.3</div>
+        <div class="wc-title">Multinomial Coefficients &amp; Stars and Bars</div>
+        <div class="wc-body">
+          Multinomial Theorem and coefficient formula. Anagram-type problems.
+          Stars and bars with and without restrictions. Resource allocation applications.
+        </div>
+      </div>
+      <div class="week-card">
+        <div class="wc-label">Module 8.4</div>
+        <div class="wc-title">Introduction to Generating Functions</div>
+        <div class="wc-body">
+          Formal definition of the ordinary generating function. The two fundamental
+          examples. Coefficient extraction. Scope note: full manipulation in Week 11.
+        </div>
+      </div>
+      <div class="week-card">
+        <div class="wc-label">Module 8.5</div>
+        <div class="wc-title">Generating Functions &amp; Algorithm Analysis</div>
+        <div class="wc-body">
+          Generating functions as encoding tools. $$\Omega(2^n)$$ lower bounds.
+          Stars and bars in OS scheduling and memory. Multinomials in hashing.
+          Week 9 probability preview.
+        </div>
+      </div>
+    </div>
+
+    <!-- Midterm Preparation -->
+    <h3 class="subsection">Midterm Exam Preparation</h3>
+    <div class="callout yellow">
+      <div class="callout-title">📋 Midterm Overview</div>
+      <p>
+        The <strong>Midterm Exam is administered during Week 9</strong> and covers all
+        material from Weeks 1–8 (120 minutes; one 8.5″ × 11″ handwritten note sheet,
+        both sides). The counting theory section accounts for approximately
+        <strong>35 of 150 points</strong>.
+      </p>
+      <p><strong>Counting topics on the Midterm (Weeks 7–8):</strong></p>
+      <ul style="margin-bottom:.5rem;">
+        <li>Sum and product rules, inclusion-exclusion (Week 7)</li>
+        <li>Permutations and combinations (Week 7)</li>
+        <li>Binomial Theorem, binomial coefficients, and identities (Week 8)</li>
+        <li>Stars and bars distributions (Week 8)</li>
+        <li>Pascal's identity (Weeks 7–8)</li>
+      </ul>
+      <p style="margin-bottom:0;">
+        <strong>Study tip:</strong> Prepare your note sheet <em>now</em>, during Week 8,
+        while the material is fresh. Reorganizing your notes into a compact reference card
+        is one of the most effective review strategies.
+      </p>
+    </div>
+
+    <h3 class="subsection">Self-Assessment Checklist</h3>
+    <p>
+      Check each item as you confirm you can do it. If any item is unclear, revisit the
+      corresponding module before the Midterm.
+    </p>
+    <ul class="checklist" aria-label="Midterm self-assessment checklist">
+      <li><label><input type="checkbox" aria-label="Checklist item 1"> I can apply the Binomial Theorem to expand $$(a+b)^n$$ and find specific terms.</label></li>
+      <li><label><input type="checkbox" aria-label="Checklist item 2"> I can prove Pascal's identity using a combinatorial argument.</label></li>
+      <li><label><input type="checkbox" aria-label="Checklist item 3"> I can state and apply Vandermonde's identity and the Hockey Stick identity.</label></li>
+      <li><label><input type="checkbox" aria-label="Checklist item 4"> I can compute multinomial coefficients and apply them to anagram-type problems.</label></li>
+      <li><label><input type="checkbox" aria-label="Checklist item 5"> I can apply stars and bars with and without minimum-per-bin restrictions.</label></li>
+      <li><label><input type="checkbox" aria-label="Checklist item 6"> I know what a generating function is and can read its coefficients.</label></li>
+      <li><label><input type="checkbox" aria-label="Checklist item 7"> I can identify the sequence encoded by $$(1+x)^n$$ and by $$\dfrac{1}{1-x}$$.</label></li>
+      <li><label><input type="checkbox" aria-label="Checklist item 8"> I can explain why brute-force subset enumeration is $$\Omega(2^n)$$.</label></li>
+      <li><label><input type="checkbox" aria-label="Checklist item 9"> I can apply stars and bars to OS resource allocation problems.</label></li>
+      <li><label><input type="checkbox" aria-label="Checklist item 10"> I can compute multinomial coefficients for hash bucket distribution problems.</label></li>
+    </ul>
+
+    <!-- Assignment reminders -->
+    <h3 class="subsection">Graded Assignment Reminders</h3>
+    <div class="callout blue">
+      <div class="callout-title">📌 PE-07: Binomial Coefficient Calculator — Due End of Week 8</div>
+      <p>
+        Submit as <code>LastName_FirstName_PE07_Week8.zip</code> via Canvas by 11:59 PM.
+        Points: 10 | Grading: Correctness 50% · Code Quality 25% · Documentation 15% · Testing 10%
+      </p>
+      <table class="assign-table">
+        <thead><tr><th>Part</th><th>Task</th><th>Key Module</th></tr></thead>
+        <tbody>
+          <tr><td><span class="part-badge">1</span></td><td>Compute $$\binom{n}{k}$$ via factorial formula and via Pascal's triangle</td><td>8.1, 8.2</td></tr>
+          <tr><td><span class="part-badge">2</span></td><td>Expand $$(a+b)^n$$ and display all terms with coefficients</td><td>8.1</td></tr>
+          <tr><td><span class="part-badge">3</span></td><td>Return the $$(k+1)$$-th term of a binomial expansion</td><td>8.1</td></tr>
+          <tr><td><span class="part-badge">4</span></td><td>Verify one binomial identity for user-supplied inputs and print confirmation</td><td>8.2</td></tr>
+        </tbody>
+      </table>
+      <p style="margin-bottom:.3rem;"><strong>Common pitfalls:</strong></p>
+      <ul style="margin-bottom:0;">
+        <li>Integer overflow for large $$n$$ — use <code>long</code> or <code>BigInteger</code></li>
+        <li>Off-by-one error in term numbering (the first term has $$k=0$$, not $$k=1$$)</li>
+        <li>Edge cases: $$k=0$$ and $$k=n$$ must both return 1</li>
+      </ul>
+    </div>
+
+    <div class="callout green">
+      <div class="callout-title">📌 Discussion Week 8: The Birthday Paradox — Due End of Week 8</div>
+      <p>
+        Points: 3–4 | Minimum: 1 initial post + 2 meaningful peer responses.
+      </p>
+      <p>
+        <strong>Prompt:</strong> The birthday paradox states that in a group of just 23
+        people, there is a greater-than-50% chance that at least two people share a
+        birthday. Using the counting techniques from this unit — combinations, the
+        complement rule, and the product rule — explain how you would begin to analyze
+        this problem. What surprises you about the result? How do you think this will
+        connect to the probability topics we will cover in Week 9?
+      </p>
+      <p><strong>Scaffolding hints (ungraded):</strong></p>
+      <ul style="margin-bottom:0;">
+        <li><strong>Hint 1:</strong> Use the complement — what is the probability that <em>no</em> two people share a birthday?</li>
+        <li><strong>Hint 2:</strong> The product rule counts the number of ways to assign birthdays so all are distinct.</li>
+        <li><strong>Hint 3:</strong> The total number of ways to assign $$n$$ birthdays with no restriction is $$365^n$$ (product rule with 365 choices each time).</li>
+      </ul>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ══════════════════════════════════════════════════════════
+       SECTION 6 — KNOWLEDGE CHECK
+       ══════════════════════════════════════════════════════════ -->
+  <section id="sec-kc" aria-labelledby="h2-kc">
+    <div class="kc-section">
+      <h2 id="h2-kc">6 · Knowledge Check</h2>
+      <p class="kc-subtitle">
+        Ungraded · Immediate feedback · 5 questions spanning generating functions and algorithm analysis
+      </p>
+
+      <!-- Q1 -->
+      <div class="kc-card" id="kc1">
+        <div class="kc-q">
+          Q1. The ordinary generating function for a sequence $$\{a_n\}$$ is
+          $$G(x) = (1+x)^8$$. What is $$a_3$$ — the coefficient of $$x^3$$?
+        </div>
+        <ul class="kc-options" role="list">
+          <li><label><input type="radio" name="q1" value="a"> 28</label></li>
+          <li><label><input type="radio" name="q1" value="b"> 56</label></li>
+          <li><label><input type="radio" name="q1" value="c"> 70</label></li>
+          <li><label><input type="radio" name="q1" value="d"> 8</label></li>
+        </ul>
+        <button class="kc-btn" onclick="checkKC('q1','b','kc1-fb')">Check Answer</button>
+        <div class="kc-feedback" id="kc1-fb" role="alert" aria-live="polite"></div>
+      </div>
+
+      <!-- Q2 -->
+      <div class="kc-card" id="kc2">
+        <div class="kc-q">
+          Q2. What is the coefficient of $$x^{10}$$ in the generating function
+          $$G(x) = \dfrac{1}{1-x}$$?
+        </div>
+        <ul class="kc-options" role="list">
+          <li><label><input type="radio" name="q2" value="a"> 0</label></li>
+          <li><label><input type="radio" name="q2" value="b"> 10</label></li>
+          <li><label><input type="radio" name="q2" value="c"> 1</label></li>
+          <li><label><input type="radio" name="q2" value="d"> $$2^{10}$$</label></li>
+        </ul>
+        <button class="kc-btn" onclick="checkKC('q2','c','kc2-fb')">Check Answer</button>
+        <div class="kc-feedback" id="kc2-fb" role="alert" aria-live="polite"></div>
+      </div>
+
+      <!-- Q3 -->
+      <div class="kc-card" id="kc3">
+        <div class="kc-q">
+          Q3. A brute-force algorithm must test every subset of a 30-element set.
+          Using the Binomial Theorem result $$\sum_{k=0}^{n}\binom{n}{k} = 2^n$$,
+          which of the following best describes the algorithm's time complexity?
+        </div>
+        <ul class="kc-options" role="list">
+          <li><label><input type="radio" name="q3" value="a"> $$O(n^2)$$ — polynomial in $$n$$</label></li>
+          <li><label><input type="radio" name="q3" value="b"> $$\Omega(2^n)$$ — at least exponential in $$n$$</label></li>
+          <li><label><input type="radio" name="q3" value="c"> $$O(n \log n)$$ — linearithmic</label></li>
+          <li><label><input type="radio" name="q3" value="d"> $$\Theta(n!)$$ — factorial</label></li>
+        </ul>
+        <button class="kc-btn" onclick="checkKC('q3','b','kc3-fb')">Check Answer</button>
+        <div class="kc-feedback" id="kc3-fb" role="alert" aria-live="polite"></div>
+      </div>
+
+      <!-- Q4 -->
+      <div class="kc-card" id="kc4">
+        <div class="kc-q">
+          Q4. An OS must allocate $$n = 10$$ identical memory blocks across
+          $$k = 3$$ processes, where each process must receive at least 1 block.
+          Using stars and bars, how many allocations are possible?
+        </div>
+        <ul class="kc-options" role="list">
+          <li><label><input type="radio" name="q4" value="a"> $$\binom{12}{2} = 66$$</label></li>
+          <li><label><input type="radio" name="q4" value="b"> $$\binom{9}{2} = 36$$</label></li>
+          <li><label><input type="radio" name="q4" value="c"> $$\binom{10}{3} = 120$$</label></li>
+          <li><label><input type="radio" name="q4" value="d"> $$\binom{11}{2} = 55$$</label></li>
+        </ul>
+        <button class="kc-btn" onclick="checkKC('q4','b','kc4-fb')">Check Answer</button>
+        <div class="kc-feedback" id="kc4-fb" role="alert" aria-live="polite"></div>
+      </div>
+
+      <!-- Q5 -->
+      <div class="kc-card" id="kc5">
+        <div class="kc-q">
+          Q5. Which of the following correctly states the relationship between the
+          Binomial Theorem and generating functions?
+        </div>
+        <ul class="kc-options" role="list">
+          <li><label><input type="radio" name="q5" value="a">
+            The Binomial Theorem is unrelated to generating functions; they are separate topics.
+          </label></li>
+          <li><label><input type="radio" name="q5" value="b">
+            $$(1+x)^n$$ is the generating function for the sequence of binomial coefficients
+            $$\binom{n}{0}, \binom{n}{1}, \ldots, \binom{n}{n}$$, so the Binomial Theorem
+            is a generating-function identity.
+          </label></li>
+          <li><label><input type="radio" name="q5" value="c">
+            $$\dfrac{1}{1-x}$$ is the generating function for the binomial coefficients.
+          </label></li>
+          <li><label><input type="radio" name="q5" value="d">
+            Generating functions only apply to infinite sequences; the Binomial Theorem
+            produces finite sequences, so generating functions cannot be used.
+          </label></li>
+        </ul>
+        <button class="kc-btn" onclick="checkKC('q5','b','kc5-fb')">Check Answer</button>
+        <div class="kc-feedback" id="kc5-fb" role="alert" aria-live="polite"></div>
+      </div>
+
+    </div><!-- end kc-section -->
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- Module closing -->
+  <section aria-label="Module closing">
+    <div class="callout green">
+      <div class="callout-title">✅ You Have Completed Week 8!</div>
+      <p>
+        You have finished all five modules of Week 8 — the final content week before the
+        Midterm Exam. You now have a complete advanced counting toolkit: the Binomial
+        Theorem, four key binomial identities, multinomial coefficients, stars and bars,
+        an introduction to generating functions, and connections to algorithm analysis.
+      </p>
+      <p style="margin-bottom:0;">
+        <strong>Your immediate next steps:</strong>
+        (1) Complete and submit PE-07 (Binomial Coefficient Calculator) by end of Week 8.
+        (2) Post your Discussion Week 8 initial response and two peer replies.
+        (3) Begin or finalize your Midterm note sheet using the self-assessment checklist above.
+        (4) Proceed to Week 9 (Discrete Probability) — the counting you mastered this week
+        will immediately appear as the core of binomial probability calculations.
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <span>CSC 240 – Discrete Structures · Module 8.5 · Spring 2026 · Mendocino College</span>
+  <span>CSLO 2: Apply combinatorics and set theory to counting problems</span>
+</footer>
+
+<script>
+  /* ── Expandable Panels ──────────────────────────────────────── */
+  function toggleExpand(btn) {
+    const expanded = btn.getAttribute('aria-expanded') === 'true';
+    const contentId = btn.getAttribute('aria-controls');
+    const content = document.getElementById(contentId);
+    btn.setAttribute('aria-expanded', String(!expanded));
+    content.classList.toggle('open', !expanded);
+  }
+
+  /* ── Knowledge Check ────────────────────────────────────────── */
+  const kcData = {
+    q1: {
+      correct: 'b',
+      msgs: {
+        b: '✓ Correct! The coefficient of x³ in (1+x)⁸ is C(8,3) = 8!/(3!·5!) = (8·7·6)/(3·2·1) = 56. ' +
+           'This is the number of 3-element subsets of an 8-element set.',
+        _: '✗ Not quite. Use the reading rule: the coefficient of xᵏ in (1+x)ⁿ is C(n,k). ' +
+           'Here n=8 and k=3, so the answer is C(8,3) = 56.'
+      }
+    },
+    q2: {
+      correct: 'c',
+      msgs: {
+        c: '✓ Correct! The generating function 1/(1-x) = 1 + x + x² + x³ + ··· encodes the ' +
+           'all-ones sequence. Every coefficient is 1, so [x¹⁰] 1/(1-x) = 1.',
+        _: '✗ Not quite. Expand 1/(1-x) as the geometric series: 1 + x + x² + ··· + x¹⁰ + ··· ' +
+           'Every coefficient equals 1, so the coefficient of x¹⁰ is 1.'
+      }
+    },
+    q3: {
+      correct: 'b',
+      msgs: {
+        b: '✓ Correct! Since there are 2ⁿ subsets of an n-element set, any algorithm that ' +
+           'must examine all of them requires at least 2ⁿ steps. This is written Ω(2ⁿ) — ' +
+           'at least exponential. For n=30 this is over one billion operations.',
+        _: '✗ Not quite. The Binomial Theorem tells us there are 2ⁿ subsets total. Any ' +
+           'algorithm forced to examine all subsets must take at least 2ⁿ steps, giving ' +
+           'a lower bound of Ω(2ⁿ). This is exponential, not polynomial.'
+      }
+    },
+    q4: {
+      correct: 'b',
+      msgs: {
+        b: '✓ Correct! With each bin getting at least 1, use the restricted stars-and-bars ' +
+           'formula: C(n-1, k-1) = C(10-1, 3-1) = C(9,2) = 9!/(2!·7!) = 36.',
+        _: '✗ Not quite. Since each process must get at least 1 block, use the restricted ' +
+           'formula: C(n-1, k-1) with n=10 blocks and k=3 processes. ' +
+           'C(9,2) = (9·8)/(2·1) = 36.'
+      }
+    },
+    q5: {
+      correct: 'b',
+      msgs: {
+        b: '✓ Correct! The Binomial Theorem states (1+x)ⁿ = Σ C(n,k)xᵏ. This is exactly ' +
+           'the definition of a generating function with aₖ = C(n,k). So the Binomial ' +
+           'Theorem IS a generating-function statement, packaging all of row n of Pascal\'s ' +
+           'triangle into one expression.',
+        _: '✗ Not quite. The Binomial Theorem (1+x)ⁿ = Σ C(n,k)xᵏ is precisely the ' +
+           'statement that (1+x)ⁿ is the generating function for the binomial coefficients ' +
+           'C(n,0), C(n,1), ..., C(n,n). Option B is correct.'
+      }
+    }
+  };
+
+  function checkKC(qName, correctVal, fbId) {
+    const selected = document.querySelector('input[name="' + qName + '"]:checked');
+    const fb = document.getElementById(fbId);
+    if (!selected) {
+      fb.className = 'kc-feedback incorrect show';
+      fb.textContent = 'Please select an answer before checking.';
+      return;
+    }
+    const data = kcData[qName];
+    const isCorrect = selected.value === data.correct;
+    const msg = data.msgs[selected.value] || data.msgs['_'];
+    fb.className = 'kc-feedback ' + (isCorrect ? 'correct' : 'incorrect') + ' show';
+    fb.textContent = msg;
+  }
+</script>
+</body>
+</html>

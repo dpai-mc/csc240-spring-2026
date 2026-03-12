@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PE-07: Binomial Coefficient Calculator | CSC 240 Week 8</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[
+    {left:'\$$',right:'\$$',display:true},
+    {left:'\$$',right:'\$$',display:false}
+  ]});"></script>
+<style>
+  /* ── Reset & Base ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --blue-dark:   #1a3a5c;
+    --blue-mid:    #2563a8;
+    --blue-light:  #dbeafe;
+    --blue-border: #93c5fd;
+    --green-dark:  #14532d;
+    --green-light: #dcfce7;
+    --green-border:#86efac;
+    --amber-dark:  #78350f;
+    --amber-light: #fef3c7;
+    --amber-border:#fcd34d;
+    --red-dark:    #7f1d1d;
+    --red-light:   #fee2e2;
+    --red-border:  #fca5a5;
+    --gray-50:     #f8fafc;
+    --gray-100:    #f1f5f9;
+    --gray-200:    #e2e8f0;
+    --gray-300:    #cbd5e1;
+    --gray-600:    #475569;
+    --gray-700:    #334155;
+    --gray-800:    #1e293b;
+    --radius:      8px;
+    --shadow:      0 2px 8px rgba(0,0,0,.10);
+    --font-body:   'Segoe UI', Arial, sans-serif;
+    --font-mono:   'Consolas', 'Courier New', monospace;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--gray-800);
+    background: var(--gray-50);
+  }
+  a { color: var(--blue-mid); }
+  a:focus-visible { outline: 3px solid var(--blue-mid); outline-offset: 2px; }
+
+  /* ── Skip Link ── */
+  .skip-link {
+    position: absolute; top: -999px; left: 0;
+    background: var(--blue-dark); color: #fff;
+    padding: .5rem 1rem; z-index: 9999;
+    border-radius: 0 0 var(--radius) 0;
+    font-weight: 700;
+  }
+  .skip-link:focus { top: 0; }
+
+  /* ── Nav Bar ── */
+  nav#topnav {
+    background: var(--blue-dark);
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 6px rgba(0,0,0,.25);
+  }
+  nav#topnav .nav-inner {
+    max-width: 1060px; margin: 0 auto;
+    display: flex; flex-wrap: wrap;
+    align-items: center; gap: .25rem;
+    padding: .55rem 1rem;
+  }
+  nav#topnav .nav-brand {
+    color: #fff; font-weight: 700; font-size: .95rem;
+    margin-right: .75rem; white-space: nowrap;
+    text-decoration: none;
+  }
+  nav#topnav a.nav-link {
+    color: #cbd5e1; font-size: .82rem; font-weight: 500;
+    padding: .3rem .6rem; border-radius: 4px;
+    text-decoration: none; white-space: nowrap;
+    transition: background .15s, color .15s;
+  }
+  nav#topnav a.nav-link:hover,
+  nav#topnav a.nav-link:focus-visible {
+    background: rgba(255,255,255,.15); color: #fff;
+  }
+
+  /* ── Page Wrapper ── */
+  .page-wrap { max-width: 1060px; margin: 0 auto; padding: 1.5rem 1.25rem 3rem; }
+
+  /* ── Page Header ── */
+  .page-header {
+    background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue-mid) 100%);
+    color: #fff; border-radius: var(--radius);
+    padding: 2rem 2rem 1.75rem; margin-bottom: 1.75rem;
+    box-shadow: var(--shadow);
+  }
+  .page-header .badge {
+    display: inline-block;
+    background: rgba(255,255,255,.18);
+    color: #e0f2fe; font-size: .78rem; font-weight: 700;
+    letter-spacing: .06em; text-transform: uppercase;
+    padding: .2rem .65rem; border-radius: 99px; margin-bottom: .6rem;
+  }
+  .page-header h1 { font-size: 1.75rem; font-weight: 800; line-height: 1.25; margin-bottom: .5rem; }
+  .page-header .meta { font-size: .88rem; opacity: .85; display: flex; flex-wrap: wrap; gap: .5rem 1.5rem; }
+  .page-header .meta span::before { content: '▸ '; }
+
+  /* ── Section Headings ── */
+  .section-heading {
+    font-size: 1.25rem; font-weight: 700;
+    color: var(--blue-dark); margin-bottom: 1rem;
+    padding-bottom: .4rem;
+    border-bottom: 3px solid var(--blue-mid);
+    display: flex; align-items: center; gap: .5rem;
+  }
+  .section-heading .icon { font-size: 1.1rem; }
+
+  h3.sub-heading {
+    font-size: 1.05rem; font-weight: 700;
+    color: var(--gray-700); margin: 1.25rem 0 .5rem;
+  }
+
+  /* ── Cards / Sections ── */
+  .card {
+    background: #fff; border-radius: var(--radius);
+    border: 1px solid var(--gray-200);
+    padding: 1.5rem; margin-bottom: 1.5rem;
+    box-shadow: var(--shadow);
+  }
+
+  /* ── Callout Boxes ── */
+  .callout {
+    border-left: 4px solid; border-radius: 0 var(--radius) var(--radius) 0;
+    padding: .9rem 1.1rem; margin: 1rem 0;
+  }
+  .callout-blue  { background: var(--blue-light);  border-color: var(--blue-mid);    color: var(--blue-dark); }
+  .callout-green { background: var(--green-light); border-color: #22c55e;            color: var(--green-dark); }
+  .callout-amber { background: var(--amber-light); border-color: #f59e0b;            color: var(--amber-dark); }
+  .callout-red   { background: var(--red-light);   border-color: #ef4444;            color: var(--red-dark); }
+  .callout strong { display: block; margin-bottom: .25rem; font-size: .93rem; }
+
+  /* ── Objectives List ── */
+  .obj-list { list-style: none; padding: 0; }
+  .obj-list li {
+    display: flex; align-items: flex-start; gap: .6rem;
+    padding: .45rem 0; border-bottom: 1px solid var(--gray-100);
+    font-size: .95rem;
+  }
+  .obj-list li:last-child { border-bottom: none; }
+  .obj-list .obj-num {
+    background: var(--blue-mid); color: #fff;
+    font-size: .75rem; font-weight: 700;
+    min-width: 1.6rem; height: 1.6rem;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: .1rem;
+  }
+
+  /* ── Task Steps ── */
+  .task-block {
+    border: 1px solid var(--gray-200); border-radius: var(--radius);
+    margin-bottom: 1.1rem; overflow: hidden;
+  }
+  .task-header {
+    background: var(--blue-dark); color: #fff;
+    padding: .65rem 1rem;
+    display: flex; align-items: center; gap: .6rem;
+    font-weight: 700; font-size: .95rem;
+  }
+  .task-header .task-num {
+    background: rgba(255,255,255,.2);
+    border-radius: 50%; min-width: 1.7rem; height: 1.7rem;
+    display: flex; align-items: center; justify-content: center;
+    font-size: .8rem; font-weight: 800; flex-shrink: 0;
+  }
+  .task-body { padding: 1rem 1.1rem; background: #fff; }
+  .task-body p { margin-bottom: .6rem; }
+  .task-body ul, .task-body ol { padding-left: 1.4rem; margin-bottom: .6rem; }
+  .task-body li { margin-bottom: .3rem; }
+
+  /* ── Formula Box ── */
+  .formula-box {
+    background: var(--gray-100); border: 1px solid var(--gray-300);
+    border-radius: var(--radius); padding: .85rem 1rem;
+    margin: .75rem 0; overflow-x: auto; text-align: center;
+  }
+
+  /* ── Notes Textarea ── */
+  .notes-area {
+    width: 100%; min-height: 100px;
+    border: 2px solid var(--blue-border); border-radius: var(--radius);
+    padding: .7rem .85rem; font-family: var(--font-body); font-size: .92rem;
+    color: var(--gray-800); background: #fff; resize: vertical;
+    transition: border-color .2s, box-shadow .2s;
+    margin-top: .5rem;
+  }
+  .notes-area:focus {
+    outline: none; border-color: var(--blue-mid);
+    box-shadow: 0 0 0 3px rgba(37,99,168,.2);
+  }
+  .notes-label {
+    display: block; font-weight: 600; font-size: .88rem;
+    color: var(--gray-600); margin-top: .75rem; margin-bottom: .2rem;
+  }
+
+  /* ── Grading Table ── */
+  .grade-table { width: 100%; border-collapse: collapse; font-size: .93rem; }
+  .grade-table th {
+    background: var(--blue-dark); color: #fff;
+    padding: .55rem .85rem; text-align: left; font-weight: 700;
+  }
+  .grade-table td { padding: .5rem .85rem; border-bottom: 1px solid var(--gray-200); }
+  .grade-table tr:last-child td { border-bottom: none; }
+  .grade-table tr:nth-child(even) td { background: var(--gray-50); }
+  .pct-bar-wrap { background: var(--gray-200); border-radius: 99px; height: 10px; min-width: 80px; }
+  .pct-bar { height: 10px; border-radius: 99px; background: var(--blue-mid); }
+
+  /* ── Checklist ── */
+  .checklist { list-style: none; padding: 0; }
+  .checklist li {
+    display: flex; align-items: flex-start; gap: .55rem;
+    padding: .3rem 0; font-size: .93rem;
+  }
+  .checklist li::before {
+    content: '☐'; font-size: 1rem; color: var(--blue-mid);
+    flex-shrink: 0; margin-top: .05rem;
+  }
+
+  /* ── Collapsible (Hints) ── */
+  .collapsible-btn {
+    width: 100%; text-align: left;
+    background: var(--amber-light); color: var(--amber-dark);
+    border: 2px solid var(--amber-border); border-radius: var(--radius);
+    padding: .7rem 1rem; font-size: .95rem; font-weight: 700;
+    cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+    transition: background .15s;
+  }
+  .collapsible-btn:hover { background: #fde68a; }
+  .collapsible-btn:focus-visible { outline: 3px solid var(--blue-mid); outline-offset: 2px; }
+  .collapsible-btn .arrow { transition: transform .25s; font-size: 1rem; }
+  .collapsible-btn[aria-expanded="true"] .arrow { transform: rotate(180deg); }
+  .collapsible-content {
+    border: 2px solid var(--amber-border); border-top: none;
+    border-radius: 0 0 var(--radius) var(--radius);
+    background: #fff; padding: 1rem 1.1rem;
+    display: none;
+  }
+  .collapsible-content.open { display: block; }
+  .collapsible-content h4 { font-size: .95rem; color: var(--amber-dark); margin: .8rem 0 .3rem; }
+  .collapsible-content h4:first-child { margin-top: 0; }
+  .collapsible-content ul { padding-left: 1.3rem; }
+  .collapsible-content li { margin-bottom: .3rem; font-size: .92rem; }
+
+  /* ── Code Block ── */
+  pre {
+    background: #1e293b; color: #e2e8f0;
+    border-radius: var(--radius); padding: 1rem 1.1rem;
+    overflow-x: auto; font-family: var(--font-mono);
+    font-size: .83rem; line-height: 1.6; margin: .75rem 0;
+  }
+  code { font-family: var(--font-mono); font-size: .88em; }
+  p code, li code {
+    background: var(--gray-100); border: 1px solid var(--gray-300);
+    border-radius: 3px; padding: .1em .35em;
+  }
+
+  /* ── CSLO Tag ── */
+  .cslo-tag {
+    display: inline-block;
+    background: var(--green-light); color: var(--green-dark);
+    border: 1px solid var(--green-border);
+    font-size: .75rem; font-weight: 700; letter-spacing: .04em;
+    padding: .15rem .55rem; border-radius: 99px; margin-left: .4rem;
+    vertical-align: middle;
+  }
+
+  /* ── Points Badge ── */
+  .pts-badge {
+    display: inline-flex; align-items: center; gap: .3rem;
+    background: var(--blue-dark); color: #fff;
+    font-size: .8rem; font-weight: 700;
+    padding: .2rem .7rem; border-radius: 99px;
+  }
+
+  /* ── Divider ── */
+  .divider { border: none; border-top: 2px solid var(--gray-200); margin: 1.5rem 0; }
+
+  /* ── Responsive ── */
+  @media (max-width: 640px) {
+    .page-header h1 { font-size: 1.35rem; }
+    .grade-table { font-size: .82rem; }
+    nav#topnav .nav-inner { gap: .15rem; }
+    nav#topnav a.nav-link { font-size: .78rem; padding: .25rem .45rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Skip Navigation -->
+<a class="skip-link" href="#main-content">Skip to main content</a>
+
+<!-- ══════════════════════════════════════════
+     TOP NAVIGATION BAR
+══════════════════════════════════════════ -->
+<nav id="topnav" aria-label="Page sections">
+  <div class="nav-inner">
+    <a href="#top" class="nav-brand" aria-label="PE-07 top of page">PE-07</a>
+    <a href="#scenario"     class="nav-link">Scenario</a>
+    <a href="#objectives"   class="nav-link">Objectives</a>
+    <a href="#tasks"        class="nav-link">Tasks</a>
+    <a href="#notes"        class="nav-link">Notes</a>
+    <a href="#submission"   class="nav-link">Submission</a>
+    <a href="#hints"        class="nav-link">Hints &amp; Tips</a>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════
+     PAGE HEADER
+══════════════════════════════════════════ -->
+<div class="page-wrap" id="top">
+<header class="page-header" role="banner">
+  <div class="badge">CSC 240 · Week 8 · Programming Exercise</div>
+  <h1>PE-07: Binomial Coefficient Calculator</h1>
+  <div class="meta">
+    <span>Course: CSC 240 – Discrete Structures</span>
+    <span>Week 8 of 17</span>
+    <span><span class="pts-badge">⭐ 10 Points</span></span>
+    <span>Due: End of Week 8 · 11:59 PM</span>
+    <span>Language: Java or C++</span>
+    <span class="cslo-tag">CSLO 2</span>
+  </div>
+</header>
+
+<main id="main-content">
+
+<!-- ══════════════════════════════════════════
+     SECTION 1 – SCENARIO & CONTEXT
+══════════════════════════════════════════ -->
+<section id="scenario" aria-labelledby="scenario-heading">
+<div class="card">
+  <h2 class="section-heading" id="scenario-heading">
+    <span class="icon" aria-hidden="true">🔭</span> Scenario &amp; Context
+  </h2>
+
+  <p>
+    Binomial coefficients — written $$\binom{n}{k}$$ — are one of the most
+    frequently encountered mathematical objects in computer science. They count
+    the number of ways to choose $$k$$ items from a set of $$n$$, and they
+    appear in an enormous range of CS contexts: analyzing the worst-case number
+    of comparisons in a sorting algorithm, computing the probability of a
+    specific number of bit errors in a transmission channel, enumerating
+    subsets for brute-force search, and sizing hash tables to minimize
+    collisions.
+  </p>
+
+  <p style="margin-top:.75rem;">
+    The <strong>Binomial Theorem</strong> ties these coefficients directly to
+    polynomial algebra:
+  </p>
+
+  <div class="formula-box" role="math" aria-label="Binomial Theorem">
+    $$
+      (a + b)^{n} \;=\; \sum_{k=0}^{n} \binom{n}{k}\, a^{\,n-k}\, b^{\,k}
+    $$
+  </div>
+
+  <p>
+    Setting $$a = b = 1$$ immediately tells us that any $$n$$-element set has
+    exactly $$2^n$$ subsets — a fact with direct consequences for algorithm
+    complexity. Setting $$a = 1,\; b = -1$$ yields the alternating-sign
+    identity $$\sum_{k=0}^{n}(-1)^k\binom{n}{k} = 0$$, useful for verifying
+    combinatorial identities.
+  </p>
+
+  <div class="callout callout-blue" role="note">
+    <strong>Why this exercise matters for CS</strong>
+    Any algorithm that must examine <em>all subsets</em> of an $$n$$-element
+    set requires at least $$\Omega(2^n)$$ time. Knowing how to compute
+    $$\binom{n}{k}$$ efficiently — and understanding its mathematical
+    properties — is foundational to reasoning about exponential complexity,
+    probability calculations (Week 9), and combinatorial optimization.
+  </div>
+
+  <p>
+    In PE-07 you will implement a program that computes $$\binom{n}{k}$$ using
+    two independent methods, expands $$(a+b)^n$$ symbolically, extracts
+    specific terms, and verifies a key binomial identity. By the end, you will
+    have a working calculator that bridges the mathematical theory from
+    Modules 8.1 and 8.2 into executable, testable code.
+  </p>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     SECTION 2 – OBJECTIVES
+══════════════════════════════════════════ -->
+<section id="objectives" aria-labelledby="obj-heading">
+<div class="card">
+  <h2 class="section-heading" id="obj-heading">
+    <span class="icon" aria-hidden="true">🎯</span> Assignment Objectives
+  </h2>
+
+  <p style="margin-bottom:.9rem;">
+    PE-07 is aligned to <strong>CSLO 2</strong>: <em>Apply combinatorics and
+    set theory to counting problems.</em> It specifically covers
+    <strong>Topics 2 and 3</strong> from the Week 8 Detailed Outline
+    (The Binomial Theorem; Binomial Coefficient Identities).
+    Upon successful completion you will be able to:
+  </p>
+
+  <ul class="obj-list" aria-label="Learning objectives">
+    <li>
+      <span class="obj-num" aria-hidden="true">1</span>
+      <span>
+        <strong>Implement two computational methods</strong> for
+        $$\binom{n}{k}$$: the direct factorial formula and the Pascal's
+        triangle row-construction method, and explain the trade-offs between
+        them (Objective 2, Module 8.1 / 8.2).
+      </span>
+    </li>
+    <li>
+      <span class="obj-num" aria-hidden="true">2</span>
+      <span>
+        <strong>Apply the Binomial Theorem</strong> to expand $$(a+b)^n$$
+        for arbitrary real-valued $$a$$, $$b$$ and non-negative integer
+        $$n$$, displaying every term with its coefficient (Objective 1,
+        Module 8.1).
+      </span>
+    </li>
+    <li>
+      <span class="obj-num" aria-hidden="true">3</span>
+      <span>
+        <strong>Identify and return the $$(k+1)$$-th term</strong> of a
+        binomial expansion using the general term formula
+        $$\binom{n}{k}a^{n-k}b^k$$ (Objective 1, Module 8.1).
+      </span>
+    </li>
+    <li>
+      <span class="obj-num" aria-hidden="true">4</span>
+      <span>
+        <strong>Verify a binomial coefficient identity</strong> (at minimum,
+        symmetry or Pascal's identity) programmatically for user-supplied
+        inputs and display a clear confirmation message (Objective 3,
+        Module 8.2).
+      </span>
+    </li>
+    <li>
+      <span class="obj-num" aria-hidden="true">5</span>
+      <span>
+        <strong>Write well-documented, tested code</strong> that handles
+        edge cases ($$k = 0$$, $$k = n$$, $$r > n$$) and includes a
+        menu-driven interface, inline comments, a README, and at least
+        three test cases with expected output.
+      </span>
+    </li>
+  </ul>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     SECTION 3 – TASKS
+══════════════════════════════════════════ -->
+<section id="tasks" aria-labelledby="tasks-heading">
+<div class="card">
+  <h2 class="section-heading" id="tasks-heading">
+    <span class="icon" aria-hidden="true">🛠️</span> Step-by-Step Tasks
+  </h2>
+
+  <p style="margin-bottom:1rem;">
+    Your program must provide a <strong>menu-driven interface</strong> that
+    allows the user to invoke each feature independently. All five tasks below
+    are required. Implement them in the order listed — each task builds on
+    the previous one.
+  </p>
+
+  <!-- ── Task 1 ── -->
+  <div class="task-block">
+    <div class="task-header">
+      <span class="task-num" aria-label="Task 1">1</span>
+      Compute $$\binom{n}{k}$$ — Two Methods
+    </div>
+    <div class="task-body">
+      <p>
+        Implement <strong>two independent functions</strong> that each return
+        $$\binom{n}{k}$$. Both must produce identical results for the same
+        inputs; you will display both values side-by-side so the user can
+        verify agreement.
+      </p>
+
+      <h3 class="sub-heading">Method A — Direct Factorial Formula</h3>
+      <div class="formula-box" role="math" aria-label="Binomial coefficient factorial formula">
+        $$
+          \binom{n}{k} \;=\; \frac{n!}{k!\,(n-k)!}
+        $$
+      </div>
+      <ul>
+        <li>Write a helper function <code>factorial(n)</code> that returns
+            $$n!$$.</li>
+        <li>Use <code>long</code> (Java) or <code>unsigned long long</code>
+            (C++) to delay overflow. For very large $$n$$, consider
+            <code>BigInteger</code> (Java) or a note in your README.</li>
+        <li>Validate that $$0 \le k \le n$$; print a clear error message
+            otherwise.</li>
+      </ul>
+
+      <h3 class="sub-heading">Method B — Pascal's Triangle Row Construction</h3>
+      <p>
+        Build Pascal's triangle row by row up to row $$n$$, then read off
+        entry $$k$$. Use the recurrence:
+      </p>
+      <div class="formula-box" role="math" aria-label="Pascal's identity recurrence">
+        $$
+          \binom{n}{k} \;=\; \binom{n-1}{k-1} \;+\; \binom{n-1}{k}
+        $$
+      </div>
+      <ul>
+        <li>Store only two rows at a time to conserve memory.</li>
+        <li>This method avoids computing large factorials and handles
+            moderate $$n$$ more robustly.</li>
+        <li>Display the full row $$n$$ of Pascal's triangle as part of
+            the output.</li>
+      </ul>
+
+      <div class="callout callout-green" role="note">
+        <strong>Expected output (example)</strong>
+        Input: n = 5, k = 2<br>
+        Method A (factorial): C(5,2) = 10<br>
+        Method B (Pascal's triangle row 5): [1, 5, 10, 10, 5, 1]<br>
+        C(5,2) = 10 ✓ Both methods agree.
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Task 2 ── -->
+  <div class="task-block">
+    <div class="task-header">
+      <span class="task-num" aria-label="Task 2">2</span>
+      Expand $$(a+b)^n$$ and Display All Terms
+    </div>
+    <div class="task-body">
+      <p>
+        Accept user-supplied values for $$a$$, $$b$$ (real numbers), and
+        $$n$$ (non-negative integer). Compute and display the full expansion
+        using the Binomial Theorem:
+      </p>
+      <div class="formula-box" role="math" aria-label="Full binomial expansion">
+        $$
+          (a+b)^n \;=\; \sum_{k=0}^{n} \binom{n}{k}\, a^{\,n-k}\, b^{\,k}
+        $$
+      </div>
+      <ul>
+        <li>Print each term on its own line in the format:<br>
+            <code>Term k+1: C(n,k) * a^(n-k) * b^k = [numerical value]</code></li>
+        <li>Also print the symbolic form when $$a$$ and $$b$$ are left as
+            variables (optional enhancement).</li>
+        <li>Handle $$n = 0$$ (result is 1) and $$n = 1$$ as edge cases.</li>
+        <li>Use <code>Math.pow</code> (Java) or <code>pow</code> (C++) for
+            the power computations; note potential floating-point rounding
+            for large exponents.</li>
+      </ul>
+
+      <div class="callout callout-green" role="note">
+        <strong>Expected output (example)</strong>
+        Input: a = 2, b = 3, n = 3<br>
+        Term 1: C(3,0) * 2^3 * 3^0 = 8<br>
+        Term 2: C(3,1) * 2^2 * 3^1 = 36<br>
+        Term 3: C(3,2) * 2^1 * 3^2 = 54<br>
+        Term 4: C(3,3) * 2^0 * 3^3 = 27<br>
+        (2+3)^3 = 125 ✓
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Task 3 ── -->
+  <div class="task-block">
+    <div class="task-header">
+      <span class="task-num" aria-label="Task 3">3</span>
+      Identify the $$(k+1)$$-th Term of an Expansion
+    </div>
+    <div class="task-body">
+      <p>
+        Accept $$a$$, $$b$$, $$n$$, and a term index $$k$$ (0-based).
+        Return and display the single $$(k+1)$$-th term using the general
+        term formula:
+      </p>
+      <div class="formula-box" role="math" aria-label="General term formula">
+        $$
+          T_{k+1} \;=\; \binom{n}{k}\, a^{\,n-k}\, b^{\,k}
+        $$
+      </div>
+      <ul>
+        <li>Clearly label the output: <em>"The 4th term (k=3) of
+            (a+b)^n is …"</em></li>
+        <li>Validate that $$0 \le k \le n$$; display an error if the
+            requested term does not exist.</li>
+        <li>
+          <strong>Off-by-one reminder:</strong> the $$(k+1)$$-th term uses
+          index $$k$$ (0-based). Term 1 corresponds to $$k=0$$, Term 2 to
+          $$k=1$$, and so on. Make this numbering explicit in your output
+          and documentation.
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ── Task 4 ── -->
+  <div class="task-block">
+    <div class="task-header">
+      <span class="task-num" aria-label="Task 4">4</span>
+      Verify a Binomial Coefficient Identity
+    </div>
+    <div class="task-body">
+      <p>
+        Implement verification of <strong>at least one</strong> of the
+        following identities for user-supplied $$n$$ and $$k$$. Your program
+        must compute both sides independently and display a confirmation (or
+        failure) message.
+      </p>
+
+      <h3 class="sub-heading">Required (choose at least one):</h3>
+
+      <p><strong>Symmetry Identity</strong></p>
+      <div class="formula-box" role="math" aria-label="Symmetry identity">
+        $$
+          \binom{n}{k} \;=\; \binom{n}{n-k}
+        $$
+      </div>
+      <p style="font-size:.9rem; color:var(--gray-600);">
+        Proof idea: choosing $$k$$ items to include is equivalent to
+        choosing $$n-k$$ items to exclude.
+      </p>
+
+      <p><strong>Pascal's Identity</strong></p>
+      <div class="formula-box" role="math" aria-label="Pascal's identity">
+        $$
+          \binom{n}{k} \;=\; \binom{n-1}{k-1} \;+\; \binom{n-1}{k}
+        $$
+      </div>
+      <p style="font-size:.9rem; color:var(--gray-600);">
+        Proof idea: fix one element; it is either in the chosen subset
+        (contributing $$\binom{n-1}{k-1}$$) or not (contributing
+        $$\binom{n-1}{k}$$).
+      </p>
+
+      <h3 class="sub-heading">Optional (for full marks on Testing):</h3>
+
+      <p><strong>Vandermonde's Identity</strong></p>
+      <div class="formula-box" role="math" aria-label="Vandermonde's identity">
+        $$
+          \sum_{k=0}^{r} \binom{m}{k}\binom{n}{r-k} \;=\; \binom{m+n}{r}
+        $$
+      </div>
+
+      <p><strong>Hockey Stick Identity</strong></p>
+      <div class="formula-box" role="math" aria-label="Hockey stick identity">
+        $$
+          \sum_{i=0}^{r} \binom{n+i}{i} \;=\; \binom{n+r+1}{r}
+        $$
+      </div>
+
+      <div class="callout callout-green" role="note">
+        <strong>Expected output (example — Symmetry)</strong>
+        Input: n = 7, k = 3<br>
+        LHS: C(7,3) = 35<br>
+        RHS: C(7,4) = 35<br>
+        ✓ Symmetry identity VERIFIED for n=7, k=3.
+      </div>
+
+      <div class="callout callout-amber" role="note">
+        <strong>Important</strong>
+        Your program must display <em>both sides</em> of the identity
+        numerically, not just print "verified." This demonstrates that your
+        code is actually computing and comparing values.
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Task 5 ── -->
+  <div class="task-block">
+    <div class="task-header">
+      <span class="task-num" aria-label="Task 5">5</span>
+      Menu Interface, Input Validation &amp; Documentation
+    </div>
+    <div class="task-body">
+      <p>
+        Wrap all four features in a <strong>numbered menu loop</strong> that
+        continues until the user selects "Exit." Each menu option must:
+      </p>
+      <ol>
+        <li>Prompt for the required inputs with clear labels.</li>
+        <li>Validate all inputs before computing (non-negative integers,
+            $$k \le n$$, etc.).</li>
+        <li>Display results in a clearly formatted, readable output block.</li>
+        <li>Return to the main menu after displaying results.</li>
+      </ol>
+
+      <h3 class="sub-heading">Suggested Menu Structure</h3>
+      <pre aria-label="Sample menu output">
+===== Binomial Coefficient Calculator =====
+  1. Compute C(n,k) — Factorial Method
+  2. Compute C(n,k) — Pascal's Triangle Method
+  3. Expand (a+b)^n — All Terms
+  4. Find the (k+1)-th Term of (a+b)^n
+  5. Verify a Binomial Identity
+  6. Exit
+===========================================
+Enter choice: _</pre>
+
+      <h3 class="sub-heading">README File (required)</h3>
+      <p>
+        Include a plain-text <code>README.txt</code> in your ZIP with the
+        following sections (following the PE-03 documentation standard):
+      </p>
+      <ol>
+        <li>Student Information (name, course, assignment, date, language)</li>
+        <li>Compilation Instructions (exact commands)</li>
+        <li>Running Instructions (exact commands, expected input format)</li>
+        <li>Features Implemented (list all menu options; note any extras)</li>
+        <li>Test Cases (at least 3 cases with inputs, expected output, and
+            actual output)</li>
+        <li>Known Limitations (e.g., overflow behavior for large $$n$$)</li>
+        <li>Resources Consulted</li>
+        <li>Academic Integrity Statement</li>
+      </ol>
+    </div>
+  </div>
+
+</div><!-- .card -->
+</section>
+
+<!-- ══════════════════════════════════════════
+     SECTION 4 – NOTES & OBSERVATIONS
+══════════════════════════════════════════ -->
+<section id="notes" aria-labelledby="notes-heading">
+<div class="card">
+  <h2 class="section-heading" id="notes-heading">
+    <span class="icon" aria-hidden="true">📝</span> Notes &amp; Observations
+  </h2>
+
+  <p>
+    Use the text areas below to record your observations as you work through
+    each task. These notes are for your own benefit — they are <strong>not
+    submitted</strong> and are not graded. Writing observations as you code
+    is one of the most effective ways to prepare for the Midterm Exam.
+  </p>
+
+  <div class="callout callout-amber" role="note" style="margin-bottom:1rem;">
+    <strong>Note</strong>
+    These text areas exist only in this browser session. They will be
+    cleared if you reload the page. Copy important notes to a local
+    file to save them permanently.
+  </div>
+
+  <!-- Notes: Task 1 -->
+  <label class="notes-label" for="notes-task1">
+    Task 1 — Factorial vs. Pascal's Triangle: What differences did you
+    observe in the two methods? When might one be preferable?
+  </label>
+  <textarea
+    id="notes-task1"
+    class="notes-area"
+    aria-label="Notes for Task 1: Factorial vs Pascal's Triangle"
+    placeholder="Type your observations here…"
+    rows="4"
+  ></textarea>
+
+  <!-- Notes: Task 2 -->
+  <label class="notes-label" for="notes-task2">
+    Task 2 — Binomial Expansion: What pattern do you notice in the
+    coefficients as $$n$$ increases? How do they relate to Pascal's triangle?
+  </label>
+  <textarea
+    id="notes-task2"
+    class="notes-area"
+    aria-label="Notes for Task 2: Binomial expansion observations"
+    placeholder="Type your observations here…"
+    rows="4"
+  ></textarea>
+
+  <!-- Notes: Task 3 -->
+  <label class="notes-label" for="notes-task3">
+    Task 3 — Specific Term: Describe how you handled the off-by-one
+    indexing. What edge cases did you test?
+  </label>
+  <textarea
+    id="notes-task3"
+    class="notes-area"
+    aria-label="Notes for Task 3: Specific term observations"
+    placeholder="Type your observations here…"
+    rows="4"
+  ></textarea>
+
+  <!-- Notes: Task 4 -->
+  <label class="notes-label" for="notes-task4">
+    Task 4 — Identity Verification: Which identity did you implement?
+    Can you explain in plain language <em>why</em> the identity is true?
+  </label>
+  <textarea
+    id="notes-task4"
+    class="notes-area"
+    aria-label="Notes for Task 4: Identity verification observations"
+    placeholder="Type your observations here…"
+    rows="4"
+  ></textarea>
+
+  <!-- Notes: General -->
+  <label class="notes-label" for="notes-general">
+    General Observations: Any surprises, challenges, or connections to
+    algorithm complexity or the upcoming Midterm?
+  </label>
+  <textarea
+    id="notes-general"
+    class="notes-area"
+    aria-label="General notes and observations"
+    placeholder="Type your observations here…"
+    rows="4"
+  ></textarea>
+
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     SECTION 5 – SUBMISSION DETAILS
+══════════════════════════════════════════ -->
+<section id="submission" aria-labelledby="sub-heading">
+<div class="card">
+  <h2 class="section-heading" id="sub-heading">
+    <span class="icon" aria-hidden="true">📤</span> Submission Details
+  </h2>
+
+  <!-- File Naming -->
+  <h3 class="sub-heading">File Naming Convention</h3>
+  <div class="callout callout-blue" role="note">
+    <strong>Required ZIP file name</strong>
+    <code>LastName_FirstName_PE07_Week8.zip</code><br>
+    Example: <code>Smith_Jordan_PE07_Week8.zip</code>
+  </div>
+
+  <p>Your ZIP archive must contain:</p>
+  <ul style="padding-left:1.4rem; margin-bottom:.75rem;">
+    <li>All source file(s) (<code>.java</code> or <code>.cpp</code> /
+        <code>.h</code>)</li>
+    <li><code>README.txt</code> (see Task 5 for required sections)</li>
+    <li>At least 3 test cases documented in the README with expected
+        and actual output</li>
+  </ul>
+  <p>
+    <strong>Do not include</strong> compiled binaries, IDE project folders
+    (<code>.idea/</code>, <code>.vscode/</code>), or <code>.class</code>
+    files.
+  </p>
+
+  <hr class="divider">
+
+  <!-- Submission Method -->
+  <h3 class="sub-heading">Submission Method</h3>
+  <p>
+    Submit via <strong>Canvas</strong> using the PE-07 assignment submission
+    link. Upload your ZIP file directly — do not paste code into the text
+    box. Submissions are due by <strong>11:59 PM at the end of Week 8</strong>.
+    Late submissions are subject to the course late policy described in the
+    syllabus.
+  </p>
+
+  <hr class="divider">
+
+  <!-- Point Breakdown -->
+  <h3 class="sub-heading">Point Breakdown — 10 Points Total</h3>
+
+  <table class="grade-table" aria-label="PE-07 grading breakdown">
+    <thead>
+      <tr>
+        <th scope="col">Component</th>
+        <th scope="col">Weight</th>
+        <th scope="col">Points</th>
+        <th scope="col">What Graders Look For</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Correctness</strong></td>
+        <td>
+          50%
+          <div class="pct-bar-wrap" aria-hidden="true">
+            <div class="pct-bar" style="width:50%"></div>
+          </div>
+        </td>
+        <td>5 pts</td>
+        <td>All four features produce correct output for valid inputs;
+            edge cases handled without crashes</td>
+      </tr>
+      <tr>
+        <td><strong>Code Quality</strong></td>
+        <td>
+          25%
+          <div class="pct-bar-wrap" aria-hidden="true">
+            <div class="pct-bar" style="width:25%"></div>
+          </div>
+        </td>
+        <td>2.5 pts</td>
+        <td>Meaningful variable names; modular functions; no unnecessary
+            code duplication; input validation with clear error messages</td>
+      </tr>
+      <tr>
+        <td><strong>Documentation</strong></td>
+        <td>
+          15%
+          <div class="pct-bar-wrap" aria-hidden="true">
+            <div class="pct-bar" style="width:15%"></div>
+          </div>
+        </td>
+        <td>1.5 pts</td>
+        <td>Complete README; inline comments explaining non-obvious logic;
+            function-level doc comments (Javadoc or equivalent)</td>
+      </tr>
+      <tr>
+        <td><strong>Testing</strong></td>
+        <td>
+          10%
+          <div class="pct-bar-wrap" aria-hidden="true">
+            <div class="pct-bar" style="width:10%"></div>
+          </div>
+        </td>
+        <td>1 pt</td>
+        <td>At least 3 documented test cases with inputs, expected output,
+            and actual output; edge cases included</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <hr class="divider">
+
+  <!-- Submission Checklist -->
+  <h3 class="sub-heading">Pre-Submission Checklist</h3>
+  <ul class="checklist" aria-label="Submission checklist">
+    <li>Program compiles and runs without errors</li>
+    <li>All four required features are implemented and accessible from the menu</li>
+    <li>Both $$\binom{n}{k}$$ methods produce matching results</li>
+    <li>Expansion output shows all $$n+1$$ terms with correct coefficients</li>
+    <li>$$(k+1)$$-th term is correctly labeled (1-based display, 0-based index)</li>
+    <li>Identity verification displays both sides and a confirmation message</li>
+    <li>Edge cases tested: $$k=0$$, $$k=n$$, $$n=0$$, invalid inputs</li>
+    <li>README.txt includes all eight required sections</li>
+    <li>ZIP file is named <code>LastName_FirstName_PE07_Week8.zip</code></li>
+    <li>Submitted via Canvas PE-07 assignment link before the deadline</li>
+  </ul>
+
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     SECTION 6 – HINTS & TIPS (COLLAPSIBLE)
+══════════════════════════════════════════ -->
+<section id="hints" aria-labelledby="hints-heading">
+<div class="card">
+  <h2 class="section-heading" id="hints-heading">
+    <span class="icon" aria-hidden="true">💡</span> Hints &amp; Tips
+    <span style="font-size:.8rem; font-weight:400; color:var(--gray-600);">(optional reading)</span>
+  </h2>
+
+  <button
+    class="collapsible-btn"
+    aria-expanded="false"
+    aria-controls="hints-content"
+    id="hints-toggle"
+  >
+    Show Hints, Common Pitfalls &amp; Testing Suggestions
+    <span class="arrow" aria-hidden="true">▼</span>
+  </button>
+
+  <div
+    id="hints-content"
+    class="collapsible-content"
+    role="region"
+    aria-labelledby="hints-toggle"
+  >
+
+    <h4>⚠️ Integer Overflow — The #1 Pitfall</h4>
+    <p>
+      Factorials grow extremely fast. $$20!$$ already exceeds the capacity
+      of a 32-bit signed integer, and $$21!$$ overflows a 64-bit
+      <code>long</code> in Java. Strategies to mitigate this:
+    </p>
+    <ul>
+      <li>
+        <strong>Java:</strong> Use <code>long</code> for moderate $$n$$
+        (up to ~20). For larger values, use <code>java.math.BigInteger</code>
+        and its <code>multiply()</code> method.
+      </li>
+      <li>
+        <strong>C++:</strong> Use <code>unsigned long long</code> for
+        moderate values. For larger values, consider a simple big-integer
+        string or note the limitation in your README.
+      </li>
+      <li>
+        <strong>Pascal's triangle method</strong> avoids computing raw
+        factorials and handles larger $$n$$ more gracefully — this is one
+        of its key advantages.
+      </li>
+      <li>
+        Alternatively, cancel common factors before multiplying:
+        $$\binom{n}{k} = \frac{n \cdot (n-1) \cdots (n-k+1)}{k!}$$
+        reduces intermediate values significantly.
+      </li>
+    </ul>
+
+    <h4>⚠️ Off-by-One in Term Numbering</h4>
+    <p>
+      The general term $$T_{k+1} = \binom{n}{k}a^{n-k}b^k$$ uses a
+      <strong>0-based index $$k$$</strong> internally but is displayed as
+      the <strong>$$(k+1)$$-th term</strong> (1-based) to the user.
+      Always be explicit: "Term 4 (k=3)" avoids confusion both in your
+      output and in your README test cases.
+    </p>
+
+    <h4>⚠️ Floating-Point Precision in Expansion</h4>
+    <p>
+      When $$a$$ or $$b$$ are non-integer reals, <code>Math.pow</code>
+      may introduce small rounding errors. For the purposes of this
+      exercise this is acceptable — just note it in your README under
+      Known Limitations.
+    </p>
+
+    <h4>✅ Suggested Test Cases</h4>
+    <ul>
+      <li>
+        <strong>Baseline:</strong> $$n=5, k=2$$ → $$\binom{5}{2} = 10$$.
+        Both methods must agree.
+      </li>
+      <li>
+        <strong>Edge — $$k=0$$:</strong> $$\binom{n}{0} = 1$$ for any
+        $$n \ge 0$$.
+      </li>
+      <li>
+        <strong>Edge — $$k=n$$:</strong> $$\binom{n}{n} = 1$$ for any
+        $$n \ge 0$$.
+      </li>
+      <li>
+        <strong>Symmetry check:</strong> $$\binom{7}{3} = \binom{7}{4} = 35$$.
+      </li>
+      <li>
+        <strong>Pascal's identity check:</strong>
+        $$\binom{6}{2} = \binom{5}{1} + \binom{5}{2} = 5 + 10 = 15$$.
+      </li>
+      <li>
+        <strong>Expansion sum check:</strong> For any $$n$$, the sum of all
+        coefficients in $$(1+1)^n$$ must equal $$2^n$$.
+      </li>
+      <li>
+        <strong>Invalid input:</strong> $$k > n$$ (e.g., $$n=3, k=5$$) —
+        your program should display an error, not crash.
+      </li>
+      <li>
+        <strong>Large value stress test:</strong> $$n=20, k=10$$ →
+        $$\binom{20}{10} = 184{,}756$$. Verify both methods agree and
+        no overflow occurs.
+      </li>
+    </ul>
+
+    <h4>✅ Code Structure Tip</h4>
+    <p>
+      Keep your four feature functions completely independent of each other.
+      Your <code>binomialCoefficient(n, k)</code> function (whichever method)
+      should be callable from the expansion function, the specific-term
+      function, and the identity-verification function. Avoid copy-pasting
+      the same computation in multiple places.
+    </p>
+
+    <h4>✅ Starter Skeleton (Java)</h4>
+    <pre aria-label="Java starter code skeleton">
+import java.util.Scanner;
+
+public class BinomialCalculator {
+
+    // Task 1A: Direct factorial formula
+    static long factorial(int n) {
+        if (n == 0 || n == 1) return 1;
+        long result = 1;
+        for (int i = 2; i <= n; i++) result *= i;
+        return result;
+    }
+
+    static long cFactorial(int n, int k) {
+        if (k < 0 || k > n) throw new IllegalArgumentException("Invalid k");
+        return factorial(n) / (factorial(k) * factorial(n - k));
+    }
+
+    // Task 1B: Pascal's triangle row construction
+    static long[] pascalRow(int n) {
+        long[] row = new long[n + 1];
+        row[0] = 1;
+        for (int i = 1; i <= n; i++) {
+            for (int j = i; j >= 1; j--)
+                row[j] += row[j - 1];
+        }
+        return row;
+    }
+
+    static long cPascal(int n, int k) {
+        return pascalRow(n)[k];
+    }
+
+    // Task 2: Expand (a+b)^n — display all terms
+    static void expandBinomial(double a, double b, int n) { /* TODO */ }
+
+    // Task 3: Return the (k+1)-th term
+    static double specificTerm(double a, double b, int n, int k) { /* TODO */ }
+
+    // Task 4: Verify an identity
+    static void verifyIdentity(int n, int k) { /* TODO */ }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int choice = 0;
+        while (choice != 6) {
+            System.out.println("\n===== Binomial Coefficient Calculator =====");
+            System.out.println("  1. Compute C(n,k) - Factorial Method");
+            System.out.println("  2. Compute C(n,k) - Pascal's Triangle Method");
+            System.out.println("  3. Expand (a+b)^n - All Terms");
+            System.out.println("  4. Find the (k+1)-th Term");
+            System.out.println("  5. Verify a Binomial Identity");
+            System.out.println("  6. Exit");
+            System.out.print("Enter choice: ");
+            choice = sc.nextInt();
+            // TODO: dispatch to each feature
+        }
+        sc.close();
+    }
+}</pre>
+
+    <h4>✅ Midterm Connection</h4>
+    <p>
+      The Counting Theory section of the Midterm Exam (Week 9) is worth
+      approximately 35 points and includes binomial theorem expansions,
+      specific-term identification, and identity verification — exactly
+      what you are implementing here. Completing PE-07 thoroughly is
+      effective Midterm preparation.
+    </p>
+
+  </div><!-- #hints-content -->
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     CSLO / TOPIC ALIGNMENT FOOTER CARD
+══════════════════════════════════════════ -->
+<div class="card" style="background:var(--gray-100); border-color:var(--gray-300);">
+  <h2 class="section-heading" style="font-size:1rem; border-bottom-color:var(--gray-300);">
+    <span class="icon" aria-hidden="true">🗺️</span> Alignment Summary
+  </h2>
+  <table class="grade-table" aria-label="Alignment of PE-07 to topics and CSLOs" style="font-size:.88rem;">
+    <thead>
+      <tr>
+        <th scope="col">PE-07 Feature</th>
+        <th scope="col">Week 8 Topic</th>
+        <th scope="col">Module</th>
+        <th scope="col">CSLO</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Compute $$\binom{n}{k}$$ — two methods</td>
+        <td>Topic 2: Binomial Theorem; Topic 3: Identities</td>
+        <td>8.1, 8.2</td>
+        <td><span class="cslo-tag">CSLO 2</span></td>
+      </tr>
+      <tr>
+        <td>Expand $$(a+b)^n$$, display all terms</td>
+        <td>Topic 2: Binomial Theorem</td>
+        <td>8.1</td>
+        <td><span class="cslo-tag">CSLO 2</span></td>
+      </tr>
+      <tr>
+        <td>Identify the $$(k+1)$$-th term</td>
+        <td>Topic 2: Binomial Theorem</td>
+        <td>8.1</td>
+        <td><span class="cslo-tag">CSLO 2</span></td>
+      </tr>
+      <tr>
+        <td>Verify a binomial identity</td>
+        <td>Topic 3: Binomial Coefficient Identities</td>
+        <td>8.2</td>
+        <td><span class="cslo-tag">CSLO 2</span></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+</main><!-- #main-content -->
+
+<!-- ══════════════════════════════════════════
+     PAGE FOOTER
+══════════════════════════════════════════ -->
+<footer style="text-align:center; font-size:.82rem; color:var(--gray-600); padding-top:1rem; border-top:1px solid var(--gray-200);" role="contentinfo">
+  CSC 240 – Discrete Structures &nbsp;·&nbsp; Mendocino College &nbsp;·&nbsp;
+  Spring 2026 &nbsp;·&nbsp; Week 8 of 17 &nbsp;·&nbsp;
+  PE-07: Binomial Coefficient Calculator &nbsp;·&nbsp;
+  Questions? Contact your instructor through Canvas or during office hours.
+</footer>
+
+</div><!-- .page-wrap -->
+
+<!-- ══════════════════════════════════════════
+     JAVASCRIPT — Collapsible toggle only
+══════════════════════════════════════════ -->
+<script>
+(function () {
+  'use strict';
+  var btn     = document.getElementById('hints-toggle');
+  var content = document.getElementById('hints-content');
+  if (!btn || !content) return;
+
+  btn.addEventListener('click', function () {
+    var expanded = btn.getAttribute('aria-expanded') === 'true';
+    btn.setAttribute('aria-expanded', String(!expanded));
+    content.classList.toggle('open', !expanded);
+  });
+}());
+</script>
+
+</body>
+</html>
