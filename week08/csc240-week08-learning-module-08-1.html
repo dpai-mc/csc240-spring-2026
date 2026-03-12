@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 8.1 – Binomial Coefficients and the Binomial Theorem | CSC 240</title>
+<script>
+// KaTeX local fallback — full KaTeX is not available; we render math via MathML-like
+// approach using styled spans. Since no CDN is allowed, we use a lightweight
+// inline renderer that converts our delimited math to readable HTML.
+// Block math: $$ ... $$  Inline math: $$ ... $$
+// We do a simple post-load substitution using pre-rendered HTML for each expression.
+</script>
+<style>
+  /* ── Reset & Base ─────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; font-size: 16px; }
+  body {
+    font-family: Georgia, 'Times New Roman', serif;
+    background: #f9f8f5;
+    color: #1a1a1a;
+    line-height: 1.7;
+  }
+
+  /* ── Skip Link ────────────────────────────────────────────── */
+  .skip-link {
+    position: absolute; top: -999px; left: 6px;
+    background: #1a4f8a; color: #fff; padding: 8px 14px;
+    border-radius: 0 0 6px 6px; font-size: .9rem;
+    text-decoration: none; z-index: 9999;
+  }
+  .skip-link:focus { top: 0; }
+
+  /* ── Top Nav ──────────────────────────────────────────────── */
+  nav#topnav {
+    position: sticky; top: 0; z-index: 100;
+    background: #1a4f8a; color: #fff;
+    padding: 0 1rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,.25);
+  }
+  nav#topnav .nav-inner {
+    max-width: 960px; margin: 0 auto;
+    display: flex; align-items: center; flex-wrap: wrap;
+    gap: 0; min-height: 48px;
+  }
+  nav#topnav .nav-brand {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: .8rem; font-weight: 700;
+    color: #c8d9f0; margin-right: 1.2rem;
+    white-space: nowrap; padding: .5rem 0;
+  }
+  nav#topnav ul {
+    list-style: none; display: flex; flex-wrap: wrap; gap: 0;
+  }
+  nav#topnav ul li a {
+    display: block;
+    color: #d6e8ff; text-decoration: none;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: .78rem; font-weight: 600;
+    padding: .6rem .65rem;
+    border-radius: 4px;
+    transition: background .15s, color .15s;
+    white-space: nowrap;
+  }
+  nav#topnav ul li a:hover { background: #2d6ab8; color: #fff; }
+  nav#topnav ul li a:focus {
+    outline: 3px solid #ffd966; outline-offset: 2px;
+    background: #2d6ab8; color: #fff;
+  }
+
+  /* ── Page Wrapper ─────────────────────────────────────────── */
+  main { max-width: 960px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+
+  /* ── Section scroll offset ────────────────────────────────── */
+  section[id], h2[id] { scroll-margin-top: 58px; }
+
+  /* ── Module Header ────────────────────────────────────────── */
+  .module-header {
+    background: linear-gradient(135deg, #1a4f8a 0%, #2d6ab8 100%);
+    color: #fff; border-radius: 10px;
+    padding: 2rem 2rem 1.6rem; margin-bottom: 2rem;
+  }
+  .module-header .badge {
+    display: inline-block;
+    background: rgba(255,255,255,.18);
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: .75rem; font-weight: 700; letter-spacing: .08em;
+    text-transform: uppercase; padding: .25rem .7rem;
+    border-radius: 20px; margin-bottom: .7rem;
+  }
+  .module-header h1 {
+    font-size: 1.75rem; font-weight: 700;
+    line-height: 1.25; margin-bottom: .5rem;
+  }
+  .module-header p {
+    font-size: .95rem; color: #c8d9f0; margin-bottom: .3rem;
+  }
+  .obj-pills { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .8rem; }
+  .obj-pill {
+    background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.3);
+    border-radius: 20px; font-size: .75rem;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    padding: .2rem .65rem; color: #e8f0fb;
+  }
+
+  /* ── Section headings ─────────────────────────────────────── */
+  h2.section-title {
+    font-size: 1.35rem; color: #1a4f8a;
+    border-left: 5px solid #1a4f8a;
+    padding-left: .75rem; margin: 2.4rem 0 1rem;
+    font-family: 'Segoe UI', Arial, sans-serif;
+  }
+  h3.subsection {
+    font-size: 1.05rem; color: #1a3a5c;
+    margin: 1.4rem 0 .5rem;
+    font-family: 'Segoe UI', Arial, sans-serif;
+  }
+
+  /* ── Prose ────────────────────────────────────────────────── */
+  p { margin-bottom: .9rem; }
+  ul, ol { margin: .5rem 0 .9rem 1.5rem; }
+  li { margin-bottom: .3rem; }
+
+  /* ── Math display ─────────────────────────────────────────── */
+  .math-block {
+    overflow-x: auto;
+    background: #f0f4fa;
+    border-left: 4px solid #1a4f8a;
+    border-radius: 0 6px 6px 0;
+    padding: 1rem 1.25rem;
+    margin: 1rem 0 1.2rem;
+    font-size: 1.05rem;
+    text-align: center;
+  }
+  .math-inline {
+    font-style: italic;
+    font-family: Georgia, serif;
+    background: #eef2fa;
+    padding: .05em .3em;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  /* Fraction helper */
+  .frac {
+    display: inline-flex; flex-direction: column;
+    align-items: center; vertical-align: middle;
+    font-size: .9em; line-height: 1.1;
+    margin: 0 .1em;
+  }
+  .frac .num { border-bottom: 1.5px solid #1a1a1a; padding: 0 .2em; }
+  .frac .den { padding: 0 .2em; }
+  /* Binomial coefficient */
+  .binom {
+    display: inline-flex; align-items: center;
+    vertical-align: middle;
+  }
+  .binom .paren { font-size: 1.6em; line-height: 1; font-weight: 200; }
+  .binom .binom-inner {
+    display: flex; flex-direction: column;
+    align-items: center; font-size: .85em;
+    line-height: 1.2; margin: 0 .1em;
+  }
+  /* Sigma sum */
+  .sigma-block { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; font-size: .85em; }
+
+  /* ── Callout boxes ────────────────────────────────────────── */
+  .callout {
+    border-radius: 8px; padding: 1rem 1.2rem;
+    margin: 1.2rem 0; border-left: 5px solid;
+  }
+  .callout-title {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-weight: 700; font-size: .9rem;
+    text-transform: uppercase; letter-spacing: .05em;
+    margin-bottom: .4rem;
+  }
+  .callout.green  { background: #edfaf3; border-color: #27a060; }
+  .callout.green .callout-title  { color: #1a7045; }
+  .callout.blue   { background: #e8f2fc; border-color: #1a6dbd; }
+  .callout.blue .callout-title   { color: #1a4f8a; }
+  .callout.yellow { background: #fffbea; border-color: #d4a017; }
+  .callout.yellow .callout-title { color: #7a5c00; }
+  .callout.purple { background: #f3eeff; border-color: #7c3aed; }
+  .callout.purple .callout-title { color: #5b21b6; }
+
+  /* ── Flip Cards ───────────────────────────────────────────── */
+  .flip-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem; margin: 1.2rem 0;
+  }
+  .flip-card {
+    perspective: 900px; height: 160px;
+    cursor: pointer;
+  }
+  .flip-card-inner {
+    position: relative; width: 100%; height: 100%;
+    transform-style: preserve-3d;
+    transition: transform .5s cubic-bezier(.4,0,.2,1);
+  }
+  .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
+  .flip-card-front, .flip-card-back {
+    position: absolute; width: 100%; height: 100%;
+    backface-visibility: hidden;
+    border-radius: 10px; padding: 1rem;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+  }
+  .flip-card-front {
+    background: #1a4f8a; color: #fff;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: .95rem; font-weight: 700;
+    border: 2px solid #2d6ab8;
+  }
+  .flip-card-back {
+    background: #f0f4fa; color: #1a1a1a;
+    transform: rotateY(180deg);
+    font-size: .82rem; line-height: 1.45;
+    border: 2px solid #1a4f8a;
+  }
+  .flip-card-front .hint {
+    font-size: .72rem; color: #a8c4e8;
+    margin-top: .5rem; font-weight: 400;
+  }
+  .flip-card:focus { outline: 3px solid #ffd966; outline-offset: 3px; border-radius: 10px; }
+
+  /* ── Pascal / Expansion side-by-side ─────────────────────── */
+  .pascal-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem; margin: 1.2rem 0;
+  }
+  @media (max-width: 600px) { .pascal-grid { grid-template-columns: 1fr; } }
+  .pascal-panel {
+    background: #f0f4fa; border-radius: 8px;
+    padding: 1rem 1.2rem;
+    border: 1px solid #c5d5ea;
+  }
+  .pascal-panel h4 {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: .85rem; font-weight: 700; color: #1a4f8a;
+    text-transform: uppercase; letter-spacing: .05em;
+    margin-bottom: .7rem;
+  }
+  .pascal-row {
+    display: flex; gap: .4rem; flex-wrap: wrap;
+    margin-bottom: .35rem; align-items: center;
+  }
+  .pascal-row .row-label {
+    font-size: .78rem; color: #666;
+    min-width: 2.5rem; font-style: italic;
+    font-family: 'Segoe UI', Arial, sans-serif;
+  }
+  .pascal-entry {
+    background: #fff; border: 1.5px solid #b0c4de;
+    border-radius: 5px; min-width: 2rem; height: 2rem;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: .85rem; font-weight: 700; color: #1a3a5c;
+    transition: background .2s, border-color .2s;
+  }
+  .pascal-entry.highlight { background: #ffd966; border-color: #c8a000; }
+  .expansion-row {
+    font-size: .85rem; margin-bottom: .4rem;
+    padding: .25rem .5rem;
+    border-radius: 4px; background: #fff;
+    border: 1px solid #c5d5ea;
+    font-family: Georgia, serif;
+  }
+  .expansion-row .row-label {
+    font-size: .78rem; color: #666; font-style: italic;
+    font-family: 'Segoe UI', Arial, sans-serif;
+  }
+
+  /* ── Expandable panels ────────────────────────────────────── */
+  .expand-group { margin: 1rem 0; }
+  .expand-btn {
+    width: 100%; text-align: left;
+    background: #e8f0fb; border: 1.5px solid #a8c0e0;
+    border-radius: 8px; padding: .7rem 1rem;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: .92rem; font-weight: 700; color: #1a3a5c;
+    cursor: pointer; display: flex; align-items: center;
+    justify-content: space-between;
+    transition: background .15s;
+  }
+  .expand-btn:hover { background: #d0e2f5; }
+  .expand-btn:focus {
+    outline: 3px solid #ffd966; outline-offset: 2px;
+  }
+  .expand-btn .chevron {
+    font-size: 1rem; transition: transform .3s;
+    display: inline-block;
+  }
+  .expand-btn[aria-expanded="true"] .chevron { transform: rotate(180deg); }
+  .expand-content {
+    display: none;
+    background: #f7f9fd;
+    border: 1.5px solid #a8c0e0; border-top: none;
+    border-radius: 0 0 8px 8px;
+    padding: 1rem 1.2rem;
+  }
+  .expand-content.open { display: block; }
+
+  /* ── Term anatomy diagram ─────────────────────────────────── */
+  .anatomy-box {
+    background: #fff; border: 2px solid #1a4f8a;
+    border-radius: 10px; padding: 1.2rem;
+    margin: 1rem 0; text-align: center;
+  }
+  .anatomy-term {
+    font-size: 1.5rem; font-family: Georgia, serif;
+    color: #1a1a1a; margin-bottom: .8rem;
+  }
+  .anatomy-labels {
+    display: flex; flex-wrap: wrap; gap: .5rem;
+    justify-content: center;
+  }
+  .anatomy-label {
+    background: #e8f0fb; border-radius: 6px;
+    padding: .35rem .7rem; font-size: .8rem;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    color: #1a3a5c;
+  }
+  .anatomy-label strong { color: #1a4f8a; }
+
+  /* ── Step boxes ───────────────────────────────────────────── */
+  .step-list { list-style: none; margin: .5rem 0 1rem; padding: 0; }
+  .step-list li {
+    display: flex; gap: .8rem; margin-bottom: .7rem; align-items: flex-start;
+  }
+  .step-num {
+    background: #1a4f8a; color: #fff;
+    border-radius: 50%; min-width: 1.6rem; height: 1.6rem;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: .8rem; font-weight: 700; flex-shrink: 0;
+    margin-top: .1rem;
+  }
+
+  /* ── Knowledge Check ──────────────────────────────────────── */
+  .kc-section {
+    background: #1a3a5c; color: #e8f0fb;
+    border-radius: 12px; padding: 1.5rem 1.5rem 1.8rem;
+    margin: 2rem 0;
+  }
+  .kc-section h2 {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 1.2rem; color: #ffd966;
+    margin-bottom: .3rem;
+  }
+  .kc-section .kc-subtitle {
+    font-size: .85rem; color: #a8c4e8; margin-bottom: 1.2rem;
+  }
+  .kc-card {
+    background: #fff; color: #1a1a1a;
+    border-radius: 8px; padding: 1.1rem 1.2rem;
+    margin-bottom: 1rem;
+  }
+  .kc-card .kc-q {
+    font-weight: 700; margin-bottom: .8rem;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: .95rem;
+  }
+  .kc-options { list-style: none; padding: 0; margin: 0 0 .8rem; }
+  .kc-options li { margin-bottom: .4rem; }
+  .kc-options label {
+    display: flex; align-items: flex-start; gap: .5rem;
+    cursor: pointer; font-size: .9rem; line-height: 1.4;
+  }
+  .kc-options input[type="radio"] {
+    margin-top: .2rem; accent-color: #1a4f8a; flex-shrink: 0;
+  }
+  .kc-options label:hover { color: #1a4f8a; }
+  .kc-btn {
+    background: #1a4f8a; color: #fff;
+    border: none; border-radius: 6px;
+    padding: .5rem 1.2rem; cursor: pointer;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: .88rem; font-weight: 700;
+    transition: background .15s;
+  }
+  .kc-btn:hover { background: #2d6ab8; }
+  .kc-btn:focus { outline: 3px solid #ffd966; outline-offset: 2px; }
+  .kc-feedback {
+    display: none; margin-top: .7rem;
+    border-radius: 6px; padding: .7rem .9rem;
+    font-size: .88rem; line-height: 1.5;
+    font-family: 'Segoe UI', Arial, sans-serif;
+  }
+  .kc-feedback.correct { background: #edfaf3; border-left: 4px solid #27a060; color: #14532d; }
+  .kc-feedback.incorrect { background: #fef2f2; border-left: 4px solid #dc2626; color: #7f1d1d; }
+  .kc-feedback.show { display: block; }
+
+  /* ── Code block ───────────────────────────────────────────── */
+  pre {
+    background: #1e2a3a; color: #c9d7e8;
+    border-radius: 8px; padding: 1rem 1.2rem;
+    overflow-x: auto; font-size: .82rem;
+    line-height: 1.55; margin: .8rem 0;
+    font-family: 'Courier New', Courier, monospace;
+  }
+  code { font-family: 'Courier New', Courier, monospace; }
+  .code-comment { color: #6a9955; }
+
+  /* ── Table ────────────────────────────────────────────────── */
+  table {
+    width: 100%; border-collapse: collapse;
+    font-size: .88rem; margin: .8rem 0 1rem;
+  }
+  th {
+    background: #1a4f8a; color: #fff;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    padding: .5rem .75rem; text-align: left;
+  }
+  td { padding: .45rem .75rem; border-bottom: 1px solid #d0dcea; }
+  tr:nth-child(even) td { background: #f0f4fa; }
+
+  /* ── Progress bar ─────────────────────────────────────────── */
+  .progress-bar-wrap {
+    background: #d0dcea; border-radius: 20px;
+    height: 8px; margin: .5rem 0 1.2rem;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    background: #27a060; height: 100%;
+    border-radius: 20px; transition: width .4s;
+  }
+
+  /* ── Divider ──────────────────────────────────────────────── */
+  hr.section-divider {
+    border: none; border-top: 2px solid #d0dcea;
+    margin: 2.5rem 0;
+  }
+
+  /* ── Footer ───────────────────────────────────────────────── */
+  footer {
+    max-width: 960px; margin: 0 auto;
+    padding: 1.5rem 1.25rem;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: .8rem; color: #666;
+    border-top: 1px solid #d0dcea;
+    display: flex; flex-wrap: wrap; gap: .5rem;
+    justify-content: space-between;
+  }
+</style>
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<!-- ── Top Navigation ── -->
+<nav id="topnav" aria-label="Module sections">
+  <div class="nav-inner">
+    <span class="nav-brand">CSC 240 · Module 8.1</span>
+    <ul>
+      <li><a href="#sec-warmup">Warm-Up</a></li>
+      <li><a href="#sec-properties">Properties</a></li>
+      <li><a href="#sec-theorem">Binomial Theorem</a></li>
+      <li><a href="#sec-specific-term">Specific Term</a></li>
+      <li><a href="#sec-corollaries">Corollaries</a></li>
+      <li><a href="#sec-knowledge-check">Knowledge Check</a></li>
+      <li><a href="#sec-code">Java Snippet</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ── Main Content ── -->
+<main id="main-content">
+
+  <!-- Module Header -->
+  <header class="module-header" role="banner">
+    <div class="badge">Week 8 · Module 8.1</div>
+    <h1>Binomial Coefficients and the Binomial Theorem</h1>
+    <p>CSC 240 – Discrete Structures &nbsp;|&nbsp; Spring 2026 &nbsp;|&nbsp; Mendocino College</p>
+    <p>Estimated time: <strong>2.0 hours</strong> &nbsp;|&nbsp; CSLO 2: Apply combinatorics and set theory to counting problems.</p>
+    <div class="obj-pills">
+      <span class="obj-pill">Objective 1 – State &amp; apply the Binomial Theorem</span>
+      <span class="obj-pill">Objective 2 – Compute &amp; interpret binomial coefficients</span>
+    </div>
+  </header>
+
+  <!-- Opening Narrative -->
+  <section aria-label="Module introduction">
+    <h2 class="section-title">Where We've Been — Where We're Going</h2>
+    <p>
+      In Week 7 you built the foundational toolkit of combinatorics: the sum and product rules,
+      the inclusion-exclusion principle, permutations, combinations, and your first look at
+      Pascal's triangle. You learned that the binomial coefficient
+      <span class="math-inline">C(n,k)</span> counts the number of ways to choose
+      <span class="math-inline">k</span> items from a set of <span class="math-inline">n</span>
+      without regard to order, and that Pascal's identity connects adjacent entries of the triangle.
+    </p>
+    <p>
+      This module asks a natural follow-up question: <strong>what pattern appears in the
+      coefficients when we expand <span class="math-inline">(a+b)<sup>n</sup></span>
+      for larger and larger <span class="math-inline">n</span>?</strong>
+      The answer — the <em>Binomial Theorem</em> — reveals that the entries of row
+      <span class="math-inline">n</span> in Pascal's triangle are <em>exactly</em> those
+      coefficients. This is not a coincidence; it is a deep combinatorial fact that we will
+      prove and then use to unlock powerful counting tools.
+    </p>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ══════════════════════════════════════════════════════════
+       SECTION 1 — WARM-UP REVIEW
+       ══════════════════════════════════════════════════════════ -->
+  <section id="sec-warmup" aria-labelledby="h2-warmup">
+    <h2 class="section-title" id="h2-warmup">1 · Warm-Up Review</h2>
+    <p>
+      Click each card to flip it and reveal the formula or definition.
+      Make sure you can recall all four before moving on — they are the
+      direct prerequisites for the Binomial Theorem.
+    </p>
+
+    <!-- Flip Cards -->
+    <div class="flip-card-grid" role="list" aria-label="Review flip cards">
+
+      <div class="flip-card" role="listitem" tabindex="0"
+           aria-label="Flip card: Binomial Coefficient formula"
+           onclick="flipCard(this)" onkeydown="if(event.key==='Enter'||event.key===' ')flipCard(this)">
+        <div class="flip-card-inner" aria-hidden="true">
+          <div class="flip-card-front">
+            Binomial Coefficient
+            <span class="hint">Click to reveal</span>
+          </div>
+          <div class="flip-card-back">
+            <div class="math-block" style="margin:0;padding:.5rem;font-size:.9rem;">
+              C(n,k) = <span class="frac"><span class="num">n!</span><span class="den">k!(n−k)!</span></span>
+            </div>
+            <small>The number of ways to choose <em>k</em> items from <em>n</em> without order.</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-card" role="listitem" tabindex="0"
+           aria-label="Flip card: Pascal's Identity"
+           onclick="flipCard(this)" onkeydown="if(event.key==='Enter'||event.key===' ')flipCard(this)">
+        <div class="flip-card-inner" aria-hidden="true">
+          <div class="flip-card-front">
+            Pascal's Identity
+            <span class="hint">Click to reveal</span>
+          </div>
+          <div class="flip-card-back">
+            <div style="font-size:.85rem;font-family:Georgia,serif;margin-bottom:.3rem;">
+              C(n,k) = C(n−1, k−1) + C(n−1, k)
+            </div>
+            <small>Each entry equals the sum of the two entries directly above it in Pascal's triangle.</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-card" role="listitem" tabindex="0"
+           aria-label="Flip card: Combinatorial meaning of C(n,k)"
+           onclick="flipCard(this)" onkeydown="if(event.key==='Enter'||event.key===' ')flipCard(this)">
+        <div class="flip-card-inner" aria-hidden="true">
+          <div class="flip-card-front">
+            Combinatorial Meaning of C(n,k)
+            <span class="hint">Click to reveal</span>
+          </div>
+          <div class="flip-card-back">
+            <div style="font-size:.85rem;">
+              C(n,k) counts the <strong>k-element subsets</strong> of an n-element set.
+            </div>
+            <small>Choosing 3 toppings from 8 options: C(8,3) = 56 ways.</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-card" role="listitem" tabindex="0"
+           aria-label="Flip card: Product Rule"
+           onclick="flipCard(this)" onkeydown="if(event.key==='Enter'||event.key===' ')flipCard(this)">
+        <div class="flip-card-inner" aria-hidden="true">
+          <div class="flip-card-front">
+            Product Rule
+            <span class="hint">Click to reveal</span>
+          </div>
+          <div class="flip-card-back">
+            <div style="font-size:.85rem;">
+              If a task has <em>m</em> ways to do step 1 and <em>n</em> ways to do step 2,
+              there are <strong>m × n</strong> ways total.
+            </div>
+            <small>Foundation for counting multi-step processes.</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pascal's Triangle Visual -->
+    <h3 class="subsection">Pascal's Triangle Rows 0 – 7 vs. Expansion Coefficients</h3>
+    <p>
+      The two panels below sit side by side. Notice how each row of Pascal's triangle
+      on the left matches the coefficients of the corresponding expansion on the right.
+      <strong>This alignment is exactly what the Binomial Theorem explains.</strong>
+    </p>
+
+    <div class="pascal-grid">
+      <div class="pascal-panel">
+        <h4>Pascal's Triangle (rows 0 – 7)</h4>
+        <div class="pascal-row"><span class="row-label">n=0</span><span class="pascal-entry">1</span></div>
+        <div class="pascal-row"><span class="row-label">n=1</span><span class="pascal-entry">1</span><span class="pascal-entry">1</span></div>
+        <div class="pascal-row"><span class="row-label">n=2</span><span class="pascal-entry">1</span><span class="pascal-entry">2</span><span class="pascal-entry">1</span></div>
+        <div class="pascal-row"><span class="row-label">n=3</span><span class="pascal-entry">1</span><span class="pascal-entry">3</span><span class="pascal-entry">3</span><span class="pascal-entry">1</span></div>
+        <div class="pascal-row"><span class="row-label">n=4</span><span class="pascal-entry">1</span><span class="pascal-entry">4</span><span class="pascal-entry highlight">6</span><span class="pascal-entry">4</span><span class="pascal-entry">1</span></div>
+        <div class="pascal-row"><span class="row-label">n=5</span><span class="pascal-entry">1</span><span class="pascal-entry">5</span><span class="pascal-entry">10</span><span class="pascal-entry">10</span><span class="pascal-entry">5</span><span class="pascal-entry">1</span></div>
+        <div class="pascal-row"><span class="row-label">n=6</span><span class="pascal-entry">1</span><span class="pascal-entry">6</span><span class="pascal-entry">15</span><span class="pascal-entry">20</span><span class="pascal-entry">15</span><span class="pascal-entry">6</span><span class="pascal-entry">1</span></div>
+        <div class="pascal-row"><span class="row-label">n=7</span><span class="pascal-entry">1</span><span class="pascal-entry">7</span><span class="pascal-entry">21</span><span class="pascal-entry">35</span><span class="pascal-entry">35</span><span class="pascal-entry">21</span><span class="pascal-entry">7</span><span class="pascal-entry">1</span></div>
+      </div>
+      <div class="pascal-panel">
+        <h4>Expansion Coefficients</h4>
+        <div class="expansion-row"><span class="row-label">n=0: </span> (a+b)⁰ = <strong>1</strong></div>
+        <div class="expansion-row"><span class="row-label">n=1: </span> (a+b)¹ = <strong>1</strong>a + <strong>1</strong>b</div>
+        <div class="expansion-row"><span class="row-label">n=2: </span> (a+b)² = <strong>1</strong>a² + <strong>2</strong>ab + <strong>1</strong>b²</div>
+        <div class="expansion-row"><span class="row-label">n=3: </span> (a+b)³ = <strong>1</strong>a³ + <strong>3</strong>a²b + <strong>3</strong>ab² + <strong>1</strong>b³</div>
+        <div class="expansion-row"><span class="row-label">n=4: </span> (a+b)⁴ = a⁴ + 4a³b + <strong style="color:#8a6000;">6</strong>a²b² + 4ab³ + b⁴</div>
+        <div class="expansion-row"><span class="row-label">n=5: </span> (a+b)⁵ = a⁵ + 5a⁴b + 10a³b² + 10a²b³ + 5ab⁴ + b⁵</div>
+        <div class="expansion-row"><span class="row-label">n=6: </span> (a+b)⁶ = a⁶ + 6a⁵b + 15a⁴b² + 20a³b³ + 15a²b⁴ + 6ab⁵ + b⁶</div>
+        <div class="expansion-row"><span class="row-label">n=7: </span> (a+b)⁷ = a⁷ + 7a⁶b + 21a⁵b² + 35a⁴b³ + 35a³b⁴ + 21a²b⁵ + 7ab⁶ + b⁷</div>
+      </div>
+    </div>
+    <div class="callout yellow">
+      <div class="callout-title">🔍 Notice</div>
+      The highlighted entry C(4,2) = <strong>6</strong> in row 4 of Pascal's triangle (gold cell, left)
+      is exactly the coefficient of <span class="math-inline">a²b²</span> in
+      <span class="math-inline">(a+b)⁴</span> (bold gold, right). This is not a coincidence —
+      the Binomial Theorem explains exactly why.
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ══════════════════════════════════════════════════════════
+       SECTION 2 — PROPERTIES OF BINOMIAL COEFFICIENTS
+       ══════════════════════════════════════════════════════════ -->
+  <section id="sec-properties" aria-labelledby="h2-properties">
+    <h2 class="section-title" id="h2-properties">2 · Properties of Binomial Coefficients</h2>
+    <p>
+      Before stating the full theorem, let's establish three fundamental properties of
+      binomial coefficients. Each has both a formal algebraic statement and an intuitive
+      combinatorial explanation.
+    </p>
+
+    <!-- Property 1: Symmetry -->
+    <h3 class="subsection">Property 1 — Symmetry Identity</h3>
+    <div class="math-block">
+      C(n, k) = C(n, n−k)
+    </div>
+    <p><strong>Formal statement:</strong>
+      For all integers <span class="math-inline">0 ≤ k ≤ n</span>,
+      <span class="math-inline">C(n,k) = C(n, n−k)</span>.
+    </p>
+    <p><strong>Intuitive explanation:</strong>
+      Choosing <span class="math-inline">k</span> items to <em>include</em> in a subset is
+      equivalent to choosing the remaining <span class="math-inline">n−k</span> items to
+      <em>exclude</em>. These two actions describe the same subset, so the counts must be equal.
+    </p>
+    <p><strong>Numeric example:</strong>
+      C(7, 2) = 21 and C(7, 5) = 21. Choosing 2 items from 7 gives the same number of subsets
+      as choosing which 5 items to leave out.
+    </p>
+
+    <!-- Property 2: Row Sum -->
+    <h3 class="subsection">Property 2 — Row Sum Identity</h3>
+    <div class="math-block">
+      C(n,0) + C(n,1) + C(n,2) + · · · + C(n,n) = 2<sup>n</sup>
+    </div>
+    <p><strong>Formal statement:</strong>
+      The sum of all binomial coefficients in row <span class="math-inline">n</span> equals
+      <span class="math-inline">2<sup>n</sup></span>.
+    </p>
+    <p><strong>Intuitive explanation:</strong>
+      Every subset of an <span class="math-inline">n</span>-element set has some size
+      <span class="math-inline">k</span> between 0 and <span class="math-inline">n</span>.
+      Summing <span class="math-inline">C(n,k)</span> over all <span class="math-inline">k</span>
+      counts <em>all</em> subsets — and we know an <span class="math-inline">n</span>-element
+      set has exactly <span class="math-inline">2<sup>n</sup></span> subsets (each element is
+      either in or out: 2 choices per element, <span class="math-inline">n</span> elements).
+    </p>
+    <p><strong>Numeric example:</strong>
+      Row 4: 1 + 4 + 6 + 4 + 1 = 16 = 2⁴. ✓
+    </p>
+
+    <!-- Property 3: Alternating Sum -->
+    <h3 class="subsection">Property 3 — Alternating Sum Identity</h3>
+    <div class="math-block">
+      C(n,0) − C(n,1) + C(n,2) − · · · + (−1)<sup>n</sup>C(n,n) = 0
+    </div>
+    <p><strong>Formal statement:</strong>
+      The alternating sum of row <span class="math-inline">n</span> equals 0 for all
+      <span class="math-inline">n ≥ 1</span>.
+    </p>
+    <p><strong>Intuitive explanation:</strong>
+      This says the number of even-sized subsets of an <span class="math-inline">n</span>-element
+      set equals the number of odd-sized subsets. There is a bijection between them: for any
+      subset <span class="math-inline">S</span>, toggle membership of a fixed element
+      (say, element 1) to switch between even and odd size.
+    </p>
+    <p><strong>Numeric example:</strong>
+      Row 4: 1 − 4 + 6 − 4 + 1 = 0. ✓
+      (Even-size subsets: ∅, {a,b}, {a,c}, {a,d}, {b,c}, {b,d}, {c,d}, {a,b,c,d} = 8.
+      Odd-size subsets: {a},{b},{c},{d},{a,b,c},{a,b,d},{a,c,d},{b,c,d} = 8.)
+    </p>
+
+    <div class="callout blue">
+      <div class="callout-title">💡 Connection to the Binomial Theorem</div>
+      Both the row-sum and alternating-sum identities are <em>special cases</em> of the
+      Binomial Theorem. Setting <span class="math-inline">a = b = 1</span> gives the row sum;
+      setting <span class="math-inline">a = 1, b = −1</span> gives the alternating sum.
+      You will see this formally in Section 5.
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ══════════════════════════════════════════════════════════
+       SECTION 3 — THE BINOMIAL THEOREM
+       ══════════════════════════════════════════════════════════ -->
+  <section id="sec-theorem" aria-labelledby="h2-theorem">
+    <h2 class="section-title" id="h2-theorem">3 · The Binomial Theorem</h2>
+
+    <!-- Formal Statement -->
+    <h3 class="subsection">Formal Statement</h3>
+    <div class="callout blue">
+      <div class="callout-title">Theorem — The Binomial Theorem</div>
+      <p>
+        Let <span class="math-inline">a</span> and <span class="math-inline">b</span> be any
+        real numbers and let <span class="math-inline">n</span> be a non-negative integer. Then:
+      </p>
+      <div class="math-block">
+        (a + b)<sup>n</sup> = C(n,0)·a<sup>n</sup>b<sup>0</sup>
+          + C(n,1)·a<sup>n−1</sup>b<sup>1</sup>
+          + C(n,2)·a<sup>n−2</sup>b<sup>2</sup>
+          + · · ·
+          + C(n,n)·a<sup>0</sup>b<sup>n</sup>
+      </div>
+      <p>Written in summation notation:</p>
+      <div class="math-block">
+        (a + b)<sup>n</sup> &nbsp;=&nbsp;
+        <span style="font-size:1.1em">∑</span><sub style="font-size:.8em">k=0</sub><sup style="font-size:.8em">n</sup>
+        &nbsp; C(n, k) · a<sup>n−k</sup> · b<sup>k</sup>
+      </div>
+    </div>
+
+    <!-- Anatomy Diagram -->
+    <h3 class="subsection">Anatomy of the General Term</h3>
+    <p>
+      The <span class="math-inline">(k+1)</span>-th term of the expansion (counting from
+      <span class="math-inline">k = 0</span>) is:
+    </p>
+    <div class="anatomy-box" aria-label="Anatomy of the general binomial term">
+      <div class="anatomy-term">
+        T<sub>k+1</sub> &nbsp;=&nbsp; C(n, k) &nbsp;·&nbsp; a<sup>n−k</sup> &nbsp;·&nbsp; b<sup>k</sup>
+      </div>
+      <div class="anatomy-labels">
+        <div class="anatomy-label"><strong>C(n,k)</strong> — binomial coefficient; the "weight" of this term</div>
+        <div class="anatomy-label"><strong>a<sup>n−k</sup></strong> — power of the first base; decreases as k increases</div>
+        <div class="anatomy-label"><strong>b<sup>k</sup></strong> — power of the second base; increases as k increases</div>
+        <div class="anatomy-label"><strong>k</strong> — term index; runs from 0 to n</div>
+      </div>
+    </div>
+
+    <!-- Combinatorial Proof Sketch -->
+    <h3 class="subsection">Why Does This Work? (Combinatorial Proof Sketch)</h3>
+    <p>
+      When we multiply out <span class="math-inline">(a+b)(a+b)···(a+b)</span>
+      (<span class="math-inline">n</span> factors), each term in the product is formed by
+      choosing either <span class="math-inline">a</span> or <span class="math-inline">b</span>
+      from each factor:
+    </p>
+    <ul>
+      <li>If we choose <span class="math-inline">b</span> from exactly
+          <span class="math-inline">k</span> of the <span class="math-inline">n</span> factors,
+          we get a term <span class="math-inline">a<sup>n−k</sup>b<sup>k</sup></span>.</li>
+      <li>The number of ways to choose <em>which</em> <span class="math-inline">k</span> factors
+          contribute the <span class="math-inline">b</span> is exactly
+          <span class="math-inline">C(n, k)</span>.</li>
+      <li>Therefore the coefficient of <span class="math-inline">a<sup>n−k</sup>b<sup>k</sup></span>
+          in the expansion is <span class="math-inline">C(n, k)</span>.</li>
+    </ul>
+    <p>
+      Since <span class="math-inline">k</span> ranges from 0 to <span class="math-inline">n</span>,
+      summing over all choices gives the full expansion.
+    </p>
+
+    <!-- Worked Examples -->
+    <h3 class="subsection">Worked Examples</h3>
+
+    <div class="expand-group">
+      <button class="expand-btn" aria-expanded="false" aria-controls="ex1-body"
+              onclick="toggleExpand(this)">
+        Example 1 — Expand (x + y)⁴
+        <span class="chevron" aria-hidden="true">▼</span>
+      </button>
+      <div class="expand-content" id="ex1-body" role="region">
+        <p><strong>Apply the theorem with</strong> <span class="math-inline">a = x</span>,
+          <span class="math-inline">b = y</span>, <span class="math-inline">n = 4</span>:</p>
+        <ol class="step-list">
+          <li><span class="step-num">1</span>
+            <span>List the terms for k = 0, 1, 2, 3, 4.</span></li>
+          <li><span class="step-num">2</span>
+            <span>Compute each C(4, k): C(4,0)=1, C(4,1)=4, C(4,2)=6, C(4,3)=4, C(4,4)=1.</span></li>
+          <li><span class="step-num">3</span>
+            <span>Write each term: C(4,k)·x<sup>4−k</sup>·y<sup>k</sup>.</span></li>
+        </ol>
+        <div class="math-block">
+          (x + y)⁴ = 1·x⁴ + 4·x³y + 6·x²y² + 4·xy³ + 1·y⁴
+        </div>
+        <p>
+          <strong>Verify:</strong> The coefficients 1, 4, 6, 4, 1 match row 4 of Pascal's triangle. ✓
+        </p>
+      </div>
+    </div>
+
+    <div class="expand-group">
+      <button class="expand-btn" aria-expanded="false" aria-controls="ex2-body"
+              onclick="toggleExpand(this)">
+        Example 2 — Expand (2x − 3)³ &nbsp;(handling coefficients and negatives)
+        <span class="chevron" aria-hidden="true">▼</span>
+      </button>
+      <div class="expand-content" id="ex2-body" role="region">
+        <p>
+          <strong>Identify:</strong> <span class="math-inline">a = 2x</span>,
+          <span class="math-inline">b = −3</span>, <span class="math-inline">n = 3</span>.
+        </p>
+        <p><strong>Key caution:</strong> <span class="math-inline">b = −3</span>, not
+          <span class="math-inline">b = 3</span>. Substitute the entire expression including the sign.</p>
+        <table>
+          <thead><tr><th>k</th><th>C(3,k)</th><th>a<sup>3−k</sup> = (2x)<sup>3−k</sup></th><th>b<sup>k</sup> = (−3)<sup>k</sup></th><th>Term</th></tr></thead>
+          <tbody>
+            <tr><td>0</td><td>1</td><td>(2x)³ = 8x³</td><td>(−3)⁰ = 1</td><td>8x³</td></tr>
+            <tr><td>1</td><td>3</td><td>(2x)² = 4x²</td><td>(−3)¹ = −3</td><td>3·4x²·(−3) = −36x²</td></tr>
+            <tr><td>2</td><td>3</td><td>(2x)¹ = 2x</td><td>(−3)² = 9</td><td>3·2x·9 = 54x</td></tr>
+            <tr><td>3</td><td>1</td><td>(2x)⁰ = 1</td><td>(−3)³ = −27</td><td>−27</td></tr>
+          </tbody>
+        </table>
+        <div class="math-block">
+          (2x − 3)³ = 8x³ − 36x² + 54x − 27
+        </div>
+        <p>
+          <strong>Check the alternating signs:</strong> The signs alternate starting with +,
+          which is expected when <span class="math-inline">b</span> is negative. ✓
+        </p>
+      </div>
+    </div>
+
+    <div class="expand-group">
+      <button class="expand-btn" aria-expanded="false" aria-controls="ex3-body"
+              onclick="toggleExpand(this)">
+        Example 3 — Find the (k+1)-th term of (1 + x)¹⁰ where k = 4
+        <span class="chevron" aria-hidden="true">▼</span>
+      </button>
+      <div class="expand-content" id="ex3-body" role="region">
+        <p>
+          <strong>Goal:</strong> Find the 5th term (since k = 4, the term is T<sub>k+1</sub> = T<sub>5</sub>).
+        </p>
+        <p>
+          <strong>Set up:</strong> <span class="math-inline">a = 1</span>,
+          <span class="math-inline">b = x</span>, <span class="math-inline">n = 10</span>,
+          <span class="math-inline">k = 4</span>.
+        </p>
+        <ol class="step-list">
+          <li><span class="step-num">1</span>
+            <span>Apply the general term formula: T<sub>k+1</sub> = C(n,k) · a<sup>n−k</sup> · b<sup>k</sup></span></li>
+          <li><span class="step-num">2</span>
+            <span>Substitute: T<sub>5</sub> = C(10, 4) · 1<sup>10−4</sup> · x<sup>4</sup></span></li>
+          <li><span class="step-num">3</span>
+            <span>Compute C(10,4) = 10!/(4!·6!) = (10·9·8·7)/(4·3·2·1) = 5040/24 = 210</span></li>
+          <li><span class="step-num">4</span>
+            <span>Since 1<sup>6</sup> = 1: T<sub>5</sub> = 210 · x⁴</span></li>
+        </ol>
+        <div class="math-block">
+          T₅ = C(10, 4) · x⁴ = <strong>210x⁴</strong>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ══════════════════════════════════════════════════════════
+       SECTION 4 — FINDING A SPECIFIC TERM
+       ══════════════════════════════════════════════════════════ -->
+  <section id="sec-specific-term" aria-labelledby="h2-specific-term">
+    <h2 class="section-title" id="h2-specific-term">4 · Finding a Specific Term</h2>
+    <p>
+      One of the most useful applications of the Binomial Theorem is locating a single term
+      in a large expansion without computing the entire thing.
+    </p>
+
+    <div class="callout purple">
+      <div class="callout-title">General Term Formula</div>
+      <p>The <span class="math-inline">(k+1)</span>-th term in the expansion of
+        <span class="math-inline">(a + b)<sup>n</sup></span> is:</p>
+      <div class="math-block">
+        T<sub>k+1</sub> = C(n, k) · a<sup>n−k</sup> · b<sup>k</sup>
+      </div>
+      <p style="margin-bottom:0;">
+        <strong>Important:</strong> Terms are indexed starting at <span class="math-inline">k = 0</span>,
+        so the <em>first</em> term has <span class="math-inline">k = 0</span>,
+        the <em>second</em> has <span class="math-inline">k = 1</span>, and so on.
+        The <em>r</em>-th term corresponds to <span class="math-inline">k = r − 1</span>.
+      </p>
+    </div>
+
+    <!-- Worked Example A -->
+    <div class="expand-group">
+      <button class="expand-btn" aria-expanded="false" aria-controls="sp1-body"
+              onclick="toggleExpand(this)">
+        Worked Example A — Find the term containing x³y² in (x + y)⁵
+        <span class="chevron" aria-hidden="true">▼</span>
+      </button>
+      <div class="expand-content" id="sp1-body" role="region">
+        <p>
+          <strong>Strategy:</strong> Identify <span class="math-inline">k</span> by matching
+          the power of <span class="math-inline">b = y</span>. Since we want
+          <span class="math-inline">y²</span>, we need <span class="math-inline">k = 2</span>.
+        </p>
+        <ol class="step-list">
+          <li><span class="step-num">1</span>
+            <span><em>n</em> = 5, <em>a</em> = x, <em>b</em> = y, <em>k</em> = 2 (power of y).</span></li>
+          <li><span class="step-num">2</span>
+            <span>Verify: a<sup>n−k</sup> = x<sup>5−2</sup> = x³ ✓ and b<sup>k</sup> = y² ✓</span></li>
+          <li><span class="step-num">3</span>
+            <span>Coefficient: C(5, 2) = 10.</span></li>
+          <li><span class="step-num">4</span>
+            <span>Term: T₃ = 10x³y².</span></li>
+        </ol>
+        <div class="math-block">
+          The term containing x³y² in (x+y)⁵ is <strong>10x³y²</strong>.
+        </div>
+      </div>
+    </div>
+
+    <!-- Worked Example B -->
+    <div class="expand-group">
+      <button class="expand-btn" aria-expanded="false" aria-controls="sp2-body"
+              onclick="toggleExpand(this)">
+        Worked Example B — Find the 4th term of (a + 2b)⁶
+        <span class="chevron" aria-hidden="true">▼</span>
+      </button>
+      <div class="expand-content" id="sp2-body" role="region">
+        <p>
+          <strong>4th term ↔ k = 3</strong> (since the first term has k = 0).
+        </p>
+        <ol class="step-list">
+          <li><span class="step-num">1</span>
+            <span><em>n</em> = 6, <em>a</em> = a, <em>b</em> = 2b, <em>k</em> = 3.</span></li>
+          <li><span class="step-num">2</span>
+            <span>T<sub>4</sub> = C(6, 3) · a<sup>6−3</sup> · (2b)<sup>3</sup></span></li>
+          <li><span class="step-num">3</span>
+            <span>C(6, 3) = 20; &nbsp; (2b)³ = 8b³.</span></li>
+          <li><span class="step-num">4</span>
+            <span>T<sub>4</sub> = 20 · a³ · 8b³ = 160a³b³.</span></li>
+        </ol>
+        <div class="math-block">
+          The 4th term of (a + 2b)⁶ is <strong>160a³b³</strong>.
+        </div>
+        <div class="callout yellow" style="margin-top:.8rem;">
+          <div class="callout-title">⚠️ Common Mistake</div>
+          When <span class="math-inline">b</span> has a coefficient (like <span class="math-inline">2b</span>),
+          you must raise the <em>entire expression</em> to the power <span class="math-inline">k</span>.
+          <span class="math-inline">(2b)³ = 8b³</span>, not <span class="math-inline">2b³</span>.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ══════════════════════════════════════════════════════════
+       SECTION 5 — KEY COROLLARIES
+       ══════════════════════════════════════════════════════════ -->
+  <section id="sec-corollaries" aria-labelledby="h2-corollaries">
+    <h2 class="section-title" id="h2-corollaries">5 · Key Corollaries</h2>
+    <p>
+      Two especially important results follow directly from the Binomial Theorem by substituting
+      specific values for <span class="math-inline">a</span> and <span class="math-inline">b</span>.
+    </p>
+
+    <!-- Corollary 1 -->
+    <div class="callout green">
+      <div class="callout-title">Corollary 1 — Subset Counting (a = b = 1)</div>
+      <p>
+        Set <span class="math-inline">a = 1</span> and <span class="math-inline">b = 1</span>
+        in the Binomial Theorem:
+      </p>
+      <div class="math-block">
+        (1 + 1)<sup>n</sup> = C(n,0) + C(n,1) + C(n,2) + · · · + C(n,n)
+        &nbsp;=&nbsp; 2<sup>n</sup>
+      </div>
+      <p><strong>Combinatorial meaning:</strong>
+        The total number of subsets of an <span class="math-inline">n</span>-element set is
+        <span class="math-inline">2<sup>n</sup></span>. Each term
+        <span class="math-inline">C(n,k)</span> counts the subsets of size exactly
+        <span class="math-inline">k</span>; summing over all sizes gives all subsets.
+      </p>
+      <p style="margin-bottom:0;">
+        <strong>Example:</strong> A set with 5 elements has
+        C(5,0)+C(5,1)+C(5,2)+C(5,3)+C(5,4)+C(5,5) = 1+5+10+10+5+1 = 32 = 2⁵ subsets.
+      </p>
+    </div>
+
+    <!-- Corollary 2 -->
+    <div class="callout blue">
+      <div class="callout-title">Corollary 2 — Alternating Sum (a = 1, b = −1)</div>
+      <p>
+        Set <span class="math-inline">a = 1</span> and <span class="math-inline">b = −1</span>:
+      </p>
+      <div class="math-block">
+        (1 − 1)<sup>n</sup> = C(n,0) − C(n,1) + C(n,2) − · · · + (−1)<sup>n</sup>C(n,n)
+        &nbsp;=&nbsp; 0
+      </div>
+      <p><strong>Combinatorial meaning:</strong>
+        For any set with <span class="math-inline">n ≥ 1</span> elements, the number of
+        even-sized subsets equals the number of odd-sized subsets.
+      </p>
+      <p style="margin-bottom:0;">
+        <strong>Practical use:</strong> This identity is a quick sanity check when computing
+        with binomial coefficients. If your alternating sum is non-zero, you have made an error.
+      </p>
+    </div>
+
+    <!-- Corollary 3: (1+x)^n -->
+    <div class="callout purple">
+      <div class="callout-title">Corollary 3 — The (1+x)<sup>n</sup> Form</div>
+      <p>
+        Setting <span class="math-inline">a = 1</span> gives a particularly clean form
+        used throughout mathematics and computer science:
+      </p>
+      <div class="math-block">
+        (1 + x)<sup>n</sup> = C(n,0) + C(n,1)x + C(n,2)x² + · · · + C(n,n)xⁿ
+      </div>
+      <p style="margin-bottom:0;">
+        <strong>Why it matters:</strong> This is the <em>generating function</em> for the
+        binomial coefficients in row <span class="math-inline">n</span> — a concept you
+        will explore in Module 8.4. The coefficient of <span class="math-inline">x<sup>k</sup></span>
+        is exactly <span class="math-inline">C(n, k)</span>.
+      </p>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ══════════════════════════════════════════════════════════
+       SECTION 6 — KNOWLEDGE CHECK
+       ══════════════════════════════════════════════════════════ -->
+  <section id="sec-knowledge-check" aria-labelledby="h2-kc">
+    <div class="kc-section" role="region" aria-labelledby="h2-kc">
+      <h2 id="h2-kc">6 · Knowledge Check</h2>
+      <p class="kc-subtitle">
+        Ungraded · Immediate feedback · 4 questions covering expansion, term identification, and corollary application
+      </p>
+
+      <!-- Q1 -->
+      <div class="kc-card" id="kc1">
+        <div class="kc-q">
+          Q1. What is the coefficient of <span style="font-style:italic;">x³y²</span> in
+          the expansion of <span style="font-style:italic;">(x + y)⁵</span>?
+        </div>
+        <ul class="kc-options" role="list">
+          <li><label><input type="radio" name="q1" value="a"> 5</label></li>
+          <li><label><input type="radio" name="q1" value="b"> 10</label></li>
+          <li><label><input type="radio" name="q1" value="c"> 15</label></li>
+          <li><label><input type="radio" name="q1" value="d"> 20</label></li>
+        </ul>
+        <button class="kc-btn" onclick="checkKC('q1','b','kc1-fb')">Check Answer</button>
+        <div class="kc-feedback" id="kc1-fb" role="alert" aria-live="polite"></div>
+      </div>
+
+      <!-- Q2 -->
+      <div class="kc-card" id="kc2">
+        <div class="kc-q">
+          Q2. Using the Binomial Theorem, what is the value of
+          C(6,0) + C(6,1) + C(6,2) + C(6,3) + C(6,4) + C(6,5) + C(6,6)?
+        </div>
+        <ul class="kc-options" role="list">
+          <li><label><input type="radio" name="q2" value="a"> 36</label></li>
+          <li><label><input type="radio" name="q2" value="b"> 48</label></li>
+          <li><label><input type="radio" name="q2" value="c"> 64</label></li>
+          <li><label><input type="radio" name="q2" value="d"> 128</label></li>
+        </ul>
+        <button class="kc-btn" onclick="checkKC('q2','c','kc2-fb')">Check Answer</button>
+        <div class="kc-feedback" id="kc2-fb" role="alert" aria-live="polite"></div>
+      </div>
+
+      <!-- Q3 -->
+      <div class="kc-card" id="kc3">
+        <div class="kc-q">
+          Q3. What is the 4th term in the expansion of <span style="font-style:italic;">(a + 2b)⁶</span>?
+        </div>
+        <ul class="kc-options" role="list">
+          <li><label><input type="radio" name="q3" value="a"> 60a³b³</label></li>
+          <li><label><input type="radio" name="q3" value="b"> 160a³b³</label></li>
+          <li><label><input type="radio" name="q3" value="c"> 120a³b³</label></li>
+          <li><label><input type="radio" name="q3" value="d"> 80a³b³</label></li>
+        </ul>
+        <button class="kc-btn" onclick="checkKC('q3','b','kc3-fb')">Check Answer</button>
+        <div class="kc-feedback" id="kc3-fb" role="alert" aria-live="polite"></div>
+      </div>
+
+      <!-- Q4 -->
+      <div class="kc-card" id="kc4">
+        <div class="kc-q">
+          Q4. A set has 8 elements. Using the row-sum corollary of the Binomial Theorem,
+          how many total subsets does it have?
+        </div>
+        <ul class="kc-options" role="list">
+          <li><label><input type="radio" name="q4" value="a"> 64</label></li>
+          <li><label><input type="radio" name="q4" value="b"> 128</label></li>
+          <li><label><input type="radio" name="q4" value="c"> 256</label></li>
+          <li><label><input type="radio" name="q4" value="d"> 512</label></li>
+        </ul>
+        <button class="kc-btn" onclick="checkKC('q4','c','kc4-fb')">Check Answer</button>
+        <div class="kc-feedback" id="kc4-fb" role="alert" aria-live="polite"></div>
+      </div>
+
+    </div><!-- end kc-section -->
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ══════════════════════════════════════════════════════════
+       SECTION 7 — JAVA CODE SNIPPET
+       ══════════════════════════════════════════════════════════ -->
+  <section id="sec-code" aria-labelledby="h2-code">
+    <h2 class="section-title" id="h2-code">7 · Java Code Snippet (Bridge to PE-07)</h2>
+    <p>
+      The collapsible panel below contains a Java method that computes
+      <span class="math-inline">C(n,k)</span> using Pascal's triangle row construction —
+      the same approach required in <strong>PE-07 Part 1</strong>. Study the inline comments
+      carefully; understanding this method will save you significant time on the assignment.
+    </p>
+
+    <div class="expand-group">
+      <button class="expand-btn" aria-expanded="false" aria-controls="code-body"
+              onclick="toggleExpand(this)">
+        Show Java: binomialCoefficient(int n, int k) — Pascal's Triangle Method
+        <span class="chevron" aria-hidden="true">▼</span>
+      </button>
+      <div class="expand-content" id="code-body" role="region">
+        <p>
+          This method builds row <span class="math-inline">n</span> of Pascal's triangle
+          iteratively and returns the <span class="math-inline">k</span>-th entry.
+          It avoids computing large factorials directly and handles integer overflow
+          better than the naive factorial approach for moderate values of
+          <span class="math-inline">n</span>.
+        </p>
+<pre><code><span class="code-comment">/**
+ * Computes C(n, k) using Pascal's triangle row construction.
+ * Builds row n iteratively; returns the k-th entry.
+ * @param n  total items (n >= 0)
+ * @param k  items chosen (0 <= k <= n)
+ * @return   C(n, k) as a long to reduce overflow risk
+ */</span>
+public static long binomialCoefficient(int n, int k) {
+    <span class="code-comment">// Edge cases</span>
+    if (k < 0 || k > n) return 0;
+    if (k == 0 || k == n) return 1;
+
+    <span class="code-comment">// Use symmetry: C(n,k) == C(n, n-k)
+    // Choosing the smaller k halves the work</span>
+    if (k > n - k) k = n - k;
+
+    <span class="code-comment">// Build only the first k+1 entries of row n
+    // using Pascal's identity in place</span>
+    long[] row = new long[k + 1];
+    row[0] = 1;  <span class="code-comment">// C(n, 0) = 1 always</span>
+
+    for (int i = 1; i <= n; i++) {
+        <span class="code-comment">// Update from right to left to avoid overwriting
+        // values we still need for this iteration</span>
+        for (int j = Math.min(i, k); j >= 1; j--) {
+            row[j] += row[j - 1];
+        }
+    }
+    return row[k];
+}
+</code></pre>
+        <div class="callout yellow">
+          <div class="callout-title">⚠️ PE-07 Note — Integer Overflow</div>
+          For large values of <span class="math-inline">n</span> (say, n &gt; 60), even
+          <code>long</code> can overflow. PE-07 requires you to handle this gracefully —
+          consider printing a warning or using <code>BigInteger</code> for Part 1's
+          overflow-safe version.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- Module Summary -->
+  <section aria-labelledby="h2-summary">
+    <h2 class="section-title" id="h2-summary">Module Summary</h2>
+    <p>In this module you have covered:</p>
+    <ul>
+      <li><strong>Warm-Up Review:</strong> C(n,k) formula, Pascal's identity, Pascal's triangle rows 0–7, and the product rule.</li>
+      <li><strong>Properties of Binomial Coefficients:</strong> Symmetry identity, row sum = 2<sup>n</sup>, and alternating sum = 0, each with combinatorial explanations.</li>
+      <li><strong>The Binomial Theorem:</strong> Formal statement, combinatorial proof sketch, anatomy of the general term, and three worked expansions.</li>
+      <li><strong>Finding a Specific Term:</strong> The (k+1)-th term formula with two detailed worked examples.</li>
+      <li><strong>Key Corollaries:</strong> Subset counting (a=b=1), alternating identity (a=1, b=−1), and the (1+x)<sup>n</sup> generating-function form.</li>
+    </ul>
+
+    <div class="callout green">
+      <div class="callout-title">✅ You are ready for Module 8.2 when you can…</div>
+      <ul style="margin-bottom:0;">
+        <li>Expand <span class="math-inline">(a+b)<sup>n</sup></span> for any small <span class="math-inline">n</span> using the theorem.</li>
+        <li>Find a specific term without expanding the entire expression.</li>
+        <li>Explain why the row sum equals <span class="math-inline">2<sup>n</sup></span> and why the alternating sum equals 0.</li>
+        <li>State the combinatorial proof idea for the Binomial Theorem in your own words.</li>
+      </ul>
+    </div>
+
+    <div class="callout blue" style="margin-top:1rem;">
+      <div class="callout-title">📌 Connection to Graded Work</div>
+      <p style="margin-bottom:.3rem;">
+        <strong>PE-07 (Binomial Coefficient Calculator):</strong> Module 8.1 provides the
+        mathematical foundation for Parts 1, 2, and 3 of PE-07. The Java snippet in Section 7
+        gives you a starting point for the Pascal's triangle construction method required in Part 1.
+      </p>
+      <p style="margin-bottom:0;">
+        <strong>Discussion Week 8 (Birthday Paradox):</strong> The row-sum corollary
+        (∑C(n,k) = 2<sup>n</sup>) and the complement-counting strategy introduced here
+        provide the combinatorial language you need for your initial post.
+      </p>
+    </div>
+
+    <p style="margin-top:1.2rem;">
+      <strong>Next:</strong> Module 8.2 — Binomial Coefficient Identities, where you will
+      formally prove Pascal's identity, explore Vandermonde's identity, and learn the
+      double-counting proof technique.
+    </p>
+  </section>
+
+</main>
+
+<footer>
+  <span>CSC 240 – Discrete Structures · Module 8.1 · Spring 2026 · Mendocino College</span>
+  <span>CSLO 2: Apply combinatorics and set theory to counting problems</span>
+</footer>
+
+<script>
+  /* ── Flip Cards ─────────────────────────────────────────────── */
+  function flipCard(card) {
+    card.classList.toggle('flipped');
+    const isFlipped = card.classList.contains('flipped');
+    card.setAttribute('aria-label',
+      card.getAttribute('aria-label').replace(
+        isFlipped ? 'Flip card' : 'Close card',
+        isFlipped ? 'Close card' : 'Flip card'
+      )
+    );
+  }
+
+  /* ── Expandable Panels ──────────────────────────────────────── */
+  function toggleExpand(btn) {
+    const expanded = btn.getAttribute('aria-expanded') === 'true';
+    const contentId = btn.getAttribute('aria-controls');
+    const content = document.getElementById(contentId);
+    btn.setAttribute('aria-expanded', String(!expanded));
+    content.classList.toggle('open', !expanded);
+  }
+
+  /* ── Knowledge Check ────────────────────────────────────────── */
+  const kcFeedback = {
+    q1: {
+      correct: 'b',
+      messages: {
+        b: '✓ Correct! The term containing x³y² in (x+y)⁵ has k=2 (power of y). ' +
+           'C(5,2) = 5!/(2!·3!) = 10. So the term is 10x³y².',
+        _: '✗ Not quite. Identify k by matching the power of b=y. We want y², so k=2. ' +
+           'Then the coefficient is C(5,2) = 10. The answer is 10x³y².'
+      }
+    },
+    q2: {
+      correct: 'c',
+      messages: {
+        c: '✓ Correct! By Corollary 1 (a=b=1), the sum of all C(6,k) for k=0..6 equals ' +
+           '2⁶ = 64. You can verify: 1+6+15+20+15+6+1 = 64. ✓',
+        _: '✗ Not quite. Apply Corollary 1: setting a=b=1 in the Binomial Theorem gives ' +
+           'the sum of all C(n,k) = 2ⁿ. Here n=6, so the answer is 2⁶ = 64.'
+      }
+    },
+    q3: {
+      correct: 'b',
+      messages: {
+        b: '✓ Correct! The 4th term means k=3. T₄ = C(6,3)·a³·(2b)³ = 20·a³·8b³ = 160a³b³. ' +
+           'Remember to raise the entire (2b) to the power k, not just b.',
+        _: '✗ Not quite. The 4th term has k=3. Use T_{k+1} = C(6,3)·a^{6-3}·(2b)³. ' +
+           'C(6,3)=20 and (2b)³=8b³, so the term is 20·8·a³b³ = 160a³b³.'
+      }
+    },
+    q4: {
+      correct: 'c',
+      messages: {
+        c: '✓ Correct! By the row-sum corollary, the total number of subsets of an ' +
+           'n-element set is 2ⁿ. With n=8: 2⁸ = 256.',
+        _: '✗ Not quite. The row-sum corollary states: sum of C(n,k) for k=0..n equals 2ⁿ. ' +
+           'This counts all subsets. With n=8, the answer is 2⁸ = 256.'
+      }
+    }
+  };
+
+  function checkKC(qName, correctVal, fbId) {
+    const selected = document.querySelector('input[name="' + qName + '"]:checked');
+    const fb = document.getElementById(fbId);
+    if (!selected) {
+      fb.className = 'kc-feedback incorrect show';
+      fb.textContent = 'Please select an answer before checking.';
+      return;
+    }
+    const data = kcFeedback[qName];
+    const isCorrect = selected.value === data.correct;
+    const msg = data.messages[selected.value] || data.messages['_'];
+    fb.className = 'kc-feedback ' + (isCorrect ? 'correct' : 'incorrect') + ' show';
+    fb.textContent = msg;
+  }
+</script>
+</body>
+</html>
