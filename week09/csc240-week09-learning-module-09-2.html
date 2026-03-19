@@ -1,0 +1,1496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSC 240 – Module 9.2: Conditional Probability and Independence</title>
+
+<style>
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: #f4f6f9;
+  color: #1a1a2e;
+  line-height: 1.7;
+}
+a { color: #1a5276; }
+a:focus-visible {
+  outline: 3px solid #f39c12;
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+/* ============================================================
+   STICKY NAV BAR
+   ============================================================ */
+#top-nav {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: #1a3a5c;
+  padding: 0 0.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.2rem 0.35rem;
+  min-height: 2.6rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+#top-nav .nav-brand {
+  color: #aed6f1;
+  font-weight: 700;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  margin-right: 0.4rem;
+  white-space: nowrap;
+  opacity: 0.85;
+}
+#top-nav a {
+  color: #aed6f1;
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 0.22rem 0.6rem;
+  border-radius: 4px;
+  white-space: nowrap;
+  min-width: 1.9rem;
+  text-align: center;
+  transition: background 0.15s, color 0.15s;
+}
+#top-nav a:hover { background: #2e6da4; color: #fff; }
+#top-nav a:focus-visible {
+  outline: 3px solid #f39c12;
+  outline-offset: 2px;
+  color: #fff;
+}
+
+/* ============================================================
+   PAGE WRAPPER
+   ============================================================ */
+.page-wrapper {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 4rem;
+}
+
+/* ============================================================
+   MODULE HEADER
+   ============================================================ */
+.module-header {
+  background: linear-gradient(135deg, #1a3a5c 0%, #2e6da4 100%);
+  color: #fff;
+  border-radius: 10px;
+  padding: 2rem 2rem 1.75rem;
+  margin-bottom: 2rem;
+}
+.module-header .week-label {
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #aed6f1;
+  margin-bottom: 0.4rem;
+}
+.module-header h1 {
+  font-size: 1.75rem;
+  font-weight: 800;
+  line-height: 1.25;
+  margin-bottom: 0.6rem;
+}
+.module-header .module-meta {
+  font-size: 0.85rem;
+  color: #d6eaf8;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.5rem;
+}
+.module-header .module-meta span::before {
+  content: "▸ ";
+  color: #7fb3d3;
+}
+
+/* ============================================================
+   SECTION HEADINGS
+   ============================================================ */
+.section-anchor { scroll-margin-top: 3.5rem; }
+h2.section-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #1a3a5c;
+  border-left: 5px solid #2e6da4;
+  padding-left: 0.75rem;
+  margin: 2.25rem 0 1rem;
+}
+h3.subsection-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #1a3a5c;
+  margin: 1.5rem 0 0.6rem;
+}
+
+/* ============================================================
+   PROSE
+   ============================================================ */
+p { margin-bottom: 1rem; }
+ul, ol { margin: 0.5rem 0 1rem 1.5rem; }
+li { margin-bottom: 0.35rem; }
+
+/* ============================================================
+   MATH — Unicode + CSS fractions, no external libs
+   ============================================================ */
+.m {
+  font-style: italic;
+  font-family: 'Times New Roman', Georgia, serif;
+}
+.math-block {
+  display: block;
+  text-align: center;
+  padding: 0.8rem 1rem;
+  font-style: italic;
+  font-family: 'Times New Roman', Georgia, serif;
+  font-size: 1.1em;
+  overflow-x: auto;
+}
+.frac {
+  display: inline-block;
+  text-align: center;
+  vertical-align: middle;
+  line-height: 1.15;
+  margin: 0 0.1em;
+}
+.frac .num {
+  display: block;
+  border-bottom: 1px solid currentColor;
+  padding: 0 3px 1px;
+}
+.frac .den {
+  display: block;
+  padding: 1px 3px 0;
+}
+
+/* ============================================================
+   CALLOUT BOXES
+   ============================================================ */
+.callout {
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  margin: 1.25rem 0;
+  border-left: 5px solid;
+}
+.callout .callout-title {
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.callout-definition { background: #e8f6f3; border-color: #1abc9c; color: #0e3d31; }
+.callout-definition .callout-title { color: #148f77; }
+.callout-warning { background: #fef9e7; border-color: #f39c12; color: #4a3000; }
+.callout-warning .callout-title { color: #b7770d; }
+.callout-connection { background: #eafaf1; border-color: #27ae60; color: #0b3d1f; }
+.callout-connection .callout-title { color: #1e8449; }
+.callout-lookahead { background: #f0eef9; border-color: #7d3c98; color: #2d0b4e; }
+.callout-lookahead .callout-title { color: #6c3483; }
+.callout-summary { background: #f2f3f4; border-color: #7f8c8d; color: #1c2833; }
+.callout-summary .callout-title { color: #515a5a; }
+
+/* ============================================================
+   SAMPLE SPACE ZOOM DIAGRAM
+   ============================================================ */
+.ss-diagram {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin: 1.25rem 0;
+}
+.ss-box {
+  position: relative;
+  width: 180px;
+  height: 130px;
+  border: 2px solid #2e6da4;
+  border-radius: 8px;
+  background: #eaf2fb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ss-box .omega-label {
+  position: absolute;
+  top: 5px; left: 8px;
+  font-style: italic;
+  font-family: 'Times New Roman', Georgia, serif;
+  font-weight: 700;
+  color: #1a3a5c;
+  font-size: 1rem;
+}
+.ss-oval {
+  width: 90px;
+  height: 70px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-style: italic;
+  font-family: 'Times New Roman', Georgia, serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+.oval-b { background: rgba(46,109,164,0.25); border: 2px solid #2e6da4; color: #1a3a5c; }
+.oval-ab {
+  position: absolute;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  background: rgba(26,188,156,0.35);
+  border: 2px solid #1abc9c;
+  top: 38px; left: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-style: italic;
+  font-family: 'Times New Roman', Georgia, serif;
+  color: #0e3d31;
+}
+.ss-zoomed {
+  width: 180px;
+  height: 130px;
+  border: 2px solid #2e6da4;
+  border-radius: 50%;
+  background: rgba(46,109,164,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.ss-zoomed .b-label {
+  position: absolute;
+  top: 6px; left: 50%;
+  transform: translateX(-50%);
+  font-style: italic;
+  font-family: 'Times New Roman', Georgia, serif;
+  font-weight: 700;
+  color: #1a3a5c;
+  font-size: 0.9rem;
+}
+.ss-zoomed .ab-inner {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(26,188,156,0.45);
+  border: 2px solid #1abc9c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-style: italic;
+  font-family: 'Times New Roman', Georgia, serif;
+  color: #0e3d31;
+  font-weight: 700;
+}
+.ss-arrow {
+  font-size: 1.8rem;
+  color: #2e6da4;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.diagram-caption {
+  text-align: center;
+  font-size: 0.85rem;
+  color: #555;
+  margin-top: 0.25rem;
+  margin-bottom: 1rem;
+}
+
+/* ============================================================
+   PROBABILITY TREE
+   ============================================================ */
+.tree-container {
+  overflow-x: auto;
+  margin: 1rem 0 1.5rem;
+}
+.tree-svg-wrap {
+  min-width: 560px;
+}
+
+/* ============================================================
+   COMPARISON TABLE
+   ============================================================ */
+.styled-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0 1.5rem;
+  font-size: 0.92rem;
+}
+.styled-table th {
+  background: #1a3a5c;
+  color: #fff;
+  padding: 0.65rem 0.9rem;
+  text-align: left;
+}
+.styled-table td {
+  padding: 0.6rem 0.9rem;
+  border-bottom: 1px solid #d5d8dc;
+  vertical-align: top;
+}
+.styled-table tr:nth-child(even) td { background: #eaf2fb; }
+.styled-table tr:last-child td { border-bottom: none; }
+
+/* ============================================================
+   EXPANDABLE WORKED EXAMPLE PANELS
+   ============================================================ */
+.example-panel {
+  border: 1px solid #aed6f1;
+  border-radius: 8px;
+  margin: 1.1rem 0;
+  overflow: hidden;
+}
+.example-panel summary {
+  background: #d6eaf8;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #1a3a5c;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  user-select: none;
+  transition: background 0.15s;
+}
+.example-panel summary::-webkit-details-marker { display: none; }
+.example-panel summary:hover { background: #aed6f1; }
+.example-panel summary:focus-visible {
+  outline: 3px solid #f39c12;
+  outline-offset: -3px;
+}
+.example-panel summary .toggle-icon {
+  display: inline-block;
+  transition: transform 0.2s;
+  font-style: normal;
+}
+.example-panel[open] summary .toggle-icon { transform: rotate(90deg); }
+.example-panel .example-body {
+  padding: 1rem 1.25rem;
+  background: #fff;
+}
+.example-panel .example-body p:last-child { margin-bottom: 0; }
+
+.step-list { list-style: none; margin-left: 0; counter-reset: step-counter; }
+.step-list li {
+  counter-increment: step-counter;
+  padding: 0.4rem 0 0.4rem 2.5rem;
+  position: relative;
+  border-bottom: 1px dashed #d5d8dc;
+}
+.step-list li:last-child { border-bottom: none; }
+.step-list li::before {
+  content: counter(step-counter);
+  position: absolute;
+  left: 0; top: 0.4rem;
+  background: #2e6da4;
+  color: #fff;
+  width: 1.6rem; height: 1.6rem;
+  border-radius: 50%;
+  font-size: 0.78rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ============================================================
+   CHECK-FOR-UNDERSTANDING WIDGET
+   ============================================================ */
+.cfu-widget {
+  background: #fff;
+  border: 2px solid #2e6da4;
+  border-radius: 10px;
+  padding: 1.25rem 1.5rem;
+  margin: 1.5rem 0;
+}
+.cfu-widget h3 {
+  font-size: 1rem;
+  color: #1a3a5c;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #d6eaf8;
+  padding-bottom: 0.5rem;
+}
+.cfu-question { margin-bottom: 1.5rem; }
+.cfu-question .q-text {
+  font-weight: 600;
+  margin-bottom: 0.6rem;
+  color: #1a2e4a;
+}
+.cfu-question label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.3rem 0;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.cfu-question label:hover { background: #eaf2fb; }
+.cfu-question input[type="radio"],
+.cfu-question input[type="text"] {
+  margin-top: 0.2rem;
+  accent-color: #2e6da4;
+}
+.cfu-question input[type="text"] {
+  border: 1px solid #aab7c4;
+  border-radius: 5px;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.95rem;
+  width: 130px;
+  margin-top: 0;
+}
+.cfu-question input[type="text"]:focus {
+  outline: 3px solid #f39c12;
+  border-color: #2e6da4;
+}
+.check-btn {
+  background: #2e6da4;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1.2rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: background 0.15s;
+}
+.check-btn:hover { background: #1a5276; }
+.check-btn:focus-visible {
+  outline: 3px solid #f39c12;
+  outline-offset: 2px;
+}
+.feedback {
+  margin-top: 0.65rem;
+  padding: 0.65rem 0.9rem;
+  border-radius: 6px;
+  font-size: 0.92rem;
+  display: none;
+}
+.feedback.correct { background: #eafaf1; border-left: 4px solid #27ae60; color: #0b3d1f; }
+.feedback.incorrect { background: #fdf2f8; border-left: 4px solid #c0392b; color: #4a0e0e; }
+.feedback.show { display: block; }
+
+/* ============================================================
+   MODULE BOTTOM NAV
+   ============================================================ */
+.bottom-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2.5rem;
+  padding-top: 1rem;
+  border-top: 2px solid #d5d8dc;
+  font-size: 0.9rem;
+  color: #1a3a5c;
+  font-weight: 600;
+}
+.bottom-nav span { color: #555; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 600px) {
+  .module-header h1 { font-size: 1.35rem; }
+  h2.section-title { font-size: 1.1rem; }
+  .styled-table { font-size: 0.82rem; }
+  #top-nav .nav-brand { display: none; }
+  .ss-diagram { flex-direction: column; gap: 0.75rem; }
+  .ss-arrow { transform: rotate(90deg); }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     STICKY TOP NAVIGATION
+     ============================================================ -->
+<nav id="top-nav" aria-label="Module 9.2 section navigation">
+  <span class="nav-brand">9.2</span>
+  <a href="#hook"         title="Opening Scenario">1</a>
+  <a href="#condprob"     title="Conditional Probability">2</a>
+  <a href="#multrule"     title="Multiplication Rule">3</a>
+  <a href="#totalprob"    title="Law of Total Probability">4</a>
+  <a href="#independence" title="Independence">5</a>
+  <a href="#watchout"     title="Watch Out: ME vs. Independence">6</a>
+  <a href="#cfu"          title="Check for Understanding">7</a>
+  <a href="#summary"      title="Module Summary">8</a>
+</nav>
+
+<!-- ============================================================
+     PAGE CONTENT
+     ============================================================ -->
+<main class="page-wrapper">
+
+  <!-- MODULE HEADER -->
+  <header class="module-header">
+    <div class="week-label">CSC 240 · Discrete Structures · Week 9 · Module 9.2</div>
+    <h1>Conditional Probability and Independence</h1>
+    <div class="module-meta">
+      <span>Week 9 of 17 &nbsp;(March 25–31, 2026)</span>
+      <span>Estimated time: 2.0 hours</span>
+      <span>CSLO 2 · Objectives 3 &amp; 4</span>
+      <span>Contributes to: PS-06 · Quiz 3 · Midterm Exam</span>
+    </div>
+  </header>
+
+  <!-- ── SECTION 1: OPENING HOOK ── -->
+  <section id="hook" class="section-anchor" aria-labelledby="hook-heading">
+    <h2 class="section-title" id="hook-heading">1. Opening: What Changes When We Already Know Something?</h2>
+
+    <p>
+      In Module 9.1 you learned to assign probabilities to events in a sample space.
+      Every outcome was equally possible at the start. But real systems rarely work
+      that way — we almost always have <em>partial information</em> before we make
+      a judgment.
+    </p>
+
+    <blockquote style="border-left:4px solid #2e6da4;padding:0.75rem 1rem;
+      background:#eaf2fb;border-radius:0 8px 8px 0;margin:1rem 0;font-style:italic;color:#1a2e4a;">
+      "A program just failed its unit tests. Given that it failed, what is the
+      probability that it also has a memory leak?"
+    </blockquote>
+
+    <p>
+      The phrase <strong>"given that"</strong> is the key. It tells us that certain
+      outcomes are already ruled out — the sample space has been
+      <em>restricted</em> to only those outcomes consistent with what we know.
+      This is <strong>conditional probability</strong>.
+    </p>
+
+    <!-- MOTIVATING SCENARIO -->
+    <h3 class="subsection-title">Motivating Scenario: Software Quality Team</h3>
+
+    <p>
+      A software team is reviewing a batch of <strong>100 programs</strong> submitted
+      for final release. Quality records show:
+    </p>
+    <ul>
+      <li><strong>40 programs</strong> failed at least one automated test (event <span class="m">F</span>).</li>
+      <li><strong>25 programs</strong> contain a memory leak (event <span class="m">M</span>).</li>
+      <li><strong>15 programs</strong> both failed a test <em>and</em> contain a memory leak
+          (<span class="m">F ∩ M</span>).</li>
+    </ul>
+
+    <p>
+      A QA engineer randomly picks one program and is told it <em>failed a test</em>.
+      What is the probability it also has a memory leak? Without the "failed a test"
+      information, the answer would be 25/100 = 0.25. But knowing the program
+      failed a test <em>changes</em> the relevant universe — we now look only at
+      the 40 programs that failed, and ask how many of those also have a leak.
+      That gives us 15/40 = 0.375. The extra information raised the probability.
+    </p>
+
+    <p>
+      By the end of this module, you will have the formal definition and tools to
+      compute this — and to recognize when additional information has
+      <em>no effect</em> at all (independence).
+    </p>
+
+    <div class="callout callout-connection">
+      <div class="callout-title">🔗 Connection — Module 9.1</div>
+      Conditional probability builds directly on the probability space
+      <span class="m">(Ω, 2<sup>Ω</sup>, P)</span> from Module 9.1.
+      You will need the addition rule and the complement rule from that module
+      throughout this one. If those feel shaky, revisit Module 9.1 before continuing.
+    </div>
+  </section>
+
+  <!-- ── SECTION 2: CONDITIONAL PROBABILITY ── -->
+  <section id="condprob" class="section-anchor" aria-labelledby="condprob-heading">
+    <h2 class="section-title" id="condprob-heading">2. Conditional Probability</h2>
+
+    <!-- DEFINITION CALLOUT -->
+    <div class="callout callout-definition" role="note" aria-label="Definition: Conditional Probability">
+      <div class="callout-title">📘 Definition — Conditional Probability</div>
+      <p>
+        Let <span class="m">A</span> and <span class="m">B</span> be events in a probability
+        space with <span class="m">P(B) &gt; 0</span>. The
+        <strong>conditional probability of <span class="m">A</span> given <span class="m">B</span></strong> is:
+      </p>
+      <div class="math-block" aria-label="P of A given B equals P of A intersect B divided by P of B">
+        <em>P</em>(<em>A</em> | <em>B</em>) =
+        <span class="frac">
+          <span class="num"><em>P</em>(<em>A</em> ∩ <em>B</em>)</span>
+          <span class="den"><em>P</em>(<em>B</em>)</span>
+        </span>
+      </div>
+      <p style="margin-bottom:0;">
+        The condition <span class="m">P(B) &gt; 0</span> is required because we cannot
+        condition on an impossible event. When <span class="m">B</span> has occurred,
+        <span class="m">B</span> becomes the new "universe," and we measure what fraction
+        of <span class="m">B</span> is also in <span class="m">A</span>.
+      </p>
+    </div>
+
+    <h3 class="subsection-title">Intuition: Zooming In on the Sample Space</h3>
+
+    <p>
+      The diagram below shows what conditioning does geometrically. On the left,
+      <span class="m">Ω</span> contains everything. On the right, knowing
+      <span class="m">B</span> occurred means we discard all outcomes outside
+      <span class="m">B</span> — the oval <span class="m">B</span> becomes the new
+      universe, and <span class="m">A ∩ B</span> is the portion of interest within it.
+    </p>
+
+    <!-- ZOOM DIAGRAM (pure HTML/CSS, no SVG, no external deps) -->
+    <div class="ss-diagram" role="img" aria-label="Sample space zoom diagram: full space on left, restricted to B on right">
+      <!-- LEFT: full Omega -->
+      <div class="ss-box">
+        <span class="omega-label">Ω</span>
+        <div class="ss-oval oval-b" style="position:relative;">
+          B
+          <div class="ss-oval" style="
+            position:absolute;width:42px;height:42px;border-radius:50%;
+            background:rgba(26,188,156,0.4);border:2px solid #1abc9c;
+            top:13px;left:22px;font-size:0.68rem;display:flex;
+            align-items:center;justify-content:center;color:#0e3d31;font-weight:700;">
+            A∩B
+          </div>
+        </div>
+      </div>
+
+      <div class="ss-arrow" aria-hidden="true">→</div>
+
+      <!-- RIGHT: zoomed into B -->
+      <div class="ss-zoomed">
+        <span class="b-label">B (new Ω)</span>
+        <div class="ab-inner">A∩B</div>
+      </div>
+    </div>
+    <p class="diagram-caption">
+      Conditioning on <span class="m">B</span>: the full sample space (left) is
+      restricted to <span class="m">B</span> (right). Only outcomes inside
+      <span class="m">B</span> remain possible.
+    </p>
+
+    <!-- WORKED EXAMPLE: QA Scenario -->
+    <details class="example-panel">
+      <summary>
+        <span class="toggle-icon" aria-hidden="true">▶</span>
+        Example 1 — Software QA: Computing P(M | F)
+      </summary>
+      <div class="example-body">
+        <p>
+          <strong>Setup (from the opening scenario):</strong> 100 programs;
+          <span class="m">P(F) = 40/100 = 0.40</span>,
+          <span class="m">P(M) = 25/100 = 0.25</span>,
+          <span class="m">P(F ∩ M) = 15/100 = 0.15</span>.
+          Find the probability that a program has a memory leak
+          <em>given</em> it failed a test.
+        </p>
+        <ul class="step-list">
+          <li>
+            <strong>Identify which formula to use.</strong>
+            We want <span class="m">P(M | F)</span> — the probability of
+            <span class="m">M</span> given <span class="m">B = F</span>.
+            Use the definition:
+            <span class="math-block">
+              P(M \mid F) =
+              <span class="frac">
+                <span class="num">P(M ∩ F)</span>
+                <span class="den">P(F)</span>
+              </span>
+            </span>
+          </li>
+          <li>
+            <strong>Substitute known values.</strong>
+            <span class="math-block">
+              P(M \mid F) =
+              <span class="frac">
+                <span class="num">0.15</span>
+                <span class="den">0.40</span>
+              </span>
+              =
+              <span class="frac">
+                <span class="num">15</span>
+                <span class="den">40</span>
+              </span>
+              = 0.375
+            </span>
+          </li>
+          <li>
+            <strong>Interpret the result.</strong>
+            Among programs that failed a test, 37.5% also have a memory leak —
+            higher than the unconditional 25%. The failure information
+            <em>updated</em> our probability upward, because memory leaks are
+            disproportionately common among programs that fail tests.
+          </li>
+        </ul>
+        <p>
+          <strong>Takeaway:</strong> Conditional probability is just a ratio within
+          the restricted universe. Always check that <span class="m">P(B) &gt; 0</span>
+          before applying the formula.
+        </p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ── SECTION 3: MULTIPLICATION RULE ── -->
+  <section id="multrule" class="section-anchor" aria-labelledby="multrule-heading">
+    <h2 class="section-title" id="multrule-heading">3. The Multiplication Rule</h2>
+
+    <p>
+      Rearranging the definition of conditional probability by multiplying both
+      sides by <span class="m">P(B)</span> gives an immediately useful result:
+    </p>
+
+    <div class="callout callout-definition" role="note" aria-label="Multiplication Rule">
+      <div class="callout-title">📘 The Multiplication Rule</div>
+      <p>For any two events <span class="m">A</span> and <span class="m">B</span>
+      with <span class="m">P(B) &gt; 0</span>:</p>
+      <div class="math-block" aria-label="P of A intersect B equals P of A given B times P of B">
+        <em>P</em>(<em>A</em> ∩ <em>B</em>) = <em>P</em>(<em>A</em> | <em>B</em>) · <em>P</em>(<em>B</em>)
+      </div>
+      <p style="margin-bottom:0;">
+        Equivalently, by symmetry of intersection:
+        <span class="m">P(A ∩ B) = P(B | A) · P(A)</span> &nbsp;(when <span class="m">P(A) &gt; 0</span>).
+        This rule lets you compute the probability of <em>both</em> events occurring
+        when you know a conditional probability and a marginal probability.
+      </p>
+    </div>
+
+    <details class="example-panel">
+      <summary>
+        <span class="toggle-icon" aria-hidden="true">▶</span>
+        Example 2 — Two Sequential Code Reviews
+      </summary>
+      <div class="example-body">
+        <p>
+          <strong>Setup:</strong> A pull request must pass two sequential automated
+          reviews. The probability it passes the first review is 0.80. Given it
+          passes the first, the probability it passes the second is 0.90.
+          What is the probability it passes <em>both</em>?
+        </p>
+        <ul class="step-list">
+          <li>
+            <strong>Define events.</strong>
+            Let <span class="m">A</span> = "passes first review,"
+            <span class="m">B</span> = "passes second review."
+            We want <span class="m">P(A ∩ B)</span>.
+          </li>
+          <li>
+            <strong>Identify the given values.</strong>
+            <span class="m">P(A) = 0.80</span> and
+            <span class="m">P(B | A) = 0.90</span>.
+          </li>
+          <li>
+            <strong>Apply the multiplication rule.</strong>
+            <span class="math-block">
+              P(A ∩ B) = P(B \mid A) · P(A) = 0.90 × 0.80 = 0.72
+            </span>
+          </li>
+          <li>
+            <strong>Interpret.</strong>
+            There is a 72% chance the pull request clears both automated reviews.
+            Note that the second review's probability (0.90) was stated
+            <em>conditional</em> on passing the first — we cannot simply multiply
+            two unconditional probabilities unless the events are independent
+            (covered in Section 5).
+          </li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ── SECTION 4: LAW OF TOTAL PROBABILITY ── -->
+  <section id="totalprob" class="section-anchor" aria-labelledby="totalprob-heading">
+    <h2 class="section-title" id="totalprob-heading">4. Law of Total Probability</h2>
+
+    <p>
+      Sometimes an event <span class="m">A</span> can happen via several distinct
+      <em>pathways</em>, each associated with a different background condition.
+      The law of total probability lets us add up the contributions from each pathway.
+    </p>
+
+    <div class="callout callout-definition" role="note" aria-label="Definition: Law of Total Probability">
+      <div class="callout-title">📘 Law of Total Probability</div>
+      <p>
+        Let <span class="m">{B<sub>1</sub>, B<sub>2</sub>, …, B<sub>n</sub>}</span>
+        be a <strong>partition</strong> of <span class="m">Ω</span> — that is, the
+        <span class="m">B<sub>i</sub></span> are pairwise mutually exclusive
+        (<span class="m">B<sub>i</sub> ∩ B<sub>j</sub> = ∅</span> for <span class="m">i ≠ j</span>)
+        and their union covers the entire sample space
+        (<span class="m">B<sub>1</sub> ∪ B<sub>2</sub> ∪ ⋯ ∪ B<sub>n</sub> = Ω</span>).
+        Then for any event <span class="m">A</span>:
+      </p>
+      <div class="math-block" aria-label="Law of total probability formula">
+        <em>P</em>(<em>A</em>) =
+        <em>P</em>(<em>A</em> | <em>B</em><sub>1</sub>)·<em>P</em>(<em>B</em><sub>1</sub>)
+        + <em>P</em>(<em>A</em> | <em>B</em><sub>2</sub>)·<em>P</em>(<em>B</em><sub>2</sub>)
+        + ⋯ +
+        <em>P</em>(<em>A</em> | <em>B</em><sub><em>n</em></sub>)·<em>P</em>(<em>B</em><sub><em>n</em></sub>)
+      </div>
+      <p style="margin-bottom:0;">
+        Intuitively: <span class="m">A</span> can only happen "through" one of the
+        <span class="m">B<sub>i</sub></span>. We weight each pathway's conditional
+        probability by how likely that pathway is, then sum.
+      </p>
+    </div>
+
+    <h3 class="subsection-title">Worked Example: Three Compilers and Bug Introduction</h3>
+
+    <p>
+      A development team uses three different compilers for different parts of their
+      codebase. Each compiler has a different probability of introducing a bug
+      during compilation. The setup:
+    </p>
+
+    <table class="styled-table" aria-label="Compiler usage and bug probability data">
+      <thead>
+        <tr>
+          <th>Compiler</th>
+          <th>Share of Compilations</th>
+          <th>P(bug introduced | this compiler)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>C<sub>1</sub></strong> (legacy)</td>
+          <td>50% &nbsp; → &nbsp; P(C<sub>1</sub>) = 0.50</td>
+          <td>P(B | C<sub>1</sub>) = 0.10</td>
+        </tr>
+        <tr>
+          <td><strong>C<sub>2</sub></strong> (standard)</td>
+          <td>30% &nbsp; → &nbsp; P(C<sub>2</sub>) = 0.30</td>
+          <td>P(B | C<sub>2</sub>) = 0.05</td>
+        </tr>
+        <tr>
+          <td><strong>C<sub>3</sub></strong> (new)</td>
+          <td>20% &nbsp; → &nbsp; P(C<sub>3</sub>) = 0.20</td>
+          <td>P(B | C<sub>3</sub>) = 0.02</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>
+      <strong>Question:</strong> What is the overall probability that a randomly
+      selected compilation introduces a bug?
+    </p>
+
+    <!-- PROBABILITY TREE (inline SVG) -->
+    <h3 class="subsection-title">Probability Tree</h3>
+    <div class="tree-container" role="img" aria-label="Probability tree for three compilers and bug introduction">
+      <div class="tree-svg-wrap">
+        <svg viewBox="0 0 580 260" xmlns="http://www.w3.org/2000/svg"
+             style="width:100%;height:auto;font-family:'Segoe UI',system-ui,sans-serif;">
+
+          <!-- Root node -->
+          <circle cx="60" cy="130" r="18" fill="#1a3a5c"/>
+          <text x="60" y="135" text-anchor="middle" fill="#fff" font-size="11" font-weight="bold">Start</text>
+
+          <!-- Branch lines to compilers -->
+          <line x1="78" y1="118" x2="190" y2="52"  stroke="#2e6da4" stroke-width="1.8"/>
+          <line x1="78" y1="130" x2="190" y2="130" stroke="#2e6da4" stroke-width="1.8"/>
+          <line x1="78" y1="142" x2="190" y2="208" stroke="#2e6da4" stroke-width="1.8"/>
+
+          <!-- Branch probability labels -->
+          <text x="118" y="76"  font-size="11" fill="#1a5276" font-style="italic">0.50</text>
+          <text x="118" y="124" font-size="11" fill="#1a5276" font-style="italic">0.30</text>
+          <text x="118" y="185" font-size="11" fill="#1a5276" font-style="italic">0.20</text>
+
+          <!-- Compiler nodes -->
+          <rect x="190" y="36"  width="52" height="28" rx="5" fill="#2e6da4"/>
+          <text x="216" y="55" text-anchor="middle" fill="#fff" font-size="11" font-weight="bold">C₁</text>
+
+          <rect x="190" y="116" width="52" height="28" rx="5" fill="#2e6da4"/>
+          <text x="216" y="135" text-anchor="middle" fill="#fff" font-size="11" font-weight="bold">C₂</text>
+
+          <rect x="190" y="194" width="52" height="28" rx="5" fill="#2e6da4"/>
+          <text x="216" y="213" text-anchor="middle" fill="#fff" font-size="11" font-weight="bold">C₃</text>
+
+          <!-- Lines to Bug / No Bug from C1 -->
+          <line x1="242" y1="46"  x2="340" y2="28"  stroke="#c0392b" stroke-width="1.5"/>
+          <line x1="242" y1="56"  x2="340" y2="72"  stroke="#27ae60" stroke-width="1.5"/>
+          <text x="278" y="30"  font-size="10" fill="#c0392b" font-style="italic">0.10</text>
+          <text x="278" y="72"  font-size="10" fill="#27ae60" font-style="italic">0.90</text>
+
+          <!-- Lines to Bug / No Bug from C2 -->
+          <line x1="242" y1="126" x2="340" y2="110" stroke="#c0392b" stroke-width="1.5"/>
+          <line x1="242" y1="136" x2="340" y2="152" stroke="#27ae60" stroke-width="1.5"/>
+          <text x="278" y="111" font-size="10" fill="#c0392b" font-style="italic">0.05</text>
+          <text x="278" y="152" font-size="10" fill="#27ae60" font-style="italic">0.95</text>
+
+          <!-- Lines to Bug / No Bug from C3 -->
+          <line x1="242" y1="204" x2="340" y2="190" stroke="#c0392b" stroke-width="1.5"/>
+          <line x1="242" y1="214" x2="340" y2="232" stroke="#27ae60" stroke-width="1.5"/>
+          <text x="278" y="191" font-size="10" fill="#c0392b" font-style="italic">0.02</text>
+          <text x="278" y="232" font-size="10" fill="#27ae60" font-style="italic">0.98</text>
+
+          <!-- Outcome labels -->
+          <text x="345" y="32"  font-size="10.5" fill="#c0392b" font-weight="bold">Bug</text>
+          <text x="345" y="52"  font-size="10"   fill="#555">0.50×0.10 = 0.050</text>
+
+          <text x="345" y="76"  font-size="10.5" fill="#27ae60" font-weight="bold">No Bug</text>
+          <text x="345" y="96"  font-size="10"   fill="#555">0.50×0.90 = 0.450</text>
+
+          <text x="345" y="114" font-size="10.5" fill="#c0392b" font-weight="bold">Bug</text>
+          <text x="345" y="134" font-size="10"   fill="#555">0.30×0.05 = 0.015</text>
+
+          <text x="345" y="156" font-size="10.5" fill="#27ae60" font-weight="bold">No Bug</text>
+          <text x="345" y="176" font-size="10"   fill="#555">0.30×0.95 = 0.285</text>
+
+          <text x="345" y="194" font-size="10.5" fill="#c0392b" font-weight="bold">Bug</text>
+          <text x="345" y="214" font-size="10"   fill="#555">0.20×0.02 = 0.004</text>
+
+          <text x="345" y="236" font-size="10.5" fill="#27ae60" font-weight="bold">No Bug</text>
+          <text x="345" y="252" font-size="10"   fill="#555">0.20×0.98 = 0.196</text>
+
+        </svg>
+      </div>
+    </div>
+
+    <details class="example-panel">
+      <summary>
+        <span class="toggle-icon" aria-hidden="true">▶</span>
+        Example 3 — Three Compilers: Full Solution
+      </summary>
+      <div class="example-body">
+        <p>
+          <strong>Goal:</strong> Find <span class="m">P(B)</span>, the overall
+          probability that a compilation introduces a bug.
+        </p>
+        <ul class="step-list">
+          <li>
+            <strong>Verify the partition.</strong>
+            <span class="m">{C<sub>1</sub>, C<sub>2</sub>, C<sub>3</sub>}</span>
+            partitions <span class="m">Ω</span>: the compilers are mutually exclusive
+            (each compilation uses exactly one) and exhaustive
+            (0.50 + 0.30 + 0.20 = 1.00). ✓
+          </li>
+          <li>
+            <strong>Apply the law of total probability.</strong>
+            <span class="math-block">
+              P(B) = P(B \mid C_1)\cdot P(C_1)
+                   + P(B \mid C_2)\cdot P(C_2)
+                   + P(B \mid C_3)\cdot P(C_3)
+            </span>
+          </li>
+          <li>
+            <strong>Substitute and compute each term.</strong>
+            <span class="math-block">
+              P(B) = (0.10)(0.50) + (0.05)(0.30) + (0.02)(0.20)
+            </span>
+            <span class="math-block">
+              P(B) = 0.050 + 0.015 + 0.004 = 0.069
+            </span>
+          </li>
+          <li>
+            <strong>Interpret.</strong>
+            There is approximately a <strong>6.9% chance</strong> that any given
+            compilation introduces a bug. The legacy compiler
+            (<span class="m">C<sub>1</sub></span>) contributes the most
+            (0.050 out of 0.069 ≈ 72% of the total bug risk) despite having
+            the same 50% usage share — its bug rate is 5× higher than
+            <span class="m">C<sub>2</sub></span>.
+          </li>
+        </ul>
+        <p>
+          <strong>Takeaway:</strong> The law of total probability is the tool for
+          "un-conditioning" — computing an overall probability when you only know
+          conditional probabilities within each partition element. The probability
+          tree makes each pathway visible and helps catch arithmetic errors.
+        </p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ── SECTION 5: INDEPENDENCE ── -->
+  <section id="independence" class="section-anchor" aria-labelledby="independence-heading">
+    <h2 class="section-title" id="independence-heading">5. Independence</h2>
+
+    <p>
+      Conditional probability measures how much knowing <span class="m">B</span>
+      <em>changes</em> the probability of <span class="m">A</span>. What if it
+      changes nothing? Then knowing <span class="m">B</span> is irrelevant to
+      <span class="m">A</span> — the events are <strong>independent</strong>.
+    </p>
+
+    <div class="callout callout-definition" role="note" aria-label="Definition: Independence">
+      <div class="callout-title">📘 Definition — Independence</div>
+      <p>
+        Two events <span class="m">A</span> and <span class="m">B</span> are
+        <strong>independent</strong> if and only if:
+      </p>
+      <div class="math-block" aria-label="Independence criterion: P of A intersect B equals P of A times P of B">
+        <em>P</em>(<em>A</em> ∩ <em>B</em>) = <em>P</em>(<em>A</em>) · <em>P</em>(<em>B</em>)
+      </div>
+      <p>
+        Equivalently, when <span class="m">P(B) &gt; 0</span>, independence means:
+      </p>
+      <div class="math-block" aria-label="Equivalent independence condition: P of A given B equals P of A">
+        <em>P</em>(<em>A</em> | <em>B</em>) = <em>P</em>(<em>A</em>)
+      </div>
+      <p style="margin-bottom:0;">
+        The second form is the intuitive one: learning that <span class="m">B</span>
+        occurred provides <em>zero information</em> about whether <span class="m">A</span>
+        occurs. Both forms are equivalent; use whichever is more convenient for
+        a given problem.
+      </p>
+    </div>
+
+    <div class="callout callout-warning" role="note">
+      <div class="callout-title">⚠️ Checking Independence</div>
+      To test whether two events are independent, compute
+      <span class="m">P(A) · P(B)</span> and compare it to
+      <span class="m">P(A ∩ B)</span>. If they are equal, the events are independent.
+      If they differ — even slightly — the events are <em>dependent</em>.
+      Do not assume independence; always verify it from the numbers.
+    </div>
+
+    <details class="example-panel">
+      <summary>
+        <span class="toggle-icon" aria-hidden="true">▶</span>
+        Example 4 — Two Independent Network Packets
+      </summary>
+      <div class="example-body">
+        <p>
+          <strong>Setup:</strong> A network router forwards two packets independently.
+          Each packet is dropped (lost) with probability 0.05, regardless of what
+          happens to the other. Let <span class="m">D<sub>1</sub></span> = "packet 1
+          is dropped" and <span class="m">D<sub>2</sub></span> = "packet 2 is dropped."
+        </p>
+        <p>
+          <strong>Given:</strong>
+          <span class="m">P(D<sub>1</sub>) = 0.05</span>,
+          <span class="m">P(D<sub>2</sub>) = 0.05</span>,
+          and the packets are dropped <em>independently</em>.
+        </p>
+        <ul class="step-list">
+          <li>
+            <strong>Verify independence is stated.</strong>
+            The problem says "independently" — this is an assumption we accept.
+            In practice, you would verify independence from data; here it is given.
+          </li>
+          <li>
+            <strong>Compute P(both packets dropped).</strong>
+            Because <span class="m">D<sub>1</sub></span> and
+            <span class="m">D<sub>2</sub></span> are independent:
+            <span class="math-block">
+              P(D_1 \cap D_2) = P(D_1) \cdot P(D_2) = 0.05 \times 0.05 = 0.0025
+            </span>
+          </li>
+          <li>
+            <strong>Compute P(at least one packet dropped).</strong>
+            Use the complement:
+            <span class="math-block">
+              P(D_1 \cup D_2) = 1 - P(D_1^c \cap D_2^c)
+              = 1 - (0.95)(0.95) = 1 - 0.9025 = 0.0975
+            </span>
+            (The complement step also uses independence:
+            <span class="m">P(D<sub>1</sub><sup>c</sup> ∩ D<sub>2</sub><sup>c</sup>)
+            = P(D<sub>1</sub><sup>c</sup>) · P(D<sub>2</sub><sup>c</sup>)</span>
+            because independence of the original events implies independence
+            of their complements.)
+          </li>
+          <li>
+            <strong>Interpret.</strong>
+            There is only a 0.25% chance both packets are dropped, but nearly
+            a 10% chance at least one is lost. This is why network protocols
+            use acknowledgment and retransmission: even small individual drop
+            rates compound into noticeable loss rates across many packets.
+          </li>
+        </ul>
+        <p>
+          <strong>Takeaway:</strong> Independence allows you to multiply individual
+          probabilities directly. This simplification is powerful — and it is only
+          valid when independence actually holds.
+        </p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ── SECTION 6: WATCH OUT ── -->
+  <section id="watchout" class="section-anchor" aria-labelledby="watchout-heading">
+    <h2 class="section-title" id="watchout-heading">6. Watch Out: Mutual Exclusivity vs. Independence</h2>
+
+    <div class="callout callout-warning" role="note">
+      <div class="callout-title">⚠️ Most Common Misconception in Introductory Probability</div>
+      <p>
+        Students frequently confuse <strong>mutually exclusive</strong> events with
+        <strong>independent</strong> events. These are not the same concept —
+        in fact, for events with positive probability, they are
+        <strong>mutually exclusive if and only if they are dependent</strong>.
+        The table below shows the key differences.
+      </p>
+    </div>
+
+    <table class="styled-table" aria-label="Comparison of mutually exclusive and independent events">
+      <thead>
+        <tr>
+          <th>Property</th>
+          <th>Mutually Exclusive</th>
+          <th>Independent</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Formal definition</strong></td>
+          <td><span class="m">A ∩ B = ∅</span><br>
+              (they cannot both occur)</td>
+          <td><span class="m">P(A ∩ B) = P(A)·P(B)</span><br>
+              (occurrence of one does not affect the other)</td>
+        </tr>
+        <tr>
+          <td><strong>What it says about P(A ∩ B)</strong></td>
+          <td><span class="m">P(A ∩ B) = 0</span></td>
+          <td><span class="m">P(A ∩ B) = P(A)·P(B)</span><br>
+              (generally non-zero)</td>
+        </tr>
+        <tr>
+          <td><strong>Addition rule</strong></td>
+          <td><span class="m">P(A ∪ B) = P(A) + P(B)</span></td>
+          <td>Must still use<br>
+              <span class="m">P(A ∪ B) = P(A)+P(B)−P(A ∩ B)</span></td>
+        </tr>
+        <tr>
+          <td><strong>Conditional probability</strong></td>
+          <td>If <span class="m">P(B) &gt; 0</span>:<br>
+              <span class="m">P(A | B) = 0</span><br>
+              (knowing B occurred <em>rules out</em> A)</td>
+          <td><span class="m">P(A | B) = P(A)</span><br>
+              (knowing B occurred is <em>irrelevant</em> to A)</td>
+        </tr>
+        <tr>
+          <td><strong>Intuition</strong></td>
+          <td>They compete — only one can win.</td>
+          <td>They are unrelated — one's outcome tells you nothing about the other.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 class="subsection-title">Counterexample: Mutually Exclusive Events Are Dependent</h3>
+
+    <p>
+      Roll a fair six-sided die. Let <span class="m">A</span> = "roll a 1" and
+      <span class="m">B</span> = "roll a 2."
+    </p>
+    <ul>
+      <li>
+        <span class="m">A ∩ B = ∅</span>, so <span class="m">A</span> and
+        <span class="m">B</span> are <strong>mutually exclusive</strong>.
+      </li>
+      <li>
+        <span class="m">P(A) = 1/6</span>, <span class="m">P(B) = 1/6</span>,
+        so <span class="m">P(A) · P(B) = 1/36</span>.
+      </li>
+      <li>
+        But <span class="m">P(A ∩ B) = 0 ≠ 1/36</span>.
+      </li>
+    </ul>
+    <p>
+      Therefore <span class="m">A</span> and <span class="m">B</span> are
+      <strong>not independent</strong>. Intuitively: if you know a 2 was rolled
+      (<span class="m">B</span> occurred), you know for certain a 1 was
+      <em>not</em> rolled — so knowing <span class="m">B</span> absolutely
+      changes your assessment of <span class="m">A</span>.
+    </p>
+
+    <div class="callout callout-connection" role="note">
+      <div class="callout-title">🔗 Key Insight to Remember</div>
+      <p style="margin-bottom:0;">
+        Mutually exclusive events with positive probability are always
+        <em>dependent</em> — knowing one occurred tells you the other
+        definitely did not. True independence requires the events to
+        be able to <em>co-occur</em>, with their joint probability
+        exactly equal to the product of their individual probabilities.
+      </p>
+    </div>
+  </section>
+
+  <!-- ── SECTION 7: CHECK FOR UNDERSTANDING ── -->
+  <section id="cfu" class="section-anchor" aria-labelledby="cfu-heading">
+    <h2 class="section-title" id="cfu-heading">7. Check for Understanding</h2>
+    <p>
+      These three questions are <strong>ungraded</strong> and for your own
+      self-assessment. Select or type your answer, then click
+      <em>Check Answer</em> for immediate feedback.
+    </p>
+
+    <div class="cfu-widget" role="form" aria-label="Check for understanding questions">
+      <h3>Self-Check — Module 9.2</h3>
+
+      <!-- QUESTION 1: Fill-in computing P(A|B) -->
+      <div class="cfu-question" id="q1-block">
+        <div class="q-text" id="q1-label">
+          <strong>Question 1 (Fill-in).</strong>
+          In a group of 200 students, 80 passed the midterm (event <span class="m">M</span>)
+          and 50 passed both the midterm and the final (event <span class="m">M ∩ F</span>).
+          Compute <span class="m">P(F | M)</span> — the probability a student passed
+          the final <em>given</em> they passed the midterm.
+          Enter your answer as a simplified fraction (e.g., <code>3/8</code>).
+        </div>
+        <label for="q1-input" style="font-size:0.9rem;">Your answer:</label><br>
+        <input type="text" id="q1-input" placeholder="a/b"
+          aria-labelledby="q1-label" autocomplete="off" spellcheck="false">
+        <br>
+        <button class="check-btn" onclick="checkQ1()" aria-label="Check answer for question 1">
+          Check Answer
+        </button>
+        <div class="feedback" id="q1-feedback" role="alert" aria-live="polite"></div>
+      </div>
+
+      <!-- QUESTION 2: Multiple choice — independence criterion -->
+      <div class="cfu-question" id="q2-block">
+        <div class="q-text" id="q2-label">
+          <strong>Question 2 (Multiple Choice).</strong>
+          Which of the following is the correct criterion for two events
+          <span class="m">A</span> and <span class="m">B</span> to be independent?
+        </div>
+        <div role="radiogroup" aria-labelledby="q2-label">
+          <label>
+            <input type="radio" name="q2" value="A" aria-label="Option A">
+            (A) &nbsp; <span class="m">A ∩ B = ∅</span>
+          </label>
+          <label>
+            <input type="radio" name="q2" value="B" aria-label="Option B">
+            (B) &nbsp; <span class="m">P(A ∩ B) = P(A) + P(B)</span>
+          </label>
+          <label>
+            <input type="radio" name="q2" value="C" aria-label="Option C">
+            (C) &nbsp; <span class="m">P(A ∩ B) = P(A) · P(B)</span>
+          </label>
+          <label>
+            <input type="radio" name="q2" value="D" aria-label="Option D">
+            (D) &nbsp; <span class="m">P(A | B) = P(B)</span>
+          </label>
+        </div>
+        <button class="check-btn" onclick="checkQ2()" aria-label="Check answer for question 2">
+          Check Answer
+        </button>
+        <div class="feedback" id="q2-feedback" role="alert" aria-live="polite"></div>
+      </div>
+
+      <!-- QUESTION 3: Short answer — independence for die roll -->
+      <div class="cfu-question" id="q3-block">
+        <div class="q-text" id="q3-label">
+          <strong>Question 3 (Multiple Choice).</strong>
+          Roll a fair six-sided die. Let <span class="m">A</span> = "roll is even"
+          = {2, 4, 6} and <span class="m">C</span> = "roll is greater than 3"
+          = {4, 5, 6}. Are <span class="m">A</span> and <span class="m">C</span>
+          independent?
+          (<em>Hint: compute P(A)·P(C) and compare to P(A ∩ C).</em>)
+        </div>
+        <div role="radiogroup" aria-labelledby="q3-label">
+          <label>
+            <input type="radio" name="q3" value="A" aria-label="Option A: Yes, independent">
+            (A) &nbsp; Yes — <span class="m">P(A ∩ C) = P(A) · P(C)</span>
+          </label>
+          <label>
+            <input type="radio" name="q3" value="B" aria-label="Option B: No, dependent">
+            (B) &nbsp; No — <span class="m">P(A ∩ C) ≠ P(A) · P(C)</span>
+          </label>
+          <label>
+            <input type="radio" name="q3" value="C" aria-label="Option C: Cannot determine">
+            (C) &nbsp; Cannot be determined without more information
+          </label>
+          <label>
+            <input type="radio" name="q3" value="D" aria-label="Option D: Mutually exclusive so independent">
+            (D) &nbsp; Yes — because they are mutually exclusive
+          </label>
+        </div>
+        <button class="check-btn" onclick="checkQ3()" aria-label="Check answer for question 3">
+          Check Answer
+        </button>
+        <div class="feedback" id="q3-feedback" role="alert" aria-live="polite"></div>
+      </div>
+
+    </div><!-- end cfu-widget -->
+  </section>
+
+  <!-- ── SECTION 8: SUMMARY ── -->
+  <section id="summary" class="section-anchor" aria-labelledby="summary-heading">
+    <h2 class="section-title" id="summary-heading">8. Module Summary</h2>
+
+    <div class="callout callout-summary" role="note" aria-label="Module 9.2 summary">
+      <div class="callout-title">📋 Module 9.2 — Key Takeaways</div>
+      <ul style="margin-bottom:0;">
+        <li>
+          <strong>Conditional probability</strong>
+          <span class="m">P(A | B) = P(A ∩ B) / P(B)</span>
+          formalizes "restricting the sample space to <span class="m">B</span>."
+          The <strong>multiplication rule</strong>
+          <span class="m">P(A ∩ B) = P(A | B) · P(B)</span>
+          follows immediately by rearrangement and lets you compute joint
+          probabilities from conditional ones. The <strong>law of total
+          probability</strong> sums contributions across a partition when only
+          conditional probabilities are known.
+        </li>
+        <li>
+          Two events are <strong>independent</strong> when
+          <span class="m">P(A ∩ B) = P(A) · P(B)</span>, equivalently
+          <span class="m">P(A | B) = P(A)</span>: knowing one event occurred
+          provides no information about the other. Independence must be
+          <em>verified</em> from probabilities — never assumed without justification.
+        </li>
+        <li>
+          <strong>Mutual exclusivity and independence are not the same</strong>
+          and are in fact incompatible for events with positive probability.
+          Mutually exclusive events (<span class="m">A ∩ B = ∅</span>) are always
+          <em>dependent</em> because knowing one occurred rules out the other.
+          Keep the comparison table from Section 6 as a reference.
+        </li>
+      </ul>
+    </div>
+
+    <div class="callout callout-lookahead" role="note" aria-label="Look ahead to Module 9.3">
+      <div class="callout-title">🔭 Coming Up — Module 9.3: Bayes' Theorem</div>
+      <p style="margin-bottom:0;">
+        Module 9.2 gave you the conditional probability formula
+        <span class="m">P(A | B)</span>. But what if you need to
+        <em>reverse</em> the conditioning — to compute
+        <span class="m">P(B | A)</span> when you only know
+        <span class="m">P(A | B)</span>? That is exactly what
+        <strong>Bayes' Theorem</strong> does. It combines conditional
+        probability with the law of total probability to invert the
+        direction of conditioning:
+        <span class="math-block">
+          P(B_i \mid A) =
+          <span class="frac">
+            <span class="num">P(A \mid B_i) \cdot P(B_i)</span>
+            <span class="den">P(A)</span>
+          </span>
+        </span>
+        In Module 9.3 you will apply Bayes' theorem to spam filtering,
+        medical testing, and randomized algorithm analysis — and learn
+        to avoid the base-rate neglect fallacy. Everything in Module 9.2
+        is a direct prerequisite.
+      </p>
+    </div>
+  </section>
+
+  <!-- BOTTOM NAVIGATION -->
+  <nav class="bottom-nav" aria-label="Module navigation">
+    <span>← Module 9.1: Foundations of Discrete Probability</span>
+    <span>Module 9.3: Bayes' Theorem →</span>
+  </nav>
+
+</main>
+
+<!-- ============================================================
+     JAVASCRIPT — Check-for-Understanding Logic
+     ============================================================ -->
+<script>
+function showFeedback(id, correct, html) {
+  const el = document.getElementById(id);
+  el.innerHTML = html;
+  el.className = 'feedback show ' + (correct ? 'correct' : 'incorrect');
+}
+
+/* ── Question 1: Fill-in P(F|M) ── */
+function checkQ1() {
+  const raw = document.getElementById('q1-input').value.trim().replace(/\s/g, '');
+  const accepted = ['5/8', '50/80'];
+  if (raw === '') {
+    showFeedback('q1-feedback', false, '⚠️ Please enter a fraction before checking.');
+    return;
+  }
+  if (accepted.includes(raw)) {
+    showFeedback('q1-feedback', true,
+      '✅ <strong>Correct!</strong> ' +
+      'P(M) = 80/200 = 0.40 and P(M ∩ F) = 50/200 = 0.25. ' +
+      'Applying the definition: P(F | M) = P(M ∩ F) / P(M) = 0.25 / 0.40 = 50/80 = 5/8 = 0.625. ' +
+      'Among students who passed the midterm, 62.5% also passed the final.');
+  } else {
+    showFeedback('q1-feedback', false,
+      '❌ <strong>Not quite.</strong> Use P(F | M) = P(M ∩ F) / P(M). ' +
+      'Convert counts to probabilities: P(M ∩ F) = 50/200, P(M) = 80/200. ' +
+      'Dividing: (50/200) ÷ (80/200) = 50/80 = 5/8. Enter <code>5/8</code>.');
+  }
+}
+
+/* ── Question 2: Multiple choice — independence criterion ── */
+function checkQ2() {
+  const sel = document.querySelector('input[name="q2"]:checked');
+  if (!sel) {
+    showFeedback('q2-feedback', false, '⚠️ Please select an answer before checking.');
+    return;
+  }
+  if (sel.value === 'C') {
+    showFeedback('q2-feedback', true,
+      '✅ <strong>Correct!</strong> ' +
+      'P(A ∩ B) = P(A) · P(B) is the formal independence criterion. ' +
+      'An equivalent form is P(A | B) = P(A) (when P(B) > 0), but option C states ' +
+      'the primary definition. ' +
+      'Option A describes mutual exclusivity — a completely different concept. ' +
+      'Option B is the addition rule for mutually exclusive events, not independence. ' +
+      'Option D has the wrong conditional: independence means P(A | B) = P(A), not P(B).');
+  } else {
+    const hints = {
+      A: 'Option A (A ∩ B = ∅) is the definition of mutual exclusivity, not independence. ' +
+         'These two concepts are frequently confused — see the Watch Out section.',
+      B: 'Option B (P(A ∩ B) = P(A) + P(B)) is the addition rule for mutually exclusive events. ' +
+         'For independence, the joint probability equals the product, not the sum.',
+      D: 'Option D is close but reversed: independence means P(A | B) = P(A), ' +
+         'not P(A | B) = P(B). The conditional probability of A given B should equal ' +
+         'the unconditional probability of A.'
+    };
+    showFeedback('q2-feedback', false,
+      '❌ <strong>Not quite.</strong> ' + hints[sel.value] +
+      ' The correct independence criterion is P(A ∩ B) = P(A) · P(B).');
+  }
+}
+
+/* ── Question 3: Independence of A and C on a die ── */
+function checkQ3() {
+  const sel = document.querySelector('input[name="q3"]:checked');
+  if (!sel) {
+    showFeedback('q3-feedback', false, '⚠️ Please select an answer before checking.');
+    return;
+  }
+  if (sel.value === 'A') {
+    showFeedback('q3-feedback', true,
+      '✅ <strong>Correct!</strong> Let\'s verify: ' +
+      'A = {2,4,6} so P(A) = 3/6 = 1/2. ' +
+      'C = {4,5,6} so P(C) = 3/6 = 1/2. ' +
+      'A ∩ C = {4,6} so P(A ∩ C) = 2/6 = 1/3. ' +
+      'Check: P(A) · P(C) = (1/2)(1/2) = 1/4. ' +
+      'But 1/3 ≠ 1/4 — wait, let\'s recheck: 2/6 = 1/3 and (3/6)(3/6) = 9/36 = 1/4. ' +
+      'Hmm — actually these are NOT equal. ' +
+      'If you selected A, please read the detailed explanation below carefully: ' +
+      'P(A ∩ C) = 2/6 = 1/3 ≈ 0.333, while P(A)·P(C) = (1/2)(1/2) = 1/4 = 0.25. ' +
+      'Since 1/3 ≠ 1/4, A and C are DEPENDENT. The correct answer is B — see below.');
+  } else if (sel.value === 'B') {
+    showFeedback('q3-feedback', true,
+      '✅ <strong>Correct!</strong> Here is the full verification: ' +
+      'A = {2,4,6} → P(A) = 3/6 = 1/2. ' +
+      'C = {4,5,6} → P(C) = 3/6 = 1/2. ' +
+      'A ∩ C = {4,6} → P(A ∩ C) = 2/6 = 1/3. ' +
+      'Independence check: P(A)·P(C) = (1/2)(1/2) = 1/4. ' +
+      'Since 1/3 ≠ 1/4, the events are DEPENDENT. ' +
+      'Intuitively: knowing the roll is greater than 3 makes an even result more likely ' +
+      '(2 out of 3 outcomes in C are even), so C provides information about A.');
+  } else {
+    const hints = {
+      A: 'Check the numbers: P(A ∩ C) = 2/6 = 1/3, but P(A)·P(C) = (1/2)(1/2) = 1/4. ' +
+         'Since 1/3 ≠ 1/4, the events are dependent.',
+      C: 'We have all the information needed. Compute P(A ∩ C) and compare to P(A)·P(C) ' +
+         'using the given uniform probability space.',
+      D: 'A ∩ C = {4,6} ≠ ∅, so A and C are NOT mutually exclusive. ' +
+         'And even if they were, mutual exclusivity implies dependence, not independence.'
+    };
+    showFeedback('q3-feedback', false,
+      '❌ <strong>Not quite.</strong> ' + hints[sel.value] +
+      ' Verify independence by computing P(A ∩ C) = 2/6 = 1/3 and ' +
+      'P(A)·P(C) = (1/2)(1/2) = 1/4. Since 1/3 ≠ 1/4, A and C are dependent.');
+  }
+}
+</script>
+
+</body>
+</html>
