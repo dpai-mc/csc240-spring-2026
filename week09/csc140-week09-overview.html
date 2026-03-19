@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CSC 240 – Week 9 Overview: Discrete Probability</title>
+<style>
+  /* ── Reset & Base ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 1rem;
+    line-height: 1.65;
+    color: #1a1a1a;
+    background: #f5f6fa;
+  }
+
+  /* ── Skip Link ── */
+  .skip-link {
+    position: absolute;
+    top: -3rem;
+    left: 1rem;
+    background: #1a3a5c;
+    color: #fff;
+    padding: .4rem .9rem;
+    border-radius: 0 0 4px 4px;
+    font-size: .9rem;
+    text-decoration: none;
+    z-index: 9999;
+    transition: top .2s;
+  }
+  .skip-link:focus { top: 0; }
+
+  /* ── Nav Bar ── */
+  nav {
+    background: #1a3a5c;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 6px rgba(0,0,0,.25);
+  }
+  nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    list-style: none;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: .1rem .75rem;
+    gap: .15rem;
+  }
+  nav ul li a {
+    display: block;
+    color: #d6e4f7;
+    text-decoration: none;
+    font-size: .82rem;
+    font-weight: 600;
+    padding: .55rem .75rem;
+    border-radius: 4px;
+    letter-spacing: .02em;
+    transition: background .18s, color .18s;
+  }
+  nav ul li a:hover,
+  nav ul li a:focus {
+    background: #2e6da4;
+    color: #fff;
+    outline: 2px solid #7ab8f5;
+    outline-offset: 1px;
+  }
+
+  /* ── Page Header ── */
+  header {
+    background: linear-gradient(135deg, #1a3a5c 0%, #2e6da4 100%);
+    color: #fff;
+    padding: 2.5rem 1.5rem 2rem;
+    text-align: center;
+  }
+  header .week-label {
+    font-size: .85rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    opacity: .82;
+    margin-bottom: .4rem;
+  }
+  header h1 {
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: .5rem;
+  }
+  header .subtitle {
+    font-size: 1.05rem;
+    opacity: .88;
+    max-width: 620px;
+    margin: 0 auto;
+  }
+
+  /* ── Main Layout ── */
+  main {
+    max-width: 960px;
+    margin: 2rem auto 3rem;
+    padding: 0 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  /* ── Cards ── */
+  .card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 1.75rem 2rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    border-left: 5px solid #2e6da4;
+  }
+  .card h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1a3a5c;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: .55rem;
+  }
+  .card h2 .icon {
+    font-size: 1.3rem;
+    line-height: 1;
+    aria-hidden: true;
+  }
+
+  /* accent colors per section */
+  #welcome    { border-left-color: #2e6da4; }
+  #goals      { border-left-color: #217a4b; }
+  #activities { border-left-color: #8b3a9e; }
+  #concepts   { border-left-color: #c0560a; }
+  #connections{ border-left-color: #a0181e; }
+
+  #goals      h2 { color: #17603b; }
+  #activities h2 { color: #6b2c7a; }
+  #concepts   h2 { color: #8a3e08; }
+  #connections h2 { color: #7d1015; }
+
+  /* ── Lists ── */
+  ol.goals-list, ul.activity-list, ul.concept-list {
+    padding-left: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: .55rem;
+  }
+  ol.goals-list li, ul.activity-list li, ul.concept-list li {
+    font-size: .97rem;
+  }
+  ul.activity-list { list-style: none; padding-left: 0; }
+  ul.activity-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: .65rem;
+    padding: .6rem .85rem;
+    border-radius: 6px;
+    background: #f0f4fa;
+    font-weight: 500;
+  }
+  ul.activity-list li .badge {
+    background: #2e6da4;
+    color: #fff;
+    font-size: .72rem;
+    font-weight: 700;
+    padding: .18rem .5rem;
+    border-radius: 20px;
+    white-space: nowrap;
+    margin-top: .1rem;
+    flex-shrink: 0;
+  }
+  ul.activity-list li .badge.quiz  { background: #8b3a9e; }
+  ul.activity-list li .badge.pts   { background: #217a4b; }
+
+  ul.concept-list { list-style: none; padding-left: 0; }
+  ul.concept-list li {
+    display: flex;
+    align-items: baseline;
+    gap: .6rem;
+  }
+  ul.concept-list li::before {
+    content: "◆";
+    color: #c0560a;
+    font-size: .65rem;
+    flex-shrink: 0;
+    position: relative;
+    top: -.05em;
+  }
+
+  /* ── Welcome prose ── */
+  .prose p { font-size: .97rem; margin-bottom: .75rem; }
+  .prose p:last-child { margin-bottom: 0; }
+
+  /* ── Connections callout ── */
+  .connections-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: .5rem;
+  }
+  @media (max-width: 600px) {
+    .connections-grid { grid-template-columns: 1fr; }
+    nav ul { gap: 0; }
+  }
+  .conn-box {
+    border-radius: 7px;
+    padding: 1rem 1.1rem;
+    font-size: .93rem;
+  }
+  .conn-box.before {
+    background: #eef6fb;
+    border: 1px solid #b3d4ef;
+  }
+  .conn-box.after {
+    background: #fdf3e7;
+    border: 1px solid #f0c080;
+  }
+  .conn-box strong {
+    display: block;
+    font-size: .8rem;
+    font-weight: 700;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    margin-bottom: .35rem;
+  }
+  .conn-box.before strong { color: #1a5a8a; }
+  .conn-box.after  strong { color: #8a4a00; }
+
+  /* ── Point chip ── */
+  .pts-chip {
+    display: inline-block;
+    background: #217a4b;
+    color: #fff;
+    font-size: .75rem;
+    font-weight: 700;
+    padding: .15rem .55rem;
+    border-radius: 20px;
+    margin-left: .4rem;
+    vertical-align: middle;
+  }
+
+  /* ── Focus styles (global) ── */
+  :focus-visible {
+    outline: 3px solid #f5a623;
+    outline-offset: 2px;
+  }
+</style>
+</head>
+<body>
+
+<!-- Skip Navigation -->
+<a class="skip-link" href="#main-content">Skip to main content</a>
+
+<!-- ── Navigation ── -->
+<nav aria-label="Page sections">
+  <ul>
+    <li><a href="#welcome">Welcome</a></li>
+    <li><a href="#goals">Learning Goals</a></li>
+    <li><a href="#activities">Activities</a></li>
+    <li><a href="#concepts">Key Concepts</a></li>
+    <li><a href="#connections">Before &amp; After</a></li>
+  </ul>
+</nav>
+
+<!-- ── Page Header ── -->
+<header>
+  <p class="week-label">CSC 240 &mdash; Discrete Structures &nbsp;|&nbsp; Week 9</p>
+  <h1>Discrete Probability</h1>
+  <p class="subtitle">
+    From counting possibilities to measuring likelihood &mdash;
+    and putting probability to work in computing.
+  </p>
+</header>
+
+<!-- ── Main Content ── -->
+<main id="main-content">
+
+  <!-- 1. Welcome & Weekly Focus -->
+  <section class="card" id="welcome" aria-labelledby="welcome-heading">
+    <h2 id="welcome-heading">
+      <span class="icon" aria-hidden="true">👋</span>
+      Welcome &amp; Weekly Focus
+    </h2>
+    <div class="prose">
+      <p>
+        Welcome to Week 9! This week we turn the counting and combinatorics skills
+        you built in Weeks 7 and 8 into a powerful new tool: <strong>discrete
+        probability</strong>. You already know how to count outcomes systematically;
+        now you will assign likelihoods to those outcomes, reason about uncertainty,
+        and use probability to make decisions in computational contexts.
+      </p>
+      <p>
+        Week 9 sits at an important crossroads in the course. The combinatorial
+        reasoning from the last two weeks flows directly into probability spaces and
+        expected value, and the structured, recursive thinking you will begin
+        developing here carries forward into Week 10, where recursion takes center
+        stage and you will start building the Probability Calculator module for
+        Project 2.
+      </p>
+    </div>
+  </section>
+
+  <!-- 2. Learning Goals -->
+  <section class="card" id="goals" aria-labelledby="goals-heading">
+    <h2 id="goals-heading">
+      <span class="icon" aria-hidden="true">🎯</span>
+      Week 9 Learning Goals
+    </h2>
+    <p style="font-size:.93rem; margin-bottom:.9rem; color:#333;">
+      By the end of this week, you should be able to:
+    </p>
+    <ol class="goals-list" aria-label="Week 9 learning objectives">
+      <li>
+        Define a <strong>sample space</strong> and a <strong>probability measure</strong>,
+        and calculate basic probabilities for equally likely outcomes.
+      </li>
+      <li>
+        Apply the <strong>complement rule</strong> and <strong>inclusion-exclusion</strong>
+        to find probabilities of unions and intersections of events.
+      </li>
+      <li>
+        Calculate and interpret <strong>conditional probability</strong>, and explain
+        what it means for one event to depend on another.
+      </li>
+      <li>
+        Determine whether two events are <strong>independent</strong> and use the
+        multiplication rule for independent events.
+      </li>
+      <li>
+        State and apply <strong>Bayes' Theorem</strong> to update probabilities
+        given new evidence, including in computing and classification contexts.
+      </li>
+      <li>
+        Define a <strong>discrete random variable</strong>, construct its probability
+        distribution, and compute its <strong>expected value</strong>.
+      </li>
+      <li>
+        Explain how <strong>Monte Carlo simulation</strong> uses randomness to
+        estimate probabilities, and describe at least one application in computer
+        science.
+      </li>
+    </ol>
+  </section>
+
+  <!-- 3. Required Activities -->
+  <section class="card" id="activities" aria-labelledby="activities-heading">
+    <h2 id="activities-heading">
+      <span class="icon" aria-hidden="true">📋</span>
+      Required Activities This Week
+    </h2>
+    <p style="font-size:.93rem; margin-bottom:.9rem; color:#333;">
+      Complete all of the following modules and assessments in order:
+    </p>
+    <ul class="activity-list" aria-label="Required activities for Week 9">
+      <li>
+        <span class="badge">Module</span>
+        <span>Module 9.1 &mdash; Foundations of Discrete Probability</span>
+      </li>
+      <li>
+        <span class="badge">Module</span>
+        <span>Module 9.2 &mdash; Conditional Probability and Independence</span>
+      </li>
+      <li>
+        <span class="badge">Module</span>
+        <span>Module 9.3 &mdash; Bayes' Theorem</span>
+      </li>
+      <li>
+        <span class="badge">Module</span>
+        <span>Module 9.4 &mdash; Discrete Random Variables and Expected Value</span>
+      </li>
+      <li>
+        <span class="badge">Module</span>
+        <span>Module 9.5 &mdash; Probability in Computing and Week 9 Assignments</span>
+      </li>
+      <li>
+        <span class="badge quiz">Quiz</span>
+        <span>
+          Quiz 3 &mdash; Counting, Probability, and Recursion Intro
+          <span class="pts-chip">30 pts</span>
+        </span>
+      </li>
+    </ul>
+  </section>
+
+  <!-- 4. Key Concepts -->
+  <section class="card" id="concepts" aria-labelledby="concepts-heading">
+    <h2 id="concepts-heading">
+      <span class="icon" aria-hidden="true">🔑</span>
+      Key Concepts to Watch For
+    </h2>
+    <p style="font-size:.93rem; margin-bottom:.9rem; color:#333;">
+      Keep these ideas front of mind as you work through the modules:
+    </p>
+    <ul class="concept-list" aria-label="Key concepts for Week 9">
+      <li>
+        <strong>Sample Space</strong> &mdash; the complete set of all possible outcomes
+        of a random experiment.
+      </li>
+      <li>
+        <strong>Probability Measure</strong> &mdash; a function that assigns a number
+        between 0 and 1 to each event, satisfying the axioms of probability.
+      </li>
+      <li>
+        <strong>Conditional Probability</strong> &mdash; the probability of an event
+        given that another event has already occurred.
+      </li>
+      <li>
+        <strong>Independence</strong> &mdash; two events are independent when knowing
+        one occurred gives no information about the other.
+      </li>
+      <li>
+        <strong>Bayes' Theorem</strong> &mdash; a formula for reversing conditional
+        probabilities; foundational in spam filters, medical testing, and machine
+        learning classifiers.
+      </li>
+      <li>
+        <strong>Expected Value</strong> &mdash; the long-run average outcome of a
+        random variable, computed as a probability-weighted sum.
+      </li>
+      <li>
+        <strong>Monte Carlo Simulation</strong> &mdash; a computational technique
+        that uses repeated random sampling to estimate probabilities and numerical
+        results.
+      </li>
+    </ul>
+  </section>
+
+  <!-- 5. Connections: Before and After -->
+  <section class="card" id="connections" aria-labelledby="connections-heading">
+    <h2 id="connections-heading">
+      <span class="icon" aria-hidden="true">🔗</span>
+      Connections: Before &amp; After
+    </h2>
+    <div class="connections-grid">
+      <div class="conn-box before" role="region" aria-label="What came before Week 9">
+        <strong>⬅ Building On (Weeks 7–8)</strong>
+        The counting principles, permutations, combinations, and
+        inclusion-exclusion you studied in Weeks 7 and 8 are the direct
+        foundation of probability. Counting favorable outcomes and total
+        outcomes is exactly how you compute probabilities in a finite
+        sample space.
+      </div>
+      <div class="conn-box after" role="region" aria-label="What comes after Week 9">
+        <strong>➡ Leading Into (Week 10 &amp; Project 2)</strong>
+        Week 10 opens the recursion unit, and the probabilistic reasoning
+        you build this week feeds directly into Project 2, where you will
+        implement a <strong>Probability Calculator</strong> module. The
+        expected-value and simulation ideas from Week 9 will reappear
+        throughout the second half of the course.
+      </div>
+    </div>
+  </section>
+
+</main>
+
+</body>
+</html>
