@@ -1,0 +1,1299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSC 240 – Module 9.3: Bayes' Theorem</title>
+<style>
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: #f4f6f9;
+  color: #1a1a2e;
+  line-height: 1.7;
+}
+a { color: #1a5276; }
+a:focus-visible { outline: 3px solid #f39c12; outline-offset: 2px; border-radius: 3px; }
+
+/* ============================================================
+   STICKY NAV BAR
+   ============================================================ */
+#top-nav {
+  position: sticky; top: 0; z-index: 1000;
+  background: #1a3a5c;
+  padding: 0 0.75rem;
+  display: flex; flex-wrap: wrap; align-items: center;
+  gap: 0.2rem 0.35rem; min-height: 2.6rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+#top-nav .nav-brand {
+  color: #aed6f1; font-weight: 700; font-size: 0.78rem;
+  letter-spacing: 0.08em; margin-right: 0.4rem;
+  white-space: nowrap; opacity: 0.85;
+}
+#top-nav a {
+  color: #aed6f1; text-decoration: none; font-size: 0.82rem;
+  font-weight: 700; padding: 0.22rem 0.6rem; border-radius: 4px;
+  white-space: nowrap; min-width: 1.9rem; text-align: center;
+  transition: background 0.15s, color 0.15s;
+}
+#top-nav a:hover { background: #2e6da4; color: #fff; }
+#top-nav a:focus-visible { outline: 3px solid #f39c12; outline-offset: 2px; color: #fff; }
+
+/* ============================================================
+   PAGE WRAPPER
+   ============================================================ */
+.page-wrapper { max-width: 860px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+
+/* ============================================================
+   MODULE HEADER
+   ============================================================ */
+.module-header {
+  background: linear-gradient(135deg, #1a3a5c 0%, #2e6da4 100%);
+  color: #fff; border-radius: 10px;
+  padding: 2rem 2rem 1.75rem; margin-bottom: 2rem;
+}
+.module-header .week-label {
+  font-size: 0.8rem; letter-spacing: 0.1em;
+  text-transform: uppercase; color: #aed6f1; margin-bottom: 0.4rem;
+}
+.module-header h1 { font-size: 1.75rem; font-weight: 800; line-height: 1.25; margin-bottom: 0.6rem; }
+.module-header .module-meta {
+  font-size: 0.85rem; color: #d6eaf8;
+  display: flex; flex-wrap: wrap; gap: 0.4rem 1.5rem;
+}
+.module-header .module-meta span::before { content: "▸ "; color: #7fb3d3; }
+
+/* ============================================================
+   SECTION HEADINGS
+   ============================================================ */
+.section-anchor { scroll-margin-top: 3.5rem; }
+h2.section-title {
+  font-size: 1.3rem; font-weight: 700; color: #1a3a5c;
+  border-left: 5px solid #2e6da4; padding-left: 0.75rem;
+  margin: 2.25rem 0 1rem;
+}
+h3.subsection-title { font-size: 1.05rem; font-weight: 700; color: #1a3a5c; margin: 1.5rem 0 0.6rem; }
+
+/* ============================================================
+   PROSE
+   ============================================================ */
+p { margin-bottom: 1rem; }
+ul, ol { margin: 0.5rem 0 1rem 1.5rem; }
+li { margin-bottom: 0.35rem; }
+
+/* ============================================================
+   MATH
+   ============================================================ */
+.m { font-style: italic; font-family: 'Times New Roman', Georgia, serif; }
+.math-block {
+  display: block; text-align: center;
+  padding: 0.8rem 1rem;
+  font-style: italic; font-family: 'Times New Roman', Georgia, serif;
+  font-size: 1.1em; overflow-x: auto;
+}
+.frac { display: inline-block; text-align: center; vertical-align: middle; line-height: 1.15; margin: 0 0.1em; }
+.frac .num { display: block; border-bottom: 1px solid currentColor; padding: 0 3px 1px; }
+.frac .den { display: block; padding: 1px 3px 0; }
+
+/* ============================================================
+   CALLOUT BOXES
+   ============================================================ */
+.callout { border-radius: 8px; padding: 1rem 1.25rem; margin: 1.25rem 0; border-left: 5px solid; }
+.callout .callout-title {
+  font-weight: 700; font-size: 0.9rem; text-transform: uppercase;
+  letter-spacing: 0.05em; margin-bottom: 0.5rem;
+  display: flex; align-items: center; gap: 0.4rem;
+}
+.callout-definition { background: #e8f6f3; border-color: #1abc9c; color: #0e3d31; }
+.callout-definition .callout-title { color: #148f77; }
+.callout-warning { background: #fef9e7; border-color: #f39c12; color: #4a3000; }
+.callout-warning .callout-title { color: #b7770d; }
+.callout-connection { background: #eafaf1; border-color: #27ae60; color: #0b3d1f; }
+.callout-connection .callout-title { color: #1e8449; }
+.callout-lookahead { background: #f0eef9; border-color: #7d3c98; color: #2d0b4e; }
+.callout-lookahead .callout-title { color: #6c3483; }
+.callout-summary { background: #f2f3f4; border-color: #7f8c8d; color: #1c2833; }
+.callout-summary .callout-title { color: #515a5a; }
+.callout-info { background: #eaf2fb; border-color: #2e6da4; color: #1a2e4a; }
+.callout-info .callout-title { color: #1a5276; }
+
+/* ============================================================
+   PROBABILITY TABLE
+   ============================================================ */
+.styled-table { width: 100%; border-collapse: collapse; margin: 1rem 0 1.5rem; font-size: 0.92rem; }
+.styled-table th { background: #1a3a5c; color: #fff; padding: 0.65rem 0.9rem; text-align: left; }
+.styled-table td { padding: 0.6rem 0.9rem; border-bottom: 1px solid #d5d8dc; vertical-align: top; }
+.styled-table tr:nth-child(even) td { background: #eaf2fb; }
+.styled-table tr:last-child td { border-bottom: none; }
+.styled-table .total-row td { background: #d6eaf8; font-weight: 700; border-top: 2px solid #2e6da4; }
+
+/* ============================================================
+   EXPANDABLE PANELS
+   ============================================================ */
+.example-panel { border: 1px solid #aed6f1; border-radius: 8px; margin: 1.1rem 0; overflow: hidden; }
+.example-panel summary {
+  background: #d6eaf8; padding: 0.75rem 1rem; cursor: pointer;
+  font-weight: 700; font-size: 0.95rem; color: #1a3a5c;
+  list-style: none; display: flex; align-items: center; gap: 0.5rem;
+  user-select: none; transition: background 0.15s;
+}
+.example-panel summary::-webkit-details-marker { display: none; }
+.example-panel summary:hover { background: #aed6f1; }
+.example-panel summary:focus-visible { outline: 3px solid #f39c12; outline-offset: -3px; }
+.example-panel summary .toggle-icon { display: inline-block; transition: transform 0.2s; font-style: normal; }
+.example-panel[open] summary .toggle-icon { transform: rotate(90deg); }
+.example-panel .example-body { padding: 1rem 1.25rem; background: #fff; }
+.example-panel .example-body p:last-child { margin-bottom: 0; }
+
+/* Derivation step panels — slightly different accent */
+.deriv-panel { border: 1px solid #a9cce3; border-radius: 8px; margin: 0.75rem 0; overflow: hidden; }
+.deriv-panel summary {
+  background: #d0e8f5; padding: 0.6rem 1rem; cursor: pointer;
+  font-weight: 600; font-size: 0.93rem; color: #1a3a5c;
+  list-style: none; display: flex; align-items: center; gap: 0.5rem;
+  user-select: none; transition: background 0.15s;
+}
+.deriv-panel summary::-webkit-details-marker { display: none; }
+.deriv-panel summary:hover { background: #aed6f1; }
+.deriv-panel summary:focus-visible { outline: 3px solid #f39c12; outline-offset: -3px; }
+.deriv-panel summary .toggle-icon { display: inline-block; transition: transform 0.2s; font-style: normal; }
+.deriv-panel[open] summary .toggle-icon { transform: rotate(90deg); }
+.deriv-panel .deriv-body { padding: 0.9rem 1.25rem; background: #f7fbff; }
+
+/* Numbered step list */
+.step-list { list-style: none; margin-left: 0; counter-reset: step-counter; }
+.step-list li {
+  counter-increment: step-counter; padding: 0.4rem 0 0.4rem 2.5rem;
+  position: relative; border-bottom: 1px dashed #d5d8dc;
+}
+.step-list li:last-child { border-bottom: none; }
+.step-list li::before {
+  content: counter(step-counter); position: absolute; left: 0; top: 0.4rem;
+  background: #2e6da4; color: #fff; width: 1.6rem; height: 1.6rem;
+  border-radius: 50%; font-size: 0.78rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* Derivation step label badge */
+.step-badge {
+  display: inline-block; background: #2e6da4; color: #fff;
+  font-size: 0.75rem; font-weight: 700; padding: 0.15rem 0.55rem;
+  border-radius: 12px; letter-spacing: 0.04em; margin-right: 0.4rem;
+  vertical-align: middle;
+}
+
+/* ============================================================
+   REFERENCE CARD
+   ============================================================ */
+.ref-card {
+  background: #fff; border: 2px solid #1a3a5c; border-radius: 10px;
+  padding: 1.25rem 1.5rem; margin: 1.5rem 0;
+}
+.ref-card h3 {
+  font-size: 1rem; color: #1a3a5c; margin-bottom: 0.9rem;
+  border-bottom: 2px solid #aed6f1; padding-bottom: 0.4rem;
+  text-transform: uppercase; letter-spacing: 0.06em;
+}
+.ref-card .ref-formula {
+  background: #eaf2fb; border-radius: 6px;
+  padding: 0.75rem 1rem; margin-bottom: 1rem; text-align: center;
+  font-style: italic; font-family: 'Times New Roman', Georgia, serif;
+  font-size: 1.05em; overflow-x: auto;
+}
+.ref-card dl { margin: 0 0 1rem 0; }
+.ref-card dt { font-weight: 700; color: #1a3a5c; margin-top: 0.5rem; }
+.ref-card dd { margin-left: 1.2rem; margin-bottom: 0.2rem; }
+.ref-card ol { margin: 0.4rem 0 0 1.4rem; }
+.ref-card ol li { margin-bottom: 0.3rem; }
+
+/* ============================================================
+   CHECK-FOR-UNDERSTANDING WIDGET
+   ============================================================ */
+.cfu-widget {
+  background: #fff; border: 2px solid #2e6da4;
+  border-radius: 10px; padding: 1.25rem 1.5rem; margin: 1.5rem 0;
+}
+.cfu-widget h3 {
+  font-size: 1rem; color: #1a3a5c; margin-bottom: 1rem;
+  border-bottom: 1px solid #d6eaf8; padding-bottom: 0.5rem;
+}
+.cfu-question { margin-bottom: 1.5rem; }
+.cfu-question .q-text { font-weight: 600; margin-bottom: 0.6rem; color: #1a2e4a; }
+.cfu-question label {
+  display: flex; align-items: flex-start; gap: 0.5rem;
+  padding: 0.3rem 0; cursor: pointer; border-radius: 4px;
+}
+.cfu-question label:hover { background: #eaf2fb; }
+.cfu-question input[type="radio"] { margin-top: 0.2rem; accent-color: #2e6da4; }
+.check-btn {
+  background: #2e6da4; color: #fff; border: none; border-radius: 6px;
+  padding: 0.5rem 1.2rem; font-size: 0.9rem; font-weight: 700;
+  cursor: pointer; margin-top: 0.5rem; transition: background 0.15s;
+}
+.check-btn:hover { background: #1a5276; }
+.check-btn:focus-visible { outline: 3px solid #f39c12; outline-offset: 2px; }
+.feedback {
+  margin-top: 0.65rem; padding: 0.65rem 0.9rem;
+  border-radius: 6px; font-size: 0.92rem; display: none;
+}
+.feedback.correct { background: #eafaf1; border-left: 4px solid #27ae60; color: #0b3d1f; }
+.feedback.incorrect { background: #fdf2f8; border-left: 4px solid #c0392b; color: #4a0e0e; }
+.feedback.neutral { background: #f0eef9; border-left: 4px solid #7d3c98; color: #2d0b4e; }
+.feedback.show { display: block; }
+
+/* Self-assessment textarea */
+.cfu-question textarea {
+  width: 100%; min-height: 90px; border: 1px solid #aab7c4;
+  border-radius: 5px; padding: 0.5rem 0.7rem; font-size: 0.93rem;
+  font-family: inherit; resize: vertical; margin-top: 0.4rem;
+}
+.cfu-question textarea:focus { outline: 3px solid #f39c12; border-color: #2e6da4; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 600px) {
+  .module-header h1 { font-size: 1.35rem; }
+  h2.section-title { font-size: 1.1rem; }
+  .styled-table { font-size: 0.8rem; }
+  #top-nav .nav-brand { display: none; }
+  .ref-card .ref-formula { font-size: 0.93em; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     STICKY TOP NAVIGATION
+     ============================================================ -->
+<nav id="top-nav" aria-label="Module 9.3 section navigation">
+  <span class="nav-brand">9.3</span>
+  <a href="#hook"       title="Opening: The Reverse Question">1</a>
+  <a href="#derivation" title="Deriving Bayes' Theorem">2</a>
+  <a href="#vocab"      title="Vocabulary: Prior, Likelihood, Posterior">3</a>
+  <a href="#medical"    title="Worked Example 1: Medical Testing">4</a>
+  <a href="#spam"       title="Worked Example 2: Spam Filtering">5</a>
+  <a href="#watchout"   title="Watch Out: Reasoning Pitfalls">6</a>
+  <a href="#refcard"    title="Bayes' Theorem Reference Card">7</a>
+  <a href="#cfu"        title="Check for Understanding">8</a>
+  <a href="#summary"    title="Module Summary">9</a>
+</nav>
+
+<!-- ============================================================
+     PAGE CONTENT
+     ============================================================ -->
+<main class="page-wrapper">
+
+  <!-- MODULE HEADER -->
+  <header class="module-header">
+    <div class="week-label">CSC 240 · Discrete Structures · Week 9 · Module 9.3</div>
+    <h1>Bayes' Theorem</h1>
+    <div class="module-meta">
+      <span>Week 9 of 17 &nbsp;(March 25–31, 2026)</span>
+      <span>Estimated time: 1.5 hours</span>
+      <span>CSLO 2 · Objectives 3 &amp; 5</span>
+      <span>Contributes to: PS-06 · Quiz 3 · Project 2</span>
+    </div>
+  </header>
+
+  <!-- ══════════════════════════════════════════════════════════
+       SECTION 1 — OPENING HOOK
+       ══════════════════════════════════════════════════════════ -->
+  <section id="hook" class="section-anchor" aria-labelledby="hook-heading">
+    <h2 class="section-title" id="hook-heading">1. Opening: The Reverse Question</h2>
+
+    <p>
+      In Module 9.2 you learned to compute <span class="m">P(A | B)</span> — the probability
+      of event <span class="m">A</span> given that event <span class="m">B</span> has already occurred.
+      The formula is clean and direct:
+    </p>
+
+    <div class="math-block" aria-label="Conditional probability definition">
+      <em>P</em>(<em>A</em> | <em>B</em>) =
+      <span class="frac">
+        <span class="num"><em>P</em>(<em>A</em> ∩ <em>B</em>)</span>
+        <span class="den"><em>P</em>(<em>B</em>)</span>
+      </span>
+    </div>
+
+    <p>
+      But real-world problems often hand us information in the <em>opposite direction</em>.
+      Consider these scenarios:
+    </p>
+
+    <ul>
+      <li>A medical test returns <strong>positive</strong>. You know the test's accuracy rate
+          (<span class="m">P(\text{positive} | \text{disease})</span>), but what you actually
+          need is <span class="m">P(\text{disease} | \text{positive})</span>.</li>
+      <li>An email contains the word "free." You know how often spam emails use that word
+          (<span class="m">P(\text{"free"} | \text{spam})</span>), but you need
+          <span class="m">P(\text{spam} | \text{"free"})</span>.</li>
+      <li>A network intrusion detection system flags a packet. You know the false-positive
+          rate, but you need the probability the flag indicates a real attack.</li>
+    </ul>
+
+    <blockquote style="border-left:4px solid #2e6da4; padding:0.75rem 1rem;
+      background:#eaf2fb; border-radius:0 8px 8px 0; margin:1rem 0;
+      font-style:italic; color:#1a2e4a;">
+      "We know how to find <strong><em>P</em>(<em>A</em> | <em>B</em>)</strong>.
+      But what if we know <strong><em>P</em>(<em>B</em> | <em>A</em>)</strong>
+      and need to find <strong><em>P</em>(<em>A</em> | <em>B</em>)</strong>?
+      This is exactly what Bayes' theorem answers."
+    </blockquote>
+
+    <p>
+      In each case, we know the probability of observing the <em>evidence</em> given a
+      <em>hypothesis</em>, but we want to flip it: given the evidence, how likely is the
+      hypothesis? Bayes' theorem is the mathematical tool that performs this reversal — and
+      it follows directly from definitions you already know.
+    </p>
+
+    <div class="callout callout-connection">
+      <div class="callout-title">🔗 Connection — Module 9.2</div>
+      Bayes' theorem requires two results from Module 9.2: the
+      <strong>conditional probability definition</strong>
+      <span class="m">P(A|B) = P(A ∩ B)/P(B)</span> and the
+      <strong>law of total probability</strong>. If either of those feels uncertain,
+      review Module 9.2 before continuing.
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════
+       SECTION 2 — DERIVATION
+       ══════════════════════════════════════════════════════════ -->
+  <section id="derivation" class="section-anchor" aria-labelledby="deriv-heading">
+    <h2 class="section-title" id="deriv-heading">2. Deriving Bayes' Theorem</h2>
+
+    <p>
+      We derive Bayes' theorem in four labeled steps. Each step is collapsible so you
+      can work through the logic at your own pace. Try to predict the next step before
+      expanding it.
+    </p>
+
+    <!-- STEP 1 -->
+    <details class="deriv-panel">
+      <summary>
+        <span class="toggle-icon" aria-hidden="true">▶</span>
+        <span class="step-badge">Step 1</span> Start with the conditional probability definition
+      </summary>
+      <div class="deriv-body">
+        <p>
+          By definition (Module 9.2), for any two events
+          <span class="m">A</span> and <span class="m">B</span> with <span class="m">P(B) &gt; 0</span>:
+        </p>
+        <div class="math-block" aria-label="Step 1: conditional probability definition">
+          <em>P</em>(<em>A</em> | <em>B</em>) =
+          <span class="frac">
+            <span class="num"><em>P</em>(<em>A</em> ∩ <em>B</em>)</span>
+            <span class="den"><em>P</em>(<em>B</em>)</span>
+          </span>
+        </div>
+        <p style="margin-bottom:0;">
+          Our goal is to express the <em>numerator</em>
+          <span class="m">P(A ∩ B)</span> using
+          <span class="m">P(B | A)</span> — the conditional probability in the
+          <em>opposite</em> direction.
+        </p>
+      </div>
+    </details>
+
+    <!-- STEP 2 -->
+    <details class="deriv-panel">
+      <summary>
+        <span class="toggle-icon" aria-hidden="true">▶</span>
+        <span class="step-badge">Step 2</span> Apply the multiplication rule to rewrite the numerator
+      </summary>
+      <div class="deriv-body">
+        <p>
+          The multiplication rule (also from Module 9.2) states that for any events
+          <span class="m">A</span> and <span class="m">B</span>:
+        </p>
+        <div class="math-block" aria-label="Multiplication rule">
+          <em>P</em>(<em>A</em> ∩ <em>B</em>) = <em>P</em>(<em>B</em> | <em>A</em>) · <em>P</em>(<em>A</em>)
+        </div>
+        <p>
+          This is symmetric: <span class="m">P(A ∩ B) = P(B | A) · P(A) = P(A | B) · P(B)</span>.
+        </p>
+        <p style="margin-bottom:0;">
+          Substituting into the conditional probability formula from Step 1:
+        </p>
+        <div class="math-block" aria-label="Substituting multiplication rule">
+          <em>P</em>(<em>A</em> | <em>B</em>) =
+          <span class="frac">
+            <span class="num"><em>P</em>(<em>B</em> | <em>A</em>) · <em>P</em>(<em>A</em>)</span>
+            <span class="den"><em>P</em>(<em>B</em>)</span>
+          </span>
+        </div>
+        <p style="margin-bottom:0;">
+          This is already a valid form of Bayes' theorem — but the denominator
+          <span class="m">P(B)</span> is often unknown directly. Step 3 addresses that.
+        </p>
+      </div>
+    </details>
+
+    <!-- STEP 3 -->
+    <details class="deriv-panel">
+      <summary>
+        <span class="toggle-icon" aria-hidden="true">▶</span>
+        <span class="step-badge">Step 3</span> Expand the denominator using the law of total probability
+      </summary>
+      <div class="deriv-body">
+        <p>
+          Suppose <span class="m">B₁, B₂, …, Bₙ</span> form a <strong>partition</strong> of
+          the sample space — they are mutually exclusive, exhaustive events. The
+          <strong>law of total probability</strong> (Module 9.2) states:
+        </p>
+        <div class="math-block" aria-label="Law of total probability">
+          <em>P</em>(<em>A</em>) =
+          <em>P</em>(<em>A</em> | <em>B</em><sub>1</sub>)<em>P</em>(<em>B</em><sub>1</sub>)
+          + <em>P</em>(<em>A</em> | <em>B</em><sub>2</sub>)<em>P</em>(<em>B</em><sub>2</sub>)
+          + ⋯ +
+          <em>P</em>(<em>A</em> | <em>B</em><sub><em>n</em></sub>)<em>P</em>(<em>B</em><sub><em>n</em></sub>)
+          = <span style="font-style:normal;">∑</span><sub><em>i</em></sub>
+          <em>P</em>(<em>A</em> | <em>B</em><sub><em>i</em></sub>)<em>P</em>(<em>B</em><sub><em>i</em></sub>)
+        </div>
+        <p style="margin-bottom:0;">
+          In the two-event case (just <span class="m">B</span> and its complement
+          <span class="m">Bᶜ</span>), this simplifies to:
+        </p>
+        <div class="math-block" aria-label="Law of total probability two events">
+          <em>P</em>(<em>A</em>) =
+          <em>P</em>(<em>A</em> | <em>B</em>)<em>P</em>(<em>B</em>)
+          + <em>P</em>(<em>A</em> | <em>B</em><sup>c</sup>)<em>P</em>(<em>B</em><sup>c</sup>)
+        </div>
+      </div>
+    </details>
+
+    <!-- STEP 4 -->
+    <details class="deriv-panel">
+      <summary>
+        <span class="toggle-icon" aria-hidden="true">▶</span>
+        <span class="step-badge">Step 4</span> Combine to get the full form of Bayes' theorem
+      </summary>
+      <div class="deriv-body">
+        <p>
+          Substituting the law of total probability into the denominator of the
+          formula from Step 2, and writing it for a general partition
+          <span class="m">B₁, B₂, …, Bₙ</span>, we obtain
+          <strong>Bayes' theorem</strong>:
+        </p>
+        <div class="math-block" aria-label="Bayes theorem full form">
+          <em>P</em>(<em>B</em><sub><em>i</em></sub> | <em>A</em>) =
+          <span class="frac">
+            <span class="num">
+              <em>P</em>(<em>A</em> | <em>B</em><sub><em>i</em></sub>) · <em>P</em>(<em>B</em><sub><em>i</em></sub>)
+            </span>
+            <span class="den">
+              ∑<sub><em>j</em></sub> <em>P</em>(<em>A</em> | <em>B</em><sub><em>j</em></sub>) · <em>P</em>(<em>B</em><sub><em>j</em></sub>)
+            </span>
+          </span>
+        </div>
+        <p>
+          For the common <strong>two-event case</strong> (hypothesis <span class="m">H</span>
+          and its complement <span class="m">Hᶜ</span>), this becomes:
+        </p>
+        <div class="math-block" aria-label="Bayes theorem two event form">
+          <em>P</em>(<em>H</em> | <em>E</em>) =
+          <span class="frac">
+            <span class="num">
+              <em>P</em>(<em>E</em> | <em>H</em>) · <em>P</em>(<em>H</em>)
+            </span>
+            <span class="den">
+              <em>P</em>(<em>E</em> | <em>H</em>)<em>P</em>(<em>H</em>)
+              + <em>P</em>(<em>E</em> | <em>H</em><sup>c</sup>)<em>P</em>(<em>H</em><sup>c</sup>)
+            </span>
+          </span>
+        </div>
+        <p style="margin-bottom:0;">
+          where <span class="m">H</span> is the hypothesis and <span class="m">E</span> is the
+          observed evidence. This two-event form is what we will use in both
+          worked examples.
+        </p>
+      </div>
+    </details>
+
+    <div class="callout callout-warning">
+      <div class="callout-title">⚠️ Nothing New — Just Rearranged</div>
+      Bayes' theorem is not a new axiom. Every symbol in the formula appeared in
+      Module 9.2. The theorem is simply the result of substituting the
+      multiplication rule and the law of total probability into the conditional
+      probability definition. Its power comes from <em>which direction</em> it lets
+      you compute — from evidence to hypothesis rather than hypothesis to evidence.
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════
+       SECTION 3 — VOCABULARY
+       ══════════════════════════════════════════════════════════ -->
+  <section id="vocab" class="section-anchor" aria-labelledby="vocab-heading">
+    <h2 class="section-title" id="vocab-heading">3. Vocabulary: Prior, Likelihood, and Posterior</h2>
+
+    <p>
+      Bayes' theorem has a standard vocabulary that names each component of the formula.
+      Learning these terms is important: they appear in statistics, machine learning,
+      and algorithm analysis literature.
+    </p>
+
+    <div class="callout callout-definition" role="note" aria-label="Vocabulary definitions">
+      <div class="callout-title">📘 Definition — Bayesian Vocabulary</div>
+
+      <p>
+        Given hypothesis <span class="m">H</span> and evidence <span class="m">E</span>:
+      </p>
+
+      <p>
+        <strong>Prior probability</strong> — <span class="m">P(Bᵢ)</span> or
+        <span class="m">P(H)</span><br>
+        The probability of the hypothesis <em>before</em> observing any evidence.
+        This reflects background knowledge or population rates (e.g., the prevalence
+        of a disease in the general population). It is called "prior" because it
+        exists prior to the new observation.
+      </p>
+
+      <p>
+        <strong>Likelihood</strong> — <span class="m">P(A | Bᵢ)</span> or
+        <span class="m">P(E | H)</span><br>
+        The probability of observing the evidence <em>given that the hypothesis is true</em>.
+        This is what a test or sensor measures (e.g., the probability a test is positive
+        given the patient has the disease). Note: the likelihood is <em>not</em> itself
+        a probability over hypotheses — it is a probability over evidence.
+      </p>
+
+      <p>
+        <strong>Posterior probability</strong> — <span class="m">P(Bᵢ | A)</span> or
+        <span class="m">P(H | E)</span><br>
+        The probability of the hypothesis <em>after</em> incorporating the observed evidence.
+        This is what Bayes' theorem computes. The posterior is the prior
+        <em>updated</em> by the likelihood of the evidence. It is called "posterior"
+        because it comes after the observation.
+      </p>
+
+      <p style="margin-bottom:0;">
+        <strong>Memory aid:</strong> Prior → observe evidence → Posterior.
+        The likelihood is the bridge between them.
+      </p>
+    </div>
+
+    <p>
+      Mapping these terms onto the two-event formula makes the structure explicit:
+    </p>
+
+    <div class="math-block" aria-label="Bayes theorem with vocabulary labels">
+      <em>P</em>(<em>H</em> | <em>E</em>)
+      <span style="font-style:normal; font-size:0.85em; color:#1a5276;"> [posterior]</span>
+      =
+      <span class="frac">
+        <span class="num">
+          <em>P</em>(<em>E</em> | <em>H</em>)
+          <span style="font-style:normal; font-size:0.8em; color:#1a5276;">[likelihood]</span>
+          · <em>P</em>(<em>H</em>)
+          <span style="font-style:normal; font-size:0.8em; color:#1a5276;">[prior]</span>
+        </span>
+        <span class="den">
+          <em>P</em>(<em>E</em>)
+          <span style="font-style:normal; font-size:0.8em; color:#1a5276;">[total probability of evidence]</span>
+        </span>
+      </span>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════
+       SECTION 4 — WORKED EXAMPLE 1: MEDICAL TESTING
+       ══════════════════════════════════════════════════════════ -->
+  <section id="medical" class="section-anchor" aria-labelledby="medical-heading">
+    <h2 class="section-title" id="medical-heading">4. Worked Example 1 — Medical Diagnostic Testing</h2>
+
+    <p>
+      This example is a model for <strong>PS-06 Problem 5</strong>. Work through
+      every step carefully.
+    </p>
+
+    <details class="example-panel" open>
+      <summary>
+        <span class="toggle-icon" aria-hidden="true">▶</span>
+        Example 1 — Medical Test: What Does a Positive Result Really Mean?
+      </summary>
+      <div class="example-body">
+
+        <h3 class="subsection-title">Setup</h3>
+        <p>A disease affects <strong>1% of the population</strong>. A diagnostic test has:</p>
+        <ul>
+          <li><strong>Sensitivity (true positive rate):</strong> 99% — if a patient
+              <em>has</em> the disease, the test is positive 99% of the time.</li>
+          <li><strong>Specificity (true negative rate):</strong> 95% — if a patient
+              <em>does not have</em> the disease, the test is negative 95% of the time.</li>
+        </ul>
+        <p>
+          A randomly selected person tests <strong>positive</strong>. What is the probability
+          they actually have the disease?
+        </p>
+
+        <h3 class="subsection-title">Defining the Events</h3>
+        <ul>
+          <li><span class="m">D</span> = "patient has the disease"</li>
+          <li><span class="m">Dᶜ</span> = "patient does not have the disease"</li>
+          <li><span class="m">T⁺</span> = "test result is positive"</li>
+        </ul>
+
+        <h3 class="subsection-title">Known Probabilities</h3>
+
+        <table class="styled-table" aria-label="Known probability values for medical example">
+          <thead>
+            <tr>
+              <th>Symbol</th>
+              <th>Meaning</th>
+              <th>Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="m">P(D)</span></td>
+              <td>Prior — disease prevalence</td>
+              <td>0.01</td>
+            </tr>
+            <tr>
+              <td><span class="m">P(Dᶜ)</span></td>
+              <td>Prior — no disease</td>
+              <td>0.99</td>
+            </tr>
+            <tr>
+              <td><span class="m">P(T⁺ | D)</span></td>
+              <td>Likelihood — sensitivity</td>
+              <td>0.99</td>
+            </tr>
+            <tr>
+              <td><span class="m">P(T⁺ | Dᶜ)</span></td>
+              <td>Likelihood — false positive rate = 1 − specificity</td>
+              <td>0.05</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3 class="subsection-title">Step-by-Step Calculation</h3>
+
+        <ul class="step-list">
+          <li>
+            <strong>Identify the partition.</strong>
+            <span class="m">D</span> and <span class="m">Dᶜ</span> partition the sample space
+            (every person either has the disease or does not). This satisfies the
+            requirement for the law of total probability.
+          </li>
+          <li>
+            <strong>Compute the denominator using the law of total probability.</strong>
+            <span class="m">P(T⁺)</span> is the total probability of a positive test
+            across both groups:
+            <div class="math-block" aria-label="Total probability of positive test">
+              <em>P</em>(<em>T</em><sup>+</sup>) =
+              <em>P</em>(<em>T</em><sup>+</sup> | <em>D</em>) · <em>P</em>(<em>D</em>)
+              + <em>P</em>(<em>T</em><sup>+</sup> | <em>D</em><sup>c</sup>) · <em>P</em>(<em>D</em><sup>c</sup>)
+            </div>
+            <div class="math-block" aria-label="Numerical calculation of P T plus">
+              = (0.99)(0.01) + (0.05)(0.99)
+              = 0.0099 + 0.0495
+              = 0.0594
+            </div>
+          </li>
+          <li>
+            <strong>Apply Bayes' theorem.</strong>
+            <div class="math-block" aria-label="Bayes theorem applied to medical example">
+              <em>P</em>(<em>D</em> | <em>T</em><sup>+</sup>) =
+              <span class="frac">
+                <span class="num">
+                  <em>P</em>(<em>T</em><sup>+</sup> | <em>D</em>) · <em>P</em>(<em>D</em>)
+                </span>
+                <span class="den">
+                  <em>P</em>(<em>T</em><sup>+</sup>)
+                </span>
+              </span>
+              =
+              <span class="frac">
+                <span class="num">0.0099</span>
+                <span class="den">0.0594</span>
+              </span>
+              ≈ 0.1667
+            </div>
+          </li>
+          <li>
+            <strong>Interpret the result.</strong>
+            Even with a positive test, the probability of actually having the disease
+            is only about <strong>16.7%</strong>.
+          </li>
+        </ul>
+
+        <h3 class="subsection-title">Labeled Probability Table</h3>
+        <p>
+          It often helps to think in terms of a population of 10,000 people to make
+          the numbers concrete:
+        </p>
+
+        <table class="styled-table" aria-label="Probability table for 10000 people">
+          <thead>
+            <tr>
+              <th></th>
+              <th>Has Disease (<span class="m">D</span>)</th>
+              <th>No Disease (<span class="m">Dᶜ</span>)</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Test Positive (<span class="m">T⁺</span>)</strong></td>
+              <td>99 <em>(true positives)</em></td>
+              <td>495 <em>(false positives)</em></td>
+              <td>594</td>
+            </tr>
+            <tr>
+              <td><strong>Test Negative (<span class="m">T⁻</span>)</strong></td>
+              <td>1 <em>(false negative)</em></td>
+              <td>9,405 <em>(true negatives)</em></td>
+              <td>9,406</td>
+            </tr>
+            <tr class="total-row">
+              <td><strong>Total</strong></td>
+              <td>100</td>
+              <td>9,900</td>
+              <td>10,000</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p>
+          Of the <strong>594 people who test positive</strong>, only <strong>99 truly
+          have the disease</strong>:
+        </p>
+        <div class="math-block" aria-label="Posterior from table">
+          <em>P</em>(<em>D</em> | <em>T</em><sup>+</sup>) =
+          <span class="frac">
+            <span class="num">99</span>
+            <span class="den">594</span>
+          </span>
+          ≈ 0.167 = 16.7%
+        </div>
+
+        <h3 class="subsection-title">Why Is This Surprising?</h3>
+        <p>
+          Most people's intuition says: "The test is 99% accurate — so a positive
+          result must mean I almost certainly have the disease." But the calculation
+          shows the posterior is only ~16.7%. The reason is the
+          <strong>low base rate</strong>: only 1 in 100 people has the disease.
+          Even a small false-positive rate (5%) applied to the large healthy
+          population (9,900 people) generates far more false positives (495) than
+          the true positives from the small diseased group (99).
+        </p>
+        <p style="margin-bottom:0;">
+          The prior probability (prevalence) dominates the result when it is very
+          small. This is called <strong>base-rate neglect</strong> when people
+          ignore it — and it is addressed in the Watch Out section.
+        </p>
+      </div>
+    </details>
+
+    <div class="callout callout-connection">
+      <div class="callout-title">🔗 Why Does This Matter in CS? — Intrusion Detection and Anomaly Detection</div>
+      <p>
+        The medical testing scenario is structurally identical to
+        <strong>network intrusion detection</strong> and <strong>anomaly detection</strong>
+        in computing systems:
+      </p>
+      <ul style="margin-bottom:0;">
+        <li>Replace "disease" with "network intrusion" and "positive test" with
+            "IDS alert." Attack events are rare (low prior), but even a 1% false
+            positive rate on millions of legitimate packets generates enormous numbers
+            of false alarms.</li>
+        <li>In <strong>anomaly detection</strong> (e.g., fraud detection, malware
+            classification), the base rate of the anomaly is typically very low.
+            A high-accuracy classifier can still produce mostly false positives in
+            production — exactly the phenomenon Bayes' theorem quantifies.</li>
+        <li>Understanding this math is why security engineers tune detection thresholds
+            carefully and why no real system operates with a binary "alert / no alert"
+            decision without considering the base rate.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════
+       SECTION 5 — WORKED EXAMPLE 2: SPAM FILTERING
+       ══════════════════════════════════════════════════════════ -->
+  <section id="spam" class="section-anchor" aria-labelledby="spam-heading">
+    <h2 class="section-title" id="spam-heading">5. Worked Example 2 — Spam Filtering and Naïve Bayes</h2>
+
+    <details class="example-panel">
+      <summary>
+        <span class="toggle-icon" aria-hidden="true">▶</span>
+        Example 2 — Spam Filter: Is This Email Spam?
+      </summary>
+      <div class="example-body">
+
+        <h3 class="subsection-title">Conceptual Overview</h3>
+        <p>
+          Email spam filters use a technique called <strong>naïve Bayes classification</strong>.
+          The core idea is to apply Bayes' theorem to classify an email as spam or
+          not-spam based on the words it contains.
+        </p>
+        <p>
+          Let <span class="m">S</span> = "email is spam" and
+          <span class="m">W</span> = "email contains the word 'free'." The filter wants
+          to compute:
+        </p>
+        <div class="math-block" aria-label="Spam filter posterior">
+          <em>P</em>(<em>S</em> | <em>W</em>) =
+          <span class="frac">
+            <span class="num">
+              <em>P</em>(<em>W</em> | <em>S</em>) · <em>P</em>(<em>S</em>)
+            </span>
+            <span class="den">
+              <em>P</em>(<em>W</em> | <em>S</em>)<em>P</em>(<em>S</em>)
+              + <em>P</em>(<em>W</em> | <em>S</em><sup>c</sup>)<em>P</em>(<em>S</em><sup>c</sup>)
+            </span>
+          </span>
+        </div>
+        <p>
+          The "naïve" part refers to an independence assumption: when multiple words
+          are considered simultaneously, the filter assumes each word's occurrence
+          is independent of the others given the class. This simplifies the
+          computation enormously and works surprisingly well in practice.
+        </p>
+
+        <h3 class="subsection-title">A Simplified Numerical Example</h3>
+        <p>
+          Suppose a spam filter has learned the following from its training data:
+        </p>
+
+        <table class="styled-table" aria-label="Spam filter known probabilities">
+          <thead>
+            <tr><th>Symbol</th><th>Meaning</th><th>Value</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="m">P(S)</span></td>
+              <td>Prior — fraction of all email that is spam</td>
+              <td>0.40</td>
+            </tr>
+            <tr>
+              <td><span class="m">P(Sᶜ)</span></td>
+              <td>Prior — fraction that is legitimate</td>
+              <td>0.60</td>
+            </tr>
+            <tr>
+              <td><span class="m">P(W | S)</span></td>
+              <td>Likelihood — "free" appears in spam emails</td>
+              <td>0.80</td>
+            </tr>
+            <tr>
+              <td><span class="m">P(W | Sᶜ)</span></td>
+              <td>Likelihood — "free" appears in legitimate emails</td>
+              <td>0.10</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <ul class="step-list">
+          <li>
+            <strong>Compute the denominator.</strong>
+            <div class="math-block" aria-label="Total probability word free">
+              <em>P</em>(<em>W</em>) =
+              (0.80)(0.40) + (0.10)(0.60)
+              = 0.32 + 0.06 = 0.38
+            </div>
+          </li>
+          <li>
+            <strong>Apply Bayes' theorem.</strong>
+            <div class="math-block" aria-label="Spam posterior calculation">
+              <em>P</em>(<em>S</em> | <em>W</em>) =
+              <span class="frac">
+                <span class="num">(0.80)(0.40)</span>
+                <span class="den">0.38</span>
+              </span>
+              =
+              <span class="frac">
+                <span class="num">0.32</span>
+                <span class="den">0.38</span>
+              </span>
+              ≈ 0.842
+            </div>
+          </li>
+          <li>
+            <strong>Interpret.</strong>
+            Given that the email contains the word "free," there is approximately
+            an <strong>84.2% probability it is spam</strong>. A filter might mark
+            any email above a threshold (e.g., 0.75) as spam and move it to the
+            junk folder.
+          </li>
+        </ul>
+
+        <p style="margin-bottom:0;">
+          In a real spam filter, dozens or hundreds of word features are combined
+          using the naïve independence assumption, and the prior
+          <span class="m">P(S)</span> is continuously updated as the user marks
+          emails as spam or not-spam. The core math, however, is exactly the
+          single-feature Bayes' calculation above — applied repeatedly.
+        </p>
+      </div>
+    </details>
+
+    <div class="callout callout-connection">
+      <div class="callout-title">🔗 Connection — This Is the Math Behind Your Email Spam Filter</div>
+      Naïve Bayes classifiers are among the oldest and most widely deployed machine
+      learning algorithms. Gmail, Outlook, and virtually every major email service
+      use variants of this approach. The formula you just applied is the mathematical
+      core of a system that processes billions of emails per day. When you study
+      machine learning or natural language processing, you will encounter this
+      derivation again — and now you will already know where it comes from.
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════
+       SECTION 6 — WATCH OUT
+       ══════════════════════════════════════════════════════════ -->
+  <section id="watchout" class="section-anchor" aria-labelledby="watchout-heading">
+    <h2 class="section-title" id="watchout-heading">6. Watch Out — Reasoning Pitfalls</h2>
+
+    <div class="callout callout-warning" role="note">
+      <div class="callout-title">⚠️ Watch Out — Two Classic Errors in Probabilistic Reasoning</div>
+
+      <h3 class="subsection-title" style="margin-top:0.75rem;">Pitfall 1: Base-Rate Neglect</h3>
+      <p>
+        <strong>The error:</strong> Focusing only on the likelihood
+        <span class="m">P(E | H)</span> and ignoring the prior
+        <span class="m">P(H)</span> when estimating the posterior
+        <span class="m">P(H | E)</span>.
+      </p>
+      <p>
+        <strong>Counterexample:</strong> In Worked Example 1, the test has 99%
+        sensitivity. A naive reasoner concludes: "99% accurate test, positive
+        result → 99% chance of disease." But the correct posterior is only ~16.7%
+        because the disease is rare (prior = 1%). The low base rate overwhelms
+        the high likelihood. <em>Always identify and use the prior.</em>
+      </p>
+      <p>
+        <strong>In computing:</strong> A security alert system that is 99% accurate
+        at detecting attacks will still produce mostly false positives if attacks
+        are rare (say, 1 in 10,000 packets). Ignoring the base rate leads to alert
+        fatigue and wasted analyst time.
+      </p>
+
+      <h3 class="subsection-title">Pitfall 2: The Prosecutor's Fallacy</h3>
+      <p>
+        <strong>The error:</strong> Confusing <span class="m">P(E | H)</span> with
+        <span class="m">P(H | E)</span> — treating the probability of the evidence
+        given innocence as if it were the probability of innocence given the evidence.
+      </p>
+      <p>
+        <strong>Counterexample:</strong> A DNA match has a 1-in-a-million false
+        positive rate, so a prosecutor argues: "There is only a 1-in-a-million chance
+        an innocent person matches — therefore the defendant is almost certainly
+        guilty." But this confuses <span class="m">P(\text{match} | \text{innocent}) = 0.000001</span>
+        with <span class="m">P(\text{innocent} | \text{match})</span>. In a city of
+        1,000,000 innocent people, roughly 1 innocent person would also match —
+        and that person could be the defendant. The posterior depends on the prior
+        probability of guilt, which the prosecutor has not established.
+      </p>
+      <p style="margin-bottom:0;">
+        <strong>In computing:</strong> Log analysis, forensic auditing, and
+        anomaly detection all involve reasoning from observed evidence to a
+        hypothesis. The prosecutor's fallacy is a constant risk when presenting
+        probabilistic evidence to non-technical stakeholders. Always distinguish
+        <span class="m">P(E | H)</span> from <span class="m">P(H | E)</span> explicitly.
+      </p>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════
+       SECTION 7 — REFERENCE CARD
+       ══════════════════════════════════════════════════════════ -->
+  <section id="refcard" class="section-anchor" aria-labelledby="refcard-heading">
+    <h2 class="section-title" id="refcard-heading">7. Bayes' Theorem Reference Card</h2>
+
+    <div class="callout callout-info">
+      <div class="callout-title">📌 Quiz 3 Preparation Note</div>
+      The reference card below summarizes everything you need to apply Bayes'
+      theorem on Quiz 3. You may find it useful to copy the formula, vocabulary
+      terms, and two-step process onto your Quiz 3 study sheet.
+    </div>
+
+    <div class="ref-card" role="note" aria-label="Bayes Theorem Reference Card">
+      <h3>Bayes' Theorem — Reference Card</h3>
+
+      <p><strong>The Formula (two-event form)</strong></p>
+      <div class="ref-formula" aria-label="Bayes theorem formula">
+        <em>P</em>(<em>H</em> | <em>E</em>) =
+        <span class="frac">
+          <span class="num">
+            <em>P</em>(<em>E</em> | <em>H</em>) · <em>P</em>(<em>H</em>)
+          </span>
+          <span class="den">
+            <em>P</em>(<em>E</em> | <em>H</em>)<em>P</em>(<em>H</em>)
+            + <em>P</em>(<em>E</em> | <em>H</em><sup>c</sup>)<em>P</em>(<em>H</em><sup>c</sup>)
+          </span>
+        </span>
+      </div>
+
+      <p><strong>General Form (partition B₁, B₂, …, Bₙ)</strong></p>
+      <div class="ref-formula" aria-label="Bayes theorem general form">
+        <em>P</em>(<em>B</em><sub><em>i</em></sub> | <em>A</em>) =
+        <span class="frac">
+          <span class="num">
+            <em>P</em>(<em>A</em> | <em>B</em><sub><em>i</em></sub>) · <em>P</em>(<em>B</em><sub><em>i</em></sub>)
+          </span>
+          <span class="den">
+            ∑<sub><em>j</em></sub>
+            <em>P</em>(<em>A</em> | <em>B</em><sub><em>j</em></sub>) · <em>P</em>(<em>B</em><sub><em>j</em></sub>)
+          </span>
+        </span>
+      </div>
+
+      <dl>
+        <dt>Prior probability — <span class="m">P(Bᵢ)</span> or <span class="m">P(H)</span></dt>
+        <dd>Probability of the hypothesis <em>before</em> observing evidence.
+            Reflects background rates or population prevalence.</dd>
+
+        <dt>Likelihood — <span class="m">P(A | Bᵢ)</span> or <span class="m">P(E | H)</span></dt>
+        <dd>Probability of observing the evidence <em>given</em> the hypothesis is true.
+            This is what a test or sensor measures.</dd>
+
+        <dt>Posterior probability — <span class="m">P(Bᵢ | A)</span> or <span class="m">P(H | E)</span></dt>
+        <dd>Probability of the hypothesis <em>after</em> incorporating the evidence.
+            This is what Bayes' theorem computes.</dd>
+      </dl>
+
+      <p><strong>Two-Step Process</strong></p>
+      <ol>
+        <li>
+          <strong>Identify the partition.</strong> Determine the mutually exclusive,
+          exhaustive set of hypotheses <span class="m">B₁, B₂, …, Bₙ</span> (often
+          just <span class="m">H</span> and <span class="m">Hᶜ</span>). Write down the
+          prior <span class="m">P(Bᵢ)</span> and likelihood
+          <span class="m">P(A | Bᵢ)</span> for each.
+        </li>
+        <li>
+          <strong>Apply the formula.</strong> Compute the denominator using the law
+          of total probability, then divide the numerator
+          <span class="m">P(A | Bᵢ) · P(Bᵢ)</span> by that denominator to obtain
+          the posterior <span class="m">P(Bᵢ | A)</span>.
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════
+       SECTION 8 — CHECK FOR UNDERSTANDING
+       ══════════════════════════════════════════════════════════ -->
+  <section id="cfu" class="section-anchor" aria-labelledby="cfu-heading">
+    <h2 class="section-title" id="cfu-heading">8. Check for Understanding</h2>
+    <p>
+      These two problems are <strong>ungraded</strong> and for your own self-assessment.
+      Problem 1 has immediate automated feedback. Problem 2 is a reflection prompt
+      with a self-assessment guide.
+    </p>
+
+    <div class="cfu-widget" role="form" aria-label="Check for understanding questions">
+      <h3>Self-Check — Module 9.3</h3>
+
+      <!-- PROBLEM 1: Factory / Defective Item -->
+      <div class="cfu-question" id="p1-block">
+        <div class="q-text" id="p1-label">
+          <strong>Problem 1 (Multiple Choice).</strong>
+          A factory has two machines. Machine A produces 60% of all items and has a
+          defect rate of 2%. Machine B produces 40% of all items and has a defect rate
+          of 5%. A randomly selected item is found to be defective. What is the
+          probability it came from Machine B?
+          <br><br>
+          <em>Hint: Let D = "item is defective," B = "item came from Machine B."
+          Identify the prior, likelihood, and apply Bayes' theorem.</em>
+        </div>
+        <div role="radiogroup" aria-labelledby="p1-label">
+          <label>
+            <input type="radio" name="p1" value="A" aria-label="Option A: approximately 62.5 percent">
+            (A) &nbsp; ≈ 62.5%
+          </label>
+          <label>
+            <input type="radio" name="p1" value="B" aria-label="Option B: approximately 40 percent">
+            (B) &nbsp; ≈ 40.0%
+          </label>
+          <label>
+            <input type="radio" name="p1" value="C" aria-label="Option C: approximately 5 percent">
+            (C) &nbsp; ≈ 5.0%
+          </label>
+          <label>
+            <input type="radio" name="p1" value="D" aria-label="Option D: approximately 33.3 percent">
+            (D) &nbsp; ≈ 33.3%
+          </label>
+        </div>
+        <button class="check-btn" onclick="checkP1()" aria-label="Check answer for problem 1">
+          Check Answer
+        </button>
+        <div class="feedback" id="p1-feedback" role="alert" aria-live="polite"></div>
+      </div>
+
+      <!-- PROBLEM 2: Reflection -->
+      <div class="cfu-question" id="p2-block">
+        <div class="q-text" id="p2-label">
+          <strong>Problem 2 (Reflection).</strong>
+          In your own words, explain what it means for a posterior probability to be
+          much lower than the likelihood. Why does the base rate matter? Use the
+          medical testing example or the spam filter example to support your answer.
+          <br><br>
+          <em>There is no single correct answer. Write your response below, then
+          click "See Self-Assessment Guide" to compare your thinking.</em>
+        </div>
+        <label for="p2-textarea" style="font-size:0.9rem; font-weight:600;">
+          Your response:
+        </label>
+        <textarea id="p2-textarea" aria-labelledby="p2-label"
+          placeholder="Type your reflection here..."></textarea>
+        <br>
+        <button class="check-btn" onclick="showP2Guide()" aria-label="See self-assessment guide for problem 2">
+          See Self-Assessment Guide
+        </button>
+        <div class="feedback" id="p2-feedback" role="alert" aria-live="polite"></div>
+      </div>
+
+    </div><!-- end cfu-widget -->
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════
+       SECTION 9 — SUMMARY
+       ══════════════════════════════════════════════════════════ -->
+  <section id="summary" class="section-anchor" aria-labelledby="summary-heading">
+    <h2 class="section-title" id="summary-heading">9. Module Summary</h2>
+
+    <div class="callout callout-summary" role="note" aria-label="Module 9.3 summary">
+      <div class="callout-title">📋 Module 9.3 — Key Takeaways</div>
+      <ul style="margin-bottom:0;">
+        <li>
+          <strong>Bayes' theorem</strong> derives directly from the conditional
+          probability definition and the law of total probability. It answers the
+          "reverse" question: given that we observe evidence <span class="m">E</span>,
+          what is the updated probability of hypothesis <span class="m">H</span>?
+          The three key quantities are the <em>prior</em>
+          <span class="m">P(H)</span>, the <em>likelihood</em>
+          <span class="m">P(E | H)</span>, and the resulting
+          <em>posterior</em> <span class="m">P(H | E)</span>.
+        </li>
+        <li>
+          <strong>The base rate dominates</strong> when the prior is very small.
+          A high-accuracy test applied to a rare condition can still produce a
+          posterior that is surprisingly low — as the medical testing example
+          (posterior ≈ 16.7% despite 99% sensitivity) demonstrates. This same
+          phenomenon governs intrusion detection, anomaly detection, and spam
+          filtering in computing systems.
+        </li>
+        <li>
+          <strong>Two critical reasoning pitfalls</strong> — base-rate neglect
+          (ignoring the prior) and the prosecutor's fallacy (confusing
+          <span class="m">P(E | H)</span> with <span class="m">P(H | E)</span>) —
+          are avoided by applying Bayes' theorem explicitly and always identifying
+          the prior before computing the posterior.
+        </li>
+      </ul>
+    </div>
+
+    <div class="callout callout-lookahead" role="note" aria-label="Look ahead to Module 9.4">
+      <div class="callout-title">🔭 Coming Up — Module 9.4: Discrete Random Variables and Expected Value</div>
+      <p style="margin-bottom:0;">
+        So far, our probability work has focused on <em>events</em> — things that
+        either happen or do not. In Module 9.4, we attach <em>numerical values</em>
+        to outcomes and ask: over many trials, what is the average value we expect
+        to observe? This is the <strong>expected value</strong> of a
+        <strong>discrete random variable</strong>, defined as:
+      </p>
+      <div class="math-block" aria-label="Expected value definition preview">
+        <em>E</em>[<em>X</em>] =
+        <span style="font-style:normal;">∑</span><sub><em>i</em></sub>
+        <em>x</em><sub><em>i</em></sub> · <em>P</em>(<em>X</em> = <em>x</em><sub><em>i</em></sub>)
+      </div>
+      <p style="margin-bottom:0;">
+        Expected value is foundational for algorithm analysis (average-case
+        complexity), game theory, and the analysis of randomized algorithms.
+        The probability tools from Modules 9.1–9.3 are all prerequisites.
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============================================================
+     JAVASCRIPT — Check-for-Understanding Logic
+     ============================================================ -->
+<script>
+function showFeedback(id, type, html) {
+  const el = document.getElementById(id);
+  el.innerHTML = html;
+  el.className = 'feedback show ' + type;
+}
+
+/* ── Problem 1 — Factory / Defective Item ── */
+function checkP1() {
+  const sel = document.querySelector('input[name="p1"]:checked');
+  if (!sel) {
+    showFeedback('p1-feedback', 'incorrect',
+      '⚠️ Please select an answer before checking.');
+    return;
+  }
+
+  const workings =
+    '<br><br><strong>Full solution:</strong><br>' +
+    'Let D = "defective," A = "from Machine A," B = "from Machine B."<br>' +
+    'Known: P(A) = 0.60, P(B) = 0.40, P(D|A) = 0.02, P(D|B) = 0.05.<br>' +
+    'Denominator (law of total probability):<br>' +
+    'P(D) = P(D|A)·P(A) + P(D|B)·P(B) = (0.02)(0.60) + (0.05)(0.40) = 0.012 + 0.020 = 0.032.<br>' +
+    'Apply Bayes\' theorem:<br>' +
+    'P(B|D) = P(D|B)·P(B) / P(D) = 0.020 / 0.032 = 0.625 ≈ 62.5%.';
+
+  if (sel.value === 'A') {
+    showFeedback('p1-feedback', 'correct',
+      '✅ <strong>Correct!</strong> The posterior probability that the defective item ' +
+      'came from Machine B is approximately 62.5%.' + workings);
+  } else {
+    const hints = {
+      B: 'Option B (40%) is just the prior P(B) — the fraction of items Machine B produces ' +
+         'before considering the defect information. Bayes\' theorem updates this prior using the likelihood.',
+      C: 'Option C (5%) is the defect rate of Machine B — that is the likelihood P(D|B), ' +
+         'not the posterior P(B|D). These are different quantities.',
+      D: 'Option D (33.3%) does not correspond to a correct application of the formula. ' +
+         'Make sure you are computing the denominator using the law of total probability first.'
+    };
+    showFeedback('p1-feedback', 'incorrect',
+      '❌ <strong>Not quite.</strong> ' + hints[sel.value] + workings);
+  }
+}
+
+/* ── Problem 2 — Reflection Self-Assessment Guide ── */
+function showP2Guide() {
+  const txt = document.getElementById('p2-textarea').value.trim();
+  if (txt.length < 10) {
+    showFeedback('p2-feedback', 'incorrect',
+      '⚠️ Please write your reflection before viewing the self-assessment guide.');
+    return;
+  }
+  showFeedback('p2-feedback', 'neutral',
+    '<strong>Self-Assessment Guide — compare your response to these key ideas:</strong>' +
+    '<ul style="margin:0.6rem 0 0 1.2rem;">' +
+    '<li><strong>The likelihood vs. the posterior:</strong> The likelihood P(E|H) tells us how ' +
+    'probable the evidence is <em>if</em> the hypothesis is true. The posterior P(H|E) tells us ' +
+    'how probable the hypothesis is <em>given</em> the evidence. These are related but not equal.</li>' +
+    '<li><strong>The role of the base rate (prior):</strong> When the prior P(H) is very small ' +
+    '(e.g., disease prevalence = 1%), even a high likelihood can produce a low posterior. ' +
+    'The denominator in Bayes\' theorem accumulates probability from all hypotheses — ' +
+    'a large population of healthy people generating false positives can easily outnumber ' +
+    'the true positives from a small diseased group.</li>' +
+    '<li><strong>Intuitive framing:</strong> A strong test result is meaningful evidence, but ' +
+    'it cannot overcome an extremely low prior on its own. The posterior is a weighted ' +
+    'compromise between the prior and the likelihood of the evidence.</li>' +
+    '<li><strong>Computing connection:</strong> In spam filtering, if only 1% of emails ' +
+    'are spam, even a highly accurate classifier will flag many legitimate emails as spam ' +
+    'unless the prior is properly accounted for in the threshold decision.</li>' +
+    '</ul>' +
+    '<br>If your response addressed the interplay between prior and likelihood, and used ' +
+    'a concrete example to illustrate why the base rate matters, you have demonstrated ' +
+    'solid understanding of this concept.');
+}
+</script>
+
+</body>
+</html>

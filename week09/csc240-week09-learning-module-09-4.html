@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSC 240 – Module 9.4: Discrete Random Variables and Expected Value</title>
+<style>
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: #f4f6f9;
+  color: #1a1a2e;
+  line-height: 1.7;
+}
+a { color: #1a5276; }
+a:focus-visible { outline: 3px solid #f39c12; outline-offset: 2px; border-radius: 3px; }
+
+/* ============================================================
+   STICKY NAV BAR
+   ============================================================ */
+#top-nav {
+  position: sticky; top: 0; z-index: 1000;
+  background: #1a3a5c;
+  padding: 0 0.75rem;
+  display: flex; flex-wrap: wrap; align-items: center;
+  gap: 0.2rem 0.35rem;
+  min-height: 2.6rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+#top-nav .nav-brand {
+  color: #aed6f1; font-weight: 700; font-size: 0.78rem;
+  letter-spacing: 0.08em; margin-right: 0.4rem;
+  white-space: nowrap; opacity: 0.85;
+}
+#top-nav a {
+  color: #aed6f1; text-decoration: none;
+  font-size: 0.82rem; font-weight: 700;
+  padding: 0.22rem 0.6rem; border-radius: 4px;
+  white-space: nowrap; min-width: 1.9rem;
+  text-align: center; transition: background 0.15s, color 0.15s;
+}
+#top-nav a:hover { background: #2e6da4; color: #fff; }
+#top-nav a:focus-visible { outline: 3px solid #f39c12; outline-offset: 2px; color: #fff; }
+
+/* ============================================================
+   PAGE WRAPPER
+   ============================================================ */
+.page-wrapper { max-width: 860px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+
+/* ============================================================
+   MODULE HEADER
+   ============================================================ */
+.module-header {
+  background: linear-gradient(135deg, #1a3a5c 0%, #2e6da4 100%);
+  color: #fff; border-radius: 10px;
+  padding: 2rem 2rem 1.75rem; margin-bottom: 2rem;
+}
+.module-header .week-label {
+  font-size: 0.8rem; letter-spacing: 0.1em;
+  text-transform: uppercase; color: #aed6f1; margin-bottom: 0.4rem;
+}
+.module-header h1 { font-size: 1.75rem; font-weight: 800; line-height: 1.25; margin-bottom: 0.6rem; }
+.module-header .module-meta {
+  font-size: 0.85rem; color: #d6eaf8;
+  display: flex; flex-wrap: wrap; gap: 0.4rem 1.5rem;
+}
+.module-header .module-meta span::before { content: "▸ "; color: #7fb3d3; }
+
+/* ============================================================
+   SECTION HEADINGS
+   ============================================================ */
+.section-anchor { scroll-margin-top: 3.5rem; }
+h2.section-title {
+  font-size: 1.3rem; font-weight: 700; color: #1a3a5c;
+  border-left: 5px solid #2e6da4; padding-left: 0.75rem;
+  margin: 2.25rem 0 1rem;
+}
+h3.subsection-title { font-size: 1.05rem; font-weight: 700; color: #1a3a5c; margin: 1.5rem 0 0.6rem; }
+
+/* ============================================================
+   PROSE
+   ============================================================ */
+p { margin-bottom: 1rem; }
+ul, ol { margin: 0.5rem 0 1rem 1.5rem; }
+li { margin-bottom: 0.35rem; }
+
+/* ============================================================
+   MATH — KaTeX rendered via inline script calls
+   ============================================================ */
+.math-block {
+  display: block; text-align: center;
+  padding: 0.8rem 1rem;
+  font-size: 1.05em; overflow-x: auto;
+  margin: 0.5rem 0;
+}
+
+/* ============================================================
+   CALLOUT BOXES
+   ============================================================ */
+.callout {
+  border-radius: 8px; padding: 1rem 1.25rem;
+  margin: 1.25rem 0; border-left: 5px solid;
+}
+.callout .callout-title {
+  font-weight: 700; font-size: 0.9rem;
+  text-transform: uppercase; letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+  display: flex; align-items: center; gap: 0.4rem;
+}
+.callout-definition { background: #e8f6f3; border-color: #1abc9c; color: #0e3d31; }
+.callout-definition .callout-title { color: #148f77; }
+.callout-warning { background: #fef9e7; border-color: #f39c12; color: #4a3000; }
+.callout-warning .callout-title { color: #b7770d; }
+.callout-connection { background: #eafaf1; border-color: #27ae60; color: #0b3d1f; }
+.callout-connection .callout-title { color: #1e8449; }
+.callout-lookahead { background: #f0eef9; border-color: #7d3c98; color: #2d0b4e; }
+.callout-lookahead .callout-title { color: #6c3483; }
+.callout-summary { background: #f2f3f4; border-color: #7f8c8d; color: #1c2833; }
+.callout-summary .callout-title { color: #515a5a; }
+.callout-scope { background: #fdf2f8; border-color: #c0392b; color: #4a0e0e; }
+.callout-scope .callout-title { color: #922b21; }
+
+/* ============================================================
+   TABLES
+   ============================================================ */
+.styled-table {
+  width: 100%; border-collapse: collapse;
+  margin: 1rem 0 1.5rem; font-size: 0.92rem;
+}
+.styled-table th {
+  background: #1a3a5c; color: #fff;
+  padding: 0.65rem 0.9rem; text-align: left;
+}
+.styled-table td {
+  padding: 0.6rem 0.9rem;
+  border-bottom: 1px solid #d5d8dc; vertical-align: top;
+}
+.styled-table tr:nth-child(even) td { background: #eaf2fb; }
+.styled-table tr:last-child td { border-bottom: none; }
+
+/* ============================================================
+   PMF BAR CHART (pure CSS/HTML)
+   ============================================================ */
+.bar-chart-wrap {
+  margin: 1.25rem 0;
+  background: #fff;
+  border: 1px solid #d5d8dc;
+  border-radius: 8px;
+  padding: 1.25rem 1.25rem 0.75rem;
+}
+.bar-chart-wrap .chart-title {
+  font-size: 0.88rem; font-weight: 700;
+  color: #1a3a5c; text-align: center;
+  margin-bottom: 1rem;
+}
+.bar-chart {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 0.6rem;
+  height: 130px;
+}
+.bar-col {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 0.25rem;
+}
+.bar {
+  width: 42px;
+  background: #2e6da4;
+  border-radius: 4px 4px 0 0;
+  transition: background 0.2s;
+  position: relative;
+}
+.bar:hover { background: #1a5276; }
+.bar-label { font-size: 0.78rem; color: #555; font-weight: 600; }
+.bar-val { font-size: 0.72rem; color: #1a3a5c; font-weight: 700; }
+.chart-axis-label {
+  text-align: center; font-size: 0.8rem;
+  color: #555; margin-top: 0.4rem;
+}
+
+/* ============================================================
+   LLN ANIMATION CANVAS
+   ============================================================ */
+.lln-wrap {
+  background: #fff; border: 1px solid #d5d8dc;
+  border-radius: 8px; padding: 1rem;
+  margin: 1.25rem 0; text-align: center;
+}
+.lln-wrap canvas {
+  display: block; margin: 0 auto;
+  max-width: 100%; border: 1px solid #eee;
+  border-radius: 4px;
+}
+.lln-controls { margin-top: 0.75rem; display: flex; gap: 0.6rem; justify-content: center; flex-wrap: wrap; }
+.lln-btn {
+  background: #2e6da4; color: #fff; border: none;
+  border-radius: 6px; padding: 0.45rem 1rem;
+  font-size: 0.88rem; font-weight: 700;
+  cursor: pointer; transition: background 0.15s;
+}
+.lln-btn:hover { background: #1a5276; }
+.lln-btn:focus-visible { outline: 3px solid #f39c12; outline-offset: 2px; }
+.lln-status { font-size: 0.83rem; color: #555; margin-top: 0.4rem; }
+
+/* ============================================================
+   EXPANDABLE WORKED EXAMPLE PANELS
+   ============================================================ */
+.example-panel {
+  border: 1px solid #aed6f1; border-radius: 8px;
+  margin: 1.1rem 0; overflow: hidden;
+}
+.example-panel summary {
+  background: #d6eaf8; padding: 0.75rem 1rem;
+  cursor: pointer; font-weight: 700; font-size: 0.95rem;
+  color: #1a3a5c; list-style: none;
+  display: flex; align-items: center; gap: 0.5rem;
+  user-select: none; transition: background 0.15s;
+}
+.example-panel summary::-webkit-details-marker { display: none; }
+.example-panel summary:hover { background: #aed6f1; }
+.example-panel summary:focus-visible { outline: 3px solid #f39c12; outline-offset: -3px; }
+.example-panel summary .toggle-icon { display: inline-block; transition: transform 0.2s; font-style: normal; }
+.example-panel[open] summary .toggle-icon { transform: rotate(90deg); }
+.example-panel .example-body { padding: 1rem 1.25rem; background: #fff; }
+.example-panel .example-body p:last-child { margin-bottom: 0; }
+
+.step-list { list-style: none; margin-left: 0; counter-reset: step-counter; }
+.step-list li {
+  counter-increment: step-counter;
+  padding: 0.4rem 0 0.4rem 2.5rem;
+  position: relative; border-bottom: 1px dashed #d5d8dc;
+}
+.step-list li:last-child { border-bottom: none; }
+.step-list li::before {
+  content: counter(step-counter);
+  position: absolute; left: 0; top: 0.4rem;
+  background: #2e6da4; color: #fff;
+  width: 1.6rem; height: 1.6rem; border-radius: 50%;
+  font-size: 0.78rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* ============================================================
+   CHECK-FOR-UNDERSTANDING WIDGET
+   ============================================================ */
+.cfu-widget {
+  background: #fff; border: 2px solid #2e6da4;
+  border-radius: 10px; padding: 1.25rem 1.5rem; margin: 1.5rem 0;
+}
+.cfu-widget h3 {
+  font-size: 1rem; color: #1a3a5c; margin-bottom: 1rem;
+  border-bottom: 1px solid #d6eaf8; padding-bottom: 0.5rem;
+}
+.cfu-question { margin-bottom: 1.5rem; }
+.cfu-question .q-text { font-weight: 600; margin-bottom: 0.6rem; color: #1a2e4a; }
+.cfu-question label {
+  display: flex; align-items: flex-start; gap: 0.5rem;
+  padding: 0.3rem 0; cursor: pointer; border-radius: 4px;
+}
+.cfu-question label:hover { background: #eaf2fb; }
+.cfu-question input[type="radio"],
+.cfu-question input[type="text"] { margin-top: 0.2rem; accent-color: #2e6da4; }
+.cfu-question input[type="text"] {
+  border: 1px solid #aab7c4; border-radius: 5px;
+  padding: 0.4rem 0.6rem; font-size: 0.95rem;
+  width: 140px; margin-top: 0;
+}
+.cfu-question input[type="text"]:focus { outline: 3px solid #f39c12; border-color: #2e6da4; }
+.check-btn {
+  background: #2e6da4; color: #fff; border: none;
+  border-radius: 6px; padding: 0.5rem 1.2rem;
+  font-size: 0.9rem; font-weight: 700; cursor: pointer;
+  margin-top: 0.5rem; transition: background 0.15s;
+}
+.check-btn:hover { background: #1a5276; }
+.check-btn:focus-visible { outline: 3px solid #f39c12; outline-offset: 2px; }
+.feedback {
+  margin-top: 0.65rem; padding: 0.65rem 0.9rem;
+  border-radius: 6px; font-size: 0.92rem; display: none;
+}
+.feedback.correct { background: #eafaf1; border-left: 4px solid #27ae60; color: #0b3d1f; }
+.feedback.incorrect { background: #fdf2f8; border-left: 4px solid #c0392b; color: #4a0e0e; }
+.feedback.show { display: block; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 600px) {
+  .module-header h1 { font-size: 1.35rem; }
+  h2.section-title { font-size: 1.1rem; }
+  .styled-table { font-size: 0.82rem; }
+  #top-nav .nav-brand { display: none; }
+  .bar { width: 32px; }
+}
+</style>
+
+<!-- KaTeX for math rendering -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[
+    {left:'\$$',right:'\$$',display:true},
+    {left:'\$$',right:'\$$',display:false}
+  ],throwOnError:false});"></script>
+</head>
+<body>
+
+<!-- ============================================================
+     STICKY NAV
+     ============================================================ -->
+<nav id="top-nav" aria-label="Module 9.4 section navigation">
+  <span class="nav-brand">9.4</span>
+  <a href="#bridge"      title="From Events to Numbers">1</a>
+  <a href="#rv-def"      title="Discrete Random Variables">2</a>
+  <a href="#pmf"         title="Probability Mass Functions">3</a>
+  <a href="#ev"          title="Expected Value">4</a>
+  <a href="#linearity"   title="Linearity of Expectation">5</a>
+  <a href="#variance"    title="Variance (Informational)">6</a>
+  <a href="#lln"         title="Law of Large Numbers">7</a>
+  <a href="#cfu"         title="Check for Understanding">8</a>
+  <a href="#summary"     title="Module Summary">9</a>
+</nav>
+
+<!-- ============================================================
+     PAGE CONTENT
+     ============================================================ -->
+<main class="page-wrapper">
+
+  <!-- MODULE HEADER -->
+  <header class="module-header">
+    <div class="week-label">CSC 240 · Discrete Structures · Week 9 · Module 9.4</div>
+    <h1>Discrete Random Variables and Expected Value</h1>
+    <div class="module-meta">
+      <span>Week 9 of 17 &nbsp;(March 25–31, 2026)</span>
+      <span>Estimated time: 1.5 hours</span>
+      <span>CSLO 2 · Objective 6</span>
+      <span>Contributes to: Quiz 3</span>
+    </div>
+  </header>
+
+  <!-- ── SECTION 1: NARRATIVE BRIDGE ── -->
+  <section id="bridge" class="section-anchor" aria-labelledby="bridge-heading">
+    <h2 class="section-title" id="bridge-heading">1. From Events to Numbers</h2>
+
+    <p>
+      In Modules 9.1 through 9.3, every question we asked had a yes-or-no
+      character: <em>Did event $$E$$ occur?</em> Did the card drawn happen to be a
+      heart? Did the test come back positive? We assigned probabilities to those
+      yes-or-no outcomes and built a rich toolkit for reasoning about them.
+    </p>
+
+    <p>
+      Now we shift the question. Instead of asking <em>"did something happen?"</em>
+      we ask: <strong>"what number did the experiment produce?"</strong>
+    </p>
+
+    <blockquote style="border-left:4px solid #2e6da4; padding:0.75rem 1rem;
+      background:#eaf2fb; border-radius:0 8px 8px 0; margin:1rem 0;
+      font-style:italic; color:#1a2e4a;">
+      Roll a fair six-sided die. Instead of asking "did we roll a 4?",
+      ask: <strong>"what is the value of the roll?"</strong>
+      The answer — 1, 2, 3, 4, 5, or 6 — is a <em>number</em>, not just an event.
+    </blockquote>
+
+    <p>
+      That number-valued result is what we call a <strong>random variable</strong>.
+      It maps every outcome in the sample space to a real number, letting us ask
+      richer questions: What is the <em>average</em> value we expect over many
+      rolls? How much does the result typically vary from that average? These
+      questions are the subject of this module.
+    </p>
+
+    <div class="callout callout-connection">
+      <div class="callout-title">🔗 Connection — Modules 9.1 &amp; 9.2</div>
+      A random variable is built on top of the probability space
+      $$(\Omega, 2^\Omega, P)$$ you defined in Module 9.1.
+      Every probability statement about a random variable — like
+      $$P(X = k)$$ — is still just a probability of an event in that space.
+      Nothing from the earlier modules is discarded; we are adding a layer.
+    </div>
+  </section>
+
+  <!-- ── SECTION 2: DISCRETE RANDOM VARIABLE ── -->
+  <section id="rv-def" class="section-anchor" aria-labelledby="rv-heading">
+    <h2 class="section-title" id="rv-heading">2. Discrete Random Variables</h2>
+
+    <div class="callout callout-definition" role="note" aria-label="Definition: Discrete Random Variable">
+      <div class="callout-title">📘 Definition — Discrete Random Variable</div>
+      <p>
+        A <strong>discrete random variable</strong> $$X$$ is a function
+        $$X : \Omega \to \mathbb{R}$$
+        that assigns a real number to every outcome in the sample space $$\Omega$$,
+        where the set of possible values $$\{X(\omega) : \omega \in \Omega\}$$ is
+        finite or countably infinite.
+      </p>
+      <p style="margin-bottom:0;">
+        We write $$X = k$$ as shorthand for the event
+        $$\{\omega \in \Omega : X(\omega) = k\}$$ — the set of all outcomes that
+        produce the value $$k$$.
+      </p>
+    </div>
+
+    <h3 class="subsection-title">The Die Roll as a Random Variable</h3>
+    <p>
+      Roll one fair six-sided die. The sample space is
+      $$\Omega = \{1, 2, 3, 4, 5, 6\}$$. Define $$X(\omega) = \omega$$ — that is,
+      the random variable simply equals the face value shown. Then:
+    </p>
+    <ul>
+      <li>$$X = 3$$ is the event $$\{3\}$$, and $$P(X = 3) = \tfrac{1}{6}$$.</li>
+      <li>$$X \leq 2$$ is the event $$\{1, 2\}$$, and $$P(X \leq 2) = \tfrac{2}{6} = \tfrac{1}{3}$$.</li>
+    </ul>
+    <p>
+      The random variable $$X$$ is not a single number — it is a <em>function</em>.
+      Its value is uncertain until the die is rolled; before that, we can only
+      describe the probabilities of each possible value.
+    </p>
+
+    <div class="callout callout-warning">
+      <div class="callout-title">⚠️ Notation Alert</div>
+      By convention, random variables are written with <strong>capital letters</strong>
+      ($$X$$, $$Y$$, $$Z$$) and their specific realized values with lowercase letters
+      ($$k$$, $$x$$, $$y$$). So $$P(X = k)$$ means "the probability that the random
+      variable $$X$$ takes the value $$k$$."
+    </div>
+  </section>
+
+  <!-- ── SECTION 3: PMF ── -->
+  <section id="pmf" class="section-anchor" aria-labelledby="pmf-heading">
+    <h2 class="section-title" id="pmf-heading">3. Probability Mass Functions</h2>
+
+    <div class="callout callout-definition" role="note" aria-label="Definition: Probability Mass Function">
+      <div class="callout-title">📘 Definition — Probability Mass Function (PMF)</div>
+      <p>
+        The <strong>probability mass function</strong> of a discrete random variable
+        $$X$$ is the function $$p : \mathbb{R} \to [0,1]$$ defined by
+        $$p(k) = P(X = k)$$
+        for each possible value $$k$$. A valid PMF must satisfy two requirements:
+      </p>
+      <ul style="margin-bottom:0;">
+        <li><strong>Non-negativity:</strong> $$p(k) \geq 0$$ for all $$k$$.</li>
+        <li><strong>Normalization:</strong> $$\displaystyle\sum_{\text{all } k} p(k) = 1$$.</li>
+      </ul>
+    </div>
+
+    <h3 class="subsection-title">PMF Table: Fair Six-Sided Die</h3>
+
+    <table class="styled-table" aria-label="PMF table for a fair six-sided die">
+      <thead>
+        <tr>
+          <th>Value $$k$$</th>
+          <th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th>
+          <th>Sum</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>$$P(X = k)$$</td>
+          <td>$$\tfrac{1}{6}$$</td>
+          <td>$$\tfrac{1}{6}$$</td>
+          <td>$$\tfrac{1}{6}$$</td>
+          <td>$$\tfrac{1}{6}$$</td>
+          <td>$$\tfrac{1}{6}$$</td>
+          <td>$$\tfrac{1}{6}$$</td>
+          <td><strong>1</strong></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- PMF BAR CHART -->
+    <div class="bar-chart-wrap" role="img" aria-label="Bar chart of PMF for a fair six-sided die. Each value 1 through 6 has probability 1/6.">
+      <div class="chart-title">PMF of a Fair Six-Sided Die</div>
+      <div class="bar-chart" aria-hidden="true">
+        <div class="bar-col">
+          <span class="bar-val">1/6</span>
+          <div class="bar" style="height:90px;" title="P(X=1) = 1/6"></div>
+          <span class="bar-label">1</span>
+        </div>
+        <div class="bar-col">
+          <span class="bar-val">1/6</span>
+          <div class="bar" style="height:90px;" title="P(X=2) = 1/6"></div>
+          <span class="bar-label">2</span>
+        </div>
+        <div class="bar-col">
+          <span class="bar-val">1/6</span>
+          <div class="bar" style="height:90px;" title="P(X=3) = 1/6"></div>
+          <span class="bar-label">3</span>
+        </div>
+        <div class="bar-col">
+          <span class="bar-val">1/6</span>
+          <div class="bar" style="height:90px;" title="P(X=4) = 1/6"></div>
+          <span class="bar-label">4</span>
+        </div>
+        <div class="bar-col">
+          <span class="bar-val">1/6</span>
+          <div class="bar" style="height:90px;" title="P(X=5) = 1/6"></div>
+          <span class="bar-label">5</span>
+        </div>
+        <div class="bar-col">
+          <span class="bar-val">1/6</span>
+          <div class="bar" style="height:90px;" title="P(X=6) = 1/6"></div>
+          <span class="bar-label">6</span>
+        </div>
+      </div>
+      <div class="chart-axis-label">Die face value $$k$$</div>
+    </div>
+
+    <p>
+      All six bars are equal in height because the die is fair — each face is
+      equally likely. The PMF is <em>uniform</em> over $$\{1,2,3,4,5,6\}$$.
+      The bars sum to 1, confirming the normalization requirement.
+    </p>
+  </section>
+
+  <!-- ── SECTION 4: EXPECTED VALUE ── -->
+  <section id="ev" class="section-anchor" aria-labelledby="ev-heading">
+    <h2 class="section-title" id="ev-heading">4. Expected Value</h2>
+
+    <div class="callout callout-definition" role="note" aria-label="Definition: Expected Value">
+      <div class="callout-title">📘 Definition — Expected Value</div>
+      <p>
+        The <strong>expected value</strong> (or <em>expectation</em>) of a discrete
+        random variable $$X$$ is the probability-weighted average of its possible
+        values:
+        $$E[X] = \sum_{\text{all } k} k \cdot P(X = k)$$
+      </p>
+      <p style="margin-bottom:0;">
+        <strong>Plain-language interpretation:</strong> If you repeat the random
+        experiment a very large number of times and average the results, that
+        average will get closer and closer to $$E[X]$$. It is the <em>long-run
+        average value</em> of the experiment.
+      </p>
+    </div>
+
+    <div class="callout callout-warning">
+      <div class="callout-title">⚠️ Expected Value Need Not Be a Possible Outcome</div>
+      $$E[X]$$ is a mathematical average — it does not have to be a value that
+      $$X$$ can actually produce. The classic example is the die roll, where
+      $$E[X] = 3.5$$, but no face of the die shows 3.5.
+    </div>
+
+    <!-- WORKED EXAMPLE 1 -->
+    <details class="example-panel">
+      <summary>
+        <span class="toggle-icon" aria-hidden="true">▶</span>
+        Worked Example 1 — Expected Value of a Fair Die Roll
+      </summary>
+      <div class="example-body">
+        <p>
+          <strong>Setup:</strong> Let $$X$$ be the result of rolling one fair
+          six-sided die. Compute $$E[X]$$.
+        </p>
+        <ul class="step-list">
+          <li>
+            <strong>Write the PMF.</strong>
+            Each value $$k \in \{1,2,3,4,5,6\}$$ has $$P(X=k) = \tfrac{1}{6}$$.
+          </li>
+          <li>
+            <strong>Apply the expected value formula.</strong>
+            $$E[X] = \sum_{k=1}^{6} k \cdot \frac{1}{6}
+              = \frac{1}{6}(1 + 2 + 3 + 4 + 5 + 6)
+              = \frac{21}{6} = 3.5$$
+          </li>
+          <li>
+            <strong>Interpret.</strong>
+            If you roll the die thousands of times and compute the running average,
+            it will converge to $$3.5$$. No single roll ever equals $$3.5$$ — the
+            expected value is a property of the <em>distribution</em>, not a
+            property of any single outcome.
+          </li>
+        </ul>
+        <p>
+          <strong>Takeaway:</strong> For a uniform distribution over
+          $$\{1, 2, \ldots, n\}$$, the expected value is always the midpoint
+          $$\tfrac{n+1}{2}$$. For $$n=6$$: $$\tfrac{7}{2} = 3.5$$. ✓
+        </p>
+      </div>
+    </details>
+
+    <!-- WORKED EXAMPLE 2 -->
+    <details class="example-panel">
+      <summary>
+        <span class="toggle-icon" aria-hidden="true">▶</span>
+        Worked Example 2 — Expected Comparisons in a Linear Search
+      </summary>
+      <div class="example-body">
+        <p>
+          <strong>Setup:</strong> You have an unsorted list of $$n$$ distinct
+          elements. You search for a target that is guaranteed to be in the list,
+          and each position is equally likely to hold the target. Let $$X$$ be
+          the number of comparisons made before the target is found. Compute
+          $$E[X]$$.
+        </p>
+        <ul class="step-list">
+          <li>
+            <strong>Identify the sample space and PMF.</strong>
+            The target is equally likely to be at any of the $$n$$ positions.
+            If the target is at position $$k$$, exactly $$k$$ comparisons are
+            made. So $$P(X = k) = \tfrac{1}{n}$$ for $$k = 1, 2, \ldots, n$$.
+          </li>
+          <li>
+            <strong>Apply the expected value formula.</strong>
+            $$E[X] = \sum_{k=1}^{n} k \cdot \frac{1}{n}
+              = \frac{1}{n} \sum_{k=1}^{n} k
+              = \frac{1}{n} \cdot \frac{n(n+1)}{2}
+              = \frac{n+1}{2}$$
+          </li>
+          <li>
+            <strong>Interpret for a concrete case.</strong>
+            For $$n = 100$$ elements: $$E[X] = \tfrac{101}{2} = 50.5$$.
+            On average, a linear search examines about half the list. This is
+            the formal justification for the informal claim that linear search
+            is $$O(n)$$ on average.
+          </li>
+        </ul>
+        <p>
+          <strong>Takeaway:</strong> Expected value connects probability directly
+          to algorithm analysis. The formula $$E[X] = \tfrac{n+1}{2}$$ gives the
+          average-case cost of linear search in a single, clean expression.
+        </p>
+        <div class="callout callout-connection" style="margin-top:0.75rem;">
+          <div class="callout-title">🔗 Connection — Algorithm Analysis</div>
+          Average-case complexity is defined as $$E[X]$$ where $$X$$ is the
+          number of operations under a probability distribution over inputs.
+          This exact calculation is what computer scientists mean when they say
+          linear search has average-case complexity $$\Theta(n)$$.
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ── SECTION 5: LINEARITY OF EXPECTATION ── -->
+  <section id="linearity" class="section-anchor" aria-labelledby="lin-heading">
+    <h2 class="section-title" id="lin-heading">5. Linearity of Expectation</h2>
+
+    <div class="callout callout-definition" role="note" aria-label="Definition: Linearity of Expectation">
+      <div class="callout-title">📘 Definition — Linearity of Expectation</div>
+      <p>
+        For any two discrete random variables $$X$$ and $$Y$$ defined on the same
+        probability space, and any constants $$a, b \in \mathbb{R}$$:
+        $$E[X + Y] = E[X] + E[Y]$$
+        $$E[aX + b] = a\,E[X] + b$$
+        <strong>This holds regardless of whether $$X$$ and $$Y$$ are
+        independent.</strong>
+      </p>
+    </div>
+
+    <h3 class="subsection-title">Why Is This Powerful?</h3>
+    <p>
+      Many random quantities that look complicated can be written as
+      <em>sums of simpler random variables</em>. Linearity of expectation lets
+      you compute the expectation of the sum by summing the individual
+      expectations — no need to figure out the joint distribution of the parts.
+      This technique is called the <strong>indicator random variable method</strong>.
+    </p>
+
+    <div class="callout callout-definition" role="note" aria-label="Definition: Indicator Random Variable">
+      <div class="callout-title">📘 Definition — Indicator Random Variable</div>
+      <p>
+        An <strong>indicator random variable</strong> $$I_E$$ for an event $$E$$ is:
+        $$I_E = \begin{cases} 1 & \text{if event } E \text{ occurs} \\ 0 & \text{otherwise} \end{cases}$$
+      </p>
+      <p style="margin-bottom:0;">
+        Its expected value is simply the probability of the event:
+        $$E[I_E] = 1 \cdot P(E) + 0 \cdot P(E^c) = P(E)$$
+      </p>
+    </div>
+
+    <!-- WORKED EXAMPLE 3 -->
+    <details class="example-panel">
+      <summary>
+        <span class="toggle-icon" aria-hidden="true">▶</span>
+        Worked Example 3 — Expected Number of Heads in 10 Coin Flips
+      </summary>
+      <div class="example-body">
+        <p>
+          <strong>Setup:</strong> Flip a fair coin 10 times. Let $$X$$ be the
+          total number of Heads. Compute $$E[X]$$ using indicator random variables.
+        </p>
+        <ul class="step-list">
+          <li>
+            <strong>Define indicator variables.</strong>
+            For each flip $$i = 1, 2, \ldots, 10$$, define:
+            $$I_i = \begin{cases} 1 & \text{if flip } i \text{ is Heads} \\ 0 & \text{otherwise} \end{cases}$$
+            Then the total number of Heads is $$X = I_1 + I_2 + \cdots + I_{10}$$.
+          </li>
+          <li>
+            <strong>Compute each indicator's expectation.</strong>
+            Since the coin is fair, $$P(\text{flip } i = \text{Heads}) = \tfrac{1}{2}$$,
+            so $$E[I_i] = \tfrac{1}{2}$$ for every $$i$$.
+          </li>
+          <li>
+            <strong>Apply linearity of expectation.</strong>
+            $$E[X] = E[I_1 + I_2 + \cdots + I_{10}]
+              = E[I_1] + E[I_2] + \cdots + E[I_{10}]
+              = 10 \times \frac{1}{2} = 5$$
+          </li>
+          <li>
+            <strong>Interpret.</strong>
+            On average, 5 out of 10 flips will be Heads. This matches intuition —
+            and we obtained it without ever writing down the full binomial
+            distribution.
+          </li>
+        </ul>
+        <p>
+          <strong>Takeaway:</strong> The indicator method works even when the
+          $$I_i$$ are <em>not</em> independent. For independent fair coin flips
+          they happen to be independent, but linearity of expectation does not
+          require it. This makes the technique applicable to much harder problems
+          where independence fails.
+        </p>
+        <div class="callout callout-connection" style="margin-top:0.75rem;">
+          <div class="callout-title">🔗 Generalization — Binomial Distribution</div>
+          For $$n$$ independent trials each with success probability $$p$$,
+          the same indicator argument gives $$E[X] = np$$. For our coin flip:
+          $$n = 10$$, $$p = \tfrac{1}{2}$$, so $$E[X] = 5$$. The binomial
+          expected value formula is just linearity of expectation applied
+          systematically.
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ── SECTION 6: VARIANCE (INFORMATIONAL ONLY) ── -->
+  <section id="variance" class="section-anchor" aria-labelledby="var-heading">
+    <h2 class="section-title" id="var-heading">6. Variance — Conceptual Introduction</h2>
+
+    <div class="callout callout-scope" role="note" aria-label="Scope note for variance">
+      <div class="callout-title">📌 Scope Note — Not Assessed</div>
+      Variance is introduced here for <strong>conceptual completeness only</strong>.
+      It is <strong>NOT assessed on Quiz 3 or the Midterm Exam</strong>. You are
+      not required to compute variance for any graded work in Week 9. Read this
+      section to build intuition for Module 9.5 and future courses.
+    </div>
+
+    <p>
+      Expected value tells us the <em>center</em> of a distribution — the
+      long-run average. But two distributions can have the same expected value
+      while behaving very differently. Consider these two scenarios:
+    </p>
+    <ul>
+      <li>
+        <strong>Scenario A:</strong> You always win exactly \$5. Here $$E[X] = 5$$
+        and the outcome never deviates from the average.
+      </li>
+      <li>
+        <strong>Scenario B:</strong> You win \$0 or \$10 with equal probability.
+        Here $$E[X] = 5$$ as well, but the outcome swings wildly.
+      </li>
+    </ul>
+    <p>
+      <strong>Variance</strong> measures this spread — how far values typically
+      deviate from the expected value.
+    </p>
+
+    <div class="callout callout-definition" role="note" aria-label="Definition: Variance (informational)">
+      <div class="callout-title">📘 Definition — Variance (Informational)</div>
+      <p>
+        The <strong>variance</strong> of a discrete random variable $$X$$ is:
+        $$\operatorname{Var}(X) = E[X^2] - (E[X])^2$$
+        where $$E[X^2] = \displaystyle\sum_k k^2 \cdot P(X = k)$$.
+      </p>
+      <p style="margin-bottom:0;">
+        The <strong>standard deviation</strong> is $$\sigma = \sqrt{\operatorname{Var}(X)}$$,
+        which has the same units as $$X$$ and is easier to interpret directly.
+        A small variance means outcomes cluster tightly around $$E[X]$$; a large
+        variance means outcomes spread far from the average.
+      </p>
+    </div>
+
+    <p>
+      For Scenario A above: $$\operatorname{Var}(X) = 0$$ (no spread).
+      For Scenario B: $$\operatorname{Var}(X) = E[X^2] - 25 = 50 - 25 = 25$$,
+      so $$\sigma = 5$$. The standard deviation of 5 reflects that outcomes
+      deviate by \$5 from the mean on every trial.
+    </p>
+  </section>
+
+  <!-- ── SECTION 7: LAW OF LARGE NUMBERS ── -->
+  <section id="lln" class="section-anchor" aria-labelledby="lln-heading">
+    <h2 class="section-title" id="lln-heading">7. The Law of Large Numbers</h2>
+
+    <h3 class="subsection-title">Plain-Language Statement</h3>
+    <p>
+      As the number of independent repetitions of a random experiment grows,
+      the <em>sample mean</em> (running average of observed values) converges
+      to the <em>expected value</em> $$E[X]$$. More repetitions → more reliable
+      average.
+    </p>
+    <p>
+      This is why casinos are profitable despite randomness, why insurance
+      companies can price policies, and why Monte Carlo simulations work: given
+      enough trials, the empirical average is an accurate estimate of the
+      theoretical expectation.
+    </p>
+
+    <!-- LLN INTERACTIVE DIAGRAM -->
+    <div class="lln-wrap">
+      <div style="font-weight:700; font-size:0.9rem; color:#1a3a5c; margin-bottom:0.5rem;">
+        Interactive: Running Average of Die Rolls Converging to $$E[X] = 3.5$$
+      </div>
+      <canvas id="llnCanvas" width="760" height="200"
+        aria-label="Animated line chart showing running average of die rolls converging to 3.5 as the number of rolls increases.">
+      </canvas>
+      <div class="lln-controls">
+        <button class="lln-btn" id="llnStartBtn" onclick="llnStart()" aria-label="Start die roll simulation">
+          ▶ Start
+        </button>
+        <button class="lln-btn" id="llnResetBtn" onclick="llnReset()" aria-label="Reset simulation">
+          ↺ Reset
+        </button>
+      </div>
+      <div class="lln-status" id="llnStatus" aria-live="polite">
+        Press Start to begin rolling the die.
+      </div>
+    </div>
+
+    <p>
+      Notice how the running average (blue line) oscillates widely at first but
+      gradually settles near the red dashed line at $$3.5 = E[X]$$. This visual
+      captures the essence of the Law of Large Numbers: randomness averages out
+      over many trials.
+    </p>
+
+    <div class="callout callout-connection">
+      <div class="callout-title">🔗 Connection — Module 9.2 Independence</div>
+      The Law of Large Numbers requires that the repeated trials be
+      <strong>independent</strong> — the result of one roll does not influence
+      the next. The formal definition of independence from Module 9.2
+      ($$P(A \cap B) = P(A) \cdot P(B)$$) is the mathematical foundation
+      that makes this convergence guarantee valid.
+    </div>
+
+    <div class="callout callout-lookahead">
+      <div class="callout-title">🔭 Looking Ahead — Module 9.5: Monte Carlo Simulation</div>
+      <p style="margin-bottom:0;">
+        The Law of Large Numbers is the theoretical justification for
+        <strong>Monte Carlo simulation</strong>. If you cannot compute
+        $$E[X]$$ analytically, you can <em>estimate</em> it by running
+        thousands of simulated trials and averaging the results. In Module 9.5,
+        you will implement exactly this idea to estimate probabilities
+        computationally — and connect it directly to the Probability Calculator
+        module in Project 2.
+      </p>
+    </div>
+  </section>
+
+  <!-- ── SECTION 8: CHECK FOR UNDERSTANDING ── -->
+  <section id="cfu" class="section-anchor" aria-labelledby="cfu-heading">
+    <h2 class="section-title" id="cfu-heading">8. Check for Understanding</h2>
+    <p>
+      These three questions are <strong>ungraded</strong> and for self-assessment
+      only. Select or type your answer, then click <em>Check Answer</em> for
+      immediate feedback.
+    </p>
+
+    <div class="cfu-widget" role="form" aria-label="Check for understanding questions">
+      <h3>Self-Check — Module 9.4</h3>
+
+      <!-- QUESTION 1: Fill-in E[X] from a PMF -->
+      <div class="cfu-question" id="q1-block">
+        <div class="q-text" id="q1-label">
+          <strong>Question 1 (Fill-in).</strong>
+          A random variable $$X$$ has the following PMF:
+        </div>
+        <table class="styled-table" style="margin:0.5rem 0 0.75rem;" aria-label="PMF table for question 1">
+          <thead>
+            <tr><th>$$k$$</th><th>1</th><th>2</th><th>3</th><th>4</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>$$P(X=k)$$</td>
+              <td>0.1</td><td>0.4</td><td>0.3</td><td>0.2</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="q-text">
+          Compute $$E[X]$$. Enter your answer as a decimal (e.g., <code>2.6</code>).
+        </div>
+        <label for="q1-input" style="font-size:0.9rem;">Your answer:</label><br>
+        <input type="text" id="q1-input" placeholder="0.0"
+          aria-labelledby="q1-label" autocomplete="off" spellcheck="false">
+        <br>
+        <button class="check-btn" onclick="checkQ1()" aria-label="Check answer for question 1">
+          Check Answer
+        </button>
+        <div class="feedback" id="q1-feedback" role="alert" aria-live="polite"></div>
+      </div>
+
+      <!-- QUESTION 2: Multiple choice on linearity -->
+      <div class="cfu-question" id="q2-block">
+        <div class="q-text" id="q2-label">
+          <strong>Question 2 (Multiple Choice).</strong>
+          Suppose $$E[X] = 4$$ and $$E[Y] = 7$$. Which statement is
+          <em>always</em> true, even if $$X$$ and $$Y$$ are <strong>not</strong>
+          independent?
+        </div>
+        <div role="radiogroup" aria-labelledby="q2-label">
+          <label>
+            <input type="radio" name="q2" value="A" aria-label="Option A">
+            (A) &nbsp; $$E[X \cdot Y] = 28$$
+          </label>
+          <label>
+            <input type="radio" name="q2" value="B" aria-label="Option B">
+            (B) &nbsp; $$E[X + Y] = 11$$
+          </label>
+          <label>
+            <input type="radio" name="q2" value="C" aria-label="Option C">
+            (C) &nbsp; $$P(X + Y = 11) = 1$$
+          </label>
+          <label>
+            <input type="radio" name="q2" value="D" aria-label="Option D">
+            (D) &nbsp; $$E[X + Y] = E[X] \cdot E[Y] = 28$$
+          </label>
+        </div>
+        <button class="check-btn" onclick="checkQ2()" aria-label="Check answer for question 2">
+          Check Answer
+        </button>
+        <div class="feedback" id="q2-feedback" role="alert" aria-live="polite"></div>
+      </div>
+
+      <!-- QUESTION 3: Game expected value scenario -->
+      <div class="cfu-question" id="q3-block">
+        <div class="q-text" id="q3-label">
+          <strong>Question 3 (Short Answer).</strong>
+          A carnival game costs \$2 to play. You roll one fair six-sided die:
+          if you roll a 6, you win \$8; otherwise you win nothing. Let $$W$$
+          be your <em>net</em> winnings (prize minus entry fee).
+          Is this game favorable, unfavorable, or fair? Select the correct answer.
+        </div>
+        <div role="radiogroup" aria-labelledby="q3-label">
+          <label>
+            <input type="radio" name="q3" value="A" aria-label="Option A">
+            (A) &nbsp; Favorable — $$E[W] > 0$$
+          </label>
+          <label>
+            <input type="radio" name="q3" value="B" aria-label="Option B">
+            (B) &nbsp; Fair — $$E[W] = 0$$
+          </label>
+          <label>
+            <input type="radio" name="q3" value="C" aria-label="Option C">
+            (C) &nbsp; Unfavorable — $$E[W] < 0$$
+          </label>
+          <label>
+            <input type="radio" name="q3" value="D" aria-label="Option D">
+            (D) &nbsp; Cannot be determined without more information
+          </label>
+        </div>
+        <button class="check-btn" onclick="checkQ3()" aria-label="Check answer for question 3">
+          Check Answer
+        </button>
+        <div class="feedback" id="q3-feedback" role="alert" aria-live="polite"></div>
+      </div>
+
+    </div><!-- end cfu-widget -->
+  </section>
+
+  <!-- ── SECTION 9: SUMMARY ── -->
+  <section id="summary" class="section-anchor" aria-labelledby="summary-heading">
+    <h2 class="section-title" id="summary-heading">9. Module Summary</h2>
+
+    <div class="callout callout-summary" role="note" aria-label="Module 9.4 summary">
+      <div class="callout-title">📋 Module 9.4 — Key Takeaways</div>
+      <ul style="margin-bottom:0;">
+        <li>
+          A <strong>discrete random variable</strong> $$X : \Omega \to \mathbb{R}$$
+          assigns a numerical value to each outcome. Its
+          <strong>probability mass function</strong> $$P(X = k)$$ must be
+          non-negative and sum to 1. The <strong>expected value</strong>
+          $$E[X] = \sum_k k \cdot P(X = k)$$ is the long-run average — it
+          need not be a possible outcome (e.g., $$E[\text{die}] = 3.5$$).
+        </li>
+        <li>
+          <strong>Linearity of expectation</strong>
+          $$E[X + Y] = E[X] + E[Y]$$ holds regardless of independence, making
+          the <strong>indicator random variable method</strong> a powerful
+          shortcut: decompose a complex count into a sum of 0/1 indicators,
+          then sum their individual expectations.
+        </li>
+        <li>
+          The <strong>Law of Large Numbers</strong> guarantees that the sample
+          mean of independent trials converges to $$E[X]$$ as the number of
+          trials grows — the theoretical foundation for Monte Carlo simulation
+          in Module 9.5. Variance (not assessed) measures how spread out the
+          distribution is around its expected value.
+        </li>
+      </ul>
+    </div>
+
+    <div class="callout callout-lookahead" role="note" aria-label="Look ahead to Module 9.5">
+      <div class="callout-title">🔭 Coming Up — Module 9.5: Probability in Computing and Week 9 Assignments</div>
+      <p style="margin-bottom:0;">
+        Module 9.5 puts the entire Week 9 toolkit to work. You will see how
+        expected value drives average-case algorithm analysis, explore
+        randomized algorithms, and work through a guided Monte Carlo simulation
+        that estimates probabilities by running thousands of trials — directly
+        applying the Law of Large Numbers you just studied. Module 9.5 also
+        provides structured support for completing <strong>PS-06</strong> and
+        preparing for <strong>Quiz 3</strong> and the <strong>Midterm Exam</strong>.
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
+<script>
+/* ── Check-for-Understanding ── */
+function showFeedback(id, correct, html) {
+  const el = document.getElementById(id);
+  el.innerHTML = html;
+  el.className = 'feedback show ' + (correct ? 'correct' : 'incorrect');
+}
+
+function checkQ1() {
+  const raw = document.getElementById('q1-input').value.trim();
+  if (!raw) { showFeedback('q1-feedback', false, '⚠️ Please enter a value before checking.'); return; }
+  const val = parseFloat(raw);
+  const correct = Math.abs(val - 2.6) < 0.001;
+  if (correct) {
+    showFeedback('q1-feedback', true,
+      '✅ <strong>Correct!</strong> ' +
+      'E[X] = 1(0.1) + 2(0.4) + 3(0.3) + 4(0.2) = 0.1 + 0.8 + 0.9 + 0.8 = 2.6. ' +
+      'Each value is weighted by its probability — higher-probability values pull the average toward themselves.');
+  } else {
+    showFeedback('q1-feedback', false,
+      '❌ <strong>Not quite.</strong> Apply the formula E[X] = Σ k·P(X=k): ' +
+      '(1)(0.1) + (2)(0.4) + (3)(0.3) + (4)(0.2) = 0.1 + 0.8 + 0.9 + 0.8 = 2.6. ' +
+      'Make sure you multiply each value by its probability before summing.');
+  }
+}
+
+function checkQ2() {
+  const sel = document.querySelector('input[name="q2"]:checked');
+  if (!sel) { showFeedback('q2-feedback', false, '⚠️ Please select an answer before checking.'); return; }
+  if (sel.value === 'B') {
+    showFeedback('q2-feedback', true,
+      '✅ <strong>Correct!</strong> ' +
+      'Linearity of expectation states E[X + Y] = E[X] + E[Y] = 4 + 7 = 11, ' +
+      'regardless of whether X and Y are independent. ' +
+      'Option A requires independence (E[XY] = E[X]·E[Y] only when X and Y are independent). ' +
+      'Option C confuses expected value with a certain outcome. ' +
+      'Option D incorrectly multiplies instead of adding.');
+  } else {
+    const hints = {
+      A: 'E[X·Y] = E[X]·E[Y] only holds when X and Y are <em>independent</em>. The question says they may not be.',
+      C: 'E[X+Y] = 11 means the long-run average is 11 — not that X+Y always equals 11.',
+      D: 'Linearity of expectation uses addition, not multiplication: E[X+Y] = E[X] + E[Y].'
+    };
+    showFeedback('q2-feedback', false,
+      '❌ <strong>Not quite.</strong> ' + (hints[sel.value] || '') +
+      ' The key property is linearity: E[X+Y] = E[X] + E[Y] always holds.');
+  }
+}
+
+function checkQ3() {
+  const sel = document.querySelector('input[name="q3"]:checked');
+  if (!sel) { showFeedback('q3-feedback', false, '⚠️ Please select an answer before checking.'); return; }
+  if (sel.value === 'C') {
+    showFeedback('q3-feedback', true,
+      '✅ <strong>Correct — Unfavorable.</strong> ' +
+      'Net winnings: roll a 6 (prob 1/6) → W = $8 − $2 = $6; ' +
+      'roll 1–5 (prob 5/6) → W = $0 − $2 = −$2. ' +
+      'E[W] = (1/6)(6) + (5/6)(−2) = 1 − 10/6 = 1 − 1.667 ≈ −0.667. ' +
+      'Since E[W] < 0, the game is unfavorable to the player on average. ' +
+      'Over many plays, you expect to lose about $0.67 per game.');
+  } else {
+    showFeedback('q3-feedback', false,
+      '❌ <strong>Not quite.</strong> Compute net winnings for each outcome: ' +
+      'Win $8 and pay $2 → net +$6 (probability 1/6); ' +
+      'Win $0 and pay $2 → net −$2 (probability 5/6). ' +
+      'E[W] = (1/6)(6) + (5/6)(−2) = 1 − 10/6 ≈ −0.67. ' +
+      'Because E[W] < 0, the game is unfavorable.');
+  }
+}
+
+/* ── Law of Large Numbers Animation ── */
+(function() {
+  const canvas = document.getElementById('llnCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const PAD = { top: 20, right: 20, bottom: 30, left: 45 };
+  const EXPECTED = 3.5;
+  const MAX_ROLLS = 200;
+  const INTERVAL_MS = 40;
+
+  let rolls = [];
+  let runningAvg = [];
+  let timer = null;
+  let running = false;
+
+  function rollDie() { return Math.floor(Math.random() * 6) + 1; }
+
+  function drawFrame() {
+    ctx.clearRect(0, 0, W, H);
+    const chartW = W - PAD.left - PAD.right;
+    const chartH = H - PAD.top - PAD.bottom;
+
+    // Background
+    ctx.fillStyle = '#fafbfc';
+    ctx.fillRect(PAD.left, PAD.top, chartW, chartH);
+    ctx.strokeStyle = '#ddd';
+    ctx.strokeRect(PAD.left, PAD.top, chartW, chartH);
+
+    // Y-axis labels and grid lines (1–6)
+    ctx.fillStyle = '#555';
+    ctx.font = '11px Segoe UI, sans-serif';
+    ctx.textAlign = 'right';
+    for (let v = 1; v <= 6; v++) {
+      const y = PAD.top + chartH - ((v - 1) / 5) * chartH;
+      ctx.fillText(v, PAD.left - 6, y + 4);
+      ctx.strokeStyle = '#eee';
+      ctx.beginPath();
+      ctx.moveTo(PAD.left, y);
+      ctx.lineTo(PAD.left + chartW, y);
+      ctx.stroke();
+    }
+
+    // Expected value line
+    const evY = PAD.top + chartH - ((EXPECTED - 1) / 5) * chartH;
+    ctx.strokeStyle = '#c0392b';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([6, 4]);
+    ctx.beginPath();
+    ctx.moveTo(PAD.left, evY);
+    ctx.lineTo(PAD.left + chartW, evY);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#c0392b';
+    ctx.textAlign = 'left';
+    ctx.font = 'bold 11px Segoe UI, sans-serif';
+    ctx.fillText('E[X] = 3.5', PAD.left + 4, evY - 4);
+
+    // Running average line
+    if (runningAvg.length > 1) {
+      ctx.strokeStyle = '#2e6da4';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      for (let i = 0; i < runningAvg.length; i++) {
+        const x = PAD.left + (i / (MAX_ROLLS - 1)) * chartW;
+        const y = PAD.top + chartH - ((runningAvg[i] - 1) / 5) * chartH;
+        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    }
+
+    // X-axis label
+    ctx.fillStyle = '#555';
+    ctx.font = '11px Segoe UI, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('Number of rolls', PAD.left + chartW / 2, H - 4);
+
+    // Roll count
+    if (rolls.length > 0) {
+      ctx.textAlign = 'right';
+      ctx.fillStyle = '#1a3a5c';
+      ctx.font = 'bold 12px Segoe UI, sans-serif';
+      const avg = runningAvg[runningAvg.length - 1];
+      ctx.fillText(
+        'n = ' + rolls.length + '   avg = ' + avg.toFixed(3),
+        W - PAD.right, PAD.top + 14
+      );
+    }
+  }
+
+  function step() {
+    if (rolls.length >= MAX_ROLLS) {
+      clearInterval(timer);
+      running = false;
+      document.getElementById('llnStartBtn').textContent = '▶ Start';
+      document.getElementById('llnStatus').textContent =
+        'Simulation complete. Running average converged near 3.5.';
+      return;
+    }
+    const r = rollDie();
+    rolls.push(r);
+    const sum = rolls.reduce((a, b) => a + b, 0);
+    runningAvg.push(sum / rolls.length);
+    drawFrame();
+    document.getElementById('llnStatus').textContent =
+      'Roll ' + rolls.length + ' of ' + MAX_ROLLS + ' — running average: ' +
+      runningAvg[runningAvg.length - 1].toFixed(3);
+  }
+
+  window.llnStart = function() {
+    if (running) {
+      clearInterval(timer);
+      running = false;
+      document.getElementById('llnStartBtn').textContent = '▶ Resume';
+      document.getElementById('llnStatus').textContent = 'Paused at roll ' + rolls.length + '.';
+    } else {
+      if (rolls.length >= MAX_ROLLS) return;
+      running = true;
+      document.getElementById('llnStartBtn').textContent = '⏸ Pause';
+      timer = setInterval(step, INTERVAL_MS);
+    }
+  };
+
+  window.llnReset = function() {
+    clearInterval(timer);
+    running = false;
+    rolls = [];
+    runningAvg = [];
+    document.getElementById('llnStartBtn').textContent = '▶ Start';
+    document.getElementById('llnStatus').textContent = 'Press Start to begin rolling the die.';
+    drawFrame();
+  };
+
+  // Initial draw
+  drawFrame();
+})();
+</script>
+
+</body>
+</html>
