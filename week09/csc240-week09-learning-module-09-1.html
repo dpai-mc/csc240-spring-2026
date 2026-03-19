@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSC 240 – Module 9.1: Foundations of Discrete Probability</title>
+
+<!-- KaTeX local bundle (self-contained via CDN-equivalent inline approach) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[
+    {left:'\$$',right:'\$$',display:true},
+    {left:'\$$',right:'\$$',display:false}
+  ]})"></script>
+
+<style>
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: #f4f6f9;
+  color: #1a1a2e;
+  line-height: 1.7;
+}
+a { color: #1a5276; }
+a:focus-visible {
+  outline: 3px solid #f39c12;
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+/* ============================================================
+   STICKY NAV BAR
+   ============================================================ */
+#top-nav {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: #1a3a5c;
+  padding: 0 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.75rem;
+  min-height: 3rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+#top-nav .nav-brand {
+  color: #e8f4fd;
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.03em;
+  margin-right: 0.5rem;
+  white-space: nowrap;
+}
+#top-nav a {
+  color: #aed6f1;
+  text-decoration: none;
+  font-size: 0.8rem;
+  padding: 0.3rem 0.5rem;
+  border-radius: 4px;
+  white-space: nowrap;
+  transition: background 0.15s, color 0.15s;
+}
+#top-nav a:hover { background: #2e6da4; color: #fff; }
+#top-nav a:focus-visible {
+  outline: 3px solid #f39c12;
+  outline-offset: 2px;
+  color: #fff;
+}
+
+/* ============================================================
+   PAGE WRAPPER
+   ============================================================ */
+.page-wrapper {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 4rem;
+}
+
+/* ============================================================
+   MODULE HEADER
+   ============================================================ */
+.module-header {
+  background: linear-gradient(135deg, #1a3a5c 0%, #2e6da4 100%);
+  color: #fff;
+  border-radius: 10px;
+  padding: 2rem 2rem 1.75rem;
+  margin-bottom: 2rem;
+}
+.module-header .week-label {
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #aed6f1;
+  margin-bottom: 0.4rem;
+}
+.module-header h1 {
+  font-size: 1.75rem;
+  font-weight: 800;
+  line-height: 1.25;
+  margin-bottom: 0.6rem;
+}
+.module-header .module-meta {
+  font-size: 0.85rem;
+  color: #d6eaf8;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.5rem;
+}
+.module-header .module-meta span::before {
+  content: "▸ ";
+  color: #7fb3d3;
+}
+
+/* ============================================================
+   SECTION HEADINGS  (scroll-margin-top prevents nav overlap)
+   ============================================================ */
+.section-anchor {
+  scroll-margin-top: 3.5rem;
+}
+h2.section-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #1a3a5c;
+  border-left: 5px solid #2e6da4;
+  padding-left: 0.75rem;
+  margin: 2.25rem 0 1rem;
+}
+h3.subsection-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #1a3a5c;
+  margin: 1.5rem 0 0.6rem;
+}
+
+/* ============================================================
+   PROSE
+   ============================================================ */
+p { margin-bottom: 1rem; }
+ul, ol { margin: 0.5rem 0 1rem 1.5rem; }
+li { margin-bottom: 0.35rem; }
+
+/* ============================================================
+   CALLOUT BOXES  (Template Anchor — copy to 9.2–9.5)
+   ============================================================ */
+.callout {
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  margin: 1.25rem 0;
+  border-left: 5px solid;
+}
+.callout .callout-title {
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* Definition — teal/blue */
+.callout-definition {
+  background: #e8f6f3;
+  border-color: #1abc9c;
+  color: #0e3d31;
+}
+.callout-definition .callout-title { color: #148f77; }
+
+/* Warning — amber */
+.callout-warning {
+  background: #fef9e7;
+  border-color: #f39c12;
+  color: #4a3000;
+}
+.callout-warning .callout-title { color: #b7770d; }
+
+/* Connection — green */
+.callout-connection {
+  background: #eafaf1;
+  border-color: #27ae60;
+  color: #0b3d1f;
+}
+.callout-connection .callout-title { color: #1e8449; }
+
+/* Look-ahead — indigo/purple */
+.callout-lookahead {
+  background: #f0eef9;
+  border-color: #7d3c98;
+  color: #2d0b4e;
+}
+.callout-lookahead .callout-title { color: #6c3483; }
+
+/* Summary — neutral gray */
+.callout-summary {
+  background: #f2f3f4;
+  border-color: #7f8c8d;
+  color: #1c2833;
+}
+.callout-summary .callout-title { color: #515a5a; }
+
+/* ============================================================
+   COMPARISON TABLE
+   ============================================================ */
+.styled-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0 1.5rem;
+  font-size: 0.92rem;
+}
+.styled-table th {
+  background: #1a3a5c;
+  color: #fff;
+  padding: 0.65rem 0.9rem;
+  text-align: left;
+}
+.styled-table td {
+  padding: 0.6rem 0.9rem;
+  border-bottom: 1px solid #d5d8dc;
+  vertical-align: top;
+}
+.styled-table tr:nth-child(even) td { background: #eaf2fb; }
+.styled-table tr:last-child td { border-bottom: none; }
+
+/* ============================================================
+   EXPANDABLE WORKED EXAMPLE PANELS
+   ============================================================ */
+.example-panel {
+  border: 1px solid #aed6f1;
+  border-radius: 8px;
+  margin: 1.1rem 0;
+  overflow: hidden;
+}
+.example-panel summary {
+  background: #d6eaf8;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #1a3a5c;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  user-select: none;
+  transition: background 0.15s;
+}
+.example-panel summary::-webkit-details-marker { display: none; }
+.example-panel summary:hover { background: #aed6f1; }
+.example-panel summary:focus-visible {
+  outline: 3px solid #f39c12;
+  outline-offset: -3px;
+}
+.example-panel summary .toggle-icon {
+  display: inline-block;
+  transition: transform 0.2s;
+  font-style: normal;
+}
+.example-panel[open] summary .toggle-icon { transform: rotate(90deg); }
+.example-panel .example-body {
+  padding: 1rem 1.25rem;
+  background: #fff;
+}
+.example-panel .example-body p:last-child { margin-bottom: 0; }
+
+/* Step list inside examples */
+.step-list { list-style: none; margin-left: 0; counter-reset: step-counter; }
+.step-list li {
+  counter-increment: step-counter;
+  padding: 0.4rem 0 0.4rem 2.5rem;
+  position: relative;
+  border-bottom: 1px dashed #d5d8dc;
+}
+.step-list li:last-child { border-bottom: none; }
+.step-list li::before {
+  content: counter(step-counter);
+  position: absolute;
+  left: 0;
+  top: 0.4rem;
+  background: #2e6da4;
+  color: #fff;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  font-size: 0.78rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ============================================================
+   CHECK-FOR-UNDERSTANDING WIDGET
+   ============================================================ */
+.cfu-widget {
+  background: #fff;
+  border: 2px solid #2e6da4;
+  border-radius: 10px;
+  padding: 1.25rem 1.5rem;
+  margin: 1.5rem 0;
+}
+.cfu-widget h3 {
+  font-size: 1rem;
+  color: #1a3a5c;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #d6eaf8;
+  padding-bottom: 0.5rem;
+}
+.cfu-question { margin-bottom: 1.5rem; }
+.cfu-question .q-text {
+  font-weight: 600;
+  margin-bottom: 0.6rem;
+  color: #1a2e4a;
+}
+.cfu-question label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.3rem 0;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.cfu-question label:hover { background: #eaf2fb; }
+.cfu-question input[type="radio"],
+.cfu-question input[type="text"] {
+  margin-top: 0.2rem;
+  accent-color: #2e6da4;
+}
+.cfu-question input[type="text"] {
+  border: 1px solid #aab7c4;
+  border-radius: 5px;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.95rem;
+  width: 120px;
+  margin-top: 0;
+}
+.cfu-question input[type="text"]:focus {
+  outline: 3px solid #f39c12;
+  border-color: #2e6da4;
+}
+.check-btn {
+  background: #2e6da4;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1.2rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: background 0.15s;
+}
+.check-btn:hover { background: #1a5276; }
+.check-btn:focus-visible {
+  outline: 3px solid #f39c12;
+  outline-offset: 2px;
+}
+.feedback {
+  margin-top: 0.65rem;
+  padding: 0.65rem 0.9rem;
+  border-radius: 6px;
+  font-size: 0.92rem;
+  display: none;
+}
+.feedback.correct {
+  background: #eafaf1;
+  border-left: 4px solid #27ae60;
+  color: #0b3d1f;
+}
+.feedback.incorrect {
+  background: #fdf2f8;
+  border-left: 4px solid #c0392b;
+  color: #4a0e0e;
+}
+.feedback.show { display: block; }
+
+/* ============================================================
+   BOTTOM NAV BUTTONS
+   ============================================================ */
+.bottom-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid #d5d8dc;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.nav-btn {
+  background: #1a3a5c;
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  padding: 0.65rem 1.4rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: default;
+  letter-spacing: 0.02em;
+}
+.nav-btn.prev { background: #5d6d7e; }
+.nav-btn.next { background: #1a5276; }
+
+/* ============================================================
+   MATH DISPLAY HELPERS
+   ============================================================ */
+.math-block {
+  overflow-x: auto;
+  padding: 0.75rem 0;
+  text-align: center;
+}
+.axiom-list { list-style: none; margin-left: 0; }
+.axiom-list li {
+  padding: 0.5rem 0.75rem;
+  border-left: 3px solid #1abc9c;
+  margin-bottom: 0.5rem;
+  background: #f0fdf9;
+  border-radius: 0 6px 6px 0;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 600px) {
+  .module-header h1 { font-size: 1.35rem; }
+  h2.section-title { font-size: 1.1rem; }
+  .styled-table { font-size: 0.82rem; }
+  #top-nav .nav-brand { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     STICKY TOP NAVIGATION
+     ============================================================ -->
+<nav id="top-nav" aria-label="Module 9.1 section navigation">
+  <span class="nav-brand">CSC 240 · Module 9.1</span>
+  <a href="#hook">Opening</a>
+  <a href="#foundations">Foundations</a>
+  <a href="#definitions">Definitions</a>
+  <a href="#axioms">Axioms</a>
+  <a href="#rules">Core Rules</a>
+  <a href="#examples">Examples</a>
+  <a href="#watchout">Watch Out</a>
+  <a href="#cfu">Check Understanding</a>
+  <a href="#summary">Summary</a>
+</nav>
+
+<!-- ============================================================
+     PAGE CONTENT
+     ============================================================ -->
+<div class="page-wrapper">
+
+  <!-- MODULE HEADER -->
+  <header class="module-header" role="banner">
+    <div class="week-label">CSC 240 · Discrete Structures · Week 9 · Module 9.1</div>
+    <h1>Foundations of Discrete Probability</h1>
+    <div class="module-meta">
+      <span>Week 9 of 17 &nbsp;(March 25–31, 2026)</span>
+      <span>Estimated time: 2.0 hours</span>
+      <span>CSLO 2 · Objectives 1 &amp; 2</span>
+      <span>Contributes to: PS-06 · Midterm Exam</span>
+    </div>
+  </header>
+
+  <!-- ── SECTION 1: OPENING HOOK ── -->
+  <section id="hook" class="section-anchor" aria-labelledby="hook-heading">
+    <h2 class="section-title" id="hook-heading">Opening: From Counting to Chance</h2>
+
+    <p>
+      You have spent the last two weeks building a powerful counting toolkit —
+      permutations, combinations, and the inclusion-exclusion principle. You can
+      answer questions like <em>"how many 5-card hands contain exactly 3 hearts?"</em>
+      with confidence. Now we ask a subtly different question:
+    </p>
+
+    <blockquote style="border-left:4px solid #2e6da4;padding:0.75rem 1rem;
+      background:#eaf2fb;border-radius:0 8px 8px 0;margin:1rem 0;font-style:italic;color:#1a2e4a;">
+      "If I draw 5 cards at random, <strong>what is the probability</strong> that
+      exactly 3 are hearts?"
+    </blockquote>
+
+    <p>
+      The shift from <em>counting</em> to <em>probability</em> is smaller than it
+      looks. Probability is just a ratio of counts — provided every outcome is
+      equally likely. The heavy lifting of computing those counts is exactly what
+      combinations were designed for.
+    </p>
+
+    <div class="callout callout-connection">
+      <div class="callout-title">🔗 Connection — Weeks 7 &amp; 8</div>
+      The counting tools you built in Weeks 7–8 (combinations, permutations,
+      inclusion-exclusion) are the <em>engine</em> inside probability calculations.
+      This module makes that connection explicit and formal.
+    </div>
+
+    <!-- MOTIVATING SCENARIO -->
+    <h3 class="subsection-title">Motivating Scenario: The Software Quality Engineer</h3>
+
+    <p>
+      Imagine you are a software quality engineer at a company that ships firmware
+      updates. A batch of <strong>20 devices</strong> has just arrived for final
+      testing. Unknown to you, <strong>8 of the 20 are defective</strong> (they
+      passed earlier screening but have a subtle hardware fault). Your testing budget
+      allows you to randomly select and test exactly <strong>5 devices</strong>.
+    </p>
+
+    <p>
+      Your manager asks: <em>"What is the probability that your sample of 5 contains
+      exactly 2 defective devices and 3 non-defective ones?"</em>
+    </p>
+
+    <p>
+      You already know how to <em>count</em> the favorable outcomes using combinations.
+      By the end of this module, you will have the formal probability framework to
+      turn that count into a precise probability. We will return to this scenario as
+      our final worked example.
+    </p>
+  </section>
+
+  <!-- ── SECTION 2: FOUNDATIONS ── -->
+  <section id="foundations" class="section-anchor" aria-labelledby="foundations-heading">
+    <h2 class="section-title" id="foundations-heading">Why a Formal Framework?</h2>
+
+    <p>
+      Informal reasoning about chance leads to well-known paradoxes and errors
+      (we will see three in the Watch Out section). A formal framework gives us
+      three things:
+    </p>
+    <ol>
+      <li><strong>Precision</strong> — unambiguous definitions prevent hidden assumptions.</li>
+      <li><strong>Derivability</strong> — all probability rules follow from three axioms.</li>
+      <li><strong>Generality</strong> — the same framework covers coins, cards, software
+          bugs, network packets, and algorithm runtimes.</li>
+    </ol>
+
+    <p>
+      The framework has three components: a <em>sample space</em>, <em>events</em>,
+      and a <em>probability measure</em>. Each is a concept you have already seen
+      in set theory — we are simply adding a measurement function on top.
+    </p>
+  </section>
+
+  <!-- ── SECTION 3: DEFINITIONS ── -->
+  <section id="definitions" class="section-anchor" aria-labelledby="def-heading">
+    <h2 class="section-title" id="def-heading">Core Definitions</h2>
+
+    <!-- SAMPLE SPACE -->
+    <div class="callout callout-definition" role="note" aria-label="Definition: Sample Space">
+      <div class="callout-title">📘 Definition — Sample Space</div>
+      <p>
+        The <strong>sample space</strong> $$\Omega$$ (capital omega) is the set of
+        <em>all possible outcomes</em> of a random experiment. Each element
+        $$\omega \in \Omega$$ is called an <strong>outcome</strong> (or
+        <em>elementary event</em>).
+      </p>
+      <p style="margin-bottom:0;">
+        <strong>Examples:</strong><br>
+        • One coin flip: $$\Omega = \{H, T\}$$<br>
+        • Two coin flips: $$\Omega = \{HH,\, HT,\, TH,\, TT\}$$<br>
+        • Drawing 1 card from a standard deck: $$|\Omega| = 52$$
+      </p>
+    </div>
+
+    <!-- EVENT -->
+    <div class="callout callout-definition" role="note" aria-label="Definition: Event">
+      <div class="callout-title">📘 Definition — Event</div>
+      <p>
+        An <strong>event</strong> is any subset $$E \subseteq \Omega$$. We say the
+        event <em>occurs</em> when the observed outcome $$\omega \in E$$.
+      </p>
+      <p style="margin-bottom:0;">
+        <strong>Special cases:</strong><br>
+        • $$\Omega$$ itself is the <em>certain event</em> (always occurs).<br>
+        • $$\emptyset$$ is the <em>impossible event</em> (never occurs).<br>
+        • A single outcome $$\{\omega\}$$ is called an <em>elementary event</em>.
+      </p>
+    </div>
+
+    <!-- PROBABILITY MEASURE -->
+    <div class="callout callout-definition" role="note" aria-label="Definition: Probability Measure">
+      <div class="callout-title">📘 Definition — Probability Measure</div>
+      <p>
+        A <strong>probability measure</strong> is a function
+        $$P : 2^{\Omega} \to \mathbb{R}$$ (from the power set of $$\Omega$$ to the
+        real numbers) satisfying the three Kolmogorov axioms (see next section).
+      </p>
+      <p style="margin-bottom:0;">
+        The triple $$(\Omega,\, 2^{\Omega},\, P)$$ is called a
+        <strong>finite probability space</strong>.
+      </p>
+    </div>
+
+    <!-- UNIFORM PROBABILITY -->
+    <div class="callout callout-definition" role="note" aria-label="Definition: Uniform Probability">
+      <div class="callout-title">📘 Definition — Uniform Probability Space</div>
+      <p>
+        When every outcome in $$\Omega$$ is equally likely, the space is called
+        <strong>uniform</strong> and the probability of any event $$E$$ is:
+      </p>
+      <div class="math-block">
+        $$ P(E) = \frac{|E|}{|\Omega|} $$
+      </div>
+      <p style="margin-bottom:0;">
+        This is the formula you will use most often in this course. Computing
+        $$|E|$$ and $$|\Omega|$$ is a <em>counting problem</em> — exactly what
+        Weeks 7–8 prepared you for.
+      </p>
+    </div>
+  </section>
+
+  <!-- ── SECTION 4: AXIOMS ── -->
+  <section id="axioms" class="section-anchor" aria-labelledby="axioms-heading">
+    <h2 class="section-title" id="axioms-heading">The Three Kolmogorov Axioms</h2>
+
+    <p>
+      Every valid probability measure must satisfy exactly three axioms. All other
+      probability rules — complement, addition, conditional probability — are
+      <em>theorems</em> derived from these three.
+    </p>
+
+    <ul class="axiom-list" aria-label="Kolmogorov Axioms">
+      <li>
+        <strong>Axiom 1 (Non-negativity):</strong> For every event $$E \subseteq \Omega$$,
+        $$P(E) \geq 0$$
+      </li>
+      <li>
+        <strong>Axiom 2 (Normalization):</strong> The probability of the entire sample
+        space is 1:
+        $$P(\Omega) = 1$$
+      </li>
+      <li>
+        <strong>Axiom 3 (Countable Additivity):</strong> If $$A$$ and $$B$$ are
+        <em>mutually exclusive</em> events ($$A \cap B = \emptyset$$), then:
+        $$P(A \cup B) = P(A) + P(B)$$
+        More generally, for any finite collection of pairwise mutually exclusive
+        events $$A_1, A_2, \ldots, A_n$$:
+        $$P(A_1 \cup A_2 \cup \cdots \cup A_n) = \sum_{i=1}^{n} P(A_i)$$
+      </li>
+    </ul>
+
+    <div class="callout callout-warning">
+      <div class="callout-title">⚠️ Axiom Check</div>
+      Any function that satisfies all three axioms is a valid probability measure —
+      even if it feels unintuitive. Conversely, if a function violates any one axiom
+      (e.g., assigns a negative value, or sums to more than 1), it is
+      <strong>not</strong> a probability measure, no matter how reasonable it seems.
+    </div>
+
+    <h3 class="subsection-title">Immediate Consequences of the Axioms</h3>
+    <p>Two important results follow directly:</p>
+    <ul>
+      <li>
+        <strong>Impossible event:</strong> $$P(\emptyset) = 0$$
+        <br><em>Proof sketch:</em> $$\Omega$$ and $$\emptyset$$ are disjoint and
+        $$\Omega \cup \emptyset = \Omega$$, so by Axiom 3:
+        $$P(\Omega) = P(\Omega) + P(\emptyset)$$, giving $$P(\emptyset)=0$$.
+      </li>
+      <li>
+        <strong>Bounded:</strong> $$0 \leq P(E) \leq 1$$ for all $$E$$
+        <br><em>Proof sketch:</em> $$E$$ and $$E^c$$ are disjoint and cover $$\Omega$$,
+        so $$P(E) + P(E^c) = 1$$. Since $$P(E^c) \geq 0$$, we get $$P(E) \leq 1$$.
+      </li>
+    </ul>
+  </section>
+
+  <!-- ── SECTION 5: CORE RULES ── -->
+  <section id="rules" class="section-anchor" aria-labelledby="rules-heading">
+    <h2 class="section-title" id="rules-heading">Core Rules — Probability as Reframed Counting</h2>
+
+    <p>
+      The two rules below are not new ideas. They are the <em>counting principles
+      from Week 7 expressed as probability statements</em>. The table below makes
+      this parallel explicit.
+    </p>
+
+    <!-- COMPARISON TABLE -->
+    <table class="styled-table" aria-label="Counting rules compared to probability rules">
+      <thead>
+        <tr>
+          <th>Rule</th>
+          <th>Week 7 Counting Version</th>
+          <th>Week 9 Probability Version</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Complement</strong></td>
+          <td>$$|A^c| = |\Omega| - |A|$$</td>
+          <td>$$P(A^c) = 1 - P(A)$$</td>
+        </tr>
+        <tr>
+          <td><strong>Addition (general)</strong></td>
+          <td>$$|A \cup B| = |A| + |B| - |A \cap B|$$<br><em>(Inclusion-Exclusion)</em></td>
+          <td>$$P(A \cup B) = P(A) + P(B) - P(A \cap B)$$</td>
+        </tr>
+        <tr>
+          <td><strong>Addition (mutually exclusive)</strong></td>
+          <td>If $$A \cap B = \emptyset$$:<br>$$|A \cup B| = |A| + |B|$$</td>
+          <td>If $$A \cap B = \emptyset$$:<br>$$P(A \cup B) = P(A) + P(B)$$</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 class="subsection-title">Derivation: Complement Rule</h3>
+    <p>
+      Since $$E$$ and $$E^c$$ partition $$\Omega$$ (they are disjoint and
+      $$E \cup E^c = \Omega$$), Axiom 3 gives:
+    </p>
+    <div class="math-block">
+      $$ P(E) + P(E^c) = P(\Omega) = 1 \quad \Longrightarrow \quad P(E^c) = 1 - P(E) $$
+    </div>
+
+    <h3 class="subsection-title">Derivation: General Addition Rule</h3>
+    <p>
+      Write $$A \cup B$$ as a union of three disjoint pieces:
+      $$A \setminus B$$, $$A \cap B$$, and $$B \setminus A$$. Applying Axiom 3
+      and rearranging yields:
+    </p>
+    <div class="math-block">
+      $$ P(A \cup B) = P(A) + P(B) - P(A \cap B) $$
+    </div>
+    <p>
+      This is <strong>inclusion-exclusion</strong> divided through by
+      $$|\Omega|$$. The structure is identical; only the notation changes.
+    </p>
+
+    <div class="callout callout-connection">
+      <div class="callout-title">🔗 Connection — Week 7 Inclusion-Exclusion</div>
+      In Week 7 you proved $$|A \cup B| = |A| + |B| - |A \cap B|$$ using
+      set-theoretic arguments. The general addition rule for probability is that
+      same identity divided by $$|\Omega|$$. If you understand one, you understand
+      the other.
+    </div>
+  </section>
+
+  <!-- ── SECTION 6: WORKED EXAMPLES ── -->
+  <section id="examples" class="section-anchor" aria-labelledby="examples-heading">
+    <h2 class="section-title" id="examples-heading">Worked Examples</h2>
+    <p>
+      Click any example title to expand it. Work through the steps yourself before
+      reading the solution.
+    </p>
+
+    <!-- EXAMPLE 1 -->
+    <details class="example-panel">
+      <summary>
+        <span class="toggle-icon" aria-hidden="true">▶</span>
+        Example 1 — Two Coin Flips and the Complement Rule
+      </summary>
+      <div class="example-body">
+        <p>
+          <strong>Setup:</strong> Flip a fair coin twice. Let $$A$$ = "at least one
+          Head appears." Find $$P(A)$$.
+        </p>
+        <ul class="step-list">
+          <li>
+            <strong>Write the sample space.</strong>
+            Each flip is H or T, so by the multiplication principle:
+            $$|\Omega| = 2 \times 2 = 4$$.
+            $$\Omega = \{HH,\; HT,\; TH,\; TT\}$$
+            Since the coin is fair, this is a uniform space.
+          </li>
+          <li>
+            <strong>Identify the complement.</strong>
+            "At least one Head" is awkward to count directly.
+            Its complement $$A^c$$ = "no Heads" = "both Tails" = $$\{TT\}$$.
+            $$|A^c| = 1 \quad \Rightarrow \quad P(A^c) = \frac{1}{4}$$
+          </li>
+          <li>
+            <strong>Apply the complement rule.</strong>
+            $$P(A) = 1 - P(A^c) = 1 - \frac{1}{4} = \frac{3}{4}$$
+          </li>
+          <li>
+            <strong>Verify directly.</strong>
+            $$A = \{HH, HT, TH\}$$, so $$|A|=3$$ and
+            $$P(A) = \tfrac{3}{4}$$. ✓
+          </li>
+        </ul>
+        <p>
+          <strong>Takeaway:</strong> The complement rule is most useful when
+          "at least one" or "not all" phrasing makes the complement smaller
+          and easier to count than the event itself.
+        </p>
+      </div>
+    </details>
+
+    <!-- EXAMPLE 2 -->
+    <details class="example-panel">
+      <summary>
+        <span class="toggle-icon" aria-hidden="true">▶</span>
+        Example 2 — Card Draw and the Addition Rule
+      </summary>
+      <div class="example-body">
+        <p>
+          <strong>Setup:</strong> Draw one card at random from a standard 52-card
+          deck. Let $$A$$ = "card is a Heart" and $$B$$ = "card is a Face card
+          (Jack, Queen, or King)." Find $$P(A \cup B)$$.
+        </p>
+        <ul class="step-list">
+          <li>
+            <strong>Identify the sample space.</strong>
+            $$|\Omega| = 52$$. Uniform space (each card equally likely).
+          </li>
+          <li>
+            <strong>Count each event.</strong>
+            There are 13 Hearts: $$|A| = 13$$, so $$P(A) = \tfrac{13}{52} = \tfrac{1}{4}$$.
+            There are 12 Face cards (3 per suit × 4 suits): $$|B| = 12$$,
+            so $$P(B) = \tfrac{12}{52} = \tfrac{3}{13}$$.
+          </li>
+          <li>
+            <strong>Count the intersection.</strong>
+            Heart Face cards: Jack♥, Queen♥, King♥ → $$|A \cap B| = 3$$,
+            so $$P(A \cap B) = \tfrac{3}{52}$$.
+          </li>
+          <li>
+            <strong>Apply the addition rule.</strong>
+            $$P(A \cup B) = \frac{13}{52} + \frac{12}{52} - \frac{3}{52}
+              = \frac{22}{52} = \frac{11}{26} \approx 0.423$$
+          </li>
+        </ul>
+        <p>
+          <strong>Takeaway:</strong> Without subtracting $$P(A \cap B)$$, the three
+          Heart Face cards would be double-counted — exactly the inclusion-exclusion
+          correction from Week 7.
+        </p>
+      </div>
+    </details>
+
+    <!-- EXAMPLE 3 — PAYOFF SCENARIO -->
+    <details class="example-panel">
+      <summary>
+        <span class="toggle-icon" aria-hidden="true">▶</span>
+        Example 3 — Software Quality Engineer (Payoff Scenario)
+      </summary>
+      <div class="example-body">
+        <p>
+          <strong>Setup (revisited):</strong> A batch of 20 devices contains
+          8 defective and 12 non-defective units. You randomly select 5 devices
+          to test. What is the probability that <em>exactly 2 are defective</em>
+          and <em>exactly 3 are non-defective</em>?
+        </p>
+        <ul class="step-list">
+          <li>
+            <strong>Define the sample space.</strong>
+            Choosing 5 devices from 20 without regard to order:
+            $$|\Omega| = \binom{20}{5} = \frac{20!}{5!\,15!} = 15{,}504$$
+            Each combination is equally likely → uniform space.
+          </li>
+          <li>
+            <strong>Count the favorable outcomes.</strong>
+            We need exactly 2 defective (chosen from 8) AND exactly 3
+            non-defective (chosen from 12). These are independent choices,
+            so by the multiplication principle:
+            $$|E| = \binom{8}{2} \cdot \binom{12}{3}$$
+            Computing each factor:
+            $$\binom{8}{2} = \frac{8!}{2!\,6!} = 28 \qquad
+              \binom{12}{3} = \frac{12!}{3!\,9!} = 220$$
+            $$|E| = 28 \times 220 = 6{,}160$$
+          </li>
+          <li>
+            <strong>Apply the uniform probability formula.</strong>
+            $$P(E) = \frac{|E|}{|\Omega|} = \frac{6{,}160}{15{,}504}
+              = \frac{385}{969} \approx 0.397$$
+          </li>
+          <li>
+            <strong>Interpret the result.</strong>
+            There is approximately a <strong>39.7% chance</strong> that your
+            5-device sample contains exactly 2 defective units. This type of
+            calculation — sampling without replacement from a population with
+            two types — is called a <em>hypergeometric probability</em>, and
+            it arises constantly in software testing, quality control, and
+            statistical auditing.
+          </li>
+        </ul>
+        <p>
+          <strong>Takeaway:</strong> The probability framework added nothing
+          computationally new — we used the same $$\binom{n}{k}$$ formula from
+          Week 8. What it added was a <em>precise interpretation</em>: the ratio
+          of favorable to total equally-likely outcomes.
+        </p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ── SECTION 7: WATCH OUT ── -->
+  <section id="watchout" class="section-anchor" aria-labelledby="watchout-heading">
+    <h2 class="section-title" id="watchout-heading">Common Misconceptions</h2>
+
+    <div class="callout callout-warning" role="alert">
+      <div class="callout-title">⚠️ Watch Out — Three Classic Errors</div>
+
+      <p><strong>1. Forgetting that probabilities must sum to 1.</strong></p>
+      <p>
+        A valid probability measure over a finite sample space requires that the
+        probabilities of all elementary events sum to exactly 1. If you assign
+        $$P(\{H\}) = 0.6$$ and $$P(\{T\}) = 0.6$$ to a coin flip, you have
+        violated Axiom 2. Always verify: $$\sum_{\omega \in \Omega} P(\{\omega\}) = 1$$.
+      </p>
+
+      <p><strong>2. Using the addition rule without subtracting the intersection.</strong></p>
+      <p>
+        A very common error: $$P(A \cup B) = P(A) + P(B)$$ is only correct when
+        $$A$$ and $$B$$ are <em>mutually exclusive</em>. In general,
+        $$P(A \cup B) = P(A) + P(B) - P(A \cap B)$$. Skipping the subtraction
+        double-counts outcomes in $$A \cap B$$ and can produce a value greater
+        than 1 — an immediate sign something went wrong.
+      </p>
+
+      <p><strong>3. Confusing "equally likely outcomes" with "equally likely events."</strong></p>
+      <p style="margin-bottom:0;">
+        The formula $$P(E) = |E|/|\Omega|$$ requires that <em>individual outcomes</em>
+        are equally likely — not events. For two coin flips, "exactly one Head" has
+        probability $$\tfrac{2}{4}$$, not $$\tfrac{1}{3}$$, because the sample space
+        has 4 equally likely outcomes, not 3 events. Listing the full $$\Omega$$
+        before computing probabilities guards against this error.
+      </p>
+    </div>
+  </section>
+
+  <!-- ── SECTION 8: CHECK FOR UNDERSTANDING ── -->
+  <section id="cfu" class="section-anchor" aria-labelledby="cfu-heading">
+    <h2 class="section-title" id="cfu-heading">Check for Understanding</h2>
+    <p>
+      These three questions are <strong>ungraded</strong> and for your own
+      self-assessment. Select or type your answer, then click
+      <em>Check Answer</em> for immediate feedback.
+    </p>
+
+    <div class="cfu-widget" role="form" aria-label="Check for understanding questions">
+      <h3>Self-Check — Module 9.1</h3>
+
+      <!-- QUESTION 1 -->
+      <div class="cfu-question" id="q1-block">
+        <div class="q-text" id="q1-label">
+          <strong>Question 1 (Multiple Choice).</strong>
+          Which of the following functions could be a valid probability measure
+          on $$\Omega = \{a, b, c\}$$?
+        </div>
+        <div role="radiogroup" aria-labelledby="q1-label">
+          <label>
+            <input type="radio" name="q1" value="A" aria-label="Option A">
+            (A) &nbsp; $$P(\{a\})=0.5,\; P(\{b\})=0.5,\; P(\{c\})=0.5$$
+          </label>
+          <label>
+            <input type="radio" name="q1" value="B" aria-label="Option B">
+            (B) &nbsp; $$P(\{a\})=0.2,\; P(\{b\})=-0.1,\; P(\{c\})=0.9$$
+          </label>
+          <label>
+            <input type="radio" name="q1" value="C" aria-label="Option C">
+            (C) &nbsp; $$P(\{a\})=0.3,\; P(\{b\})=0.5,\; P(\{c\})=0.2$$
+          </label>
+          <label>
+            <input type="radio" name="q1" value="D" aria-label="Option D">
+            (D) &nbsp; $$P(\{a\})=0.4,\; P(\{b\})=0.4,\; P(\{c\})=0.4$$
+          </label>
+        </div>
+        <button class="check-btn" onclick="checkQ1()" aria-label="Check answer for question 1">
+          Check Answer
+        </button>
+        <div class="feedback" id="q1-feedback" role="alert" aria-live="polite"></div>
+      </div>
+
+      <!-- QUESTION 2 -->
+      <div class="cfu-question" id="q2-block">
+        <div class="q-text" id="q2-label">
+          <strong>Question 2 (Fill-in).</strong>
+          A bag contains 4 red marbles and 6 blue marbles (10 total). One marble
+          is drawn at random. Enter the probability of drawing a red marble as a
+          simplified fraction (e.g., <code>2/5</code>).
+        </div>
+        <label for="q2-input" style="font-size:0.9rem;">Your answer:</label><br>
+        <input type="text" id="q2-input" placeholder="a/b"
+          aria-labelledby="q2-label" autocomplete="off" spellcheck="false">
+        <br>
+        <button class="check-btn" onclick="checkQ2()" aria-label="Check answer for question 2">
+          Check Answer
+        </button>
+        <div class="feedback" id="q2-feedback" role="alert" aria-live="polite"></div>
+      </div>
+
+      <!-- QUESTION 3 -->
+      <div class="cfu-question" id="q3-block">
+        <div class="q-text" id="q3-label">
+          <strong>Question 3 (Multiple Choice).</strong>
+          Roll one fair six-sided die. Let $$A$$ = "roll is even" and
+          $$B$$ = "roll is greater than 4." What is $$P(A \cup B)$$?
+        </div>
+        <div role="radiogroup" aria-labelledby="q3-label">
+          <label>
+            <input type="radio" name="q3" value="A" aria-label="Option A">
+            (A) &nbsp; $$\dfrac{5}{6}$$
+          </label>
+          <label>
+            <input type="radio" name="q3" value="B" aria-label="Option B">
+            (B) &nbsp; $$\dfrac{2}{3}$$
+          </label>
+          <label>
+            <input type="radio" name="q3" value="C" aria-label="Option C">
+            (C) &nbsp; $$\dfrac{1}{2}$$
+          </label>
+          <label>
+            <input type="radio" name="q3" value="D" aria-label="Option D">
+            (D) &nbsp; $$\dfrac{4}{6}$$
+          </label>
+        </div>
+        <button class="check-btn" onclick="checkQ3()" aria-label="Check answer for question 3">
+          Check Answer
+        </button>
+        <div class="feedback" id="q3-feedback" role="alert" aria-live="polite"></div>
+      </div>
+
+    </div><!-- end cfu-widget -->
+  </section>
+
+  <!-- ── SECTION 9: SUMMARY ── -->
+  <section id="summary" class="section-anchor" aria-labelledby="summary-heading">
+    <h2 class="section-title" id="summary-heading">Module Summary</h2>
+
+    <div class="callout callout-summary" role="note" aria-label="Module summary">
+      <div class="callout-title">📋 Module 9.1 — Key Takeaways</div>
+      <ul style="margin-bottom:0;">
+        <li>
+          A <strong>finite probability space</strong> $$(\Omega, 2^\Omega, P)$$
+          consists of a sample space, events as subsets, and a probability measure
+          satisfying three axioms (non-negativity, normalization, additivity).
+          In a <strong>uniform space</strong>, $$P(E) = |E|/|\Omega|$$ — and
+          computing $$|E|$$ is a counting problem from Weeks 7–8.
+        </li>
+        <li>
+          The <strong>complement rule</strong> $$P(E^c) = 1 - P(E)$$ and the
+          <strong>general addition rule</strong>
+          $$P(A \cup B) = P(A) + P(B) - P(A \cap B)$$ are probability restatements
+          of the set-cardinality identities you already know from inclusion-exclusion.
+        </li>
+        <li>
+          The three most common errors — probabilities not summing to 1, omitting
+          the intersection in the addition rule, and confusing equally-likely
+          outcomes with equally-likely events — can all be caught by returning to
+          the formal definitions and listing $$\Omega$$ explicitly.
+        </li>
+      </ul>
+    </div>
+
+    <div class="callout callout-lookahead" role="note" aria-label="Look ahead to Module 9.2">
+      <div class="callout-title">🔭 Coming Up — Module 9.2: Conditional Probability and Independence</div>
+      <p style="margin-bottom:0;">
+        In Module 9.2, we <em>restrict</em> our sample space: instead of asking
+        "what is the probability of $$A$$?", we ask "what is the probability of
+        $$A$$ <em>given that we already know $$B$$ occurred</em>?" This is
+        <strong>conditional probability</strong>, defined as:
+        $$P(A \mid B) = \frac{P(A \cap B)}{P(B)}$$
+        We will also formalize what it means for two events to be
+        <strong>independent</strong> — a concept critical for analyzing algorithms
+        and randomized systems. The counting and probability tools from Module 9.1
+        are prerequisites for everything in 9.2.
+      </p>
+    </div>
+  </section>
+
+  <!-- ── BOTTOM NAVIGATION ── -->
+  <nav class="bottom-nav" aria-label="Module navigation">
+    <span class="nav-btn prev" role="img" aria-label="Previous: Week 8 Review">
+      ← Week 8 Review
+    </span>
+    <span style="font-size:0.82rem;color:#5d6d7e;text-align:center;">
+      Module 9.1 of 5 &nbsp;·&nbsp; Week 9: Discrete Probability
+    </span>
+    <span class="nav-btn next" role="img" aria-label="Next: Module 9.2">
+      Module 9.2 →
+    </span>
+  </nav>
+
+</div><!-- end page-wrapper -->
+
+<!-- ============================================================
+     JAVASCRIPT — Check-for-Understanding Logic
+     ============================================================ -->
+<script>
+function showFeedback(id, correct, html) {
+  const el = document.getElementById(id);
+  el.innerHTML = html;
+  el.className = 'feedback show ' + (correct ? 'correct' : 'incorrect');
+}
+
+/* ── Question 1 ── */
+function checkQ1() {
+  const sel = document.querySelector('input[name="q1"]:checked');
+  if (!sel) {
+    showFeedback('q1-feedback', false,
+      '⚠️ Please select an answer before checking.');
+    return;
+  }
+  if (sel.value === 'C') {
+    showFeedback('q1-feedback', true,
+      '✅ <strong>Correct!</strong> Option C is the only valid probability measure. ' +
+      'Check: \$$0.3 + 0.5 + 0.2 = 1.0\$$ (Axiom 2 satisfied) and all values ' +
+      'are non-negative (Axiom 1 satisfied). ' +
+      'Option A sums to 1.5 (violates Axiom 2). ' +
+      'Option B has a negative value (violates Axiom 1). ' +
+      'Option D sums to 1.2 (violates Axiom 2).');
+  } else {
+    const hints = {
+      A: 'Option A: \$$0.5+0.5+0.5=1.5 \\neq 1\$$. This violates Axiom 2 (normalization).',
+      B: 'Option B: \$$P(\\{b\\})=-0.1 < 0\$$. This violates Axiom 1 (non-negativity).',
+      D: 'Option D: \$$0.4+0.4+0.4=1.2 \\neq 1\$$. This violates Axiom 2 (normalization).'
+    };
+    showFeedback('q1-feedback', false,
+      '❌ <strong>Not quite.</strong> ' + hints[sel.value] +
+      ' Remember: a valid probability measure requires all values \$$\\geq 0\$$ ' +
+      'and the elementary probabilities must sum to exactly 1. Try again!');
+  }
+  if (window.renderMathInElement)
+    renderMathInElement(document.getElementById('q1-feedback'),
+      {delimiters:[{left:'\$$',right:'\$$',display:false},{left:'\$$',right:'\$$',display:true}]});
+}
+
+/* ── Question 2 ── */
+function checkQ2() {
+  const raw = document.getElementById('q2-input').value.trim().replace(/\s/g,'');
+  const correct = ['2/5','4/10'];
+  if (correct.includes(raw)) {
+    showFeedback('q2-feedback', true,
+      '✅ <strong>Correct!</strong> There are 4 red marbles out of 10 total, so ' +
+      '\$$P(\\text{red}) = \\frac{4}{10} = \\frac{2}{5}\$$. ' +
+      'This is a uniform space: each marble is equally likely.');
+  } else if (raw === '') {
+    showFeedback('q2-feedback', false, '⚠️ Please enter a fraction before checking.');
+  } else {
+    showFeedback('q2-feedback', false,
+      '❌ <strong>Not quite.</strong> Use the formula \$$P(E)=|E|/|\\Omega|\$$. ' +
+      'Here \$$|E|=4\$$ (red marbles) and \$$|\\Omega|=10\$$ (total marbles), ' +
+      'giving \$$P = 4/10 = 2/5\$$. Enter your answer as <code>2/5</code>.');
+  }
+  if (window.renderMathInElement)
+    renderMathInElement(document.getElementById('q2-feedback'),
+      {delimiters:[{left:'\$$',right:'\$$',display:false},{left:'\$$',right:'\$$',display:true}]});
+}
+
+/* ── Question 3 ── */
+function checkQ3() {
+  const sel = document.querySelector('input[name="q3"]:checked');
+  if (!sel) {
+    showFeedback('q3-feedback', false,
+      '⚠️ Please select an answer before checking.');
+    return;
+  }
+  if (sel.value === 'B') {
+    showFeedback('q3-feedback', true,
+      '✅ <strong>Correct!</strong> ' +
+      '\$$A=\\{2,4,6\\}\$$ so \$$P(A)=3/6\$$. ' +
+      '\$$B=\\{5,6\\}\$$ so \$$P(B)=2/6\$$. ' +
+      '\$$A\\cap B=\\{6\\}\$$ so \$$P(A\\cap B)=1/6\$$. ' +
+      'Addition rule: \$$P(A\\cup B)=3/6+2/6-1/6=4/6=2/3\$$.');
+  } else {
+    showFeedback('q3-feedback', false,
+      '❌ <strong>Not quite.</strong> List the sets: ' +
+      '\$$A=\\{2,4,6\\}\$$, \$$B=\\{5,6\\}\$$, \$$A\\cap B=\\{6\\}\$$. ' +
+      'Apply the addition rule: ' +
+      '\$$P(A\\cup B)=P(A)+P(B)-P(A\\cap B)=\\frac{3}{6}+\\frac{2}{6}-\\frac{1}{6}=\\frac{4}{6}=\\frac{2}{3}\$$. ' +
+      'Note that option D also equals \$$4/6\$$ but is not simplified — ' +
+      'option B is the simplified form.');
+  }
+  if (window.renderMathInElement)
+    renderMathInElement(document.getElementById('q3-feedback'),
+      {delimiters:[{left:'\$$',right:'\$$',display:false},{left:'\$$',right:'\$$',display:true}]});
+}
+</script>
+
+</body>
+</html>
