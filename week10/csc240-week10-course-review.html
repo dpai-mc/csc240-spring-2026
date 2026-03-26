@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="CSC 240 Discrete Structures – Comprehensive review of Weeks 1–9 covering sets, relations, cardinality, logic, proof techniques, counting, and discrete probability.">
+<title>CSC 240 – Weeks 1–9 Course Review</title>
+<style>
+/* RESET & BASE */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: #f4f6f9;
+  color: #1a1a2e;
+  line-height: 1.7;
+}
+a { color: #1a5276; }
+a:focus-visible { outline: 3px solid #f39c12; outline-offset: 2px; border-radius: 3px; }
+
+/* STICKY NAV */
+#top-nav {
+  position: sticky; top: 0; z-index: 1000;
+  background: #1a3a5c;
+  padding: 0 0.75rem;
+  display: flex; flex-wrap: wrap; align-items: center;
+  gap: 0.2rem 0.3rem; min-height: 2.6rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+#top-nav .nav-brand {
+  color: #aed6f1; font-weight: 700; font-size: 0.78rem;
+  letter-spacing: 0.07em; margin-right: 0.4rem; white-space: nowrap; opacity: 0.85;
+}
+#top-nav a {
+  color: #aed6f1; text-decoration: none; font-size: 0.8rem; font-weight: 700;
+  padding: 0.22rem 0.5rem; border-radius: 4px; white-space: nowrap;
+  transition: background 0.15s, color 0.15s;
+}
+#top-nav a:hover { background: #2e6da4; color: #fff; }
+#top-nav a:focus-visible { outline: 3px solid #f39c12; outline-offset: 2px; color: #fff; }
+
+/* PAGE WRAPPER */
+.page-wrapper { max-width: 860px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+
+/* MODULE HEADER */
+.module-header {
+  background: linear-gradient(135deg, #1a3a5c 0%, #2e6da4 100%);
+  color: #fff; border-radius: 10px; padding: 2rem 2rem 1.75rem; margin-bottom: 2rem;
+}
+.module-header .week-label {
+  font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase;
+  color: #aed6f1; margin-bottom: 0.4rem;
+}
+.module-header h1 { font-size: 1.75rem; font-weight: 800; line-height: 1.25; margin-bottom: 0.6rem; }
+.module-header .module-meta {
+  font-size: 0.85rem; color: #d6eaf8; display: flex; flex-wrap: wrap; gap: 0.4rem 1.5rem;
+}
+.module-header .module-meta span::before { content: "▸ "; color: #7fb3d3; }
+
+/* SECTION HEADINGS */
+.section-anchor { scroll-margin-top: 3.5rem; }
+h2.section-title {
+  font-size: 1.3rem; font-weight: 700; color: #1a3a5c;
+  border-left: 5px solid #2e6da4; padding-left: 0.75rem; margin: 2.25rem 0 1rem;
+}
+h3.subsection-title { font-size: 1.05rem; font-weight: 700; color: #1a3a5c; margin: 1.5rem 0 0.6rem; }
+
+/* PROSE */
+p { margin-bottom: 1rem; }
+ul, ol { margin: 0.5rem 0 1rem 1.5rem; }
+li { margin-bottom: 0.35rem; }
+
+/* MATH — self-contained CSS approach (no CDN required) */
+.m { font-style: italic; font-family: 'Times New Roman', Georgia, serif; }
+.math-block {
+  display: block; text-align: center; padding: 0.8rem 1rem;
+  font-style: italic; font-family: 'Times New Roman', Georgia, serif;
+  font-size: 1.1em; overflow-x: auto;
+}
+.frac { display: inline-block; text-align: center; vertical-align: middle; line-height: 1.15; margin: 0 0.1em; }
+.frac .num { display: block; border-bottom: 1px solid currentColor; padding: 0 3px 1px; }
+.frac .den { display: block; padding: 1px 3px 0; }
+
+/* CALLOUT BOXES */
+.callout { border-radius: 8px; padding: 1rem 1.25rem; margin: 1.25rem 0; border-left: 5px solid; }
+.callout .callout-title {
+  font-weight: 700; font-size: 0.9rem; text-transform: uppercase;
+  letter-spacing: 0.05em; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem;
+}
+.callout-definition { background: #e8f6f3; border-color: #1abc9c; color: #0e3d31; }
+.callout-definition .callout-title { color: #148f77; }
+.callout-warning { background: #fef9e7; border-color: #f39c12; color: #4a3000; }
+.callout-warning .callout-title { color: #b7770d; }
+.callout-connection { background: #eafaf1; border-color: #27ae60; color: #0b3d1f; }
+.callout-connection .callout-title { color: #1e8449; }
+.callout-summary { background: #f2f3f4; border-color: #7f8c8d; color: #1c2833; }
+.callout-summary .callout-title { color: #515a5a; }
+
+/* TABLE */
+.styled-table { width: 100%; border-collapse: collapse; margin: 1rem 0 1.5rem; font-size: 0.92rem; }
+.styled-table th { background: #1a3a5c; color: #fff; padding: 0.65rem 0.9rem; text-align: left; }
+.styled-table td { padding: 0.55rem 0.9rem; border-bottom: 1px solid #d5d8dc; vertical-align: top; }
+.styled-table tr:nth-child(even) td { background: #eaf2fb; }
+.styled-table tr:last-child td { border-bottom: none; }
+
+/* EXPANDABLE WORKED EXAMPLES */
+.example-panel { border: 1px solid #aed6f1; border-radius: 8px; margin: 1.1rem 0; overflow: hidden; }
+.example-panel summary {
+  background: #d6eaf8; padding: 0.75rem 1rem; cursor: pointer; font-weight: 700;
+  font-size: 0.95rem; color: #1a3a5c; list-style: none;
+  display: flex; align-items: center; gap: 0.5rem; user-select: none; transition: background 0.15s;
+}
+.example-panel summary::-webkit-details-marker { display: none; }
+.example-panel summary:hover { background: #aed6f1; }
+.example-panel summary:focus-visible { outline: 3px solid #f39c12; outline-offset: -3px; }
+.example-panel summary .toggle-icon { display: inline-block; transition: transform 0.2s; font-style: normal; }
+.example-panel[open] summary .toggle-icon { transform: rotate(90deg); }
+.example-panel .example-body { padding: 1rem 1.25rem; background: #fff; }
+.step-list { list-style: none; margin-left: 0; counter-reset: step-counter; }
+.step-list li {
+  counter-increment: step-counter; padding: 0.4rem 0 0.4rem 2.5rem;
+  position: relative; border-bottom: 1px dashed #d5d8dc;
+}
+.step-list li:last-child { border-bottom: none; }
+.step-list li::before {
+  content: counter(step-counter); position: absolute; left: 0; top: 0.4rem;
+  background: #2e6da4; color: #fff; width: 1.6rem; height: 1.6rem;
+  border-radius: 50%; font-size: 0.78rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* AXIOM LIST */
+.axiom-list { list-style: none; margin-left: 0; }
+.axiom-list li {
+  padding: 0.5rem 0.75rem; border-left: 3px solid #1abc9c;
+  margin-bottom: 0.5rem; background: #f0fdf9; border-radius: 0 6px 6px 0;
+}
+
+/* CFU WIDGET */
+.cfu-widget { background: #fff; border: 2px solid #2e6da4; border-radius: 10px; padding: 1.25rem 1.5rem; margin: 1.5rem 0; }
+.cfu-widget h3 { font-size: 1rem; color: #1a3a5c; margin-bottom: 1rem; border-bottom: 1px solid #d6eaf8; padding-bottom: 0.5rem; }
+.cfu-question { margin-bottom: 1.5rem; }
+.cfu-question .q-text { font-weight: 600; margin-bottom: 0.6rem; color: #1a2e4a; }
+.cfu-question label {
+  display: flex; align-items: flex-start; gap: 0.5rem;
+  padding: 0.3rem 0.4rem; cursor: pointer; border-radius: 4px;
+}
+.cfu-question label:hover { background: #eaf2fb; }
+.cfu-question input[type="radio"] { margin-top: 0.25rem; accent-color: #2e6da4; flex-shrink: 0; }
+.check-btn {
+  background: #2e6da4; color: #fff; border: none; border-radius: 6px;
+  padding: 0.5rem 1.2rem; font-size: 0.9rem; font-weight: 700;
+  cursor: pointer; margin-top: 0.5rem; transition: background 0.15s;
+}
+.check-btn:hover { background: #1a5276; }
+.check-btn:focus-visible { outline: 3px solid #f39c12; outline-offset: 2px; }
+.feedback { margin-top: 0.65rem; padding: 0.65rem 0.9rem; border-radius: 6px; font-size: 0.92rem; display: none; }
+.feedback.correct { background: #eafaf1; border-left: 4px solid #27ae60; color: #0b3d1f; }
+.feedback.incorrect { background: #fdf2f8; border-left: 4px solid #c0392b; color: #4a0e0e; }
+.feedback.show { display: block; }
+
+/* BOTTOM NAV */
+.bottom-nav {
+  display: flex; justify-content: space-between; flex-wrap: wrap;
+  gap: 0.75rem; margin-top: 3rem; padding-top: 1.5rem; border-top: 2px solid #d5d8dc;
+}
+.nav-btn {
+  background: #1a3a5c; color: #fff; border-radius: 6px;
+  padding: 0.65rem 1.25rem; font-size: 0.9rem; font-weight: 700;
+  display: inline-block;
+}
+
+/* RESPONSIVE */
+@media (max-width: 600px) {
+  .module-header h1 { font-size: 1.35rem; }
+  h2.section-title { font-size: 1.1rem; }
+  .styled-table { font-size: 0.82rem; }
+  #top-nav .nav-brand { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     STICKY TOP NAVIGATION
+     ============================================================ -->
+<nav id="top-nav" aria-label="Course review section navigation">
+  <span class="nav-brand">Wk 1–9 Review</span>
+  <a href="#sets"        title="Week 1: Sets &amp; Set Operations">W1</a>
+  <a href="#relations"   title="Week 2: Relations &amp; Functions">W2</a>
+  <a href="#logic"       title="Week 3: Cardinality &amp; Propositional Logic">W3</a>
+  <a href="#predicate"   title="Week 4: Predicate Logic &amp; Logical Equivalences">W4</a>
+  <a href="#proofs"      title="Weeks 5–6: Proof Techniques">W5–6</a>
+  <a href="#counting"    title="Week 7: Fundamental Counting">W7</a>
+  <a href="#advanced"    title="Week 8: Advanced Counting">W8</a>
+  <a href="#probability" title="Week 9: Discrete Probability">W9</a>
+  <a href="#cfu"         title="Check for Understanding">CFU</a>
+</nav>
+
+<!-- ============================================================
+     MAIN CONTENT
+     ============================================================ -->
+<main class="page-wrapper">
+
+  <!-- ── MODULE HEADER ── -->
+  <header class="module-header">
+    <div class="week-label">CSC 240 · Discrete Structures · Week 10</div>
+    <h1>Course Review: Weeks 1–9</h1>
+    <div class="module-meta">
+      <span>Sets · Logic · Proofs · Counting · Probability</span>
+      <span>Covers all Midterm material (Weeks 1–8) plus Week 9</span>
+      <span>Week 10 of 17</span>
+    </div>
+  </header>
+
+  <p>Use this page as an active reference and self-test tool. Work through each section in order, expand the worked examples to check your reasoning, and complete the Check for Understanding at the end. All activities are ungraded practice.</p>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       SECTION 1 — SETS AND SET OPERATIONS (Week 1)
+       ═══════════════════════════════════════════════════════════ -->
+  <section id="sets" class="section-anchor" aria-labelledby="sets-heading">
+    <h2 class="section-title" id="sets-heading">1. Sets and Set Operations (Week 1)</h2>
+
+    <div class="callout callout-definition">
+      <div class="callout-title">📘 Key Definitions</div>
+      <ul>
+        <li><strong>Set</strong> — an unordered collection of distinct elements. Written in braces: <span class="m">A = {1, 2, 3}</span>.</li>
+        <li><span class="m">a ∈ A</span> means element <span class="m">a</span> belongs to set <span class="m">A</span>; <span class="m">a ∉ A</span> means it does not.</li>
+        <li><strong>Empty set</strong> <span class="m">∅ = {}</span> — a set containing no elements.</li>
+        <li><strong>Universal set</strong> <span class="m">U</span> — the set of all elements under consideration in a given context.</li>
+        <li><strong>Subset:</strong> <span class="m">A ⊆ B</span> means every element of <span class="m">A</span> is also in <span class="m">B</span>. <strong>Proper subset:</strong> <span class="m">A ⊂ B</span> means <span class="m">A ⊆ B</span> and <span class="m">A ≠ B</span>.</li>
+        <li><strong>Power set</strong> <span class="m">𝒫(A)</span> — the set of all subsets of <span class="m">A</span>. If <span class="m">|A| = n</span>, then <span class="m">|𝒫(A)| = 2ⁿ</span>.</li>
+        <li><strong>Cartesian product:</strong> <span class="m">A × B = { (a, b) | a ∈ A, b ∈ B }</span>. Size: <span class="m">|A × B| = |A| · |B|</span>.</li>
+      </ul>
+    </div>
+
+    <h3 class="subsection-title">Core Set Operations</h3>
+    <table class="styled-table" aria-label="Set operations">
+      <thead><tr><th>Operation</th><th>Notation</th><th>Definition</th></tr></thead>
+      <tbody>
+        <tr><td>Union</td><td><span class="m">A ∪ B</span></td><td>All elements in <span class="m">A</span> or <span class="m">B</span> (or both)</td></tr>
+        <tr><td>Intersection</td><td><span class="m">A ∩ B</span></td><td>Elements that are in both <span class="m">A</span> and <span class="m">B</span></td></tr>
+        <tr><td>Difference</td><td><span class="m">A ∖ B</span></td><td>Elements in <span class="m">A</span> but not in <span class="m">B</span></td></tr>
+        <tr><td>Complement</td><td><span class="m">A'</span> or <span class="m">Aᶜ</span></td><td>Elements of <span class="m">U</span> that are not in <span class="m">A</span></td></tr>
+        <tr><td>Disjoint</td><td><span class="m">A ∩ B = ∅</span></td><td><span class="m">A</span> and <span class="m">B</span> share no elements</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-warning">
+      <div class="callout-title">⚠️ Watch Out — Common Set Mistakes</div>
+      <ul>
+        <li><strong>Order does not matter:</strong> <span class="m">{1, 2, 3} = {3, 1, 2}</span>.</li>
+        <li><strong>No duplicates:</strong> <span class="m">{1, 2, 2, 3} = {1, 2, 3}</span>.</li>
+        <li><strong><span class="m">∅ ≠ {∅}</span>:</strong> The empty set has 0 elements; <span class="m">{∅}</span> is a set containing the empty set and has 1 element.</li>
+        <li><strong>Membership vs. subset:</strong> <span class="m">1 ∈ {1, 2, 3}</span> but <span class="m">{1} ⊆ {1, 2, 3}</span>. The element <span class="m">1</span> and the set <span class="m">{1}</span> are different objects.</li>
+      </ul>
+    </div>
+
+    <details class="example-panel">
+      <summary><span class="toggle-icon">▶</span> Worked Example — Set Operations and Power Set</summary>
+      <div class="example-body">
+        <p>Let <span class="m">U = {1, 2, 3, 4, 5, 6, 7, 8}</span>, <span class="m">A = {1, 2, 3, 4}</span>, <span class="m">B = {3, 4, 5, 6}</span>.</p>
+        <ol class="step-list">
+          <li><span class="m">A ∪ B = {1, 2, 3, 4, 5, 6}</span> — combine all elements; no duplicates.</li>
+          <li><span class="m">A ∩ B = {3, 4}</span> — only the elements common to both.</li>
+          <li><span class="m">A ∖ B = {1, 2}</span> — in <span class="m">A</span> but not in <span class="m">B</span>.</li>
+          <li><span class="m">B ∖ A = {5, 6}</span> — note that <span class="m">A ∖ B ≠ B ∖ A</span> in general.</li>
+          <li><span class="m">A' = {5, 6, 7, 8}</span> — elements of <span class="m">U</span> not in <span class="m">A</span>.</li>
+          <li><span class="m">|𝒫(A)| = 2⁴ = 16</span> — the power set of <span class="m">A</span> contains all 16 subsets of <span class="m">A</span> (including <span class="m">∅</span> and <span class="m">A</span> itself).</li>
+        </ol>
+      </div>
+    </details>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       SECTION 2 — RELATIONS AND FUNCTIONS (Week 2)
+       ═══════════════════════════════════════════════════════════ -->
+  <section id="relations" class="section-anchor" aria-labelledby="relations-heading">
+    <h2 class="section-title" id="relations-heading">2. Relations and Functions (Week 2)</h2>
+
+    <div class="callout callout-definition">
+      <div class="callout-title">📘 Key Definitions</div>
+      <ul>
+        <li><strong>Binary relation</strong> <span class="m">R</span> from <span class="m">A</span> to <span class="m">B</span>: a subset <span class="m">R ⊆ A × B</span>. We write <span class="m">a R b</span> when <span class="m">(a, b) ∈ R</span>.</li>
+        <li><strong>Equivalence relation:</strong> a relation that is reflexive, symmetric, <em>and</em> transitive. Equivalence relations partition their set into disjoint <strong>equivalence classes</strong>.</li>
+        <li><strong>Partial order:</strong> a relation that is reflexive, antisymmetric, and transitive (e.g., ≤ on integers, ⊆ on sets).</li>
+        <li><strong>Function</strong> <span class="m">f : A → B</span>: a relation where each element of <span class="m">A</span> maps to exactly one element of <span class="m">B</span>. Every function is a relation, but not every relation is a function.</li>
+      </ul>
+    </div>
+
+    <h3 class="subsection-title">Relation Properties</h3>
+    <table class="styled-table" aria-label="Relation properties">
+      <thead><tr><th>Property</th><th>Formal Definition</th></tr></thead>
+      <tbody>
+        <tr><td>Reflexive</td><td><span class="m">∀a ∈ A : (a, a) ∈ R</span></td></tr>
+        <tr><td>Symmetric</td><td><span class="m">∀a, b : (a, b) ∈ R → (b, a) ∈ R</span></td></tr>
+        <tr><td>Transitive</td><td><span class="m">∀a, b, c : (a,b) ∈ R ∧ (b,c) ∈ R → (a,c) ∈ R</span></td></tr>
+        <tr><td>Antisymmetric</td><td><span class="m">∀a, b : (a,b) ∈ R ∧ (b,a) ∈ R → a = b</span></td></tr>
+      </tbody>
+    </table>
+
+    <h3 class="subsection-title">Function Types</h3>
+    <table class="styled-table" aria-label="Function types">
+      <thead><tr><th>Type</th><th>Condition</th><th>Key point</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Injective (one-to-one)</td>
+          <td><span class="m">f(x₁) = f(x₂) → x₁ = x₂</span></td>
+          <td>No two inputs share an output</td>
+        </tr>
+        <tr>
+          <td>Surjective (onto)</td>
+          <td><span class="m">∀y ∈ B, ∃x ∈ A : f(x) = y</span></td>
+          <td>Every element of <span class="m">B</span> is hit at least once</td>
+        </tr>
+        <tr>
+          <td>Bijective</td>
+          <td>Injective and surjective</td>
+          <td>Perfect pairing; an inverse <span class="m">f⁻¹</span> exists</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-definition">
+      <div class="callout-title">📘 Pigeonhole Principle</div>
+      If <span class="m">n</span> items are distributed into <span class="m">m</span> containers and <span class="m">n &gt; m</span>, then at least one container holds at least <span class="m">⌈n/m⌉</span> items.
+      <br><br>
+      <strong>Classic example:</strong> In any group of 13 people, at least two must share a birth month (13 people, 12 months, so at least one month has ≥ 2 people).
+      <br><br>
+      <strong>CS connection:</strong> Any function from a set of size <span class="m">n</span> to a set of size <span class="m">m &lt; n</span> is guaranteed to be non-injective.
+    </div>
+
+    <div class="callout callout-warning">
+      <div class="callout-title">⚠️ Watch Out — Relations and Functions</div>
+      <ul>
+        <li><strong>Antisymmetric ≠ not symmetric.</strong> A relation can be both symmetric and antisymmetric simultaneously (e.g., equality). These are independent properties.</li>
+        <li><strong>Composition order:</strong> <span class="m">(g ∘ f)(x) = g(f(x))</span> — apply <span class="m">f</span> first, then <span class="m">g</span>. In general, <span class="m">g ∘ f ≠ f ∘ g</span>.</li>
+        <li><strong>Inverses require bijection.</strong> Only bijective functions have an inverse function.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       SECTION 3 — CARDINALITY AND PROPOSITIONAL LOGIC (Week 3)
+       ═══════════════════════════════════════════════════════════ -->
+  <section id="logic" class="section-anchor" aria-labelledby="logic-heading">
+    <h2 class="section-title" id="logic-heading">3. Cardinality and Propositional Logic (Week 3)</h2>
+
+    <h3 class="subsection-title">Cardinality and Countability</h3>
+    <div class="callout callout-definition">
+      <div class="callout-title">📘 Key Definitions</div>
+      <ul>
+        <li><strong>Cardinality</strong> <span class="m">|A|</span> — the number of elements in set <span class="m">A</span>.</li>
+        <li>Two sets have the <strong>same cardinality</strong> if and only if there exists a bijection between them.</li>
+        <li><strong>Countably infinite:</strong> same cardinality as <span class="m">ℕ</span> — can be listed in a sequence. Examples: <span class="m">ℤ</span>, <span class="m">ℚ</span>.</li>
+        <li><strong>Uncountably infinite:</strong> strictly larger cardinality than <span class="m">|ℕ|</span>. The real numbers <span class="m">ℝ</span> are uncountable (Cantor's diagonal argument).</li>
+      </ul>
+    </div>
+
+    <h3 class="subsection-title">Propositional Logic</h3>
+    <p>A <strong>proposition</strong> is a declarative statement with a definite truth value: true (T) or false (F). Propositions are combined using <strong>logical connectives</strong>:</p>
+
+    <table class="styled-table" aria-label="Logical connectives">
+      <thead><tr><th>Symbol</th><th>Name</th><th>Key truth condition</th></tr></thead>
+      <tbody>
+        <tr><td><span class="m">¬p</span></td><td>Negation (NOT)</td><td>True when <span class="m">p</span> is false</td></tr>
+        <tr><td><span class="m">p ∧ q</span></td><td>Conjunction (AND)</td><td>True only when both <span class="m">p</span> and <span class="m">q</span> are true</td></tr>
+        <tr><td><span class="m">p ∨ q</span></td><td>Disjunction (OR)</td><td>False only when both <span class="m">p</span> and <span class="m">q</span> are false</td></tr>
+        <tr><td><span class="m">p → q</span></td><td>Implication (IF…THEN)</td><td>False only when <span class="m">p</span> is true and <span class="m">q</span> is false</td></tr>
+        <tr><td><span class="m">p ↔ q</span></td><td>Biconditional (IFF)</td><td>True when <span class="m">p</span> and <span class="m">q</span> have the same truth value</td></tr>
+      </tbody>
+    </table>
+
+    <p>
+      <strong>Tautology:</strong> a proposition that is always true, for every assignment (e.g., <span class="m">p ∨ ¬p</span>).<br>
+      <strong>Contradiction:</strong> always false (e.g., <span class="m">p ∧ ¬p</span>).<br>
+      <strong>Contingency:</strong> true for some assignments and false for others.
+    </p>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       SECTION 4 — PREDICATE LOGIC AND LOGICAL EQUIVALENCES (Week 4)
+       ═══════════════════════════════════════════════════════════ -->
+  <section id="predicate" class="section-anchor" aria-labelledby="predicate-heading">
+    <h2 class="section-title" id="predicate-heading">4. Logical Equivalences, Normal Forms, and Predicate Logic (Week 4)</h2>
+
+    <h3 class="subsection-title">Key Logical Equivalences</h3>
+    <table class="styled-table" aria-label="Logical equivalences">
+      <thead><tr><th>Name</th><th>Equivalence</th></tr></thead>
+      <tbody>
+        <tr><td>Double negation</td><td><span class="m">¬(¬p) ≡ p</span></td></tr>
+        <tr><td>De Morgan's (AND)</td><td><span class="m">¬(p ∧ q) ≡ ¬p ∨ ¬q</span></td></tr>
+        <tr><td>De Morgan's (OR)</td><td><span class="m">¬(p ∨ q) ≡ ¬p ∧ ¬q</span></td></tr>
+        <tr><td>Contrapositive</td><td><span class="m">(p → q) ≡ (¬q → ¬p)</span></td></tr>
+        <tr><td>Implication as disjunction</td><td><span class="m">(p → q) ≡ (¬p ∨ q)</span></td></tr>
+        <tr><td>Absorption</td><td><span class="m">p ∨ (p ∧ q) ≡ p</span></td></tr>
+        <tr><td>Distributive (AND over OR)</td><td><span class="m">p ∧ (q ∨ r) ≡ (p ∧ q) ∨ (p ∧ r)</span></td></tr>
+      </tbody>
+    </table>
+
+    <p>
+      <strong>CNF (Conjunctive Normal Form):</strong> a conjunction of clauses, each a disjunction of literals.
+      Example: <span class="m">(p ∨ ¬q) ∧ (¬p ∨ r)</span>.
+    </p>
+    <p>
+      <strong>DNF (Disjunctive Normal Form):</strong> a disjunction of clauses, each a conjunction of literals.
+      Example: <span class="m">(p ∧ q) ∨ (¬p ∧ r)</span>.
+    </p>
+
+    <h3 class="subsection-title">Predicate Logic and Quantifiers</h3>
+    <div class="callout callout-definition">
+      <div class="callout-title">📘 Key Definitions</div>
+      <ul>
+        <li><strong>Predicate</strong> <span class="m">P(x)</span>: a statement whose truth value depends on the value of <span class="m">x</span> from some domain <span class="m">D</span>.</li>
+        <li><strong>Universal quantifier</strong> <span class="m">∀x P(x)</span>: "For all <span class="m">x</span> in the domain, <span class="m">P(x)</span> is true." True only when <span class="m">P</span> holds for every element. Disproved by a single <em>counterexample</em>.</li>
+        <li><strong>Existential quantifier</strong> <span class="m">∃x P(x)</span>: "There exists at least one <span class="m">x</span> such that <span class="m">P(x)</span>." Proved by a single <em>witness</em>.</li>
+      </ul>
+    </div>
+
+    <p><strong>Negating quantifiers</strong> (De Morgan's laws extended to predicate logic):</p>
+    <span class="math-block">¬(∀x P(x)) ≡ ∃x ¬P(x) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ¬(∃x P(x)) ≡ ∀x ¬P(x)</span>
+
+    <div class="callout callout-warning">
+      <div class="callout-title">⚠️ Watch Out — Logic Pitfalls</div>
+      <ul>
+        <li><span class="m">p → q</span> is <em>not</em> equivalent to its converse <span class="m">q → p</span>. Only the <strong>contrapositive</strong> <span class="m">¬q → ¬p</span> is logically equivalent.</li>
+        <li><strong>Quantifier order matters:</strong> <span class="m">∀x ∃y P(x, y)</span> means "for every <span class="m">x</span>, there exists a (possibly different) <span class="m">y</span>," which is generally stronger than <span class="m">∃y ∀x P(x, y)</span> ("one fixed <span class="m">y</span> works for all <span class="m">x</span>").</li>
+        <li>A statement of the form <span class="m">∀x P(x)</span> is true in a vacuously true sense when the domain is empty.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       SECTION 5 — PROOF TECHNIQUES (Weeks 5–6)
+       ═══════════════════════════════════════════════════════════ -->
+  <section id="proofs" class="section-anchor" aria-labelledby="proofs-heading">
+    <h2 class="section-title" id="proofs-heading">5. Proof Techniques (Weeks 5–6)</h2>
+
+    <table class="styled-table" aria-label="Proof technique overview">
+      <thead><tr><th>Technique</th><th>Structure</th><th>Best used when</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Direct proof</td>
+          <td>Assume <span class="m">P</span>; derive <span class="m">Q</span></td>
+          <td>The conclusion follows naturally from definitions and assumptions</td>
+        </tr>
+        <tr>
+          <td>Proof by contrapositive</td>
+          <td>Assume <span class="m">¬Q</span>; derive <span class="m">¬P</span></td>
+          <td>The negation of the conclusion is easier to work with</td>
+        </tr>
+        <tr>
+          <td>Proof by contradiction</td>
+          <td>Assume <span class="m">P ∧ ¬Q</span>; derive a contradiction</td>
+          <td>Existence proofs; irrationality; when the negation leads somewhere useful</td>
+        </tr>
+        <tr>
+          <td>Mathematical induction</td>
+          <td>Base case + inductive step (<span class="m">P(k) → P(k+1)</span>)</td>
+          <td>Statements about all natural numbers; sequence formulas</td>
+        </tr>
+        <tr>
+          <td>Strong induction</td>
+          <td>Assume all of <span class="m">P(1), …, P(k)</span>; prove <span class="m">P(k+1)</span></td>
+          <td><span class="m">P(k+1)</span> depends on multiple earlier cases, not just <span class="m">P(k)</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-definition">
+      <div class="callout-title">📘 Mathematical Induction — Standard Structure</div>
+      To prove <span class="m">∀n ≥ n₀, P(n)</span>:
+      <ul>
+        <li><strong>Base case:</strong> Show <span class="m">P(n₀)</span> is true directly.</li>
+        <li><strong>Inductive hypothesis:</strong> Assume <span class="m">P(k)</span> holds for some arbitrary <span class="m">k ≥ n₀</span>.</li>
+        <li><strong>Inductive step:</strong> Using the hypothesis, prove <span class="m">P(k+1)</span>.</li>
+        <li><strong>Conclusion:</strong> By the principle of induction, <span class="m">P(n)</span> holds for all <span class="m">n ≥ n₀</span>. □</li>
+      </ul>
+    </div>
+
+    <details class="example-panel">
+      <summary><span class="toggle-icon">▶</span> Worked Example — Induction: Sum of First <span class="m">n</span> Integers</summary>
+      <div class="example-body">
+        <p><strong>Claim:</strong> For all <span class="m">n ≥ 1</span>, <span class="m">1 + 2 + 3 + ⋯ + n</span> = <span class="frac" style="font-style:italic;font-family:'Times New Roman',serif"><span class="num">n(n+1)</span><span class="den">2</span></span>.</p>
+        <ol class="step-list">
+          <li><strong>Base case</strong> (<span class="m">n = 1</span>): LHS = 1. RHS = <span class="frac" style="font-style:italic;font-family:'Times New Roman',serif"><span class="num">1 · 2</span><span class="den">2</span></span> = 1. ✓</li>
+          <li><strong>Inductive hypothesis:</strong> Assume <span class="m">1 + 2 + ⋯ + k = k(k+1)/2</span> for some <span class="m">k ≥ 1</span>.</li>
+          <li><strong>Inductive step</strong> — show the formula holds for <span class="m">k+1</span>:
+            <span class="math-block">
+              1 + 2 + ⋯ + k + (k+1)
+              = <span class="frac"><span class="num">k(k+1)</span><span class="den">2</span></span> + (k+1)
+              = (k+1) · <span class="frac"><span class="num">k + 2</span><span class="den">2</span></span>
+              = <span class="frac"><span class="num">(k+1)(k+2)</span><span class="den">2</span></span>
+            </span>
+            This matches the formula with <span class="m">n = k+1</span>. ✓</li>
+          <li><strong>Conclusion:</strong> By induction, the formula holds for all <span class="m">n ≥ 1</span>. □</li>
+        </ol>
+      </div>
+    </details>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       SECTION 6 — FUNDAMENTAL COUNTING (Week 7)
+       ═══════════════════════════════════════════════════════════ -->
+  <section id="counting" class="section-anchor" aria-labelledby="counting-heading">
+    <h2 class="section-title" id="counting-heading">6. Fundamental Counting (Week 7)</h2>
+
+    <div class="callout callout-definition">
+      <div class="callout-title">📘 Core Counting Rules</div>
+      <ul>
+        <li><strong>Sum rule:</strong> If tasks <span class="m">A</span> and <span class="m">B</span> cannot both be done simultaneously (mutually exclusive), the total is <span class="m">|A| + |B|</span>.</li>
+        <li><strong>Product rule:</strong> If a task consists of <span class="m">m</span> sequential independent steps with <span class="m">n₁, n₂, …, nₘ</span> choices respectively, the total is <span class="m">n₁ · n₂ · ⋯ · nₘ</span>.</li>
+        <li><strong>Inclusion-exclusion (two sets):</strong>
+          <span class="math-block">|A ∪ B| = |A| + |B| − |A ∩ B|</span>
+          For three sets: <span class="m">|A ∪ B ∪ C| = |A| + |B| + |C| − |A ∩ B| − |A ∩ C| − |B ∩ C| + |A ∩ B ∩ C|</span>.
+        </li>
+      </ul>
+    </div>
+
+    <h3 class="subsection-title">Permutations and Combinations</h3>
+    <table class="styled-table" aria-label="Permutations and combinations">
+      <thead><tr><th></th><th>Formula</th><th>When to use</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Permutation</strong> <span class="m">P(n, r)</span></td>
+          <td><span class="m">P(n, r) = <span class="frac"><span class="num">n!</span><span class="den">(n − r)!</span></span></span></td>
+          <td>Ordered arrangements of <span class="m">r</span> items from <span class="m">n</span> (order matters)</td>
+        </tr>
+        <tr>
+          <td><strong>Combination</strong> <span class="m">C(n, r)</span></td>
+          <td><span class="m">C(n, r) = <span class="frac"><span class="num">n!</span><span class="den">r!(n − r)!</span></span></span></td>
+          <td>Unordered selections of <span class="m">r</span> items from <span class="m">n</span> (order does not matter)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p><strong>Pascal's identity:</strong> <span class="m">C(n, k) = C(n−1, k−1) + C(n−1, k)</span> — the recurrence that builds Pascal's triangle row by row.</p>
+
+    <details class="example-panel">
+      <summary><span class="toggle-icon">▶</span> Worked Example — Committees and Passwords</summary>
+      <div class="example-body">
+        <p><strong>Problem A:</strong> A club of 10 people needs to form a 3-person committee. How many distinct committees are possible?</p>
+        <ol class="step-list">
+          <li>Order does not matter (a committee {Alice, Bob, Carol} is the same as {Carol, Alice, Bob}) → use combinations.</li>
+          <li><span class="m">C(10, 3) = <span class="frac" style="font-style:italic;font-family:'Times New Roman',serif"><span class="num">10!</span><span class="den">3! · 7!</span></span> = <span class="frac" style="font-style:italic;font-family:'Times New Roman',serif"><span class="num">10 · 9 · 8</span><span class="den">3 · 2 · 1</span></span> = 120</span> distinct committees.</li>
+        </ol>
+        <p style="margin-top:1rem"><strong>Problem B:</strong> How many 3-character passwords use distinct letters from A–Z?</p>
+        <ol class="step-list">
+          <li>Order matters (password "CAT" ≠ "ACT") and no repetition → use permutations.</li>
+          <li><span class="m">P(26, 3) = 26 · 25 · 24 = 15,600</span> distinct passwords.</li>
+        </ol>
+      </div>
+    </details>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       SECTION 7 — ADVANCED COUNTING (Week 8)
+       ═══════════════════════════════════════════════════════════ -->
+  <section id="advanced" class="section-anchor" aria-labelledby="advanced-heading">
+    <h2 class="section-title" id="advanced-heading">7. Advanced Counting — Binomial Theorem and More (Week 8)</h2>
+
+    <div class="callout callout-definition">
+      <div class="callout-title">📘 The Binomial Theorem</div>
+      For any real numbers <span class="m">a, b</span> and non-negative integer <span class="m">n</span>:
+      <span class="math-block">(a + b)ⁿ = ∑<sub>k=0</sub><sup>n</sup> C(n, k) · aⁿ⁻ᵏ · bᵏ</span>
+      The coefficient of <span class="m">aⁿ⁻ᵏ bᵏ</span> is <span class="m">C(n, k)</span> — the entry in row <span class="m">n</span>, position <span class="m">k</span> of Pascal's triangle.
+      <br><br>
+      <strong>Key corollary (set counting):</strong> Setting <span class="m">a = b = 1</span>:
+      <span class="math-block">∑<sub>k=0</sub><sup>n</sup> C(n, k) = 2ⁿ</span>
+      This confirms that an <span class="m">n</span>-element set has exactly <span class="m">2ⁿ</span> subsets (matching the power set formula from Week 1).
+    </div>
+
+    <h3 class="subsection-title">Binomial Coefficient Identities</h3>
+    <table class="styled-table" aria-label="Binomial coefficient identities">
+      <thead><tr><th>Identity</th><th>Formula</th></tr></thead>
+      <tbody>
+        <tr><td>Symmetry</td><td><span class="m">C(n, k) = C(n, n − k)</span></td></tr>
+        <tr><td>Pascal's identity</td><td><span class="m">C(n, k) = C(n−1, k−1) + C(n−1, k)</span></td></tr>
+        <tr><td>Vandermonde's identity</td><td><span class="m">∑<sub>k=0</sub><sup>r</sup> C(m, k) · C(n, r−k) = C(m+n, r)</span></td></tr>
+        <tr><td>Hockey stick identity</td><td><span class="m">∑<sub>i=0</sub><sup>r</sup> C(n+i, i) = C(n+r+1, r)</span></td></tr>
+      </tbody>
+    </table>
+
+    <h3 class="subsection-title">Multinomial Coefficients</h3>
+    <p>Count distinct arrangements of <span class="m">n</span> objects when there are <span class="m">r</span> types with <span class="m">k₁, k₂, …, kᵣ</span> indistinguishable items of each type (<span class="m">k₁ + ⋯ + kᵣ = n</span>):</p>
+    <span class="math-block"><span class="frac"><span class="num">n!</span><span class="den">k₁! · k₂! · ⋯ · kᵣ!</span></span></span>
+    <p><em>Example:</em> Distinct arrangements of MISSISSIPPI (11 letters: 1 M, 4 I, 4 S, 2 P):
+    <span class="m">11! / (1! · 4! · 4! · 2!) = 34,650</span>.</p>
+
+    <h3 class="subsection-title">Stars and Bars</h3>
+    <p>Count the ways to distribute <span class="m">n</span> indistinguishable objects into <span class="m">k</span> distinct labeled bins:</p>
+    <ul>
+      <li><strong>Bins may be empty:</strong> <span class="m">C(n + k − 1, k − 1)</span> ways.</li>
+      <li><strong>Each bin gets at least one object:</strong> <span class="m">C(n − 1, k − 1)</span> ways.</li>
+    </ul>
+    <p>Equivalent formulation: count non-negative integer solutions to <span class="m">x₁ + x₂ + ⋯ + xₖ = n</span>.</p>
+
+    <div class="callout callout-connection">
+      <div class="callout-title">🔗 Generating Functions — First Look</div>
+      The <strong>ordinary generating function</strong> for a counting sequence <span class="m">{a₀, a₁, a₂, …}</span> is the formal power series <span class="m">G(x) = a₀ + a₁x + a₂x² + ⋯</span>. The Binomial Theorem shows that <span class="m">(1+x)ⁿ</span> is the generating function for the binomial coefficients — reading off the coefficient of <span class="m">xᵏ</span> gives <span class="m">C(n, k)</span>. Generating functions return in Week 11 to solve recurrence relations.
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       SECTION 8 — DISCRETE PROBABILITY (Week 9)
+       ═══════════════════════════════════════════════════════════ -->
+  <section id="probability" class="section-anchor" aria-labelledby="probability-heading">
+    <h2 class="section-title" id="probability-heading">8. Discrete Probability (Week 9)</h2>
+
+    <div class="callout callout-definition">
+      <div class="callout-title">📘 Probability Space — Core Definitions</div>
+      <ul>
+        <li><strong>Sample space <span class="m">Ω</span></strong>: the set of all possible outcomes of a random experiment.</li>
+        <li><strong>Event <span class="m">E ⊆ Ω</span></strong>: any subset of the sample space (using the set vocabulary from Week 1).</li>
+        <li><strong>Probability measure <span class="m">P</span></strong>: a function assigning a real number to each event, satisfying the three Kolmogorov axioms:</li>
+      </ul>
+      <ul class="axiom-list" style="margin-top:0.5rem">
+        <li><strong>Axiom 1:</strong> <span class="m">P(E) ≥ 0</span> for all events <span class="m">E ⊆ Ω</span>.</li>
+        <li><strong>Axiom 2:</strong> <span class="m">P(Ω) = 1</span>. (The probability of some outcome occurring is 1.)</li>
+        <li><strong>Axiom 3:</strong> If <span class="m">A ∩ B = ∅</span>, then <span class="m">P(A ∪ B) = P(A) + P(B)</span>.</li>
+      </ul>
+      <br>
+      <strong>Uniform probability spaces</strong> — when all outcomes are equally likely:
+      <span class="math-block">P(E) = <span class="frac"><span class="num">|E|</span><span class="den">|Ω|</span></span></span>
+      In a uniform space, computing probability reduces to counting — the exact techniques of Weeks 7–8.
+    </div>
+
+    <h3 class="subsection-title">Core Rules (derived from the axioms)</h3>
+    <table class="styled-table" aria-label="Core probability rules">
+      <thead><tr><th>Rule</th><th>Formula</th><th>Derivation note</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Complement rule</td>
+          <td><span class="m">P(Eᶜ) = 1 − P(E)</span></td>
+          <td>From <span class="m">P(E) + P(Eᶜ) = P(Ω) = 1</span> (Axioms 2 &amp; 3, since <span class="m">E</span> and <span class="m">Eᶜ</span> are disjoint)</td>
+        </tr>
+        <tr>
+          <td>Addition rule (general)</td>
+          <td><span class="m">P(A ∪ B) = P(A) + P(B) − P(A ∩ B)</span></td>
+          <td>Inclusion-exclusion from Week 7 expressed as probability</td>
+        </tr>
+        <tr>
+          <td>Addition rule (mutually exclusive)</td>
+          <td><span class="m">P(A ∪ B) = P(A) + P(B)</span> when <span class="m">A ∩ B = ∅</span></td>
+          <td>Direct from Axiom 3</td>
+        </tr>
+        <tr>
+          <td>Conditional probability</td>
+          <td><span class="m">P(A | B) = <span class="frac"><span class="num">P(A ∩ B)</span><span class="den">P(B)</span></span></span>, where <span class="m">P(B) &gt; 0</span></td>
+          <td>Restricts the effective sample space to <span class="m">B</span></td>
+        </tr>
+        <tr>
+          <td>Independence</td>
+          <td><span class="m">P(A ∩ B) = P(A) · P(B)</span></td>
+          <td>Knowing <span class="m">B</span> occurred provides no information about <span class="m">A</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-definition">
+      <div class="callout-title">📘 Bayes' Theorem</div>
+      Derived by applying the definition of conditional probability twice:
+      <span class="math-block">P(A | B) = <span class="frac"><span class="num">P(B | A) · P(A)</span><span class="den">P(B)</span></span></span>
+      Interpretation: Bayes' theorem lets you update the <strong>prior</strong> probability <span class="m">P(A)</span> to a <strong>posterior</strong> probability <span class="m">P(A | B)</span> after observing evidence <span class="m">B</span>.
+    </div>
+
+    <div class="callout callout-definition">
+      <div class="callout-title">📘 Discrete Random Variables and Expected Value</div>
+      A <strong>discrete random variable</strong> <span class="m">X</span> is a function that assigns a numerical value to each outcome in <span class="m">Ω</span>. The <strong>expected value</strong> (long-run average):
+      <span class="math-block">E[X] = ∑<sub>all x</sub> x · P(X = x)</span>
+      <em>Example:</em> For a fair six-sided die, <span class="m">E[X] = (1 + 2 + 3 + 4 + 5 + 6)/6 = 3.5</span>.
+    </div>
+
+    <div class="callout callout-warning">
+      <div class="callout-title">⚠️ Watch Out — Common Probability Misconceptions</div>
+      <ul>
+        <li><span class="m">P(Ω) = 1</span>, not the count of outcomes. Probabilities are always in <span class="m">[0, 1]</span>.</li>
+        <li><strong>Mutually exclusive vs. independent are different concepts.</strong> Mutually exclusive: <span class="m">A ∩ B = ∅</span> (they cannot both happen). Independent: <span class="m">P(A ∩ B) = P(A) · P(B)</span> (one gives no information about the other). Two events with positive probability cannot be both mutually exclusive and independent.</li>
+        <li><strong><span class="m">P(A | B) ≠ P(B | A)</span> in general.</strong> Confusing these is known as the prosecutor's fallacy.</li>
+        <li><span class="m">P(E) = 0</span> does not mean <span class="m">E</span> is impossible — this can occur in continuous (non-discrete) settings.</li>
+      </ul>
+    </div>
+
+    <details class="example-panel">
+      <summary><span class="toggle-icon">▶</span> Worked Example — Probability Using Combinations</summary>
+      <div class="example-body">
+        <p><strong>Problem:</strong> A shipment of 20 devices contains 8 defective and 12 good units. A quality tester randomly selects 5 devices. What is the probability that exactly 2 of the selected devices are defective?</p>
+        <ol class="step-list">
+          <li>Define the sample space: <span class="m">Ω</span> = all ways to choose 5 devices from 20.<br>
+            <span class="m">|Ω| = C(20, 5) = 15,504</span>.</li>
+          <li>Define event <span class="m">E</span>: exactly 2 defective (from 8) and exactly 3 good (from 12).<br>
+            Using the product rule (independent choices from each group):
+            <span class="math-block">|E| = C(8, 2) · C(12, 3) = 28 · 220 = 6,160</span>
+          </li>
+          <li>Apply uniform probability:
+            <span class="math-block">P(E) = <span class="frac"><span class="num">6,160</span><span class="den">15,504</span></span> ≈ 0.397</span>
+          </li>
+        </ol>
+        <p>There is approximately a <strong>39.7%</strong> chance that the sample contains exactly 2 defective devices. This calculation uses Week 7–8 counting tools directly inside the Week 9 probability framework.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       SECTION 9 — CHECK FOR UNDERSTANDING
+       ═══════════════════════════════════════════════════════════ -->
+  <section id="cfu" class="section-anchor" aria-labelledby="cfu-heading">
+    <h2 class="section-title" id="cfu-heading">9. Check for Understanding</h2>
+    <p>Select the best answer for each question and click <strong>Check Answer</strong> to see immediate feedback. These questions are ungraded and for self-assessment only.</p>
+
+    <div class="cfu-widget" aria-label="Check for understanding questions">
+      <h3>Five Quick-Check Questions — Weeks 1–9</h3>
+
+      <!-- Q1: Week 1 — Sets -->
+      <div class="cfu-question" id="q1-block">
+        <div class="q-text">Q1 (Week 1 — Sets). Let <span class="m">A = {1, 2, 3}</span> and <span class="m">B = {2, 3, 4, 5}</span>. Which correctly describes <span class="m">A ∩ B</span>?</div>
+        <label><input type="radio" name="q1" value="a"> <span><span class="m">{1, 2, 3, 4, 5}</span></span></label>
+        <label><input type="radio" name="q1" value="b"> <span><span class="m">{2, 3}</span></span></label>
+        <label><input type="radio" name="q1" value="c"> <span><span class="m">{1, 4, 5}</span></span></label>
+        <label><input type="radio" name="q1" value="d"> <span><span class="m">{1}</span></span></label>
+        <br>
+        <button class="check-btn" onclick="checkQ('q1','b')">Check Answer</button>
+        <div class="feedback" id="q1-fb" role="alert" aria-live="polite"></div>
+      </div>
+
+      <!-- Q2: Week 4 — Logic -->
+      <div class="cfu-question" id="q2-block">
+        <div class="q-text">Q2 (Week 4 — Logic). Which of the following is the correct negation of <span class="m">¬(p ∧ q)</span> using De Morgan's Law?</div>
+        <label><input type="radio" name="q2" value="a"> <span><span class="m">¬p ∧ ¬q</span></span></label>
+        <label><input type="radio" name="q2" value="b"> <span><span class="m">p ∨ q</span></span></label>
+        <label><input type="radio" name="q2" value="c"> <span><span class="m">¬p ∨ ¬q</span></span></label>
+        <label><input type="radio" name="q2" value="d"> <span><span class="m">p ∧ q</span></span></label>
+        <br>
+        <button class="check-btn" onclick="checkQ('q2','c')">Check Answer</button>
+        <div class="feedback" id="q2-fb" role="alert" aria-live="polite"></div>
+      </div>
+
+      <!-- Q3: Week 7 — Counting -->
+      <div class="cfu-question" id="q3-block">
+        <div class="q-text">Q3 (Week 7 — Counting). A committee of 4 people must be chosen from a group of 9. How many distinct committees are possible?</div>
+        <label><input type="radio" name="q3" value="a"> <span>3,024 &nbsp;<em>(P(9,4))</em></span></label>
+        <label><input type="radio" name="q3" value="b"> <span>126 &nbsp;<em>(C(9,4))</em></span></label>
+        <label><input type="radio" name="q3" value="c"> <span>362,880 &nbsp;<em>(9!)</em></span></label>
+        <label><input type="radio" name="q3" value="d"> <span>36 &nbsp;<em>(9 × 4)</em></span></label>
+        <br>
+        <button class="check-btn" onclick="checkQ('q3','b')">Check Answer</button>
+        <div class="feedback" id="q3-fb" role="alert" aria-live="polite"></div>
+      </div>
+
+      <!-- Q4: Week 8 — Binomial -->
+      <div class="cfu-question" id="q4-block">
+        <div class="q-text">Q4 (Week 8 — Binomial Theorem). Using the Binomial Theorem, what is the coefficient of <span class="m">x²</span> in the expansion of <span class="m">(1 + x)⁵</span>?</div>
+        <label><input type="radio" name="q4" value="a"> <span>5</span></label>
+        <label><input type="radio" name="q4" value="b"> <span>20</span></label>
+        <label><input type="radio" name="q4" value="c"> <span>10</span></label>
+        <label><input type="radio" name="q4" value="d"> <span>1</span></label>
+        <br>
+        <button class="check-btn" onclick="checkQ('q4','c')">Check Answer</button>
+        <div class="feedback" id="q4-fb" role="alert" aria-live="polite"></div>
+      </div>
+
+      <!-- Q5: Week 9 — Probability -->
+      <div class="cfu-question" id="q5-block">
+        <div class="q-text">Q5 (Week 9 — Probability). Events <span class="m">A</span> and <span class="m">B</span> satisfy <span class="m">P(A) = 0.5</span>, <span class="m">P(B) = 0.4</span>, and <span class="m">P(A ∩ B) = 0.2</span>. What is <span class="m">P(A ∪ B)</span>?</div>
+        <label><input type="radio" name="q5" value="a"> <span>0.9</span></label>
+        <label><input type="radio" name="q5" value="b"> <span>0.7</span></label>
+        <label><input type="radio" name="q5" value="c"> <span>0.5</span></label>
+        <label><input type="radio" name="q5" value="d"> <span>0.2</span></label>
+        <br>
+        <button class="check-btn" onclick="checkQ('q5','b')">Check Answer</button>
+        <div class="feedback" id="q5-fb" role="alert" aria-live="polite"></div>
+      </div>
+
+    </div><!-- end .cfu-widget -->
+  </section>
+
+  <!-- ── COURSE SUMMARY ── -->
+  <div class="callout callout-summary" style="margin-top:2rem">
+    <div class="callout-title">📋 Weeks 1–9 at a Glance</div>
+    <ul>
+      <li><strong>Weeks 1–2:</strong> Sets and operations are the shared language of the entire course. Relations generalize sets; functions are the special case where each input maps to exactly one output.</li>
+      <li><strong>Weeks 3–4:</strong> Cardinality measures and compares set sizes. Propositional and predicate logic give us the formal language for making precise statements about mathematical objects.</li>
+      <li><strong>Weeks 5–6:</strong> Direct proof, contrapositive, contradiction, and mathematical induction are the tools for <em>establishing</em> truths rigorously — not just observing patterns.</li>
+      <li><strong>Weeks 7–8:</strong> The sum/product rules, permutations, combinations, the Binomial Theorem, multinomial coefficients, and stars and bars all answer the question "how many?"</li>
+      <li><strong>Week 9:</strong> Probability formally extends counting. In a uniform space, <span class="m">P(E) = |E|/|Ω|</span>. Conditional probability, independence, Bayes' theorem, and expected value complete the foundational toolkit.</li>
+    </ul>
+  </div>
+
+  <!-- ── BOTTOM NAVIGATION ── -->
+  <nav class="bottom-nav" aria-label="Module navigation">
+    <span class="nav-btn">← Week 8 Review</span>
+    <span class="nav-btn">Module 9.2 →</span>
+  </nav>
+
+</main><!-- end .page-wrapper -->
+
+<script>
+const ANSWERS = {
+  q1: {
+    correct: 'b',
+    right: '✓ Correct! A ∩ B = {2, 3} — the intersection contains only elements that appear in both A = {1, 2, 3} and B = {2, 3, 4, 5}.',
+    wrong: '✗ Not quite. A ∩ B is the intersection — only elements present in BOTH sets. A = {1, 2, 3} and B = {2, 3, 4, 5} share the elements 2 and 3, so A ∩ B = {2, 3}.'
+  },
+  q2: {
+    correct: 'c',
+    right: '✓ Correct! By De Morgan\'s Law: ¬(p ∧ q) ≡ ¬p ∨ ¬q. The negation of a conjunction distributes as a disjunction of the individual negations.',
+    wrong: '✗ Not quite. Apply De Morgan\'s Law: ¬(p ∧ q) ≡ ¬p ∨ ¬q. The AND (∧) becomes OR (∨), and both propositions are individually negated.'
+  },
+  q3: {
+    correct: 'b',
+    right: '✓ Correct! Committees are unordered, so we use combinations: C(9, 4) = 9! / (4! · 5!) = (9 · 8 · 7 · 6) / (4 · 3 · 2 · 1) = 3024 / 24 = 126.',
+    wrong: '✗ Not quite. Since a committee is unordered (the same people in a different order form the same committee), use combinations: C(9, 4) = 9! / (4! · 5!) = 126. Permutations would be used if order mattered.'
+  },
+  q4: {
+    correct: 'c',
+    right: '✓ Correct! By the Binomial Theorem, the coefficient of x² in (1+x)⁵ is C(5, 2) = 5! / (2! · 3!) = 10.',
+    wrong: '✗ Not quite. The Binomial Theorem gives (1+x)⁵ = Σ C(5,k) xᵏ. The coefficient of x² corresponds to k=2: C(5, 2) = 10.'
+  },
+  q5: {
+    correct: 'b',
+    right: '✓ Correct! Use the general addition rule: P(A ∪ B) = P(A) + P(B) − P(A ∩ B) = 0.5 + 0.4 − 0.2 = 0.7. This is inclusion-exclusion expressed as probability.',
+    wrong: '✗ Not quite. Use the general addition rule: P(A ∪ B) = P(A) + P(B) − P(A ∩ B) = 0.5 + 0.4 − 0.2 = 0.7. You must subtract P(A ∩ B) to avoid double-counting the overlap.'
+  }
+};
+
+function checkQ(qId, correctVal) {
+  var selected = document.querySelector('input[name="' + qId + '"]:checked');
+  var fb = document.getElementById(qId + '-fb');
+  if (!selected) {
+    fb.className = 'feedback incorrect show';
+    fb.textContent = 'Please select an answer first.';
+    return;
+  }
+  var data = ANSWERS[qId];
+  if (selected.value === data.correct) {
+    fb.className = 'feedback correct show';
+    fb.textContent = data.right;
+  } else {
+    fb.className = 'feedback incorrect show';
+    fb.textContent = data.wrong;
+  }
+}
+</script>
+
+</body>
+</html>
