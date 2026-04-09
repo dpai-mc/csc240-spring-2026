@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 11.4 – Recurrence Relations: Defining, Modeling, and Solving | CSC 240</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --pri:#1a5276;--pril:#2980b9;--acc:#117a65;
+  --bg:#f4f6f8;--card:#fff;--bdr:#d0d8e4;
+  --txt:#1c2833;--muted:#5d6d7e;--navh:52px;
+  --cb-cbg:#eaf4fb;--cb-cbdr:#2980b9;
+  --cb-wbg:#fef9e7;--cb-wbdr:#e67e22;
+  --cb-pbg:#eafaf1;--cb-pbdr:#27ae60;
+  --cb-tbg:#f5eef8;--cb-tbdr:#8e44ad;
+  --cb-bbg:#f2f3f4;--cb-bbdr:#717d7e;
+}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;
+  background:var(--bg);color:var(--txt);line-height:1.7;font-size:16px}
+:focus-visible{outline:3px solid #e67e22;outline-offset:2px}
+
+/* skip link */
+.skip{position:absolute;top:-44px;left:8px;z-index:9999;background:var(--pri);
+  color:#fff;padding:6px 14px;border-radius:4px;font-weight:700;text-decoration:none;
+  transition:top .15s}
+.skip:focus{top:8px}
+
+/* nav */
+.tnav{position:sticky;top:0;z-index:100;background:var(--pri);
+  height:var(--navh);box-shadow:0 2px 6px rgba(0,0,0,.22)}
+.ninner{max-width:1100px;margin:0 auto;padding:0 12px;height:100%;
+  display:flex;align-items:center;gap:1px;overflow-x:auto;
+  scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.3) transparent}
+.nbrand{color:rgba(255,255,255,.58);font-size:.7rem;font-weight:700;
+  letter-spacing:.07em;text-transform:uppercase;white-space:nowrap;
+  margin-right:10px;flex-shrink:0}
+.tnav a{color:rgba(255,255,255,.8);text-decoration:none;font-size:.77rem;
+  font-weight:500;padding:5px 8px;border-radius:4px;white-space:nowrap;
+  transition:background .13s,color .13s;flex-shrink:0}
+.tnav a:hover,.tnav a:focus-visible{background:rgba(255,255,255,.18);color:#fff}
+.nsep{color:rgba(255,255,255,.22);font-size:.7rem;flex-shrink:0;
+  padding:0 1px;user-select:none}
+
+/* layout */
+.pwrap{max-width:960px;margin:0 auto;padding:0 16px 80px}
+
+/* module header */
+.mhdr{background:var(--pri);color:#fff;padding:30px 26px 24px;
+  border-radius:0 0 12px 12px;margin-bottom:24px}
+.mbadge{display:inline-block;background:rgba(255,255,255,.18);
+  font-size:.69rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  padding:3px 11px;border-radius:20px;margin-bottom:10px}
+.mhdr h1{font-size:1.68rem;font-weight:700;line-height:1.25;margin-bottom:7px}
+.msub{color:rgba(255,255,255,.78);font-size:.88rem;margin-bottom:5px}
+.mdesc{color:rgba(255,255,255,.86);font-size:.9rem;line-height:1.65;
+  margin:10px 0 16px}
+.ogrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));gap:8px}
+.opill{background:rgba(255,255,255,.12);border-radius:6px;padding:8px 12px;
+  font-size:.8rem;color:rgba(255,255,255,.88)}
+.opill strong{display:block;font-size:.68rem;letter-spacing:.04em;
+  color:rgba(255,255,255,.52);margin-bottom:2px;text-transform:uppercase}
+
+/* scroll offset for sticky nav */
+.sa{scroll-margin-top:calc(var(--navh) + 10px)}
+
+/* section card */
+.sec{background:var(--card);border-radius:10px;
+  box-shadow:0 1px 4px rgba(0,0,0,.08);padding:24px 26px;margin-bottom:22px}
+h2.sh{font-size:1.18rem;font-weight:700;color:var(--pri);
+  border-left:4px solid var(--pri);padding-left:10px;margin-bottom:16px;
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.sn{background:var(--pri);color:#fff;font-size:.68rem;font-weight:700;
+  padding:2px 8px;border-radius:12px;flex-shrink:0}
+h3.sh3{font-size:1rem;font-weight:600;color:var(--pri);margin:20px 0 9px}
+p{margin-bottom:12px}
+ul,ol{margin:5px 0 12px 22px}
+li{margin-bottom:5px}
+strong{font-weight:600}
+
+/* callout boxes */
+.cb{border-left:4px solid;border-radius:0 8px 8px 0;padding:12px 16px;margin:14px 0}
+.cbh{font-size:.68rem;font-weight:700;letter-spacing:.07em;
+  text-transform:uppercase;margin-bottom:5px}
+.c-con{background:var(--cb-cbg);border-color:var(--cb-cbdr)}
+.c-con .cbh{color:var(--cb-cbdr)}
+.c-wrn{background:var(--cb-wbg);border-color:var(--cb-wbdr)}
+.c-wrn .cbh{color:#c0392b}
+.c-pe{background:var(--cb-pbg);border-color:var(--cb-pbdr)}
+.c-pe .cbh{color:var(--cb-pbdr)}
+.c-tip{background:var(--cb-tbg);border-color:var(--cb-tbdr)}
+.c-tip .cbh{color:var(--cb-tbdr)}
+.c-brg{background:var(--cb-bbg);border-color:var(--cb-bbdr)}
+.c-brg .cbh{color:#4d5656}
+
+/* math blocks */
+.mb{background:#f8f9fa;border:1px solid var(--bdr);border-radius:6px;
+  padding:12px 16px;margin:10px 0;overflow-x:auto}
+.mbc{text-align:center}
+.ml{display:block;padding:2px 0;
+  font-family:'Courier New',Courier,monospace;font-size:1rem;white-space:nowrap}
+/* fraction helper */
+.fr{display:inline-flex;flex-direction:column;align-items:center;
+  vertical-align:middle;font-size:.93em;margin:0 1px;line-height:1.2}
+.fr .fn{border-bottom:1.5px solid currentColor;padding:0 3px 1px;text-align:center}
+.fr .fd{padding:2px 3px 0;text-align:center}
+
+/* tables */
+.twrap{overflow-x:auto;margin:10px 0}
+.tbl{width:100%;border-collapse:collapse;font-size:.87rem;min-width:400px}
+.tbl th{background:var(--pri);color:#fff;font-weight:600;
+  padding:9px 12px;text-align:left;white-space:nowrap}
+.tbl td{padding:8px 12px;border-bottom:1px solid var(--bdr);vertical-align:top}
+.tbl tr:nth-child(even) td{background:#f8f9fa}
+.tbl tr:last-child td{border-bottom:none}
+
+/* step list */
+.stps{list-style:none;margin:0;padding:0}
+.stp{display:flex;gap:13px;margin-bottom:16px;align-items:flex-start}
+.stpn{flex-shrink:0;width:32px;height:32px;background:var(--pri);color:#fff;
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:.9rem;margin-top:3px}
+.stpb{flex:1}
+.stpb strong{display:block;color:var(--pri);margin-bottom:3px}
+
+/* collapsible */
+.colbtn{width:100%;background:var(--pri);color:#fff;border:none;
+  padding:10px 15px;border-radius:6px;text-align:left;font-size:.9rem;
+  font-weight:600;cursor:pointer;display:flex;justify-content:space-between;
+  align-items:center;transition:background .13s;margin-top:12px}
+.colbtn:hover,.colbtn:focus-visible{background:var(--pril)}
+.colarr{transition:transform .22s;font-size:.8rem;flex-shrink:0;margin-left:8px}
+.colbtn[aria-expanded="true"] .colarr{transform:rotate(180deg)}
+.colbody{overflow:hidden;max-height:0;transition:max-height .32s ease}
+.colbody.open{max-height:4000px}
+.colinn{background:#f8f9fa;border:1px solid var(--bdr);border-top:none;
+  border-radius:0 0 6px 6px;padding:16px}
+.ds{border-left:3px solid var(--pril);padding:6px 12px;margin:8px 0;
+  background:#fff;border-radius:0 4px 4px 0}
+.dl{font-size:.67rem;font-weight:700;color:var(--pril);
+  text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px}
+
+/* mini-case / reveal */
+.mc{border:2px dashed var(--pril);border-radius:8px;
+  padding:14px 18px;margin:16px 0;background:#f0f7ff}
+.mch{font-size:.68rem;font-weight:700;letter-spacing:.07em;
+  text-transform:uppercase;color:var(--pril);margin-bottom:8px}
+.rvbtn{background:var(--acc);color:#fff;border:none;
+  padding:7px 15px;border-radius:5px;font-size:.83rem;
+  font-weight:600;cursor:pointer;margin-top:8px;transition:background .13s}
+.rvbtn:hover,.rvbtn:focus-visible{background:#0e6655}
+.rvbody{display:none;margin-top:12px;padding:11px 14px;
+  background:#fff;border-radius:6px;border:1px solid #a9dfbf}
+pre{background:#fff;border:1px solid #b0c4de;border-radius:5px;
+  padding:9px 12px;font-size:.81rem;overflow-x:auto;margin:8px 0;
+  white-space:pre;line-height:1.5}
+
+/* fibonacci iteration table */
+.ittbl{border-collapse:collapse;margin:10px auto;font-size:.85rem}
+.ittbl th,.ittbl td{border:1px solid var(--bdr);padding:6px 11px;text-align:center}
+.ittbl thead th{background:var(--pri);color:#fff}
+.ittbl tbody tr:nth-child(even) td{background:#f8f9fa}
+
+/* knowledge check */
+.kcq{border:1px solid var(--bdr);border-radius:8px;
+  padding:15px 17px;margin-bottom:16px;background:#fff}
+.kcq .qt{font-weight:600;margin-bottom:10px}
+.kcopts{list-style:none;padding:0;margin:0 0 10px}
+.kcopts li{margin-bottom:6px}
+.kcopts label{display:flex;align-items:flex-start;gap:8px;
+  cursor:pointer;padding:7px 10px;border:1px solid var(--bdr);
+  border-radius:6px;transition:background .12s;font-size:.88rem}
+.kcopts label:hover{background:#f0f4f8}
+.kcopts input[type=radio]{margin-top:3px;flex-shrink:0;cursor:pointer}
+.kcsub{background:var(--pri);color:#fff;border:none;
+  padding:7px 16px;border-radius:6px;font-size:.86rem;
+  font-weight:600;cursor:pointer;transition:background .13s}
+.kcsub:hover,.kcsub:focus-visible{background:var(--pril)}
+.kcfb{margin-top:9px;padding:9px 12px;border-radius:6px;
+  font-size:.86rem;display:none;line-height:1.6}
+.kcfb.ok{background:#eafaf1;border:1px solid #27ae60;color:#1e8449;display:block}
+.kcfb.no{background:#fdedec;border:1px solid #e74c3c;color:#922b21;display:block}
+.lopt-ok{background:#eafaf1!important;border-color:#27ae60!important}
+.lopt-no{background:#fdedec!important;border-color:#e74c3c!important}
+
+/* bridge / summary */
+.bsec{background:linear-gradient(135deg,#1a4f70 0%,#0e2d40 100%);
+  color:#fff;border-radius:10px;padding:24px 26px;margin-bottom:24px}
+.bsec h2.sh{color:#fff;border-color:rgba(255,255,255,.3)}
+.bsec p{color:rgba(255,255,255,.87);margin-bottom:10px}
+.kigrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));
+  gap:9px;margin:14px 0}
+.kicard{background:rgba(255,255,255,.12);border-radius:7px;
+  padding:10px 13px;font-size:.82rem;color:rgba(255,255,255,.88)}
+.kicard strong{display:block;font-size:.67rem;color:#85c1e9;
+  letter-spacing:.04em;margin-bottom:3px;text-transform:uppercase}
+.bsec .cb{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.28);margin-top:16px}
+.bsec .cbh{color:rgba(255,255,255,.6)}
+.bsec .cb p{margin-bottom:0}
+
+/* misc */
+code{font-family:'Courier New',Courier,monospace;background:#f0f3f4;
+  border-radius:3px;padding:1px 5px;font-size:.87em}
+.tag-ug{display:inline-block;background:#fff3e0;color:#e65100;
+  font-size:.68rem;font-weight:700;padding:1px 7px;border-radius:10px;
+  letter-spacing:.04em;text-transform:uppercase;margin-left:6px;vertical-align:middle}
+.hi-box{background:#eafaf1;border:1px solid #a9dfbf;border-radius:5px;
+  padding:10px 14px;margin:8px 0}
+
+@media(max-width:620px){
+  .sec,.bsec{padding:16px 14px}
+  .mhdr{padding:20px 14px}
+  .mhdr h1{font-size:1.35rem}
+  .stpn{width:28px;height:28px;font-size:.8rem}
+}
+</style>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to main content</a>
+
+<nav class="tnav" aria-label="Module 11.4 section navigation">
+  <div class="ninner">
+    <span class="nbrand">Mod 11.4</span>
+    <a href="#sec1">1&nbsp;Definition</a><span class="nsep" aria-hidden="true">·</span>
+    <a href="#sec2">2&nbsp;Modeling</a><span class="nsep" aria-hidden="true">·</span>
+    <a href="#sec3">3&nbsp;Iteration</a><span class="nsep" aria-hidden="true">·</span>
+    <a href="#sec4">4&nbsp;Char.&nbsp;Eq.</a><span class="nsep" aria-hidden="true">·</span>
+    <a href="#sec5">5&nbsp;Non-Hom.</a><span class="nsep" aria-hidden="true">·</span>
+    <a href="#sec6">6&nbsp;Patterns</a><span class="nsep" aria-hidden="true">·</span>
+    <a href="#sec7">7&nbsp;Knowledge&nbsp;Check</a><span class="nsep" aria-hidden="true">·</span>
+    <a href="#sec8">8&nbsp;Summary</a>
+  </div>
+</nav>
+
+<main id="main" class="pwrap">
+
+<!-- ═══════════════ MODULE HEADER ═══════════════ -->
+<header class="mhdr">
+  <div class="mbadge">Week 11 · Module 11.4 of 5</div>
+  <h1>Recurrence Relations: Defining, Modeling, and Solving</h1>
+  <p class="msub">CSC 240 – Discrete Structures &nbsp;|&nbsp; Mendocino College &nbsp;|&nbsp; Spring 2026</p>
+  <p class="mdesc">This module introduces recurrence relations as the formal algebraic language for describing the cost of recursive algorithms. You will translate algorithmic behavior into recurrence form, generate terms by iteration, and solve linear homogeneous and non-homogeneous recurrences using the characteristic equation method. This module is the mathematical core of PE-08.</p>
+  <div class="ogrid" aria-label="Learning objectives covered in this module">
+    <div class="opill"><strong>Objective 5</strong>Define recurrence relations and specify appropriate initial conditions.</div>
+    <div class="opill"><strong>Objective 6</strong>Model algorithmic problems using recurrence relations.</div>
+    <div class="opill"><strong>Objective 7</strong>Solve linear homogeneous recurrence relations using the characteristic equation method.</div>
+    <div class="opill"><strong>Objective 8</strong>Identify and solve linear non-homogeneous recurrence relations using the particular-solution approach.</div>
+  </div>
+</header>
+
+<!-- ═══════════════ SECTION 1: DEFINITION ═══════════════ -->
+<section class="sec sa" id="sec1" aria-labelledby="h-sec1">
+  <h2 class="sh" id="h-sec1"><span class="sn" aria-hidden="true">1</span>Definition and Notation</h2>
+
+  <div class="cb c-con">
+    <div class="cbh">📐 Formal Definition</div>
+    <p>A <strong>recurrence relation</strong> for a sequence {a<sub>n</sub>} is an equation that expresses a<sub>n</sub> in terms of one or more earlier terms a<sub>n−1</sub>, a<sub>n−2</sub>, …, a<sub>n−k</sub>. The relation alone defines a <em>family</em> of sequences; a unique sequence is selected by specifying <strong>initial conditions</strong> — explicit values for a<sub>0</sub>, a<sub>1</sub>, …, a<sub>k−1</sub>.</p>
+  </div>
+
+  <p>The <strong>standard form</strong> of a degree-k linear recurrence relation with constant coefficients is:</p>
+
+  <div class="mb mbc">
+    <span class="ml">a<sub>n</sub> = c<sub>1</sub>a<sub>n−1</sub> + c<sub>2</sub>a<sub>n−2</sub> + ⋯ + c<sub>k</sub>a<sub>n−k</sub></span>
+    <span class="ml" style="color:var(--muted);font-size:.88rem">initial conditions: a<sub>0</sub> = v<sub>0</sub>, &nbsp; a<sub>1</sub> = v<sub>1</sub>, &nbsp; … &nbsp; a<sub>k−1</sub> = v<sub>k−1</sub></span>
+  </div>
+
+  <p>where c<sub>1</sub>, c<sub>2</sub>, …, c<sub>k</sub> are real constants with c<sub>k</sub> ≠ 0. The <strong>degree</strong> (or <em>order</em>) k is the distance between subscript n and the earliest subscript referenced on the right-hand side.</p>
+
+  <h3 class="sh3">Recurrence Relation vs. Recursive Definition</h3>
+  <p>These two constructs have the same algebraic form but serve different purposes:</p>
+
+  <div class="twrap">
+    <table class="tbl" aria-label="Comparison of recurrence relation and recursive definition">
+      <thead><tr>
+        <th style="width:16%">Feature</th>
+        <th>Recursive Definition</th>
+        <th>Recurrence Relation</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Purpose</strong></td>
+          <td>Defines what a sequence <em>is</em> — enumerates its values</td>
+          <td>Describes the <em>cost</em> of a computation as a function of input size</td>
+        </tr>
+        <tr>
+          <td><strong>Context</strong></td>
+          <td>Pure mathematics; data structures</td>
+          <td>Algorithm analysis and complexity theory</td>
+        </tr>
+        <tr>
+          <td><strong>Goal</strong></td>
+          <td>Enumerate values or prove sequence properties</td>
+          <td>Derive a closed-form Big-O bound for T(n)</td>
+        </tr>
+        <tr>
+          <td><strong>Example</strong></td>
+          <td>F(n) = F(n−1) + F(n−2) <em>defines</em> the Fibonacci numbers</td>
+          <td>T(n) = 2T(n/2) + n <em>describes</em> the runtime cost of merge sort</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="cb c-wrn">
+    <div class="cbh">⚠ Common Confusion</div>
+    <p>F(n) = F(n−1) + F(n−2) and T(n) = T(n−1) + 1 look structurally identical — and both <em>are</em> recurrence relations. The distinction lies in interpretation: F(n) is a number sequence; T(n) is the count of operations an algorithm performs on an input of size n. Always clarify what the variable represents before setting up a recurrence.</p>
+  </div>
+
+  <h3 class="sh3">Why Initial Conditions Are Required</h3>
+
+  <div class="mc" aria-label="Ungraded concept question">
+    <div class="mch">💭 Concept Question <span class="tag-ug">Ungraded</span></div>
+    <p>Consider a<sub>n</sub> = 2a<sub>n−1</sub>. The <em>same rule</em> produces entirely different sequences depending on the starting value:</p>
+    <ul>
+      <li>a<sub>0</sub> = 1 &nbsp;→&nbsp; 1, 2, 4, 8, 16, …</li>
+      <li>a<sub>0</sub> = 3 &nbsp;→&nbsp; 3, 6, 12, 24, 48, …</li>
+      <li>a<sub>0</sub> = −5 &nbsp;→&nbsp; −5, −10, −20, −40, …</li>
+    </ul>
+    <p><strong>Why does the recurrence alone not uniquely determine the sequence?</strong></p>
+    <button class="rvbtn" aria-expanded="false" aria-controls="rev-ic"
+      data-show="Show Explanation ▾" data-hide="Hide Explanation ▴"
+      onclick="toggleReveal('rev-ic')">Show Explanation ▾</button>
+    <div class="rvbody" id="rev-ic" role="region" aria-label="Explanation for concept question">
+      <p>A recurrence relation is a <em>rule for extending</em> a sequence — it specifies how each new term relates to earlier ones, but it says nothing about where the sequence <em>starts</em>. Without initial conditions, infinitely many distinct sequences all satisfy the same rule. Uniqueness is guaranteed only when you supply exactly k initial values for a degree-k recurrence. Those values anchor the sequence so that every subsequent term is determined by one and only one application of the rule. This is directly analogous to an ordinary differential equation: the general solution is a family of curves, and initial conditions select the unique curve that passes through a given point.</p>
+    </div>
+  </div>
+
+</section>
+
+<!-- ═══════════════ SECTION 2: MODELING ═══════════════ -->
+<section class="sec sa" id="sec2" aria-labelledby="h-sec2">
+  <h2 class="sh" id="h-sec2"><span class="sn" aria-hidden="true">2</span>Modeling Algorithms as Recurrence Relations</h2>
+
+  <p>Translating pseudocode into a recurrence relation is a core algorithm analysis skill. Apply these five steps consistently:</p>
+
+  <ol class="stps" role="list">
+    <li class="stp">
+      <div class="stpn" aria-hidden="true">1</div>
+      <div class="stpb">
+        <strong>Identify the size parameter n</strong>
+        Determine the quantity governing problem size: array length, number of elements, tree height, etc.
+      </div>
+    </li>
+    <li class="stp">
+      <div class="stpn" aria-hidden="true">2</div>
+      <div class="stpb">
+        <strong>Count work done at the current call level</strong>
+        Count only operations performed directly at this level — comparisons, swaps, arithmetic. Do <em>not</em> count work inside recursive calls; that will be handled by the T(·) terms.
+      </div>
+    </li>
+    <li class="stp">
+      <div class="stpn" aria-hidden="true">3</div>
+      <div class="stpb">
+        <strong>Identify recursive calls</strong>
+        How many recursive calls are made, and what is the subproblem size passed to each call?
+      </div>
+    </li>
+    <li class="stp">
+      <div class="stpn" aria-hidden="true">4</div>
+      <div class="stpb">
+        <strong>Write the recurrence equation</strong>
+        Combine: T(n) = [sum of costs of all recursive calls] + [work done at the current level].
+      </div>
+    </li>
+    <li class="stp">
+      <div class="stpn" aria-hidden="true">5</div>
+      <div class="stpb">
+        <strong>State the base case</strong>
+        Identify when recursion stops and record T(base&nbsp;case) = [cost at that point].
+      </div>
+    </li>
+  </ol>
+
+  <h3 class="sh3">Three Worked Examples</h3>
+
+  <div class="twrap">
+    <table class="tbl" aria-label="Worked examples: modeling three algorithms as recurrences">
+      <thead><tr>
+        <th>Algorithm</th>
+        <th>What Happens at Each Call</th>
+        <th>Recurrence</th>
+        <th>Closed Form</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Sequential Search</strong></td>
+          <td>Check 1 element; if not found, recurse on the remaining n−1 elements. One comparison per call.</td>
+          <td>T(n) = T(n−1) + 1<br>T(1) = 1</td>
+          <td>T(n) = n<br>→ Θ(n)</td>
+        </tr>
+        <tr>
+          <td><strong>Binary Search</strong></td>
+          <td>Make 1 comparison to choose a half; recurse on that half (size ⌊n/2⌋). Constant work per call.</td>
+          <td>T(n) = T(n/2) + 1<br>T(1) = 1</td>
+          <td>T(n) = ⌊log<sub>2</sub>n⌋ + 1<br>→ Θ(log n)</td>
+        </tr>
+        <tr>
+          <td><strong>Merge Sort</strong></td>
+          <td>Split evenly (free); recurse on both halves; merge the two sorted halves in Θ(n) time.</td>
+          <td>T(n) = 2T(n/2) + n<br>T(1) = 1</td>
+          <td>T(n) = n log<sub>2</sub>n<br>→ Θ(n log n)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="cb c-tip">
+    <div class="cbh">💡 Anatomy of the Merge Sort Recurrence</div>
+    <p>T(n) = <strong>2</strong>T(n/<strong>2</strong>) + <strong>n</strong><br>
+    The leading <strong>2</strong> counts the number of recursive calls. The divisor <strong>2</strong> in n/2 is the subproblem-size reduction factor. The trailing <strong>n</strong> is the cost of the merge step executed <em>after</em> both recursive calls return. This form — aT(n/b) + f(n) — is the signature of divide-and-conquer recurrences; Module 11.5 handles them with the Master Theorem.</p>
+  </div>
+
+  <!-- Mini-Case: Insertion Sort -->
+  <div class="mc" aria-label="Mini-case activity: Insertion Sort — ungraded">
+    <div class="mch">🔍 Mini-Case: Insertion Sort <span class="tag-ug">Ungraded</span></div>
+    <p>Apply the five-step method to derive the recurrence for <strong>worst-case insertion sort</strong>. In the worst case (input in reverse order), inserting A[n] into the already-sorted subarray A[1..n−1] requires exactly n−1 comparisons.</p>
+<pre><code>InsertionSort(A, n):
+  if n == 1: return                     // base case: one element is already sorted
+  InsertionSort(A, n − 1)               // sort the first n − 1 elements
+  insert A[n] into its correct position // worst case: n − 1 comparisons needed</code></pre>
+    <p><strong>Work through the five steps and write T(n).</strong></p>
+    <button class="rvbtn" aria-expanded="false" aria-controls="rev-is"
+      data-show="Show Solution ▾" data-hide="Hide Solution ▴"
+      onclick="toggleReveal('rev-is')">Show Solution ▾</button>
+    <div class="rvbody" id="rev-is" role="region" aria-label="Solution for insertion sort mini-case">
+      <ol>
+        <li><strong>Size parameter:</strong> n = number of elements to sort.</li>
+        <li><strong>Work at current level:</strong> n−1 comparisons (worst case) to insert A[n].</li>
+        <li><strong>Recursive calls:</strong> One call, on n−1 elements → contributes T(n−1).</li>
+        <li><strong>Recurrence:</strong></li>
+      </ol>
+      <div class="mb mbc">
+        <span class="ml">T(n) = T(n−1) + (n−1), &nbsp;&nbsp; T(1) = 0</span>
+      </div>
+      <ol start="5">
+        <li><strong>Base case:</strong> T(1) = 0 — a single-element array is already sorted; zero comparisons needed.</li>
+      </ol>
+      <p><strong>Iterating to closed form:</strong> T(n) = (n−1) + (n−2) + ⋯ + 1 + 0 =
+        <span class="fr"><span class="fn">n(n−1)</span><span class="fd">2</span></span>
+        &nbsp;→&nbsp; Θ(n<sup>2</sup>).
+      </p>
+    </div>
+  </div>
+
+</section>
+
+<!-- ═══════════════ SECTION 3: ITERATION ═══════════════ -->
+<section class="sec sa" id="sec3" aria-labelledby="h-sec3">
+  <h2 class="sh" id="h-sec3"><span class="sn" aria-hidden="true">3</span>Generating Terms by Iteration</h2>
+
+  <p>Before attempting an algebraic closed form, generate the first several terms by <strong>direct substitution</strong> — also called <em>unrolling</em> or <em>forward iteration</em>. This technique applies the recurrence rule starting from the initial conditions and stepping forward one index at a time.</p>
+
+  <h3 class="sh3">Method</h3>
+  <ol>
+    <li>Write down all initial conditions.</li>
+    <li>Substitute the smallest undefined index n into the recurrence; compute the resulting value using already-known terms.</li>
+    <li>Repeat, incrementing the index, until you have the desired number of terms.</li>
+  </ol>
+
+  <h3 class="sh3">Worked Example: First 8 Fibonacci Terms</h3>
+  <p>Recurrence: F(n) = F(n−1) + F(n−2), &nbsp; F(0) = 0, &nbsp; F(1) = 1.</p>
+
+  <div class="twrap">
+    <table class="ittbl" aria-label="Fibonacci iteration table — first eight terms F(0) through F(7)">
+      <thead>
+        <tr>
+          <th scope="col">n</th>
+          <th scope="col">0</th><th scope="col">1</th><th scope="col">2</th>
+          <th scope="col">3</th><th scope="col">4</th><th scope="col">5</th>
+          <th scope="col">6</th><th scope="col">7</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row" style="background:var(--pri);color:#fff;text-align:left;padding:6px 11px">Computation</th>
+          <td style="color:var(--muted);font-size:.82rem">given</td>
+          <td style="color:var(--muted);font-size:.82rem">given</td>
+          <td>0 + 1</td><td>1 + 1</td><td>1 + 2</td>
+          <td>2 + 3</td><td>3 + 5</td><td>5 + 8</td>
+        </tr>
+        <tr>
+          <th scope="row" style="background:var(--pri);color:#fff;text-align:left;padding:6px 11px">F(n)</th>
+          <td><strong>0</strong></td><td><strong>1</strong></td>
+          <td><strong>1</strong></td><td><strong>2</strong></td>
+          <td><strong>3</strong></td><td><strong>5</strong></td>
+          <td><strong>8</strong></td><td><strong>13</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>Each F(n) entry is computed by summing the two entries immediately to its left. The first two entries come directly from the initial conditions; no computation is needed for them.</p>
+
+  <div class="cb c-pe">
+    <div class="cbh">🔗 PE-08 Connection — "Generate First n Terms"</div>
+    <p>PE-08 requires your program to <strong>generate the first n terms</strong> of a user-supplied recurrence relation. The iteration method above is exactly what your code must implement:</p>
+    <ol>
+      <li>Read the recurrence coefficients and initial conditions as input; store the initial values in an array.</li>
+      <li>Run a loop from index k (= degree of the recurrence) up to the requested term count, computing each new value by applying the recurrence to previously stored entries.</li>
+      <li>Collect and output the complete sequence.</li>
+    </ol>
+    <p><strong>Verification target:</strong> For F(n) = F(n−1) + F(n−2), a<sub>0</sub> = 0, a<sub>1</sub> = 1, requesting 8 terms, your program should produce: <code>0, 1, 1, 2, 3, 5, 8, 13</code>.</p>
+  </div>
+
+  <div class="cb c-tip">
+    <div class="cbh">💡 Two Reasons to Generate Terms First</div>
+    <ol>
+      <li><strong>Model validation:</strong> If the numbers look wrong (unexpected sign, growth rate, or pattern), revisit your recurrence setup <em>before</em> investing time in the algebra.</li>
+      <li><strong>Closed-form verification:</strong> After deriving a closed form, plug in small values of n and compare against the iteration table. A mismatch reveals an algebra error immediately — for example, Binet's formula (Section 4) should give F(6) = 8, exactly matching the table above.</li>
+    </ol>
+  </div>
+
+</section>
+
+<!-- ═══════════════ SECTION 4: CHARACTERISTIC EQUATION ═══════════════ -->
+<section class="sec sa" id="sec4" aria-labelledby="h-sec4">
+  <h2 class="sh" id="h-sec4"><span class="sn" aria-hidden="true">4</span>Solving Linear Homogeneous Recurrences — Characteristic Equation Method</h2>
+
+  <div class="cb c-con">
+    <div class="cbh">📐 Definition: Linear Homogeneous Recurrence with Constant Coefficients</div>
+    <p>A recurrence is <strong>linear homogeneous with constant coefficients</strong> when it has the form</p>
+    <div class="mb mbc" style="margin:6px 0">
+      <span class="ml">a<sub>n</sub> = c<sub>1</sub>a<sub>n−1</sub> + c<sub>2</sub>a<sub>n−2</sub> + ⋯ + c<sub>k</sub>a<sub>n−k</sub></span>
+    </div>
+    <p><strong>Linear:</strong> every a<sub>n−j</sub> appears to the first power only. &nbsp;<strong>Homogeneous:</strong> the right-hand side contains only previous a terms — no additional function of n. &nbsp;<strong>Constant coefficients:</strong> the c<sub>j</sub> values do not depend on n.</p>
+  </div>
+
+  <h3 class="sh3">Five-Step Visual Walkthrough</h3>
+
+  <ol class="stps" role="list">
+    <li class="stp">
+      <div class="stpn" aria-hidden="true">1</div>
+      <div class="stpb">
+        <strong>Write the recurrence in standard form</strong>
+        Move all a terms to the left so the right side equals zero:
+        <div class="mb mbc" style="margin:7px 0;font-size:.93rem">
+          <span class="ml">a<sub>n</sub> − c<sub>1</sub>a<sub>n−1</sub> − c<sub>2</sub>a<sub>n−2</sub> − ⋯ − c<sub>k</sub>a<sub>n−k</sub> = 0</span>
+        </div>
+      </div>
+    </li>
+    <li class="stp">
+      <div class="stpn" aria-hidden="true">2</div>
+      <div class="stpb">
+        <strong>Substitute the trial solution a<sub>n</sub> = r<sup>n</sup></strong>
+        Replacing a<sub>n−j</sub> = r<sup>n−j</sup> and dividing every term by r<sup>n−k</sup> yields the <em>characteristic equation</em> — a polynomial in r:
+        <div class="mb mbc" style="margin:7px 0;font-size:.93rem">
+          <span class="ml">r<sup>k</sup> − c<sub>1</sub>r<sup>k−1</sup> − c<sub>2</sub>r<sup>k−2</sup> − ⋯ − c<sub>k</sub> = 0</span>
+        </div>
+      </div>
+    </li>
+    <li class="stp">
+      <div class="stpn" aria-hidden="true">3</div>
+      <div class="stpb">
+        <strong>Find the characteristic roots r<sub>1</sub>, r<sub>2</sub>, …, r<sub>k</sub></strong>
+        Factor or apply the quadratic formula. Each distinct root will contribute an independent term to the general solution.
+      </div>
+    </li>
+    <li class="stp">
+      <div class="stpn" aria-hidden="true">4</div>
+      <div class="stpb">
+        <strong>Write the general solution (distinct roots)</strong>
+        When all k roots are distinct, the general solution is:
+        <div class="mb mbc" style="margin:7px 0;font-size:.93rem">
+          <span class="ml">a<sub>n</sub> = α<sub>1</sub>r<sub>1</sub><sup>n</sup> + α<sub>2</sub>r<sub>2</sub><sup>n</sup> + ⋯ + α<sub>k</sub>r<sub>k</sub><sup>n</sup></span>
+        </div>
+        The constants α<sub>1</sub>, …, α<sub>k</sub> are as yet undetermined.
+      </div>
+    </li>
+    <li class="stp">
+      <div class="stpn" aria-hidden="true">5</div>
+      <div class="stpb">
+        <strong>Apply initial conditions to determine the constants</strong>
+        Substitute a<sub>0</sub> = v<sub>0</sub>, a<sub>1</sub> = v<sub>1</sub>, …, a<sub>k−1</sub> = v<sub>k−1</sub> into the general solution. This produces a linear system of k equations in k unknowns. Solve the system to obtain the closed form.
+      </div>
+    </li>
+  </ol>
+
+  <h3 class="sh3">Fully Worked Example: Fibonacci Closed Form (Binet's Formula)</h3>
+  <p>We apply all five steps to F(n) = F(n−1) + F(n−2), &nbsp; F(0) = 0, &nbsp; F(1) = 1.</p>
+
+  <button class="colbtn" aria-expanded="false" aria-controls="binet-col"
+    onclick="toggleCollapse('binet-col')">
+    Show Full Derivation — Binet's Formula
+    <span class="colarr" aria-hidden="true">▼</span>
+  </button>
+  <div class="colbody" id="binet-col" role="region" aria-label="Full derivation of Binet's formula for Fibonacci">
+    <div class="colinn">
+
+      <div class="ds">
+        <div class="dl">Step 1 — Standard Form</div>
+        <div class="mb mbc"><span class="ml">F(n) − F(n−1) − F(n−2) = 0</span></div>
+      </div>
+
+      <div class="ds">
+        <div class="dl">Step 2 — Characteristic Equation</div>
+        <p>Substitute F(n) = r<sup>n</sup>; divide through by r<sup>n−2</sup>:</p>
+        <div class="mb mbc">
+          <span class="ml">r<sup>n</sup> − r<sup>n−1</sup> − r<sup>n−2</sup> = 0</span>
+          <span class="ml" style="color:var(--muted);font-size:.85rem">÷ r<sup>n−2</sup></span>
+          <span class="ml">r<sup>2</sup> − r − 1 = 0</span>
+        </div>
+      </div>
+
+      <div class="ds">
+        <div class="dl">Step 3 — Characteristic Roots (Quadratic Formula)</div>
+        <div class="mb mbc">
+          <span class="ml">r = <span class="fr"><span class="fn">1 ± √5</span><span class="fd">2</span></span></span>
+        </div>
+        <p>Name the two distinct roots:</p>
+        <div class="mb mbc">
+          <span class="ml">φ = <span class="fr"><span class="fn">1 + √5</span><span class="fd">2</span></span> ≈ 1.6180 &nbsp;&nbsp; <em>(the golden ratio)</em></span>
+          <span class="ml">ψ = <span class="fr"><span class="fn">1 − √5</span><span class="fd">2</span></span> ≈ −0.6180</span>
+        </div>
+      </div>
+
+      <div class="ds">
+        <div class="dl">Step 4 — General Solution (two distinct roots)</div>
+        <div class="mb mbc">
+          <span class="ml">F(n) = A · φ<sup>n</sup> + B · ψ<sup>n</sup></span>
+        </div>
+      </div>
+
+      <div class="ds">
+        <div class="dl">Step 5 — Apply Initial Conditions</div>
+        <p><strong>From F(0) = 0:</strong></p>
+        <div class="mb mbc">
+          <span class="ml">A · φ<sup>0</sup> + B · ψ<sup>0</sup> = 0 &nbsp;⟹&nbsp; A + B = 0 &nbsp;⟹&nbsp; B = −A</span>
+        </div>
+        <p><strong>From F(1) = 1:</strong></p>
+        <div class="mb mbc">
+          <span class="ml">A · φ + (−A) · ψ = 1 &nbsp;⟹&nbsp; A(φ − ψ) = 1</span>
+        </div>
+        <p>Compute φ − ψ directly:</p>
+        <div class="mb mbc">
+          <span class="ml">φ − ψ = <span class="fr"><span class="fn">1+√5</span><span class="fd">2</span></span> − <span class="fr"><span class="fn">1−√5</span><span class="fd">2</span></span> = <span class="fr"><span class="fn">2√5</span><span class="fd">2</span></span> = √5</span>
+        </div>
+        <p>Therefore:</p>
+        <div class="mb mbc">
+          <span class="ml">A · √5 = 1 &nbsp;⟹&nbsp; A = <span class="fr"><span class="fn">1</span><span class="fd">√5</span></span> &nbsp;&nbsp;&nbsp; B = −A = −<span class="fr"><span class="fn">1</span><span class="fd">√5</span></span></span>
+        </div>
+      </div>
+
+      <div class="ds" style="border-color:var(--cb-pbdr)">
+        <div class="dl" style="color:var(--cb-pbdr)">Result — Binet's Formula</div>
+        <div class="hi-box" style="text-align:center">
+          <span class="ml" style="font-size:1.07rem"><strong>F(n) = <span class="fr"><span class="fn">φ<sup>n</sup> − ψ<sup>n</sup></span><span class="fd">√5</span></span></strong></span>
+          <span class="ml" style="font-size:.84rem;color:var(--muted)">where &nbsp; φ = <span class="fr"><span class="fn">1+√5</span><span class="fd">2</span></span>, &nbsp;&nbsp; ψ = <span class="fr"><span class="fn">1−√5</span><span class="fd">2</span></span></span>
+        </div>
+        <p style="margin-top:8px"><strong>Verification (n = 6):</strong> φ<sup>6</sup> ≈ 17.944, ψ<sup>6</sup> ≈ 0.056; &nbsp; (17.944 − 0.056) ÷ 2.236 ≈ 8.00 ✓ — matches F(6) = 8 from the iteration table in Section 3.</p>
+        <p>Although φ and ψ are irrational, the formula produces a positive integer for every n ≥ 0 because the irrational √5 parts cancel exactly.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Repeated Roots -->
+  <h3 class="sh3">Extension: Repeated Characteristic Roots</h3>
+
+  <div class="cb c-con">
+    <div class="cbh">📐 Repeated Root Rule</div>
+    <p>If the characteristic equation has a root r with <strong>multiplicity m</strong> — meaning (x − r)<sup>m</sup> divides the characteristic polynomial — then that root contributes <strong>m linearly independent terms</strong> to the general solution:</p>
+    <div class="mb mbc" style="margin:6px 0">
+      <span class="ml">(α<sub>1</sub> + α<sub>2</sub>n + α<sub>3</sub>n<sup>2</sup> + ⋯ + α<sub>m</sub>n<sup>m−1</sup>) · r<sup>n</sup></span>
+    </div>
+    <p>The ordinary distinct-root formula r<sup>n</sup> is the special case m = 1. Each additional copy of the same root introduces a factor of n multiplying r<sup>n</sup>.</p>
+  </div>
+
+  <h3 class="sh3">Repeated Root — Worked Example</h3>
+  <p>Solve: a<sub>n</sub> = 4a<sub>n−1</sub> − 4a<sub>n−2</sub>, &nbsp; a<sub>0</sub> = 1, &nbsp; a<sub>1</sub> = 2.</p>
+
+  <button class="colbtn" aria-expanded="false" aria-controls="rep-col"
+    onclick="toggleCollapse('rep-col')">
+    Show Full Solution
+    <span class="colarr" aria-hidden="true">▼</span>
+  </button>
+  <div class="colbody" id="rep-col" role="region" aria-label="Repeated characteristic root worked example">
+    <div class="colinn">
+
+      <div class="ds">
+        <div class="dl">Characteristic Equation</div>
+        <div class="mb mbc">
+          <span class="ml">r<sup>2</sup> − 4r + 4 = 0 &nbsp;⟹&nbsp; (r − 2)<sup>2</sup> = 0 &nbsp;⟹&nbsp; r = 2 &nbsp; (double root, m = 2)</span>
+        </div>
+      </div>
+
+      <div class="ds">
+        <div class="dl">General Solution (Repeated Root, m = 2)</div>
+        <div class="mb mbc">
+          <span class="ml">a<sub>n</sub> = (α<sub>1</sub> + α<sub>2</sub>n) · 2<sup>n</sup></span>
+        </div>
+      </div>
+
+      <div class="ds">
+        <div class="dl">Apply Initial Conditions</div>
+        <div class="mb mbc">
+          <span class="ml">a<sub>0</sub> = 1: &nbsp; (α<sub>1</sub> + 0) · 2<sup>0</sup> = 1 &nbsp;⟹&nbsp; α<sub>1</sub> = 1</span>
+          <span class="ml">a<sub>1</sub> = 2: &nbsp; (1 + α<sub>2</sub>) · 2<sup>1</sup> = 2 &nbsp;⟹&nbsp; 1 + α<sub>2</sub> = 1 &nbsp;⟹&nbsp; α<sub>2</sub> = 0</span>
+        </div>
+      </div>
+
+      <div class="ds" style="border-color:var(--cb-pbdr)">
+        <div class="dl" style="color:var(--cb-pbdr)">Closed Form</div>
+        <div class="hi-box" style="text-align:center">
+          <span class="ml" style="font-size:1.05rem"><strong>a<sub>n</sub> = 2<sup>n</sup></strong></span>
+        </div>
+        <p style="margin-top:8px"><strong>Verification:</strong> a<sub>0</sub>=1 ✓, a<sub>1</sub>=2 ✓, a<sub>2</sub>=4(2)−4(1)=4=2<sup>2</sup> ✓, a<sub>3</sub>=4(4)−4(2)=8=2<sup>3</sup> ✓.</p>
+        <p>The α<sub>2</sub> = 0 result collapses the polynomial factor to a constant: (1 + 0·n)·2<sup>n</sup> = 2<sup>n</sup>. The solution is purely geometric even though the characteristic root had multiplicity 2.</p>
+      </div>
+
+    </div>
+  </div>
+
+</section>
+
+<!-- ═══════════════ SECTION 5: NON-HOMOGENEOUS ═══════════════ -->
+<section class="sec sa" id="sec5" aria-labelledby="h-sec5">
+  <h2 class="sh" id="h-sec5"><span class="sn" aria-hidden="true">5</span>Linear Non-Homogeneous Recurrences</h2>
+
+  <div class="cb c-con">
+    <div class="cbh">📐 Definition: Linear Non-Homogeneous Recurrence</div>
+    <p>A recurrence of the form</p>
+    <div class="mb mbc" style="margin:6px 0">
+      <span class="ml">a<sub>n</sub> = c<sub>1</sub>a<sub>n−1</sub> + c<sub>2</sub>a<sub>n−2</sub> + ⋯ + c<sub>k</sub>a<sub>n−k</sub> + f(n)</span>
+    </div>
+    <p>where f(n) ≠ 0 is a function of n alone (called the <strong>driving function</strong> or <strong>forcing function</strong>) is a <strong>linear non-homogeneous recurrence relation</strong>. The associated <strong>homogeneous</strong> recurrence is obtained by setting f(n) = 0.</p>
+  </div>
+
+  <h3 class="sh3">Solution Strategy: Homogeneous + Particular</h3>
+  <p>The general solution combines two independent components:</p>
+
+  <div class="mb mbc">
+    <span class="ml">a<sub>n</sub> &nbsp;=&nbsp; a<sub>n</sub><sup>(h)</sup> &nbsp;+&nbsp; a<sub>n</sub><sup>(p)</sup></span>
+  </div>
+
+  <ul>
+    <li><strong>a<sub>n</sub><sup>(h)</sup></strong> — the <strong>homogeneous solution</strong>: solve the associated homogeneous recurrence (f(n) = 0) using the characteristic equation method from Section 4. This part contains the free constants α<sub>i</sub>.</li>
+    <li><strong>a<sub>n</sub><sup>(p)</sup></strong> — a <strong>particular solution</strong>: guess a trial form for a<sub>n</sub><sup>(p)</sup> whose shape is guided by f(n), substitute it into the <em>full</em> recurrence, and equate coefficients to solve for the constants in the guess.</li>
+  </ul>
+
+  <p>After forming a<sub>n</sub> = a<sub>n</sub><sup>(h)</sup> + a<sub>n</sub><sup>(p)</sup>, apply the initial conditions to the <em>combined</em> general solution (not to the homogeneous part alone) to determine the remaining constants.</p>
+
+  <h3 class="sh3">Choosing the Particular Solution Form</h3>
+
+  <div class="twrap">
+    <table class="tbl" aria-label="Particular solution guess forms by driving function type">
+      <thead><tr>
+        <th>f(n) Type</th>
+        <th>Standard Particular Solution Guess</th>
+        <th>Resonance Exception</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td>Polynomial of degree d<br><em>e.g., 3n + 2 &nbsp;(d = 1)</em></td>
+          <td>p<sub>d</sub>n<sup>d</sup> + p<sub>d−1</sub>n<sup>d−1</sup> + ⋯ + p<sub>0</sub></td>
+          <td>If 1 is a characteristic root with multiplicity j, multiply guess by n<sup>j</sup>.</td>
+        </tr>
+        <tr>
+          <td>Exponential<br><em>e.g., 3<sup>n</sup></em></td>
+          <td>C · 3<sup>n</sup></td>
+          <td>If 3 is a characteristic root with multiplicity j, use C · n<sup>j</sup> · 3<sup>n</sup>.</td>
+        </tr>
+        <tr>
+          <td>Polynomial × Exponential<br><em>e.g., n · 2<sup>n</sup></em></td>
+          <td>(p<sub>d</sub>n<sup>d</sup> + ⋯ + p<sub>0</sub>) · 2<sup>n</sup></td>
+          <td>Apply both rules above as needed.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="cb c-wrn">
+    <div class="cbh">⚠ Resonance Pitfall</div>
+    <p>If the base of f(n)'s exponential matches a characteristic root, the naive particular guess is already part of the homogeneous solution and yields 0 = f(n) when substituted — making the constants unsolvable. Fix: multiply the particular guess by n (or n<sup>j</sup> for multiplicity j) to make it linearly independent from the homogeneous solution. This situation is called <strong>resonance</strong>, in analogy with driven oscillators in differential equations.</p>
+  </div>
+
+  <h3 class="sh3">Worked Example: Polynomial Driving Function</h3>
+  <p>Solve: a<sub>n</sub> = 2a<sub>n−1</sub> + n, &nbsp; a<sub>0</sub> = 1.</p>
+
+  <button class="colbtn" aria-expanded="false" aria-controls="nhom-col"
+    onclick="toggleCollapse('nhom-col')">
+    Show Full Solution
+    <span class="colarr" aria-hidden="true">▼</span>
+  </button>
+  <div class="colbody" id="nhom-col" role="region" aria-label="Non-homogeneous recurrence worked example">
+    <div class="colinn">
+
+      <div class="ds">
+        <div class="dl">Step 1 — Homogeneous Solution</div>
+        <p>Associated homogeneous recurrence: a<sub>n</sub> = 2a<sub>n−1</sub>. &nbsp; Characteristic equation: r − 2 = 0 &nbsp;⟹&nbsp; r = 2.</p>
+        <div class="mb mbc"><span class="ml">a<sub>n</sub><sup>(h)</sup> = A · 2<sup>n</sup></span></div>
+      </div>
+
+      <div class="ds">
+        <div class="dl">Step 2 — Particular Solution</div>
+        <p>f(n) = n is degree-1; characteristic root r = 2 ≠ 1, so no resonance. Guess: a<sub>n</sub><sup>(p)</sup> = cn + d.</p>
+        <p>Substitute into the full recurrence:</p>
+        <div class="mb mbc">
+          <span class="ml">cn + d = 2[c(n−1) + d] + n</span>
+          <span class="ml">cn + d = 2cn − 2c + 2d + n</span>
+          <span class="ml">cn + d = (2c + 1)n + (−2c + 2d)</span>
+        </div>
+        <p>Equate coefficients by power of n:</p>
+        <div class="mb mbc">
+          <span class="ml">n<sup>1</sup>: &nbsp; c = 2c + 1 &nbsp;⟹&nbsp; −c = 1 &nbsp;⟹&nbsp; c = −1</span>
+          <span class="ml">n<sup>0</sup>: &nbsp; d = −2c + 2d &nbsp;⟹&nbsp; −d = −2c = 2 &nbsp;⟹&nbsp; d = −2</span>
+        </div>
+        <div class="mb mbc"><span class="ml">a<sub>n</sub><sup>(p)</sup> = −n − 2</span></div>
+      </div>
+
+      <div class="ds">
+        <div class="dl">Step 3 — General Solution</div>
+        <div class="mb mbc">
+          <span class="ml">a<sub>n</sub> = A · 2<sup>n</sup> + (−n − 2) = A · 2<sup>n</sup> − n − 2</span>
+        </div>
+      </div>
+
+      <div class="ds">
+        <div class="dl">Step 4 — Apply Initial Condition</div>
+        <div class="mb mbc">
+          <span class="ml">a<sub>0</sub> = 1: &nbsp; A · 2<sup>0</sup> − 0 − 2 = 1 &nbsp;⟹&nbsp; A − 2 = 1 &nbsp;⟹&nbsp; A = 3</span>
+        </div>
+      </div>
+
+      <div class="ds" style="border-color:var(--cb-pbdr)">
+        <div class="dl" style="color:var(--cb-pbdr)">Closed Form</div>
+        <div class="hi-box" style="text-align:center">
+          <span class="ml" style="font-size:1.05rem"><strong>a<sub>n</sub> = 3 · 2<sup>n</sup> − n − 2</strong></span>
+        </div>
+        <p style="margin-top:8px"><strong>Verification:</strong></p>
+        <ul>
+          <li>a<sub>0</sub> = 3(1) − 0 − 2 = 1 ✓</li>
+          <li>a<sub>1</sub> = 3(2) − 1 − 2 = 3; &nbsp; check via recurrence: 2(1) + 1 = 3 ✓</li>
+          <li>a<sub>2</sub> = 3(4) − 2 − 2 = 8; &nbsp; check: 2(3) + 2 = 8 ✓</li>
+          <li>a<sub>3</sub> = 3(8) − 3 − 2 = 19; &nbsp; check: 2(8) + 3 = 19 ✓</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+</section>
+
+<!-- ═══════════════ SECTION 6: PATTERNS TABLE ═══════════════ -->
+<section class="sec sa" id="sec6" aria-labelledby="h-sec6">
+  <h2 class="sh" id="h-sec6"><span class="sn" aria-hidden="true">6</span>Common Recurrence Patterns — Summary Table</h2>
+
+  <p>Recognizing standard recurrence patterns on sight will save significant time in exams and in PE-08. Aim to memorize the first three columns; the closed forms and growth rates follow by the methods of this module.</p>
+
+  <div class="twrap">
+    <table class="tbl" aria-label="Common recurrence patterns summary table">
+      <thead><tr>
+        <th>Pattern</th>
+        <th>Recurrence</th>
+        <th>Initial Conditions</th>
+        <th>Closed Form</th>
+        <th>Growth Rate</th>
+        <th>Algorithm Example</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Arithmetic Sequence</strong></td>
+          <td>a<sub>n</sub> = a<sub>n−1</sub> + d</td>
+          <td>a<sub>0</sub> = a</td>
+          <td>a + nd</td>
+          <td>Θ(n)</td>
+          <td>Sequential Search (d = 1)</td>
+        </tr>
+        <tr>
+          <td><strong>Geometric Sequence</strong></td>
+          <td>a<sub>n</sub> = r · a<sub>n−1</sub></td>
+          <td>a<sub>0</sub> = a</td>
+          <td>a · r<sup>n</sup></td>
+          <td>Θ(r<sup>n</sup>) for r &gt; 1</td>
+          <td>Towers of Hanoi (r = 2)</td>
+        </tr>
+        <tr>
+          <td><strong>Fibonacci</strong></td>
+          <td>F(n) = F(n−1) + F(n−2)</td>
+          <td>F(0) = 0, F(1) = 1</td>
+          <td><span class="fr"><span class="fn">φ<sup>n</sup> − ψ<sup>n</sup></span><span class="fd">√5</span></span></td>
+          <td>Θ(φ<sup>n</sup>) ≈ Θ(1.618<sup>n</sup>)</td>
+          <td>Naïve Fibonacci recursion</td>
+        </tr>
+        <tr>
+          <td><strong>Sequential Search</strong></td>
+          <td>T(n) = T(n−1) + 1</td>
+          <td>T(1) = 1</td>
+          <td>n</td>
+          <td>Θ(n)</td>
+          <td>Linear scan / linear search</td>
+        </tr>
+        <tr>
+          <td><strong>Binary Search</strong></td>
+          <td>T(n) = T(n/2) + 1</td>
+          <td>T(1) = 1</td>
+          <td>⌊log<sub>2</sub>n⌋ + 1</td>
+          <td>Θ(log n)</td>
+          <td>Binary Search</td>
+        </tr>
+        <tr>
+          <td><strong>Merge Sort</strong></td>
+          <td>T(n) = 2T(n/2) + n</td>
+          <td>T(1) = 1</td>
+          <td>n log<sub>2</sub>n</td>
+          <td>Θ(n log n)</td>
+          <td>Merge Sort</td>
+        </tr>
+        <tr>
+          <td><strong>Towers of Hanoi</strong></td>
+          <td>T(n) = 2T(n−1) + 1</td>
+          <td>T(1) = 1</td>
+          <td>2<sup>n</sup> − 1</td>
+          <td>Θ(2<sup>n</sup>)</td>
+          <td>Towers of Hanoi</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="cb c-tip">
+    <div class="cbh">💡 Module 11.5 Connection</div>
+    <p>The Binary Search and Merge Sort rows use divide-and-conquer recurrences of the form T(n) = aT(n/b) + f(n). Although their closed forms are listed above, deriving them via the characteristic equation method is awkward — the n/b subproblem size breaks the constant-coefficient assumption. The <strong>Master Theorem</strong> (Module 11.5) handles these in three pattern-matching cases without any algebra, and is the tool PE-08 requires for its divide-and-conquer analysis component.</p>
+  </div>
+
+</section>
+
+<!-- ═══════════════ SECTION 7: KNOWLEDGE CHECK ═══════════════ -->
+<section class="sec sa" id="sec7" aria-labelledby="h-sec7">
+  <h2 class="sh" id="h-sec7"><span class="sn" aria-hidden="true">7</span>Knowledge Check <span class="tag-ug">Ungraded</span></h2>
+
+  <div class="cb c-brg" style="margin-bottom:16px">
+    <div class="cbh">ℹ About This Check</div>
+    <p>These four questions are <strong>not graded</strong> and do not submit to Canvas. Select your answer and click <em>Check Answer</em> for immediate, explanatory feedback. Use them to gauge your readiness before beginning PE-08 and PS-07.</p>
+  </div>
+
+  <div role="list" aria-label="Four knowledge check questions">
+
+    <!-- Q1 -->
+    <div class="kcq" role="listitem">
+      <p class="qt">Question 1 of 4 — Write the Recurrence</p>
+      <p>The Towers of Hanoi algorithm moves n discs from peg A to peg C by: (1) recursively moving n−1 discs from A to B, (2) moving the single largest disc directly from A to C (1 disc move), then (3) recursively moving n−1 discs from B to C. Let T(n) = total number of disc moves. Which recurrence and base case correctly model this algorithm?</p>
+      <ul class="kcopts" role="radiogroup" aria-label="Answer choices for question 1">
+        <li><label><input type="radio" name="q1" value="a">&nbsp; T(n) = T(n−1) + 1, &nbsp;&nbsp;&nbsp; T(1) = 1</label></li>
+        <li><label><input type="radio" name="q1" value="b">&nbsp; T(n) = 2T(n−1) + 1, &nbsp; T(1) = 1</label></li>
+        <li><label><input type="radio" name="q1" value="c">&nbsp; T(n) = 2T(n/2) + n, &nbsp; T(1) = 1</label></li>
+        <li><label><input type="radio" name="q1" value="d">&nbsp; T(n) = T(n−1) + n, &nbsp;&nbsp;&nbsp; T(1) = 0</label></li>
+      </ul>
+      <button class="kcsub" onclick="checkKC(1,'b')">Check Answer</button>
+      <div class="kcfb" id="fb1" role="alert" aria-live="polite"></div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="kcq" role="listitem">
+      <p class="qt">Question 2 of 4 — Generate Terms</p>
+      <p>For the recurrence a<sub>n</sub> = 3a<sub>n−1</sub> − 2a<sub>n−2</sub> with initial conditions a<sub>0</sub> = 1, a<sub>1</sub> = 3, what are the first <strong>six terms</strong> (a<sub>0</sub> through a<sub>5</sub>)?</p>
+      <ul class="kcopts" role="radiogroup" aria-label="Answer choices for question 2">
+        <li><label><input type="radio" name="q2" value="a">&nbsp; 1, 3, 7, 15, 31, 63</label></li>
+        <li><label><input type="radio" name="q2" value="b">&nbsp; 1, 3, 9, 27, 81, 243</label></li>
+        <li><label><input type="radio" name="q2" value="c">&nbsp; 1, 3, 5, 7, 9, 11</label></li>
+        <li><label><input type="radio" name="q2" value="d">&nbsp; 1, 3, 8, 18, 42, 96</label></li>
+      </ul>
+      <button class="kcsub" onclick="checkKC(2,'a')">Check Answer</button>
+      <div class="kcfb" id="fb2" role="alert" aria-live="polite"></div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="kcq" role="listitem">
+      <p class="qt">Question 3 of 4 — Solve a Degree-2 Homogeneous Recurrence</p>
+      <p>Solve: a<sub>n</sub> = 5a<sub>n−1</sub> − 6a<sub>n−2</sub>, &nbsp; a<sub>0</sub> = 1, &nbsp; a<sub>1</sub> = 5. Which closed-form expression is correct?</p>
+      <ul class="kcopts" role="radiogroup" aria-label="Answer choices for question 3">
+        <li><label><input type="radio" name="q3" value="a">&nbsp; a<sub>n</sub> = 2<sup>n</sup> + 3<sup>n</sup></label></li>
+        <li><label><input type="radio" name="q3" value="b">&nbsp; a<sub>n</sub> = 3 · 3<sup>n</sup> − 2 · 2<sup>n</sup></label></li>
+        <li><label><input type="radio" name="q3" value="c">&nbsp; a<sub>n</sub> = 2 · 2<sup>n</sup> + 3 · 3<sup>n</sup></label></li>
+        <li><label><input type="radio" name="q3" value="d">&nbsp; a<sub>n</sub> = (−2)<sup>n</sup> + 3<sup>n</sup></label></li>
+      </ul>
+      <button class="kcsub" onclick="checkKC(3,'b')">Check Answer</button>
+      <div class="kcfb" id="fb3" role="alert" aria-live="polite"></div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="kcq" role="listitem">
+      <p class="qt">Question 4 of 4 — Classify the Recurrence</p>
+      <p>Classify T(n) = 2T(n/2) + n. Which description is most accurate?</p>
+      <ul class="kcopts" role="radiogroup" aria-label="Answer choices for question 4">
+        <li><label><input type="radio" name="q4" value="a">&nbsp; Linear homogeneous recurrence with constant coefficients</label></li>
+        <li><label><input type="radio" name="q4" value="b">&nbsp; Linear non-homogeneous divide-and-conquer recurrence</label></li>
+        <li><label><input type="radio" name="q4" value="c">&nbsp; Non-linear recurrence (the n/2 subproblem size makes it non-linear)</label></li>
+        <li><label><input type="radio" name="q4" value="d">&nbsp; Exponential recurrence</label></li>
+      </ul>
+      <button class="kcsub" onclick="checkKC(4,'b')">Check Answer</button>
+      <div class="kcfb" id="fb4" role="alert" aria-live="polite"></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════ SECTION 8: SUMMARY AND BRIDGE ═══════════════ -->
+<div class="bsec sa" id="sec8" role="region" aria-labelledby="h-sec8">
+  <h2 class="sh" id="h-sec8"><span class="sn" aria-hidden="true">8</span>Module Summary and Bridge to Module 11.5</h2>
+  <p>You have developed the complete algebraic toolkit for recurrence relations. Here is a compact recap of the eight core ideas from this module:</p>
+  <div class="kigrid" aria-label="Key ideas from Module 11.4">
+    <div class="kicard"><strong>Definition</strong>A recurrence expresses a<sub>n</sub> in terms of earlier terms; initial conditions guarantee uniqueness of the sequence.</div>
+    <div class="kicard"><strong>Distinction</strong>A recursive definition enumerates values; a recurrence relation models algorithmic cost for Big-O analysis.</div>
+    <div class="kicard"><strong>5-Step Modeling</strong>Size parameter → current-level work → recursive calls → recurrence equation → base case.</div>
+    <div class="kicard"><strong>Iteration</strong>Generate terms by direct substitution to validate your model and verify closed-form results numerically.</div>
+    <div class="kicard"><strong>5-Step Char. Eq.</strong>Standard form → characteristic equation → roots → general solution → apply initial conditions.</div>
+    <div class="kicard"><strong>Binet's Formula</strong>F(n) = (φ<sup>n</sup> − ψ<sup>n</sup>)/√5; irrational parts cancel exactly to produce integers at every n.</div>
+    <div class="kicard"><strong>Repeated Roots</strong>Multiplicity m adds polynomial factor (α<sub>1</sub> + α<sub>2</sub>n + ⋯ + α<sub>m</sub>n<sup>m−1</sup>) · r<sup>n</sup> to the general solution.</div>
+    <div class="kicard"><strong>Non-Homogeneous</strong>General solution = homogeneous part + particular part; guess the particular form from the type of f(n).</div>
+  </div>
+  <div class="cb" style="background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.28);margin-top:16px">
+    <div class="cbh" style="color:rgba(255,255,255,.58)">▶ Up Next: Module 11.5 — The Master Theorem</div>
+    <p>The characteristic equation method works cleanly for recurrences like T(n) = T(n−1) + 1 where each call reduces the problem by a fixed amount. Divide-and-conquer recurrences — T(n) = 2T(n/2) + n, T(n) = T(n/2) + 1 — involve subproblem sizes of the form n/b, which breaks the constant-coefficient assumption and makes the characteristic equation method awkward to apply. In <strong>Module 11.5</strong> you will learn the <strong>Master Theorem</strong>, a three-case pattern-matching tool that resolves the complexity of any T(n) = aT(n/b) + f(n) recurrence in seconds — completing the merge sort and binary search analyses and satisfying PE-08's divide-and-conquer requirement.</p>
+  </div>
+</div>
+
+</main>
+
+<script>
+/* ── COLLAPSIBLE ─────────────────────────────────────── */
+function toggleCollapse(id) {
+  var body = document.getElementById(id);
+  var btn  = document.querySelector('[aria-controls="' + id + '"]');
+  if (!body || !btn) return;
+  var isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  btn.setAttribute('aria-expanded', String(!isOpen));
+}
+
+/* ── REVEAL (mini-case / concept question) ───────────── */
+function toggleReveal(id) {
+  var el  = document.getElementById(id);
+  var btn = document.querySelector('[aria-controls="' + id + '"]');
+  if (!el || !btn) return;
+  var visible = el.style.display === 'block';
+  el.style.display = visible ? 'none' : 'block';
+  btn.setAttribute('aria-expanded', String(!visible));
+  btn.textContent = visible
+    ? (btn.dataset.show || 'Show ▾')
+    : (btn.dataset.hide || 'Hide ▴');
+}
+
+/* ── KNOWLEDGE CHECK ─────────────────────────────────── */
+var KC = {
+  1: {
+    correct: 'b',
+    ok: '✓ Correct! There are <strong>two</strong> recursive calls — one on n−1 discs moving A→B, one on n−1 discs moving B→C — plus 1 move for the largest disc, giving T(n) = 2T(n−1) + 1 with T(1) = 1. The closed form T(n) = 2<sup>n</sup> − 1 follows by iterating this geometric recurrence (see the Towers of Hanoi row in the patterns table).',
+    no:  '✗ Not quite. Count the recursive calls carefully: the algorithm calls itself <em>twice</em> (steps 1 and 3), each time on n−1 discs, and performs exactly 1 additional move for the largest disc (step 2). That gives T(n) = 2T(n−1) + 1, T(1) = 1.'
+  },
+  2: {
+    correct: 'a',
+    ok:  '✓ Correct! Iterating: a<sub>2</sub> = 3(3)−2(1) = 7; a<sub>3</sub> = 3(7)−2(3) = 15; a<sub>4</sub> = 3(15)−2(7) = 31; a<sub>5</sub> = 3(31)−2(15) = 63. The sequence 1, 3, 7, 15, 31, 63 matches the pattern 2<sup>n+1</sup>−1 (characteristic roots r = 1, r = 2; closed form a<sub>n</sub> = 2<sup>n+1</sup> − 1).',
+    no:  '✗ Not quite. Apply the recurrence step by step: a<sub>2</sub> = 3·a<sub>1</sub> − 2·a<sub>0</sub> = 3(3)−2(1) = 7. Then a<sub>3</sub> = 3(7)−2(3) = 15; a<sub>4</sub> = 3(15)−2(7) = 31; a<sub>5</sub> = 3(31)−2(15) = 63. Full sequence: 1, 3, 7, 15, 31, 63.'
+  },
+  3: {
+    correct: 'b',
+    ok:  '✓ Correct! Characteristic equation: r<sup>2</sup>−5r+6 = (r−2)(r−3) = 0 → roots r = 2, r = 3. General solution: a<sub>n</sub> = A·2<sup>n</sup> + B·3<sup>n</sup>. Applying a<sub>0</sub>=1: A+B=1; a<sub>1</sub>=5: 2A+3B=5 → B=3, A=−2. Therefore a<sub>n</sub> = 3·3<sup>n</sup> − 2·2<sup>n</sup>. Verify: a<sub>0</sub>=3−2=1 ✓, a<sub>1</sub>=9−4=5 ✓.',
+    no:  '✗ Not quite. Factor the characteristic equation r<sup>2</sup>−5r+6 = (r−2)(r−3) = 0 to get roots r = 2 and r = 3. Write a<sub>n</sub> = A·2<sup>n</sup>+B·3<sup>n</sup> and solve the 2×2 system from a<sub>0</sub>=1 and a<sub>1</sub>=5: you get A = −2 and B = 3, giving a<sub>n</sub> = 3·3<sup>n</sup> − 2·2<sup>n</sup>.'
+  },
+  4: {
+    correct: 'b',
+    ok:  '✓ Correct! T(n) = 2T(n/2) + n is <strong>linear</strong> (T appears to the first power), <strong>non-homogeneous</strong> (the "+n" driving function is present on the right-hand side), and a <strong>divide-and-conquer</strong> recurrence (subproblem size n/2 is a fractional reduction, not a constant decrement). The characteristic equation method does not apply here — Module 11.5\'s Master Theorem is the appropriate tool.',
+    no:  '✗ Not quite. Two observations: (1) the "+n" term on the right-hand side makes this <em>non-homogeneous</em> — a homogeneous recurrence would contain only T terms on the right; (2) the subproblem size n/2 (not n−1) marks this as divide-and-conquer rather than a standard linear recurrence. The Master Theorem in Module 11.5 handles it directly.'
+  }
+};
+
+function checkKC(q, correct) {
+  var sel  = document.querySelector('input[name="q' + q + '"]:checked');
+  var fb   = document.getElementById('fb' + q);
+  var all  = document.querySelectorAll('input[name="q' + q + '"]');
+
+  if (!sel) {
+    fb.className = 'kcfb no';
+    fb.innerHTML = 'Please select an answer before checking.';
+    return;
+  }
+
+  all.forEach(function(r) {
+    r.parentElement.classList.remove('lopt-ok', 'lopt-no');
+  });
+  all.forEach(function(r) {
+    if (r.value === correct) {
+      r.parentElement.classList.add('lopt-ok');
+    } else if (r.checked && r.value !== correct) {
+      r.parentElement.classList.add('lopt-no');
+    }
+  });
+
+  var data = KC[q];
+  if (sel.value === correct) {
+    fb.className = 'kcfb ok';
+    fb.innerHTML = data.ok;
+  } else {
+    fb.className = 'kcfb no';
+    fb.innerHTML = data.no;
+  }
+}
+</script>
+</body>
+</html>

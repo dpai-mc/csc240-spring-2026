@@ -1,0 +1,1429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Module 11.2 – Recursive Algorithms | CSC 240 Discrete Structures</title>
+<style>
+/* ── Reset & Variables ───────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --nh:56px;--pri:#1a3a5c;--pri2:#2c6fad;--acc:#0072ce;
+  --grn:#166534;--bg:#f3f5f8;--wh:#fff;--tx:#1e2430;
+  --mu:#5a6070;--bd:#d0d7de;--cb:#1e1e2e;--cf:#cdd6f4;--r:8px;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+     background:var(--bg);color:var(--tx);line-height:1.7;padding-top:var(--nh)}
+/* ── Accessibility ── */
+.skip-link{position:absolute;top:-40px;left:0;background:var(--acc);color:#fff;
+  padding:8px 14px;z-index:9999;border-radius:0 0 4px 0;text-decoration:none;
+  font-weight:700;transition:top .15s}
+.skip-link:focus{top:0}
+:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+/* ── Navigation ── */
+#top-nav{position:fixed;top:0;left:0;right:0;height:var(--nh);
+  background:var(--pri);z-index:1000;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.nav-inner{max-width:1100px;margin:0 auto;height:100%;display:flex;
+  align-items:center;gap:10px;padding:0 16px}
+.nav-brand{font-weight:700;font-size:.9rem;color:#fff;white-space:nowrap;flex-shrink:0}
+.nav-links{display:flex;list-style:none;gap:2px;flex-wrap:wrap}
+.nav-links a{color:#bdd7f5;text-decoration:none;font-size:.79rem;padding:4px 7px;
+  border-radius:4px;white-space:nowrap;transition:background .15s,color .15s}
+.nav-links a:hover,.nav-links a:focus-visible{background:rgba(255,255,255,.2);color:#fff}
+/* ── Progress Bar ── */
+#prog-bar{position:fixed;top:var(--nh);left:0;right:0;height:4px;
+  background:rgba(255,255,255,.15);z-index:999}
+#prog-fill{height:100%;width:0;background:linear-gradient(90deg,#38bdf8,#0ea5e9);
+  transition:width .1s}
+/* ── Layout ── */
+main{max-width:900px;margin:0 auto;padding:24px 20px 64px}
+section,header{scroll-margin-top:calc(var(--nh) + 14px)}
+/* ── Module Header ── */
+.mod-hdr{background:linear-gradient(140deg,var(--pri),#1e4e7a);color:#fff;
+  padding:36px 32px;border-radius:var(--r);margin-bottom:28px}
+.mod-meta{font-size:.75rem;opacity:.7;text-transform:uppercase;
+  letter-spacing:.09em;margin-bottom:8px}
+.mod-hdr h1{font-size:1.65rem;font-weight:700;line-height:1.3;margin-bottom:10px}
+.mod-sub{font-size:1rem;opacity:.88;max-width:680px;margin-bottom:20px}
+.cslo-badge{display:inline-block;background:rgba(255,255,255,.15);
+  border:1px solid rgba(255,255,255,.4);border-radius:20px;padding:3px 14px;
+  font-size:.8rem;font-weight:700;margin-bottom:18px}
+.obj-box{background:rgba(255,255,255,.1);border-left:4px solid rgba(255,255,255,.5);
+  border-radius:0 6px 6px 0;padding:14px 18px;margin-top:16px}
+.obj-box h3{font-size:.82rem;text-transform:uppercase;letter-spacing:.06em;
+  opacity:.8;margin-bottom:8px}
+.obj-box ul{list-style:none;padding:0}
+.obj-box li{padding:3px 0 3px 18px;position:relative;font-size:.92rem}
+.obj-box li::before{content:'→';position:absolute;left:0;opacity:.65}
+.prereq{background:rgba(255,165,0,.15);border:1px solid rgba(255,165,0,.4);
+  border-radius:6px;padding:12px 16px;margin-top:16px;font-size:.88rem}
+/* ── Section Cards ── */
+.card{background:var(--wh);border-radius:var(--r);border:1px solid var(--bd);
+  padding:32px;margin-bottom:28px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.card h2{font-size:1.35rem;font-weight:700;color:var(--pri);margin-bottom:20px;
+  padding-bottom:12px;border-bottom:2px solid var(--bd);
+  display:flex;align-items:center;gap:10px}
+.card h3{font-size:1.1rem;font-weight:700;color:var(--pri);margin:24px 0 10px}
+.card h4{font-size:1rem;font-weight:600;margin:14px 0 6px}
+.card p{margin-bottom:12px}
+.card ul,.card ol{padding-left:24px;margin-bottom:12px}
+.card li{margin-bottom:4px}
+/* ── Algorithm Blocks ── */
+.algo-block{border:1px solid var(--bd);border-radius:6px;overflow:hidden;margin-bottom:32px}
+.algo-hdr{background:var(--pri);color:#fff;padding:10px 18px;font-size:1rem;font-weight:700}
+.algo-body{padding:20px}
+/* ── Code ── */
+pre{background:var(--cb);color:var(--cf);padding:18px 20px;border-radius:6px;
+  font-family:'Cascadia Code','Fira Code',Consolas,monospace;font-size:.84rem;
+  line-height:1.65;overflow-x:auto;margin:10px 0;tab-size:4}
+code{background:#eef1f7;color:#b71c1c;padding:1px 5px;border-radius:3px;
+  font-family:'Cascadia Code','Fira Code',Consolas,monospace;font-size:.88em}
+pre code{background:none;color:inherit;padding:0}
+.kw{color:#cba6f7}.fn{color:#89b4fa}.cm{color:#6c7086;font-style:italic}
+.nu{color:#fab387}.st{color:#a6e3a1}.ty{color:#f9e2af}
+/* ── Collapsible ── */
+.coll-wrap{margin:10px 0}
+.coll-btn{display:inline-flex;align-items:center;gap:8px;background:var(--pri);
+  color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;
+  font-size:.88rem;font-weight:600;font-family:inherit;transition:background .15s}
+.coll-btn:hover,.coll-btn:focus-visible{background:var(--pri2)}
+.coll-btn .arr{display:inline-block;transition:transform .22s;font-size:.75rem}
+.coll-btn[aria-expanded="true"] .arr{transform:rotate(90deg)}
+.coll-body{display:none;border:1px solid var(--bd);border-top:none;
+  border-radius:0 0 6px 6px;overflow:hidden}
+.coll-body.open{display:block}
+/* ── Tables ── */
+.tbl-wrap{overflow-x:auto;margin:14px 0}
+table{width:100%;border-collapse:collapse;font-size:.88rem}
+th{background:var(--pri);color:#fff;padding:10px 12px;text-align:left;
+  font-weight:600;white-space:nowrap}
+td{padding:9px 12px;border-bottom:1px solid var(--bd);vertical-align:top}
+tr:nth-child(even) td{background:#f8f9fc}
+tr:hover td{background:#eef4ff}
+tr.base-row td{background:#dcfce7;font-weight:600}
+tr.unwind-row td{background:#fef9c3}
+.lbl-dn{color:#1d4ed8;font-weight:700}
+.lbl-up{color:#b45309;font-weight:700}
+.lbl-ok{color:#166534;font-weight:700}
+/* ── Callout Boxes ── */
+.box{border-radius:6px;padding:16px 20px;margin:16px 0;border-left:5px solid}
+.box-title{font-weight:700;font-size:.85rem;text-transform:uppercase;
+  letter-spacing:.05em;margin-bottom:8px}
+.box p:last-child,.box ul:last-child,.box ol:last-child{margin-bottom:0}
+.box-info{background:#e8f4fd;border-color:#2980b9;color:#1a3350}
+.box-info .box-title{color:#1a6fa0}
+.box-tip{background:#f0fdf4;border-color:#22c55e;color:#14532d}
+.box-tip .box-title{color:#15803d}
+.box-warn{background:#fefce8;border-color:#eab308;color:#713f12}
+.box-warn .box-title{color:#a16207}
+.box-key{background:#f5f3ff;border-color:#7c3aed;color:#2e1065}
+.box-key .box-title{color:#6d28d9}
+.box-preview{background:#fff7ed;border-color:#f97316;color:#431407}
+.box-preview .box-title{color:#c2410c}
+/* ── Side-by-Side Compare ── */
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:14px 0}
+@media(max-width:600px){.compare{grid-template-columns:1fr}}
+.comp-panel{border:1px solid var(--bd);border-radius:6px;overflow:hidden}
+.comp-head{padding:8px 14px;font-weight:700;font-size:.82rem;
+  text-transform:uppercase;letter-spacing:.05em}
+.comp-head.rec{background:#dbeafe;color:#1e3a8a}
+.comp-head.itr{background:#dcfce7;color:#14532d}
+.comp-panel pre{margin:0;border-radius:0}
+/* ── Recursion Tree ── */
+.tree-wrap{background:#f8fafc;border:1px solid var(--bd);border-radius:8px;
+  padding:20px 12px;margin:14px 0;text-align:center;overflow-x:auto}
+.tree-legend{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;
+  margin-top:14px;font-size:.83rem;color:var(--mu)}
+.leg-dot{width:13px;height:13px;border-radius:50%;display:inline-block;
+  vertical-align:middle;margin-right:4px;border:2px solid rgba(0,0,0,.15)}
+/* ── Knowledge Check ── */
+.kc-q{border:1px solid var(--bd);border-radius:8px;padding:22px;margin-bottom:20px}
+.kc-num{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--mu);margin-bottom:6px}
+.kc-prompt{font-weight:600;font-size:.98rem;margin-bottom:14px;line-height:1.5}
+.kc-opt{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;
+  border:2px solid var(--bd);border-radius:6px;margin-bottom:8px;cursor:pointer;
+  transition:border-color .15s,background .15s;user-select:none}
+.kc-opt:hover{border-color:var(--acc);background:#f0f7ff}
+.kc-opt input[type=radio]{margin-top:3px;flex-shrink:0;accent-color:var(--acc)}
+.kc-opt.correct{border-color:#16a34a;background:#f0fdf4}
+.kc-opt.wrong{border-color:#dc2626;background:#fef2f2}
+.kc-btn{background:var(--acc);color:#fff;border:none;padding:9px 20px;border-radius:6px;
+  cursor:pointer;font-size:.88rem;font-weight:600;font-family:inherit;
+  margin-top:8px;transition:background .15s}
+.kc-btn:hover,.kc-btn:focus-visible{background:var(--pri)}
+.kc-fb{margin-top:12px;padding:14px 16px;border-radius:6px;display:none;
+  font-size:.93rem;line-height:1.6;outline:none}
+.kc-fb.show{display:block}
+.kc-fb.fb-ok{background:#f0fdf4;border-left:4px solid #16a34a}
+.kc-fb.fb-no{background:#fef2f2;border-left:4px solid #dc2626}
+.kc-score{background:var(--pri);color:#fff;padding:18px 24px;border-radius:8px;
+  text-align:center;margin-top:24px}
+.kc-score .sc-num{font-size:1.5rem;font-weight:700;display:block;margin-bottom:4px}
+/* ── Section Checklist ── */
+.sec-chk{display:flex;align-items:center;padding:12px 0;border-top:1px solid var(--bd);
+  margin-top:24px;font-size:.88rem;color:var(--mu)}
+.sec-chk label{display:flex;align-items:center;gap:8px;cursor:pointer}
+.sec-chk input[type=checkbox]{width:18px;height:18px;accent-color:var(--grn);cursor:pointer}
+/* ── Summary & Bridge ── */
+.sum-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));
+  gap:14px;margin:18px 0}
+.sum-item{border:1px solid var(--bd);border-radius:8px;padding:16px;background:var(--bg)}
+.sum-item h4{color:var(--pri);margin-bottom:6px;font-size:.9rem}
+.sum-item p{font-size:.85rem;color:var(--mu);margin:0}
+.bridge{background:linear-gradient(135deg,var(--pri),#2c5f8a);color:#fff;
+  padding:22px 26px;border-radius:8px;margin-top:20px}
+.bridge h3{margin-bottom:8px;font-size:1.05rem}
+.bridge p{opacity:.9;margin:0;font-size:.93rem}
+/* ── Numbered Steps ── */
+.steps{list-style:none;padding:0;counter-reset:sc}
+.steps li{counter-increment:sc;padding:11px 11px 11px 50px;position:relative;
+  margin-bottom:7px;background:#f8f9fc;border-radius:6px;border:1px solid var(--bd)}
+.steps li::before{content:counter(sc);position:absolute;left:12px;top:50%;
+  transform:translateY(-50%);background:var(--pri);color:#fff;width:22px;height:22px;
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:.78rem;font-weight:700}
+hr.divider{border:none;border-top:2px dashed var(--bd);margin:28px 0}
+footer{text-align:center;padding:24px 0;color:var(--mu);font-size:.82rem;
+  border-top:1px solid var(--bd);margin-top:16px}
+@media(max-width:650px){
+  .card,.algo-body{padding:20px 16px}
+  .mod-hdr{padding:24px 18px}
+  .mod-hdr h1{font-size:1.3rem}
+  .nav-links{display:none}
+}
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main-content">Skip to main content</a>
+
+<!-- ── NAVIGATION ─────────────────────────────────────────────────── -->
+<nav id="top-nav" role="navigation" aria-label="Module sections">
+  <div class="nav-inner">
+    <span class="nav-brand">CSC 240 · Module 11.2</span>
+    <ul class="nav-links" aria-label="Jump to section">
+      <li><a href="#sec-algos">1 · Algorithms</a></li>
+      <li><a href="#sec-trees">2 · Rec. Trees</a></li>
+      <li><a href="#sec-tail">3 · Tail Rec.</a></li>
+      <li><a href="#sec-iter">4 · To Iteration</a></li>
+      <li><a href="#sec-complexity">5 · Complexity</a></li>
+      <li><a href="#sec-check">6 · Check</a></li>
+      <li><a href="#sec-summary">7 · Summary</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ── PROGRESS BAR ────────────────────────────────────────────────── -->
+<div id="prog-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0"
+     aria-valuemax="100" aria-label="Reading progress">
+  <div id="prog-fill"></div>
+</div>
+
+<main id="main-content">
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     MODULE HEADER
+════════════════════════════════════════════════════════════════════ -->
+<header class="mod-hdr">
+  <div class="mod-meta">Week 11 &nbsp;·&nbsp; Module 11.2 of 5 &nbsp;·&nbsp; CSLO 4</div>
+  <h1>Recursive Algorithms: Implementation, Tracing, and Iteration</h1>
+  <p class="mod-sub">
+    Moving from mathematical definitions to working code. You will implement four
+    classic recursive algorithms, trace their execution using recursion tree diagrams,
+    and convert recursive solutions to iterative form — including tail-recursive
+    rewriting. The recursion tree is the central visual tool that bridges recursive
+    thinking to the recurrence analysis in Module 11.4.
+  </p>
+  <div class="cslo-badge">&#127979; CSLO 4 — Induction &amp; Recursion</div>
+
+  <div class="obj-box">
+    <h3>&#127919; Objectives for This Module</h3>
+    <ul>
+      <li><strong>Objective 2:</strong> Implement and trace recursive algorithms using recursion tree diagrams.</li>
+      <li><strong>Objective 3:</strong> Convert between recursive and iterative implementations and identify tail recursion.</li>
+    </ul>
+  </div>
+
+  <div class="prereq">
+    <strong>&#9888;&#65039; Prerequisite:</strong> Complete <strong>Module 11.1</strong>
+    (Recursive Definitions and Structures) before this module. The base-case /
+    recursive-case vocabulary established there is assumed throughout.
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     SECTION 1 – CLASSIC RECURSIVE ALGORITHMS
+════════════════════════════════════════════════════════════════════ -->
+<section id="sec-algos" class="card" aria-labelledby="h2-algos">
+  <h2 id="h2-algos">&#128187; Classic Recursive Algorithms</h2>
+  <p>
+    Four algorithms appear in virtually every discrete structures course because
+    they cleanly illustrate different recursive structures:
+    <strong>Factorial</strong> (linear recursion),
+    <strong>Fibonacci</strong> (binary / branching recursion),
+    <strong>Euclid's GCD</strong> (tail recursion — previewed here, detailed in
+    Section 3), and <strong>Towers of Hanoi</strong> (exponential recursion that
+    produces output rather than returning a computed value).
+  </p>
+  <p>
+    For each algorithm: pseudocode &rarr; collapsible Java implementation &rarr;
+    hand-trace table showing every call, return value, and stack depth.
+  </p>
+
+  <!-- ─── FACTORIAL ─────────────────────────────────────────────── -->
+  <div class="algo-block">
+    <div class="algo-hdr">&#10024; Factorial &mdash; f(n) = n!</div>
+    <div class="algo-body">
+
+      <h4>Pseudocode</h4>
+      <pre>FACTORIAL(n):
+  <span class="kw">if</span> n = 0
+    <span class="kw">return</span> 1                     <span class="cm">// base case: 0! = 1</span>
+  <span class="kw">return</span> n &times; FACTORIAL(n &minus; 1) <span class="cm">// recursive case</span></pre>
+
+      <div class="coll-wrap">
+        <button class="coll-btn" aria-expanded="false"
+                aria-controls="java-fact" id="btn-fact">
+          <span class="arr">&#9658;</span> Show Java
+        </button>
+        <div class="coll-body" id="java-fact" role="region" aria-labelledby="btn-fact">
+<pre><span class="cm">/** Returns n! for n &gt;= 0. */</span>
+<span class="kw">public static</span> <span class="ty">long</span> <span class="fn">factorial</span>(<span class="ty">int</span> n) {
+    <span class="kw">if</span> (n &lt; <span class="nu">0</span>) <span class="kw">throw new</span> <span class="ty">IllegalArgumentException</span>(<span class="st">"n must be &ge; 0"</span>);
+    <span class="kw">if</span> (n == <span class="nu">0</span>) <span class="kw">return</span> <span class="nu">1</span>;            <span class="cm">// base case</span>
+    <span class="kw">return</span> n * <span class="fn">factorial</span>(n - <span class="nu">1</span>);   <span class="cm">// recursive case</span>
+}</pre>
+        </div>
+      </div>
+
+      <h4>Hand Trace — <code>factorial(4)</code></h4>
+      <p>
+        The call stack grows as frames are pushed
+        (<span class="lbl-dn">&#8595; descend</span>), then unwinds as each frame
+        returns its value (<span class="lbl-up">&#8593; return</span>).
+        Every intermediate frame holds a <em>pending multiplication</em> that cannot
+        complete until the recursive call below it returns.
+      </p>
+      <div class="tbl-wrap">
+        <table aria-label="Hand trace of factorial(4)">
+          <thead>
+            <tr><th>Phase</th><th>Call</th><th>n</th><th>Stack Depth</th><th>Returns</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="lbl-dn">&#8595;</span></td><td><code>factorial(4)</code></td><td>4</td><td>1</td><td>waiting…</td></tr>
+            <tr><td><span class="lbl-dn">&#8595;</span></td><td><code>factorial(3)</code></td><td>3</td><td>2</td><td>waiting…</td></tr>
+            <tr><td><span class="lbl-dn">&#8595;</span></td><td><code>factorial(2)</code></td><td>2</td><td>3</td><td>waiting…</td></tr>
+            <tr><td><span class="lbl-dn">&#8595;</span></td><td><code>factorial(1)</code></td><td>1</td><td>4</td><td>waiting…</td></tr>
+            <tr class="base-row"><td><span class="lbl-ok">&#10003; base</span></td><td><code>factorial(0)</code></td><td>0</td><td>5</td><td><strong>1</strong></td></tr>
+            <tr class="unwind-row"><td><span class="lbl-up">&#8593;</span></td><td><code>factorial(1)</code></td><td>1</td><td>4</td><td>1 &times; 1 = <strong>1</strong></td></tr>
+            <tr class="unwind-row"><td><span class="lbl-up">&#8593;</span></td><td><code>factorial(2)</code></td><td>2</td><td>3</td><td>2 &times; 1 = <strong>2</strong></td></tr>
+            <tr class="unwind-row"><td><span class="lbl-up">&#8593;</span></td><td><code>factorial(3)</code></td><td>3</td><td>2</td><td>3 &times; 2 = <strong>6</strong></td></tr>
+            <tr class="unwind-row"><td><span class="lbl-up">&#8593;</span></td><td><code>factorial(4)</code></td><td>4</td><td>1</td><td>4 &times; 6 = <strong>24</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="box box-tip">
+        <div class="box-title">&#128161; Key Observation</div>
+        <p>
+          The call stack reaches its deepest point (depth&nbsp;5) at the base case.
+          Each frame above it holds one pending multiplication waiting for the result
+          below. This pending work is exactly what <strong>tail-call optimization</strong>
+          eliminates — covered in Section 3.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── FIBONACCI ─────────────────────────────────────────────── -->
+  <div class="algo-block">
+    <div class="algo-hdr">&#128200; Fibonacci &mdash; F(n) = F(n&minus;1) + F(n&minus;2)</div>
+    <div class="algo-body">
+
+      <h4>Pseudocode</h4>
+      <pre>FIB(n):
+  <span class="kw">if</span> n = 0  <span class="kw">return</span> 0              <span class="cm">// base case 1</span>
+  <span class="kw">if</span> n = 1  <span class="kw">return</span> 1              <span class="cm">// base case 2</span>
+  <span class="kw">return</span> FIB(n &minus; 1) + FIB(n &minus; 2) <span class="cm">// binary recursion — two sub-calls</span></pre>
+
+      <div class="coll-wrap">
+        <button class="coll-btn" aria-expanded="false"
+                aria-controls="java-fib" id="btn-fib">
+          <span class="arr">&#9658;</span> Show Java
+        </button>
+        <div class="coll-body" id="java-fib" role="region" aria-labelledby="btn-fib">
+<pre><span class="cm">/** Returns the n-th Fibonacci number. F(0)=0, F(1)=1. */</span>
+<span class="kw">public static</span> <span class="ty">int</span> <span class="fn">fib</span>(<span class="ty">int</span> n) {
+    <span class="kw">if</span> (n == <span class="nu">0</span>) <span class="kw">return</span> <span class="nu">0</span>;
+    <span class="kw">if</span> (n == <span class="nu">1</span>) <span class="kw">return</span> <span class="nu">1</span>;
+    <span class="kw">return</span> <span class="fn">fib</span>(n - <span class="nu">1</span>) + <span class="fn">fib</span>(n - <span class="nu">2</span>);
+}</pre>
+        </div>
+      </div>
+
+      <h4>Hand Trace — <code>fib(4)</code> (depth-first, left call first)</h4>
+      <p>
+        Java evaluates the left call <code>fib(n-1)</code> completely before
+        starting <code>fib(n-2)</code>. The trace follows that depth-first order.
+      </p>
+      <div class="tbl-wrap">
+        <table aria-label="Hand trace of fib(4)">
+          <thead>
+            <tr><th>Step</th><th>Call</th><th>n</th><th>Depth</th><th>Action / Returns</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td><code>fib(4)</code></td><td>4</td><td>1</td><td>calls fib(3); will call fib(2) after it returns</td></tr>
+            <tr><td>2</td><td><code>fib(3)</code></td><td>3</td><td>2</td><td>calls fib(2); will call fib(1) after it returns</td></tr>
+            <tr><td>3</td><td><code>fib(2)</code></td><td>2</td><td>3</td><td>calls fib(1); will call fib(0) after it returns</td></tr>
+            <tr class="base-row"><td>4</td><td><code>fib(1)</code></td><td>1</td><td>4</td><td>base case &rarr; <strong>1</strong></td></tr>
+            <tr class="base-row"><td>5</td><td><code>fib(0)</code></td><td>0</td><td>4</td><td>base case &rarr; <strong>0</strong></td></tr>
+            <tr class="unwind-row"><td>6</td><td><code>fib(2)</code></td><td>&mdash;</td><td>3</td><td>1 + 0 = <strong>1</strong> &uarr; to fib(3)</td></tr>
+            <tr class="base-row"><td>7</td><td><code>fib(1)</code></td><td>1</td><td>3</td><td>base case &rarr; <strong>1</strong></td></tr>
+            <tr class="unwind-row"><td>8</td><td><code>fib(3)</code></td><td>&mdash;</td><td>2</td><td>1 + 1 = <strong>2</strong> &uarr; to fib(4)</td></tr>
+            <tr><td>9</td><td><code>fib(2)</code></td><td>2</td><td>2</td><td>calls fib(1); will call fib(0) after it returns</td></tr>
+            <tr class="base-row"><td>10</td><td><code>fib(1)</code></td><td>1</td><td>3</td><td>base case &rarr; <strong>1</strong></td></tr>
+            <tr class="base-row"><td>11</td><td><code>fib(0)</code></td><td>0</td><td>3</td><td>base case &rarr; <strong>0</strong></td></tr>
+            <tr class="unwind-row"><td>12</td><td><code>fib(2)</code></td><td>&mdash;</td><td>2</td><td>1 + 0 = <strong>1</strong> &uarr; to fib(4)</td></tr>
+            <tr class="unwind-row"><td>13</td><td><code>fib(4)</code></td><td>&mdash;</td><td>1</td><td>2 + 1 = <strong>3</strong> &#10003;</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="box box-warn">
+        <div class="box-title">&#9888;&#65039; Redundant Computation</div>
+        <p>
+          <code>fib(2)</code> is computed <em>twice</em> (steps 3 and 9);
+          <code>fib(1)</code> is computed <em>three times</em> (steps 4, 7, 10).
+          This redundancy is why na&iuml;ve recursive Fibonacci has exponential
+          cost — explored formally in Section 5 and Module 11.4.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── GCD ──────────────────────────────────────────────────── -->
+  <div class="algo-block">
+    <div class="algo-hdr">&#128290; Euclid's GCD &mdash; gcd(a, b)</div>
+    <div class="algo-body">
+
+      <h4>Pseudocode</h4>
+      <pre>GCD(a, b):
+  <span class="kw">if</span> b = 0   <span class="kw">return</span> a       <span class="cm">// base case: gcd(a, 0) = a</span>
+  <span class="kw">return</span> GCD(b, a <span class="kw">mod</span> b)   <span class="cm">// recursive case — this is a tail call</span></pre>
+
+      <div class="coll-wrap">
+        <button class="coll-btn" aria-expanded="false"
+                aria-controls="java-gcd" id="btn-gcd">
+          <span class="arr">&#9658;</span> Show Java
+        </button>
+        <div class="coll-body" id="java-gcd" role="region" aria-labelledby="btn-gcd">
+<pre><span class="cm">/** Returns the greatest common divisor of a and b (a, b &gt;= 0). */</span>
+<span class="kw">public static</span> <span class="ty">int</span> <span class="fn">gcd</span>(<span class="ty">int</span> a, <span class="ty">int</span> b) {
+    <span class="kw">if</span> (b == <span class="nu">0</span>) <span class="kw">return</span> a;      <span class="cm">// base case</span>
+    <span class="kw">return</span> <span class="fn">gcd</span>(b, a % b);     <span class="cm">// tail call — no pending work after this</span>
+}</pre>
+        </div>
+      </div>
+
+      <h4>Hand Trace — <code>gcd(48, 18)</code></h4>
+      <p>
+        GCD is a <em>linear</em> recursion — each call makes exactly one recursive
+        call. Because the recursive call is the <em>only</em> thing returned,
+        there is no pending arithmetic. This makes GCD naturally
+        <strong>tail-recursive</strong> (Section 3). Notice how the answer
+        6 propagates back <em>unchanged</em> through every unwind frame.
+      </p>
+      <div class="tbl-wrap">
+        <table aria-label="Hand trace of gcd(48, 18)">
+          <thead>
+            <tr><th>Phase</th><th>Call</th><th>a</th><th>b</th><th>a mod b</th><th>Depth</th><th>Returns</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="lbl-dn">&#8595; 1</span></td><td><code>gcd(48, 18)</code></td><td>48</td><td>18</td><td>12</td><td>1</td><td>&rarr; gcd(18, 12)</td></tr>
+            <tr><td><span class="lbl-dn">&#8595; 2</span></td><td><code>gcd(18, 12)</code></td><td>18</td><td>12</td><td>6</td><td>2</td><td>&rarr; gcd(12, 6)</td></tr>
+            <tr><td><span class="lbl-dn">&#8595; 3</span></td><td><code>gcd(12,&nbsp; 6)</code></td><td>12</td><td>6</td><td>0</td><td>3</td><td>&rarr; gcd(6, 0)</td></tr>
+            <tr class="base-row"><td><span class="lbl-ok">&#10003; base</span></td><td><code>gcd(6,&nbsp;&nbsp; 0)</code></td><td>6</td><td>0</td><td>&mdash;</td><td>4</td><td><strong>6</strong></td></tr>
+            <tr class="unwind-row"><td><span class="lbl-up">&#8593;</span></td><td><code>gcd(12,&nbsp; 6)</code></td><td></td><td></td><td></td><td>3</td><td><strong>6</strong></td></tr>
+            <tr class="unwind-row"><td><span class="lbl-up">&#8593;</span></td><td><code>gcd(18, 12)</code></td><td></td><td></td><td></td><td>2</td><td><strong>6</strong></td></tr>
+            <tr class="unwind-row"><td><span class="lbl-up">&#8593;</span></td><td><code>gcd(48, 18)</code></td><td></td><td></td><td></td><td>1</td><td><strong>6</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="box box-info">
+        <div class="box-title">&#128270; Why the Answer Propagates Unchanged</div>
+        <p>
+          Once the base case returns 6, each frame above it simply passes 6 upward —
+          no computation is needed. This is the hallmark of tail recursion: the
+          deepest return value flows back through every waiting frame without
+          modification. A compiler with tail-call optimization collapses all four
+          frames into one (see Section 3).
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── TOWERS OF HANOI ──────────────────────────────────────── -->
+  <div class="algo-block">
+    <div class="algo-hdr">&#127963;&#65039; Towers of Hanoi &mdash; hanoi(n, from, to, via)</div>
+    <div class="algo-body">
+      <p>
+        Hanoi does not <em>return</em> a computed value — it <em>produces
+        output</em> (the sequence of disk moves). The structure is: to move
+        n&nbsp;disks from peg <em>from</em> to peg <em>to</em>, first move the
+        top n&minus;1 disks to the temporary peg <em>via</em>, then move the
+        large disk, then move the n&minus;1 disks from <em>via</em> to <em>to</em>.
+      </p>
+
+      <h4>Pseudocode</h4>
+      <pre>HANOI(n, from, to, via):
+  <span class="kw">if</span> n = 1
+    print "Move disk 1 from " + from + " to " + to
+    <span class="kw">return</span>
+  HANOI(n &minus; 1, from, via, to)    <span class="cm">// move top n-1 out of the way</span>
+  print "Move disk " + n + " from " + from + " to " + to
+  HANOI(n &minus; 1, via, to, from)    <span class="cm">// move top n-1 to destination</span></pre>
+
+      <div class="coll-wrap">
+        <button class="coll-btn" aria-expanded="false"
+                aria-controls="java-hanoi" id="btn-hanoi">
+          <span class="arr">&#9658;</span> Show Java
+        </button>
+        <div class="coll-body" id="java-hanoi" role="region" aria-labelledby="btn-hanoi">
+<pre><span class="cm">/** Prints the moves to transfer n disks from 'from' to 'to' using 'via'. */</span>
+<span class="kw">public static void</span> <span class="fn">hanoi</span>(<span class="ty">int</span> n, <span class="ty">char</span> from, <span class="ty">char</span> to, <span class="ty">char</span> via) {
+    <span class="kw">if</span> (n == <span class="nu">1</span>) {
+        System.out.println(<span class="st">"Move disk 1 from "</span> + from + <span class="st">" to "</span> + to);
+        <span class="kw">return</span>;
+    }
+    <span class="fn">hanoi</span>(n - <span class="nu">1</span>, from, via, to);   <span class="cm">// move top n-1 to via</span>
+    System.out.println(<span class="st">"Move disk "</span> + n + <span class="st">" from "</span> + from + <span class="st">" to "</span> + to);
+    <span class="fn">hanoi</span>(n - <span class="nu">1</span>, via, to, from);   <span class="cm">// move n-1 from via to to</span>
+}</pre>
+        </div>
+      </div>
+
+      <h4>Hand Trace — <code>hanoi(3, 'A', 'C', 'B')</code></h4>
+      <p>
+        Pegs: <strong>A</strong> = source &nbsp;|&nbsp;
+        <strong>C</strong> = destination &nbsp;|&nbsp;
+        <strong>B</strong> = temporary.
+        The trace follows depth-first (left subtree first) order.
+      </p>
+      <div class="tbl-wrap">
+        <table aria-label="Hand trace of hanoi(3, A, C, B)">
+          <thead>
+            <tr><th>Step</th><th>Active Call</th><th>n</th><th>Depth</th><th>Output</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td><code>hanoi(3,A,C,B)</code></td><td>3</td><td>1</td><td>&mdash;</td></tr>
+            <tr><td>2</td><td><code>hanoi(2,A,B,C)</code></td><td>2</td><td>2</td><td>&mdash;</td></tr>
+            <tr class="base-row"><td>3</td><td><code>hanoi(1,A,C,B)</code></td><td>1</td><td>3</td><td>Move disk 1: A &rarr; C</td></tr>
+            <tr class="unwind-row"><td>4</td><td>&larr; resume hanoi(2,A,B,C)</td><td>2</td><td>2</td><td>Move disk 2: A &rarr; B</td></tr>
+            <tr class="base-row"><td>5</td><td><code>hanoi(1,C,B,A)</code></td><td>1</td><td>3</td><td>Move disk 1: C &rarr; B</td></tr>
+            <tr class="unwind-row"><td>6</td><td>&larr; resume hanoi(3,A,C,B)</td><td>3</td><td>1</td><td>Move disk 3: A &rarr; C</td></tr>
+            <tr><td>7</td><td><code>hanoi(2,B,C,A)</code></td><td>2</td><td>2</td><td>&mdash;</td></tr>
+            <tr class="base-row"><td>8</td><td><code>hanoi(1,B,A,C)</code></td><td>1</td><td>3</td><td>Move disk 1: B &rarr; A</td></tr>
+            <tr class="unwind-row"><td>9</td><td>&larr; resume hanoi(2,B,C,A)</td><td>2</td><td>2</td><td>Move disk 2: B &rarr; C</td></tr>
+            <tr class="base-row"><td>10</td><td><code>hanoi(1,A,C,B)</code></td><td>1</td><td>3</td><td>Move disk 1: A &rarr; C</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p><strong>Total moves for 3 disks: 7</strong> &nbsp;(= 2<sup>3</sup> &minus; 1 = 2<sup>n</sup> &minus; 1 in general).</p>
+
+      <div class="box box-key">
+        <div class="box-title">&#128272; Exponential Growth</div>
+        <p>
+          For n disks, Hanoi requires exactly 2<sup>n</sup> &minus; 1 moves.
+          Moving 64 disks would require 2<sup>64</sup> &minus; 1 &asymp; 1.8 &times;
+          10<sup>19</sup> moves &mdash; at one move per second, roughly
+          585 billion years. This is the concrete meaning of exponential time
+          complexity.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-chk">
+    <label>
+      <input type="checkbox" onchange="markChecked(this)">
+      I have studied all four algorithm traces and can describe the call/return
+      sequence for each.
+    </label>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     SECTION 2 – RECURSION TREE DIAGRAMS
+════════════════════════════════════════════════════════════════════ -->
+<section id="sec-trees" class="card" aria-labelledby="h2-trees">
+  <h2 id="h2-trees">&#127795; Recursion Tree Diagrams</h2>
+
+  <h3>What Is a Recursion Tree?</h3>
+  <p>
+    A <strong>recursion tree</strong> is a rooted tree where each node represents
+    one function call, and the children of a node are the recursive sub-calls it
+    spawns. Reading top-down shows how calls multiply; reading bottom-up shows how
+    results propagate back to the root.
+  </p>
+
+  <div class="box box-info">
+    <div class="box-title">&#128221; Anatomy of a Recursion Tree</div>
+    <ul>
+      <li><strong>Root:</strong> the initial call (e.g., <code>fib(4)</code>).</li>
+      <li><strong>Internal nodes:</strong> calls that make further recursive calls.</li>
+      <li><strong>Leaves:</strong> base-case calls — they return without recursing.</li>
+      <li><strong>Depth / level L:</strong> the number of edges from the root to a node.</li>
+      <li><strong>Total nodes:</strong> the total number of function invocations.</li>
+    </ul>
+  </div>
+
+  <h3>How to Draw a Recursion Tree</h3>
+  <ol>
+    <li><strong>Root:</strong> write the initial call at the top.</li>
+    <li><strong>Expand:</strong> draw one child for each recursive call the current node makes.</li>
+    <li><strong>Label:</strong> annotate each node with its argument(s) and return value.</li>
+    <li><strong>Stop at leaves:</strong> base-case calls are leaves; mark them (e.g., &#10003;).</li>
+    <li><strong>Annotate returns:</strong> show how values propagate back toward the root.</li>
+  </ol>
+
+  <h3>Annotated Recursion Tree: <code>fib(4)</code></h3>
+  <p>
+    The diagram below shows all <strong>9 function calls</strong> made to compute
+    <code>fib(4)</code>. Dark-blue nodes make recursive calls (internal nodes);
+    green nodes are base cases (n&nbsp;=&nbsp;0 or n&nbsp;=&nbsp;1) that return
+    immediately without further recursion.
+  </p>
+
+  <div class="tree-wrap">
+    <svg viewBox="0 0 520 295" xmlns="http://www.w3.org/2000/svg"
+         style="width:100%;max-width:520px;display:block;margin:0 auto"
+         role="img"
+         aria-label="Recursion tree for fib(4). Root fib(4) returns 3. Level 1: fib(3) returns 2, fib(2) returns 1. Level 2: fib(2) returns 1 and fib(1) returns 1 under fib(3); fib(1) returns 1 and fib(0) returns 0 under the right fib(2). Level 3: fib(1) returns 1 and fib(0) returns 0 under the left fib(2). Total 9 calls.">
+      <rect width="520" height="295" fill="#f8fafc" rx="6"/>
+      <!-- level labels -->
+      <text x="6" y="46" fill="#94a3b8" font-size="10" font-family="monospace">L0</text>
+      <text x="6" y="116" fill="#94a3b8" font-size="10" font-family="monospace">L1</text>
+      <text x="6" y="186" fill="#94a3b8" font-size="10" font-family="monospace">L2</text>
+      <text x="6" y="256" fill="#94a3b8" font-size="10" font-family="monospace">L3</text>
+      <!-- edges drawn first so nodes overlap line endpoints -->
+      <line x1="262" y1="40" x2="148" y2="110" stroke="#94a3b8" stroke-width="1.5"/>
+      <line x1="262" y1="40" x2="392" y2="110" stroke="#94a3b8" stroke-width="1.5"/>
+      <line x1="148" y1="110" x2="94" y2="180" stroke="#94a3b8" stroke-width="1.5"/>
+      <line x1="148" y1="110" x2="202" y2="180" stroke="#94a3b8" stroke-width="1.5"/>
+      <line x1="392" y1="110" x2="348" y2="180" stroke="#94a3b8" stroke-width="1.5"/>
+      <line x1="392" y1="110" x2="442" y2="180" stroke="#94a3b8" stroke-width="1.5"/>
+      <line x1="94" y1="180" x2="54" y2="250" stroke="#94a3b8" stroke-width="1.5"/>
+      <line x1="94" y1="180" x2="134" y2="250" stroke="#94a3b8" stroke-width="1.5"/>
+      <!-- fib(4) root — dark navy -->
+      <circle cx="262" cy="40" r="28" fill="#1a3a5c" stroke="#0f2540" stroke-width="2"/>
+      <text x="262" y="36" text-anchor="middle" fill="white" font-size="10.5" font-family="monospace" font-weight="bold">fib(4)</text>
+      <text x="262" y="50" text-anchor="middle" fill="#93c5fd" font-size="9.5" font-family="monospace">&#8594; 3</text>
+      <!-- fib(3) L1 left — medium blue, internal -->
+      <circle cx="148" cy="110" r="28" fill="#1d4ed8" stroke="#1e3a8a" stroke-width="2"/>
+      <text x="148" y="106" text-anchor="middle" fill="white" font-size="10.5" font-family="monospace" font-weight="bold">fib(3)</text>
+      <text x="148" y="120" text-anchor="middle" fill="#93c5fd" font-size="9.5" font-family="monospace">&#8594; 2</text>
+      <!-- fib(2) L1 right — medium blue, internal -->
+      <circle cx="392" cy="110" r="28" fill="#1d4ed8" stroke="#1e3a8a" stroke-width="2"/>
+      <text x="392" y="106" text-anchor="middle" fill="white" font-size="10.5" font-family="monospace" font-weight="bold">fib(2)</text>
+      <text x="392" y="120" text-anchor="middle" fill="#93c5fd" font-size="9.5" font-family="monospace">&#8594; 1</text>
+      <!-- fib(2) L2 left child of fib(3) — medium blue, internal -->
+      <circle cx="94" cy="180" r="28" fill="#1d4ed8" stroke="#1e3a8a" stroke-width="2"/>
+      <text x="94" y="176" text-anchor="middle" fill="white" font-size="10.5" font-family="monospace" font-weight="bold">fib(2)</text>
+      <text x="94" y="190" text-anchor="middle" fill="#93c5fd" font-size="9.5" font-family="monospace">&#8594; 1</text>
+      <!-- fib(1) L2 right child of fib(3) — green, base -->
+      <circle cx="202" cy="180" r="28" fill="#166534" stroke="#14532d" stroke-width="2"/>
+      <text x="202" y="176" text-anchor="middle" fill="white" font-size="10.5" font-family="monospace" font-weight="bold">fib(1)</text>
+      <text x="202" y="190" text-anchor="middle" fill="#86efac" font-size="9.5" font-family="monospace">&#8594; 1 &#10003;</text>
+      <!-- fib(1) L2 left child of right fib(2) — green, base -->
+      <circle cx="348" cy="180" r="28" fill="#166534" stroke="#14532d" stroke-width="2"/>
+      <text x="348" y="176" text-anchor="middle" fill="white" font-size="10.5" font-family="monospace" font-weight="bold">fib(1)</text>
+      <text x="348" y="190" text-anchor="middle" fill="#86efac" font-size="9.5" font-family="monospace">&#8594; 1 &#10003;</text>
+      <!-- fib(0) L2 right child of right fib(2) — green, base -->
+      <circle cx="442" cy="180" r="28" fill="#166534" stroke="#14532d" stroke-width="2"/>
+      <text x="442" y="176" text-anchor="middle" fill="white" font-size="10.5" font-family="monospace" font-weight="bold">fib(0)</text>
+      <text x="442" y="190" text-anchor="middle" fill="#86efac" font-size="9.5" font-family="monospace">&#8594; 0 &#10003;</text>
+      <!-- fib(1) L3 left child of left fib(2) — green, base -->
+      <circle cx="54" cy="250" r="28" fill="#166534" stroke="#14532d" stroke-width="2"/>
+      <text x="54" y="246" text-anchor="middle" fill="white" font-size="10.5" font-family="monospace" font-weight="bold">fib(1)</text>
+      <text x="54" y="260" text-anchor="middle" fill="#86efac" font-size="9.5" font-family="monospace">&#8594; 1 &#10003;</text>
+      <!-- fib(0) L3 right child of left fib(2) — green, base -->
+      <circle cx="134" cy="250" r="28" fill="#166534" stroke="#14532d" stroke-width="2"/>
+      <text x="134" y="246" text-anchor="middle" fill="white" font-size="10.5" font-family="monospace" font-weight="bold">fib(0)</text>
+      <text x="134" y="260" text-anchor="middle" fill="#86efac" font-size="9.5" font-family="monospace">&#8594; 0 &#10003;</text>
+    </svg>
+
+    <div class="tree-legend" aria-hidden="true">
+      <span><span class="leg-dot" style="background:#1a3a5c"></span>Root call</span>
+      <span><span class="leg-dot" style="background:#1d4ed8"></span>Recursive (internal) call</span>
+      <span><span class="leg-dot" style="background:#166534"></span>Base case — returns immediately &#10003;</span>
+    </div>
+  </div>
+
+  <h3>Reading the Tree</h3>
+  <ul>
+    <li><strong>Total calls:</strong> 9 nodes &rarr; 9 invocations to compute fib(4).</li>
+    <li><strong>Max depth:</strong> L3, so the call stack reaches depth&nbsp;4 at most.</li>
+    <li><strong>Redundancy:</strong> <code>fib(2)</code> appears twice;
+        <code>fib(1)</code> appears three times. These repeated sub-problems drive
+        the exponential cost of na&iuml;ve Fibonacci.</li>
+    <li><strong>Leaves = base cases:</strong> 5 leaves total (3&times; fib(1), 2&times; fib(0)).</li>
+  </ul>
+
+  <h3>Visualization Tools</h3>
+  <div class="box box-tip">
+    <div class="box-title">&#128250; Recommended Tools (refer to by name — no links)</div>
+    <p>
+      <strong>Recursion Visualizer</strong> (David Galles, University of San Francisco)
+      animates the recursion tree level by level as each call is made and resolved.
+      Enter a Fibonacci call and step through it; the resulting tree matches the
+      diagram and trace table above exactly.
+    </p>
+    <p>
+      <strong>Python Tutor</strong> visualizes the call stack as a set of stacked
+      frames. Write a Python equivalent of <code>fib(4)</code>, run it, and
+      compare the frames panel (call stack) with the Depth column in the trace table.
+      Each new frame corresponds to one node in the recursion tree.
+    </p>
+    <p style="margin-bottom:0">
+      Both tools are listed by name in the Week 11 Detailed Outline and the
+      17-Week Plan Supplementary Resources. Access them through your browser.
+    </p>
+  </div>
+
+  <div class="sec-chk">
+    <label>
+      <input type="checkbox" onchange="markChecked(this)">
+      I can draw the recursion tree for fib(4) from memory and identify total
+      calls, max depth, and repeated sub-problems.
+    </label>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     SECTION 3 – TAIL RECURSION
+════════════════════════════════════════════════════════════════════ -->
+<section id="sec-tail" class="card" aria-labelledby="h2-tail">
+  <h2 id="h2-tail">&#9881;&#65039; Tail Recursion and Tail-Call Optimization</h2>
+
+  <div class="box box-key">
+    <div class="box-title">&#128214; Definition — Tail Call &amp; Tail Recursion</div>
+    <p>
+      A recursive call is a <strong>tail call</strong> if it is the <em>last
+      operation</em> performed before the function returns — there is no pending
+      work (no arithmetic, no assignment, no further computation) that must happen
+      after the call returns.
+    </p>
+    <p style="margin-bottom:0">
+      A function is <strong>tail-recursive</strong> if <em>every</em> recursive
+      call it contains is a tail call.
+    </p>
+  </div>
+
+  <h3>Quick Test: Is It a Tail Call?</h3>
+  <div class="tbl-wrap">
+    <table aria-label="Tail call examples and non-examples">
+      <thead>
+        <tr><th>Return Statement</th><th>Tail Call?</th><th>Reason</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>return gcd(b, a % b);</code></td><td>&#9989; Yes</td><td>Nothing happens after the call returns.</td></tr>
+        <tr><td><code>return n * factorial(n-1);</code></td><td>&#10060; No</td><td>Multiplication by n is pending after the call.</td></tr>
+        <tr><td><code>return fib(n-1) + fib(n-2);</code></td><td>&#10060; No</td><td>Addition (and the second call) are pending.</td></tr>
+        <tr><td><code>return helper(n-1, acc+n);</code></td><td>&#9989; Yes</td><td>All computation is done before passing as argument; nothing remains after.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Side-by-Side: GCD — Tail-Recursive vs. Iterative</h3>
+  <p>
+    Because GCD is already tail-recursive, converting it to an iterative version
+    is mechanical: replace the recursive call with a loop that updates the
+    parameters directly.
+  </p>
+
+  <div class="compare">
+    <div class="comp-panel">
+      <div class="comp-head rec">&#128260; Tail-Recursive GCD</div>
+<pre><span class="kw">public static</span> <span class="ty">int</span> <span class="fn">gcd</span>(<span class="ty">int</span> a, <span class="ty">int</span> b) {
+    <span class="kw">if</span> (b == <span class="nu">0</span>) <span class="kw">return</span> a;
+    <span class="kw">return</span> <span class="fn">gcd</span>(b, a % b); <span class="cm">// &#9664; tail call</span>
+}</pre>
+    </div>
+    <div class="comp-panel">
+      <div class="comp-head itr">&#128260; Iterative GCD</div>
+<pre><span class="kw">public static</span> <span class="ty">int</span> <span class="fn">gcdIter</span>(<span class="ty">int</span> a, <span class="ty">int</span> b) {
+    <span class="kw">while</span> (b != <span class="nu">0</span>) {
+        <span class="ty">int</span> tmp = b;
+        b = a % b;
+        a = tmp;
+    }
+    <span class="kw">return</span> a;
+}</pre>
+    </div>
+  </div>
+
+  <div class="box box-info">
+    <div class="box-title">&#128161; The Conversion Pattern for Tail Recursion</div>
+    <ul>
+      <li>The <strong>base case</strong> (<code>if b == 0 return a</code>) becomes the <strong>loop exit condition</strong> (<code>while b != 0</code>).</li>
+      <li>The <strong>tail call</strong> <code>gcd(b, a%b)</code> becomes a <strong>parameter update</strong>: store <code>b</code> in a temp, update <code>b = a%b</code>, then <code>a = tmp</code>.</li>
+      <li>The loop body executes exactly what the recursive step used to do.</li>
+    </ul>
+  </div>
+
+  <h3>Tail-Call Optimization (TCO)</h3>
+  <p>
+    Many compilers and runtimes (Scheme, Haskell, modern JavaScript engines) apply
+    <strong>tail-call optimization</strong>: recognizing that a tail-recursive call
+    will never need the current frame again, the runtime <em>reuses</em> the current
+    stack frame instead of pushing a new one — turning recursion into an implicit loop.
+  </p>
+  <div class="box box-warn">
+    <div class="box-title">&#9888;&#65039; Java Does Not Automatically Apply TCO</div>
+    <p>
+      The standard JVM does <em>not</em> perform tail-call optimization for Java
+      source code. A tail-recursive Java method still allocates a new stack frame
+      per call. For large inputs this risks a <code>StackOverflowError</code>.
+      When stack depth or performance matters, convert tail-recursive Java to an
+      explicit loop, as shown for GCD above.
+    </p>
+  </div>
+
+  <div class="sec-chk">
+    <label>
+      <input type="checkbox" onchange="markChecked(this)">
+      I can identify whether a return statement contains a tail call and explain
+      the difference between the recursive and iterative GCD.
+    </label>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     SECTION 4 – CONVERTING RECURSION TO ITERATION
+════════════════════════════════════════════════════════════════════ -->
+<section id="sec-iter" class="card" aria-labelledby="h2-iter">
+  <h2 id="h2-iter">&#128260; Converting Recursion to Iteration</h2>
+  <p>
+    Every recursive algorithm can be rewritten as an iterative one. For
+    <strong>tail-recursive</strong> functions the conversion is mechanical
+    (Section 3). For <strong>non-tail-recursive</strong> functions, two strategies
+    cover most cases: the <em>accumulator pattern</em> (for linear recursion)
+    and the <em>rolling-variable pattern</em> (for two-term recurrences).
+  </p>
+
+  <!-- ── FACTORIAL: ACCUMULATOR ─────────────────────────────── -->
+  <h3>&#10024; Factorial — Accumulator Pattern</h3>
+  <p>
+    The key insight: instead of building the product on the way <em>back up</em>
+    the call stack, carry a running <code>acc</code> variable that accumulates
+    the product on the way <em>down</em> (i.e., inside the loop). The base-case
+    value seeds the accumulator.
+  </p>
+
+  <h4>Step-by-Step Conversion</h4>
+  <ol class="steps">
+    <li>
+      <strong>Seed the accumulator</strong> at the base-case value:
+      <code>factorial(0) = 1</code>, so <code>acc = 1</code>.
+    </li>
+    <li>
+      <strong>Identify the step computation:</strong> the recursive case multiplies
+      by <code>n</code> and decrements toward 0. In the loop, multiply
+      <code>acc &times;= i</code> for each <code>i</code> from 1 to n.
+    </li>
+    <li>
+      <strong>Loop while the base case is not yet reached:</strong>
+      <code>for (int i = 1; i &lt;= n; i++)</code>.
+    </li>
+    <li>
+      <strong>Return the accumulator</strong> after the loop exits.
+    </li>
+  </ol>
+
+  <div class="compare">
+    <div class="comp-panel">
+      <div class="comp-head rec">Recursive Factorial</div>
+<pre><span class="kw">public static</span> <span class="ty">long</span> <span class="fn">factorial</span>(<span class="ty">int</span> n) {
+    <span class="kw">if</span> (n == <span class="nu">0</span>) <span class="kw">return</span> <span class="nu">1</span>;
+    <span class="kw">return</span> n * <span class="fn">factorial</span>(n - <span class="nu">1</span>);
+    <span class="cm">// pending &times; n on every frame</span>
+}</pre>
+    </div>
+    <div class="comp-panel">
+      <div class="comp-head itr">Iterative Factorial (Accumulator)</div>
+<pre><span class="kw">public static</span> <span class="ty">long</span> <span class="fn">factIter</span>(<span class="ty">int</span> n) {
+    <span class="ty">long</span> acc = <span class="nu">1</span>;  <span class="cm">// seed = 0! = 1</span>
+    <span class="kw">for</span> (<span class="ty">int</span> i = <span class="nu">1</span>; i &lt;= n; i++) {
+        acc *= i;  <span class="cm">// acc holds i! after each step</span>
+    }
+    <span class="kw">return</span> acc;
+}</pre>
+    </div>
+  </div>
+
+  <h4>Accumulator Walkthrough — <code>factIter(4)</code></h4>
+  <div class="tbl-wrap">
+    <table aria-label="Accumulator trace for factIter(4)">
+      <thead>
+        <tr><th>i</th><th>acc (before)</th><th>acc = acc &times; i</th><th>acc (after)</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>1</td><td>1 &times; 1</td><td>1</td></tr>
+        <tr><td>2</td><td>1</td><td>1 &times; 2</td><td>2</td></tr>
+        <tr><td>3</td><td>2</td><td>2 &times; 3</td><td>6</td></tr>
+        <tr><td>4</td><td>6</td><td>6 &times; 4</td><td>24</td></tr>
+        <tr class="base-row"><td>exit (i=5)</td><td colspan="2">loop ends</td><td><strong>return 24</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ── FIBONACCI: ROLLING VARIABLES ──────────────────────── -->
+  <h3>&#128200; Fibonacci — Rolling-Variable Pattern</h3>
+  <p>
+    Fibonacci cannot use a single accumulator because each term depends on
+    <em>two</em> preceding values. Instead, maintain two variables
+    (<code>prev2</code> and <code>prev1</code>) as a
+    <em>sliding window</em> through the sequence: at every step they hold
+    the two most recently computed values.
+  </p>
+
+  <h4>Step-by-Step Conversion</h4>
+  <ol class="steps">
+    <li>
+      <strong>Handle base cases directly:</strong>
+      <code>if (n &lt;= 1) return n</code> — returns 0 for n=0, 1 for n=1.
+    </li>
+    <li>
+      <strong>Initialize the window</strong> at the two base cases:
+      <code>prev2 = 0</code> (F<sub>0</sub>) and <code>prev1 = 1</code> (F<sub>1</sub>).
+    </li>
+    <li>
+      <strong>Loop from i = 2 to n:</strong> compute
+      <code>curr = prev1 + prev2</code>, then shift the window:
+      <code>prev2 &larr; prev1</code>, <code>prev1 &larr; curr</code>.
+    </li>
+    <li>
+      <strong>Return <code>prev1</code></strong> after the loop — it holds
+      F<sub>n</sub>.
+    </li>
+  </ol>
+
+  <div class="compare">
+    <div class="comp-panel">
+      <div class="comp-head rec">Recursive Fibonacci</div>
+<pre><span class="kw">public static</span> <span class="ty">int</span> <span class="fn">fib</span>(<span class="ty">int</span> n) {
+    <span class="kw">if</span> (n &lt;= <span class="nu">1</span>) <span class="kw">return</span> n;
+    <span class="kw">return</span> <span class="fn">fib</span>(n-<span class="nu">1</span>) + <span class="fn">fib</span>(n-<span class="nu">2</span>);
+    <span class="cm">// O(2&#8319;) calls; redundant work</span>
+}</pre>
+    </div>
+    <div class="comp-panel">
+      <div class="comp-head itr">Iterative Fibonacci (Rolling Vars)</div>
+<pre><span class="kw">public static</span> <span class="ty">int</span> <span class="fn">fibIter</span>(<span class="ty">int</span> n) {
+    <span class="kw">if</span> (n &lt;= <span class="nu">1</span>) <span class="kw">return</span> n;
+    <span class="ty">int</span> prev2 = <span class="nu">0</span>, prev1 = <span class="nu">1</span>;
+    <span class="kw">for</span> (<span class="ty">int</span> i = <span class="nu">2</span>; i &lt;= n; i++) {
+        <span class="ty">int</span> curr = prev1 + prev2;
+        prev2 = prev1;
+        prev1 = curr;
+    }
+    <span class="kw">return</span> prev1; <span class="cm">// O(n); no redundancy</span>
+}</pre>
+    </div>
+  </div>
+
+  <h4>Rolling-Variable Walkthrough — <code>fibIter(6)</code></h4>
+  <div class="tbl-wrap">
+    <table aria-label="Rolling variable trace for fibIter(6)">
+      <thead>
+        <tr><th>i</th><th>prev2</th><th>prev1</th><th>curr = prev1 + prev2</th><th>After shift</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>&mdash;</td><td>0 (F<sub>0</sub>)</td><td>1 (F<sub>1</sub>)</td><td>&mdash;</td><td>initialization</td></tr>
+        <tr><td>2</td><td>0</td><td>1</td><td>1</td><td>prev2=1, prev1=1 (F<sub>2</sub>)</td></tr>
+        <tr><td>3</td><td>1</td><td>1</td><td>2</td><td>prev2=1, prev1=2 (F<sub>3</sub>)</td></tr>
+        <tr><td>4</td><td>1</td><td>2</td><td>3</td><td>prev2=2, prev1=3 (F<sub>4</sub>)</td></tr>
+        <tr><td>5</td><td>2</td><td>3</td><td>5</td><td>prev2=3, prev1=5 (F<sub>5</sub>)</td></tr>
+        <tr><td>6</td><td>3</td><td>5</td><td>8</td><td>prev2=5, prev1=8 (F<sub>6</sub>)</td></tr>
+        <tr class="base-row"><td>exit</td><td colspan="3">loop ends</td><td><strong>return 8 &#10003;</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="box box-warn">
+    <div class="box-title">&#9888;&#65039; When an Explicit Stack Is Required</div>
+    <p>
+      The accumulator and rolling-variable patterns work because Factorial and
+      Fibonacci have small, well-defined state — one or two scalar values.
+      Algorithms with <strong>complex branching</strong> (graph DFS, tree traversal,
+      backtracking search) cannot be collapsed into scalar variables.
+    </p>
+    <p style="margin-bottom:0">
+      For those cases, replace the implicit call stack with an
+      <strong>explicit stack data structure</strong> (e.g., <code>Stack&lt;T&gt;</code>
+      in Java). Push subproblems onto the stack instead of making recursive calls,
+      and pop them when ready to process. You will apply this technique when
+      implementing iterative DFS in Week 13.
+    </p>
+  </div>
+
+  <div class="sec-chk">
+    <label>
+      <input type="checkbox" onchange="markChecked(this)">
+      I can convert factorial to iterative using an accumulator, and Fibonacci to
+      iterative using two rolling variables.
+    </label>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     SECTION 5 – COMPLEXITY PREVIEW
+════════════════════════════════════════════════════════════════════ -->
+<section id="sec-complexity" class="card" aria-labelledby="h2-complexity">
+  <h2 id="h2-complexity">&#128202; Complexity Preview (Informal)</h2>
+  <p>
+    Before Module 11.4 introduces recurrence relations as a formal tool, you can
+    estimate time complexity directly from the recursion tree.
+  </p>
+
+  <div class="box box-info">
+    <div class="box-title">&#128221; The Counting Rule</div>
+    <p>
+      Each node in the recursion tree represents one function call that does
+      O(1) work (ignoring the recursive sub-calls themselves). Therefore:
+    </p>
+    <p style="margin-bottom:0;font-weight:600;text-align:center">
+      Time complexity &asymp; O(total number of nodes in the recursion tree)
+    </p>
+  </div>
+
+  <div class="tbl-wrap">
+    <table aria-label="Complexity comparison of the four recursive algorithms">
+      <thead>
+        <tr>
+          <th>Algorithm</th>
+          <th>Tree Shape</th>
+          <th>Branching</th>
+          <th>Total Calls (n)</th>
+          <th>Complexity</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>factorial(n)</code></td>
+          <td>Linear chain</td>
+          <td>1 child per node</td>
+          <td>n + 1</td>
+          <td><strong>O(n)</strong></td>
+        </tr>
+        <tr>
+          <td><code>gcd(a, b)</code></td>
+          <td>Linear chain</td>
+          <td>1 child per node</td>
+          <td>O(log n)</td>
+          <td><strong>O(log n)</strong></td>
+        </tr>
+        <tr>
+          <td><code>fib(n)</code> (na&iuml;ve)</td>
+          <td>Binary tree</td>
+          <td>2 children per internal node</td>
+          <td>&asymp; 2<sup>n</sup></td>
+          <td><strong>O(2<sup>n</sup>)</strong></td>
+        </tr>
+        <tr>
+          <td><code>hanoi(n)</code></td>
+          <td>Full binary tree</td>
+          <td>2 children per internal node</td>
+          <td>2<sup>n+1</sup> &minus; 1</td>
+          <td><strong>O(2<sup>n</sup>)</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Why Fibonacci Is O(2<sup>n</sup>)</h3>
+  <p>
+    At each level of the fib(n) tree, the number of nodes roughly doubles because
+    every internal node spawns exactly two children. Starting from 1 node (the root),
+    after k levels there are at most 2<sup>k</sup> nodes. The tree has depth n,
+    so total nodes &le; 2<sup>0</sup> + 2<sup>1</sup> + &hellip; + 2<sup>n</sup>
+    = 2<sup>n+1</sup> &minus; 1 = O(2<sup>n</sup>).
+  </p>
+  <p>
+    The <em>iterative</em> <code>fibIter</code> runs exactly n &minus; 1 loop
+    iterations — O(n). Eliminating redundant sub-calls collapses exponential
+    cost to linear. This is the formal cost of the repeated sub-problems identified
+    in the recursion tree diagram.
+  </p>
+
+  <h3>Why Factorial Is O(n)</h3>
+  <p>
+    Factorial's tree is a straight chain: each call spawns exactly one recursive
+    call (no branching). There are n + 1 total calls, each doing O(1) work &rarr;
+    O(n) total.
+  </p>
+
+  <div class="box box-preview">
+    <div class="box-title">&#128064; Bridge to Module 11.4</div>
+    <p>
+      The informal counting above becomes a formal proof via
+      <strong>recurrence relations</strong>. The recurrence for factorial is
+      T(n) = T(n &minus; 1) + c, which solves to T(n) = O(n). The recurrence for
+      na&iuml;ve Fibonacci is T(n) = T(n &minus; 1) + T(n &minus; 2) + c, which
+      solves to T(n) = O(2<sup>n</sup>).
+      Module 11.4 introduces the <em>characteristic equation method</em> that
+      derives these closed-form solutions exactly, and Module 11.5 adds the
+      <em>Master Theorem</em> for divide-and-conquer algorithms like merge sort.
+    </p>
+  </div>
+
+  <div class="sec-chk">
+    <label>
+      <input type="checkbox" onchange="markChecked(this)">
+      I can estimate an algorithm's complexity by counting nodes in its recursion
+      tree and explain why na&iuml;ve Fibonacci is O(2<sup>n</sup>).
+    </label>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     SECTION 6 – KNOWLEDGE CHECK
+════════════════════════════════════════════════════════════════════ -->
+<section id="sec-check" class="card" aria-labelledby="h2-check">
+  <h2 id="h2-check">&#9997;&#65039; Knowledge Check</h2>
+  <p>
+    Three ungraded questions to confirm your understanding. Select an answer and
+    click <strong>Check Answer</strong> for immediate explanatory feedback. This
+    activity does not contribute to any grade.
+  </p>
+
+  <!-- Q1 -->
+  <div class="kc-q" id="q1">
+    <div class="kc-num">Question 1 of 3</div>
+    <div class="kc-prompt">
+      Trace <code>gcd(48, 18)</code> by hand (use the format from Section 1).
+      How many total function calls are made, <em>including</em> the base-case call?
+    </div>
+    <label class="kc-opt">
+      <input type="radio" name="q1" value="a">
+      <span>2 calls — gcd(48,&nbsp;18) and gcd(18,&nbsp;12) only</span>
+    </label>
+    <label class="kc-opt">
+      <input type="radio" name="q1" value="b">
+      <span>3 calls — gcd(48,&nbsp;18), gcd(18,&nbsp;12), gcd(12,&nbsp;6)</span>
+    </label>
+    <label class="kc-opt">
+      <input type="radio" name="q1" value="c">
+      <span>4 calls — gcd(48,&nbsp;18), gcd(18,&nbsp;12), gcd(12,&nbsp;6), gcd(6,&nbsp;0)</span>
+    </label>
+    <label class="kc-opt">
+      <input type="radio" name="q1" value="d">
+      <span>5 calls — includes an additional call gcd(0,&nbsp;6) after gcd(6,&nbsp;0)</span>
+    </label>
+    <button class="kc-btn" onclick="checkAnswer('q1','c')">Check Answer</button>
+    <div class="kc-fb" id="q1-fb" tabindex="-1"></div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="kc-q" id="q2">
+    <div class="kc-num">Question 2 of 3</div>
+    <div class="kc-prompt">
+      Consider the following Java method. Is it tail-recursive?
+    </div>
+    <pre style="margin-bottom:14px"><span class="cm">/** Computes 1 + 2 + ... + n using an accumulator. */</span>
+<span class="kw">public static</span> <span class="ty">int</span> <span class="fn">sumAcc</span>(<span class="ty">int</span> n, <span class="ty">int</span> acc) {
+    <span class="kw">if</span> (n == <span class="nu">0</span>) <span class="kw">return</span> acc;
+    <span class="kw">return</span> <span class="fn">sumAcc</span>(n - <span class="nu">1</span>, acc + n);  <span class="cm">// &#9664; Line A</span>
+}</pre>
+    <label class="kc-opt">
+      <input type="radio" name="q2" value="a">
+      <span><strong>Yes</strong> — the recursive call on Line A is the last operation performed before returning.</span>
+    </label>
+    <label class="kc-opt">
+      <input type="radio" name="q2" value="b">
+      <span><strong>No</strong> — using two parameters disqualifies a function from being tail-recursive.</span>
+    </label>
+    <label class="kc-opt">
+      <input type="radio" name="q2" value="c">
+      <span><strong>No</strong> — the addition <code>acc + n</code> is computed after the recursive call returns.</span>
+    </label>
+    <label class="kc-opt">
+      <input type="radio" name="q2" value="d">
+      <span><strong>Yes</strong> — but only when <code>n = 1</code>, not in general.</span>
+    </label>
+    <button class="kc-btn" onclick="checkAnswer('q2','a')">Check Answer</button>
+    <div class="kc-fb" id="q2-fb" tabindex="-1"></div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="kc-q" id="q3">
+    <div class="kc-num">Question 3 of 3</div>
+    <div class="kc-prompt">
+      The recursive function below computes 1 + 2 + &hellip; + n.
+      Which iterative version using an accumulator is correct?
+    </div>
+    <pre style="margin-bottom:14px"><span class="kw">public static</span> <span class="ty">int</span> <span class="fn">sum</span>(<span class="ty">int</span> n) {
+    <span class="kw">if</span> (n == <span class="nu">0</span>) <span class="kw">return</span> <span class="nu">0</span>;
+    <span class="kw">return</span> n + <span class="fn">sum</span>(n - <span class="nu">1</span>);
+}</pre>
+    <label class="kc-opt">
+      <input type="radio" name="q3" value="a">
+      <span><code>int total = 0; for (int i = 1; i &lt;= n; i++) total += i; return total;</code></span>
+    </label>
+    <label class="kc-opt">
+      <input type="radio" name="q3" value="b">
+      <span><code>int total = 1; for (int i = 1; i &lt;= n; i++) total += i; return total;</code></span>
+    </label>
+    <label class="kc-opt">
+      <input type="radio" name="q3" value="c">
+      <span><code>int total = 0; for (int i = 1; i &lt; n; i++) total += i; return total;</code></span>
+    </label>
+    <label class="kc-opt">
+      <input type="radio" name="q3" value="d">
+      <span><code>int total = n; for (int i = 1; i &lt;= n; i++) total += i; return total;</code></span>
+    </label>
+    <button class="kc-btn" onclick="checkAnswer('q3','a')">Check Answer</button>
+    <div class="kc-fb" id="q3-fb" tabindex="-1"></div>
+  </div>
+
+  <div class="kc-score" id="kc-score" aria-live="polite">
+    <span class="sc-num" id="sc-num">&mdash;</span>
+    <span style="font-size:.88rem;font-weight:400;opacity:.85">
+      Score updates after each answer &nbsp;&middot;&nbsp; Ungraded activity
+    </span>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     SECTION 7 – SUMMARY AND BRIDGE
+════════════════════════════════════════════════════════════════════ -->
+<section id="sec-summary" class="card" aria-labelledby="h2-summary">
+  <h2 id="h2-summary">&#127891; Summary and Bridge</h2>
+
+  <h3>Key Ideas from Module 11.2</h3>
+  <div class="sum-grid">
+    <div class="sum-item">
+      <h4>&#128187; Classic Algorithms</h4>
+      <p>Factorial (linear), Fibonacci (binary), GCD (tail), Hanoi (exponential) — four structural archetypes that recur throughout computer science.</p>
+    </div>
+    <div class="sum-item">
+      <h4>&#127795; Recursion Trees</h4>
+      <p>One node per call. Leaves are base cases. Count nodes to estimate complexity. Max depth equals maximum call-stack depth.</p>
+    </div>
+    <div class="sum-item">
+      <h4>&#9881;&#65039; Tail Recursion</h4>
+      <p>Recursive call is the <em>last operation</em>. GCD is naturally tail-recursive. Java does not apply TCO automatically — convert to a loop when stack depth matters.</p>
+    </div>
+    <div class="sum-item">
+      <h4>&#128260; Iteration Patterns</h4>
+      <p>Accumulator for linear recursion. Rolling variables for two-term recurrences. Explicit stack for complex branching (DFS — Week 13).</p>
+    </div>
+    <div class="sum-item">
+      <h4>&#128202; Complexity Preview</h4>
+      <p>Linear chain &rarr; O(n). Doubling tree &rarr; O(2<sup>n</sup>). Removing redundant calls collapses O(2<sup>n</sup>) Fibonacci to O(n).</p>
+    </div>
+  </div>
+
+  <div class="box box-info" style="margin-top:20px">
+    <div class="box-title">&#128203; Supports PE-08 and PS-07</div>
+    <p style="margin-bottom:0">
+      The recursion-to-iteration conversion in Section 4 directly prepares the
+      implementation comparison required in <strong>PE-08</strong> (Recurrence Relation
+      Solver). The recursion tree visualization in Section 2 builds the diagramming
+      skills needed for documenting PE-08 outputs. The correctness discussion
+      (why these algorithms produce the right answer) is formally addressed in
+      <strong>PS-07</strong> via Module 11.3.
+    </p>
+  </div>
+
+  <div class="bridge">
+    <h3>&#128073; Bridge to Module 11.3</h3>
+    <p>
+      You have now seen recursive algorithms running and have traced their execution
+      step by step. But how do we <em>know</em> they are correct — that
+      <code>factorial(n)</code> returns n! for <em>every</em> non-negative integer,
+      not just the examples we traced? Module 11.3 asks exactly that deeper question.
+      The answer is <strong>mathematical induction</strong> — which you already
+      studied in Week 6. You will use induction to prove that recursive algorithms
+      produce the right result, and to prove that they <em>terminate</em> — that
+      they always reach a base case rather than running forever.
+    </p>
+  </div>
+
+  <div class="sec-chk">
+    <label>
+      <input type="checkbox" onchange="markChecked(this)">
+      Module 11.2 complete — I am ready to move on to Module 11.3.
+    </label>
+  </div>
+</section>
+
+<footer>
+  CSC 240 &mdash; Discrete Structures &nbsp;&middot;&nbsp;
+  Mendocino College &nbsp;&middot;&nbsp; Spring 2026 &nbsp;&middot;&nbsp;
+  Module 11.2
+</footer>
+</main>
+
+<!-- ── JAVASCRIPT ──────────────────────────────────────────────────── -->
+<script>
+/* ── Progress Bar ─────────────────────────────────────────── */
+(function () {
+  var fill = document.getElementById('prog-fill');
+  var bar  = document.getElementById('prog-bar');
+  function update() {
+    var st  = document.documentElement.scrollTop || document.body.scrollTop;
+    var max = document.documentElement.scrollHeight - window.innerHeight;
+    var pct = max > 0 ? Math.min(100, Math.round((st / max) * 100)) : 0;
+    fill.style.width = pct + '%';
+    bar.setAttribute('aria-valuenow', pct);
+  }
+  window.addEventListener('scroll', update, { passive: true });
+  update();
+})();
+
+/* ── Collapsible Blocks ───────────────────────────────────── */
+document.querySelectorAll('.coll-btn').forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    var expanded = btn.getAttribute('aria-expanded') === 'true';
+    var target   = document.getElementById(btn.getAttribute('aria-controls'));
+    btn.setAttribute('aria-expanded', String(!expanded));
+    target.classList.toggle('open', !expanded);
+  });
+});
+
+/* ── Section Checklist ────────────────────────────────────── */
+function markChecked(cb) {
+  var lbl = cb.closest('label');
+  if (cb.checked) {
+    lbl.style.color      = '#166534';
+    lbl.style.fontWeight = '600';
+  } else {
+    lbl.style.color      = '';
+    lbl.style.fontWeight = '';
+  }
+}
+
+/* ── Knowledge Check ──────────────────────────────────────── */
+var FEEDBACK = {
+  q1: {
+    c: {
+      ok: true,
+      msg: '<strong>&#10003; Correct!</strong> <code>gcd(48, 18)</code> makes exactly <strong>4 calls</strong>: '
+         + 'gcd(48,&nbsp;18) &rarr; gcd(18,&nbsp;12) &rarr; gcd(12,&nbsp;6) &rarr; gcd(6,&nbsp;0). '
+         + 'At each step: 48&nbsp;mod&nbsp;18&nbsp;=&nbsp;12, 18&nbsp;mod&nbsp;12&nbsp;=&nbsp;6, '
+         + '12&nbsp;mod&nbsp;6&nbsp;=&nbsp;0. When b&nbsp;=&nbsp;0 the base case fires and returns a&nbsp;=&nbsp;6. '
+         + 'The recursion tree for GCD is a straight <strong>linear chain</strong> of 4 nodes — no branching. '
+         + 'The answer 6 propagates back unchanged through the 3 waiting frames above the base case.'
+    },
+    _: {
+      ok: false,
+      msg: '<strong>Not quite.</strong> Work through the trace step by step: '
+         + 'gcd(48,18) calls gcd(18, 48&nbsp;mod&nbsp;18)&nbsp;=&nbsp;gcd(18,12). '
+         + 'That calls gcd(12, 18&nbsp;mod&nbsp;12)&nbsp;=&nbsp;gcd(12,6). '
+         + 'That calls gcd(6, 12&nbsp;mod&nbsp;6)&nbsp;=&nbsp;gcd(6,0). '
+         + 'gcd(6,0) hits the base case (b=0) and returns 6. '
+         + 'Count them: <strong>4 calls total</strong>. '
+         + 'After gcd(6,0) there is no further call — b is already 0.'
+    }
+  },
+  q2: {
+    a: {
+      ok: true,
+      msg: '<strong>&#10003; Correct!</strong> <code>sumAcc</code> is tail-recursive. '
+         + 'On Line A, <code>return sumAcc(n&nbsp;&minus;&nbsp;1, acc&nbsp;+&nbsp;n)</code>, '
+         + 'the expression <code>acc&nbsp;+&nbsp;n</code> is <em>computed before</em> being '
+         + 'passed as an argument — so by the time the recursive call begins, there is '
+         + '<strong>no pending work left</strong> in the current frame. '
+         + 'Contrast with the non-tail version <code>return n + sum(n-1)</code>: there, '
+         + 'the addition <code>n +&nbsp;&hellip;</code> cannot happen until <code>sum(n-1)</code> '
+         + 'returns, which means work IS pending after the call.'
+    },
+    _: {
+      ok: false,
+      msg: '<strong>Not quite.</strong> Focus on what the current frame must do '
+         + '<em>after</em> the recursive call returns. In '
+         + '<code>return sumAcc(n-1, acc+n)</code>, <code>acc+n</code> is computed '
+         + 'and passed <em>before</em> the call starts. Once the call is made, the '
+         + 'current frame has nothing left to do — the call IS a tail call. '
+         + 'Having two parameters does not affect tail-call status. '
+         + 'Tail-call classification depends only on whether work is pending '
+         + 'after the call returns, not on parameter count.'
+    }
+  },
+  q3: {
+    a: {
+      ok: true,
+      msg: '<strong>&#10003; Correct!</strong> Option A faithfully translates the recursive structure. '
+         + 'The base case <code>sum(0)&nbsp;=&nbsp;0</code> seeds the accumulator: <code>total&nbsp;=&nbsp;0</code>. '
+         + 'The recursive step <code>n&nbsp;+&nbsp;sum(n&minus;1)</code> becomes '
+         + '<code>total&nbsp;+=&nbsp;i</code> for i from 1 to n inclusive. '
+         + 'After the loop: total&nbsp;=&nbsp;0+1+2+&hellip;+n&nbsp;=&nbsp;n(n+1)/2. '
+         + '<em>Option B</em> starts at total=1, adding an extra 1. '
+         + '<em>Option C</em> uses <code>i &lt; n</code>, so it misses the final term n. '
+         + '<em>Option D</em> starts at total=n then also adds 1 through n, counting n twice.'
+    },
+    _: {
+      ok: false,
+      msg: '<strong>Not quite.</strong> Trace the correct option against the base case: '
+         + '<code>sum(0) = 0</code>, so the accumulator must start at <strong>0</strong>, '
+         + 'not 1, not n. Then the loop must add each integer from i=1 '
+         + '<strong>up to and including i=n</strong>. '
+         + 'Check your chosen option: does it seed at 0? Does the loop bound include n? '
+         + 'For n=4 the correct answer is 1+2+3+4=10. Verify your option gives 10.'
+    }
+  }
+};
+
+var answered = {};
+
+function checkAnswer(qid, correct) {
+  var q        = document.getElementById(qid);
+  var selected = q.querySelector('input[name="' + qid + '"]:checked');
+  if (!selected) { alert('Please select an answer first.'); return; }
+
+  var val  = selected.value;
+  var data = FEEDBACK[qid];
+  var entry = data[val] || data['_'];
+
+  /* clear previous styling */
+  q.querySelectorAll('.kc-opt').forEach(function (o) {
+    o.classList.remove('correct', 'wrong');
+  });
+
+  /* mark chosen option */
+  selected.closest('.kc-opt').classList.add(entry.ok ? 'correct' : 'wrong');
+
+  /* if wrong, also highlight the right answer */
+  if (!entry.ok) {
+    q.querySelectorAll('.kc-opt').forEach(function (o) {
+      if (o.querySelector('input').value === correct) o.classList.add('correct');
+    });
+  }
+
+  /* show feedback */
+  var fb = document.getElementById(qid + '-fb');
+  fb.innerHTML   = entry.msg;
+  fb.className   = 'kc-fb show ' + (entry.ok ? 'fb-ok' : 'fb-no');
+  fb.focus();
+
+  /* disable all options for this question */
+  q.querySelectorAll('input[type=radio]').forEach(function (r) { r.disabled = true; });
+  q.querySelector('.kc-btn').disabled = true;
+
+  answered[qid] = entry.ok;
+  updateScore();
+}
+
+function updateScore() {
+  var correct = Object.values(answered).filter(Boolean).length;
+  var total   = 3;
+  document.getElementById('sc-num').textContent = correct + ' / ' + total + ' correct';
+}
+</script>
+</body>
+</html>

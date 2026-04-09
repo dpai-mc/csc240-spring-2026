@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Module 11.3 – Proving Recursive Algorithms Correct | CSC 240</title>
+<style>
+/* ── reset & base ─────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;font-size:1rem;line-height:1.75;color:#1c2833;background:#f4f6f8}
+a{color:#2474a8}
+a:focus-visible{outline:3px solid #f0c040;outline-offset:2px;border-radius:2px}
+
+/* ── skip link ────────────────────────────────────── */
+.skip{position:absolute;top:-60px;left:0;background:#1a5276;color:#fff;padding:.55rem 1.1rem;z-index:9999;font-weight:700;text-decoration:none;border-radius:0 0 4px 0;transition:top .2s}
+.skip:focus{top:0}
+
+/* ── navigation ───────────────────────────────────── */
+#topnav{position:sticky;top:0;z-index:200;background:#1a5276;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.nav-in{max-width:980px;margin:0 auto;display:flex;align-items:center;padding:0 1rem;flex-wrap:wrap}
+.nav-brand{color:#fff;font-weight:700;font-size:.85rem;padding:.65rem .85rem .65rem 0;border-right:1px solid rgba(255,255,255,.25);margin-right:.4rem;white-space:nowrap}
+#topnav ul{list-style:none;display:flex;flex-wrap:wrap}
+#topnav a{display:block;color:rgba(255,255,255,.82);text-decoration:none;padding:.65rem .5rem;font-size:.75rem;white-space:nowrap;transition:background .15s,color .15s}
+#topnav a:hover{background:rgba(255,255,255,.15);color:#fff}
+#topnav a:focus{outline:2px solid #f0c040;outline-offset:-2px;color:#fff}
+
+/* ── layout ───────────────────────────────────────── */
+main{max-width:900px;margin:0 auto;padding:2rem 1.25rem 5rem}
+
+/* ── module header ────────────────────────────────── */
+.mhdr{background:linear-gradient(135deg,#1a5276,#2e86c1);color:#fff;border-radius:8px;padding:2rem 2rem 1.75rem;margin-bottom:2.5rem}
+.mhdr .crumb{font-size:.77rem;opacity:.75;margin-bottom:.35rem}
+.mhdr h1{font-size:1.5rem;font-weight:700;line-height:1.3;margin-bottom:.65rem}
+.mhdr .intro{font-size:.93rem;opacity:.92;margin-bottom:.9rem;line-height:1.65}
+.badge{display:inline-block;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);border-radius:4px;padding:.18rem .65rem;font-size:.72rem;font-weight:700;margin-right:.4rem}
+
+/* ── sections ─────────────────────────────────────── */
+.sec{margin-bottom:2.75rem;scroll-margin-top:52px}
+.sec-hd{display:flex;align-items:baseline;gap:.55rem;border-bottom:3px solid #2e86c1;padding-bottom:.4rem;margin-bottom:1.25rem}
+.sec-num{font-size:.97rem;font-weight:700;color:#2e86c1;min-width:1.7rem}
+.sec-hd h2{font-size:1.28rem;font-weight:700;color:#1c2833}
+h3{font-size:1.03rem;font-weight:700;color:#1a5276;margin:1.5rem 0 .65rem}
+h4{font-size:.93rem;font-weight:700;color:#2e86c1;margin:1.1rem 0 .4rem}
+p{margin-bottom:.9rem}
+ul,ol{margin:.35rem 0 .9rem 1.55rem}
+li{margin-bottom:.25rem}
+
+/* ── callout boxes ────────────────────────────────── */
+.box{border-radius:6px;padding:.85rem 1.1rem;margin:1.1rem 0;border-left:5px solid}
+.box .lbl{font-weight:700;font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.3rem}
+.box>p:last-child,.box>ol:last-child,.box>ul:last-child{margin-bottom:0}
+.bx-k{background:#e8f6f3;border-color:#148f77}.bx-k .lbl{color:#0e6655}
+.bx-i{background:#eaf4fb;border-color:#2e86c1}.bx-i .lbl{color:#1a5276}
+.bx-p{background:#fdedec;border-color:#e74c3c}.bx-p .lbl{color:#c0392b}
+.bx-t{background:#f5eef8;border-color:#8e44ad}.bx-t .lbl{color:#7d3c98}
+
+/* ── code blocks ──────────────────────────────────── */
+pre{background:#1d2b38;color:#cdd6e0;border-radius:6px;padding:1rem 1.2rem;font-family:'Courier New',Courier,monospace;font-size:.86rem;line-height:1.65;overflow-x:auto;margin:.85rem 0 1rem;tab-size:2}
+code{font-family:'Courier New',Courier,monospace;font-size:.87em;background:#e4e9ef;border-radius:3px;padding:.1em .35em;color:#1a5276}
+pre code{background:none;color:inherit;padding:0;font-size:1em}
+.kw{color:#7ec8e3}.fn{color:#a8d8a8}.cm{color:#6a8a9a;font-style:italic}.nl{color:#f0c070}
+
+/* ── parallel table ───────────────────────────────── */
+.ptbl{width:100%;border-collapse:collapse;margin:.5rem 0;font-size:.88rem}
+.ptbl caption{text-align:left;font-weight:700;font-size:.87rem;color:#1a5276;padding-bottom:.45rem;caption-side:top}
+.ptbl th{background:#1a5276;color:#fff;padding:.6rem .85rem;text-align:left}
+.ptbl th.hi{background:#1a6fa8}.ptbl th.ha{background:#1a7a5c}.ptbl th.hc{text-align:center;width:13%}
+.ptbl td{padding:.68rem .85rem;vertical-align:top;border:1px solid #c8d6e0}
+.ptbl .rl{font-weight:700;font-size:.77rem;text-transform:uppercase;letter-spacing:.05em;color:#1a5276;background:#eaf2f8!important;text-align:center}
+.ptbl tr:nth-child(odd) td:not(.rl){background:#fff}
+.ptbl tr:nth-child(even) td:not(.rl){background:#f0f6fb}
+
+/* ── proof blocks ─────────────────────────────────── */
+.pb{background:#f7f9fb;border:1px solid #c8d6e0;border-radius:8px;padding:1.1rem 1.3rem;margin:1rem 0}
+.pb-t{font-weight:700;font-size:.95rem;color:#1a5276;padding-bottom:.5rem;border-bottom:2px solid #2e86c1;margin-bottom:.85rem}
+.pp{margin:.6rem 0;display:grid;grid-template-columns:148px 1fr;gap:.3rem .7rem;align-items:start}
+.ppl{font-weight:700;font-size:.73rem;text-transform:uppercase;letter-spacing:.05em;line-height:1.4;padding-top:.1rem}
+.ppl small{display:block;font-weight:400;text-transform:none;letter-spacing:0;font-size:.83em;margin-top:.15rem}
+.bc .ppl{color:#148f77}.ih .ppl{color:#2e86c1}.is .ppl{color:#d35400}.cn .ppl{color:#1a5276}
+.ppb>p:first-child,.ppb>ul:first-child,.ppb>ol:first-child{margin-top:0}
+.ppb>p:last-child,.ppb>ul:last-child,.ppb>ol:last-child{margin-bottom:0}
+.qed{text-align:right;font-size:1.1rem;color:#1a5276;margin-top:.5rem;font-weight:700}
+
+/* ── equation chains ──────────────────────────────── */
+.eqc{font-family:'Courier New',Courier,monospace;font-size:.88rem;line-height:1.7;margin:.4rem 0}
+.eqr{display:grid;grid-template-columns:16em 1.4em 1fr;gap:.1rem .2rem;align-items:baseline;margin:.18rem 0}
+.eqr .wy{font-style:italic;font-family:'Segoe UI',Arial,sans-serif;font-size:.75rem;color:#5a6a78;margin-left:.35rem}
+.eqr .wy::before{content:"["}.eqr .wy::after{content:"]"}
+
+/* ── claim boxes ──────────────────────────────────── */
+.claim{background:#fef9e7;border:1px solid #d4ac0d;border-radius:5px;padding:.6rem 1.05rem;margin:.7rem 0;font-size:.93rem}
+.claim .cl{font-weight:700;font-size:.73rem;text-transform:uppercase;letter-spacing:.05em;color:#9a7d0a;display:block;margin-bottom:.2rem}
+
+/* ── knowledge check ──────────────────────────────── */
+.kcw{background:#fff;border:2px solid #2e86c1;border-radius:8px;padding:1.3rem;margin:1.25rem 0}
+.kc-h{font-size:1.03rem;font-weight:700;color:#1a5276;padding-bottom:.5rem;border-bottom:2px solid #e4e9ef;margin-bottom:1.1rem}
+.kc-q{margin-bottom:0}
+.kc-q+.kc-q,fieldset.kc-q+fieldset.kc-q,.kc-q+fieldset.kc-q,fieldset.kc-q+.kc-q{margin-top:1.75rem;padding-top:1.75rem;border-top:1px solid #e4e9ef}
+fieldset.kc-q{border:none;padding:0;min-inline-size:0}
+fieldset.kc-q legend{font-weight:600;font-size:.96rem;color:#1c2833;margin-bottom:.6rem;padding:0;display:block;width:100%}
+.kc-opts{list-style:none;margin:0 0 .65rem}
+.kc-opts li{margin-bottom:.3rem}
+.kc-opts label{display:flex;align-items:flex-start;gap:.5rem;cursor:pointer;padding:.35rem .5rem;border-radius:4px;transition:background .1s;font-size:.9rem;line-height:1.5}
+.kc-opts label:hover,.kc-opts label:focus-within{background:#eaf4fb}
+.kc-opts input[type="radio"]{margin-top:.25rem;flex-shrink:0;cursor:pointer}
+.kc-fb{border-radius:4px;padding:.6rem .9rem;font-size:.87rem;display:none;line-height:1.6;margin-top:.5rem}
+.kc-fb.ok{display:block;background:#e8f6f3;border-left:4px solid #148f77}
+.kc-fb.no{display:block;background:#fdedec;border-left:4px solid #e74c3c}
+.kc-fb:focus{outline:2px solid #2e86c1;outline-offset:1px}
+.kc-btn{background:#1a5276;color:#fff;border:none;border-radius:4px;padding:.45rem 1.1rem;font-size:.87rem;cursor:pointer;transition:background .15s;margin-top:.2rem}
+.kc-btn:hover{background:#2e86c1}
+.kc-btn:focus{outline:2px solid #f0c040;outline-offset:2px}
+
+/* ── written response ─────────────────────────────── */
+.wrtxt{width:100%;min-height:108px;border:1px solid #c8d6e0;border-radius:4px;padding:.65rem;display:block;font-family:'Segoe UI',Arial,sans-serif;font-size:.9rem;resize:vertical;line-height:1.6;margin-top:.4rem}
+.wrtxt:focus{outline:2px solid #2e86c1;outline-offset:1px;border-color:#2e86c1}
+.rvl-btn{background:#148f77;color:#fff;border:none;border-radius:4px;padding:.45rem 1.1rem;font-size:.87rem;cursor:pointer;margin-top:.65rem;transition:background .15s}
+.rvl-btn:hover{background:#0e6655}
+.rvl-btn:focus{outline:2px solid #f0c040;outline-offset:2px}
+.mans{display:none;background:#e8f6f3;border-left:4px solid #148f77;border-radius:4px;padding:.7rem 1rem;margin-top:.6rem;font-size:.87rem;line-height:1.6}
+.mans>p:last-child,.mans>ul:last-child,.mans>ol:last-child{margin-bottom:0}
+
+/* ── mini-case ────────────────────────────────────── */
+.mcb{background:#fff;border:2px solid #8e44ad;border-radius:8px;padding:1.3rem;margin:1rem 0}
+.mc-h{font-weight:700;font-size:.95rem;color:#7d3c98;margin-bottom:.85rem;display:flex;align-items:center;gap:.45rem}
+.fp{background:#fdf8ff;border:1px solid #c0a0df;border-radius:6px;padding:.9rem 1.05rem;margin:.85rem 0;font-size:.9rem}
+.fp>p{margin-bottom:.5rem}.fp>p:last-child{margin-bottom:0}
+.fp-note{font-size:.77rem;color:#7d3c98;font-style:italic}
+
+/* ── summary ──────────────────────────────────────── */
+.sgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(195px,1fr));gap:.8rem;margin:.85rem 0}
+.sc{background:#fff;border:1px solid #c8d6e0;border-radius:6px;padding:.85rem;border-top:4px solid #2e86c1}
+.sc h4{font-size:.84rem;color:#1a5276;margin:0 0 .3rem}
+.sc p{font-size:.81rem;margin:0;color:#444;line-height:1.55}
+.bridge{background:linear-gradient(135deg,#1a5276,#2e86c1);color:#fff;border-radius:8px;padding:1.15rem 1.4rem;margin:1.4rem 0}
+.bridge h3{color:#fff;margin-top:0;font-size:1.03rem}
+.bridge p{color:rgba(255,255,255,.9);margin-bottom:0}
+
+/* ── math & type helpers ──────────────────────────── */
+.mi{font-style:italic}
+sup{font-size:.74em;vertical-align:super;line-height:0}
+sub{font-size:.74em;vertical-align:sub;line-height:0}
+.vh{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+/* ── responsive ───────────────────────────────────── */
+@media(max-width:640px){
+  .ptbl{font-size:.79rem}
+  .ptbl th,.ptbl td{padding:.42rem .5rem}
+  .pp{grid-template-columns:1fr;gap:.12rem}
+  .eqr{grid-template-columns:auto 1.2em 1fr}
+  .nav-brand{display:none}
+  #topnav a{padding:.6rem .38rem;font-size:.71rem}
+  .sgrid{grid-template-columns:1fr}
+  .mhdr h1{font-size:1.28rem}
+}
+</style>
+</head>
+<body>
+
+<a href="#main" class="skip">Skip to main content</a>
+
+<nav id="topnav" aria-label="Module 11.3 section navigation">
+  <div class="nav-in">
+    <span class="nav-brand" aria-hidden="true">Mod 11.3</span>
+    <ul>
+      <li><a href="#sec1">1.&nbsp;Structural Parallel</a></li>
+      <li><a href="#sec2">2.&nbsp;Correctness Proofs</a></li>
+      <li><a href="#sec3">3.&nbsp;Termination</a></li>
+      <li><a href="#sec4">4.&nbsp;Structural Induction</a></li>
+      <li><a href="#sec5">5.&nbsp;Mini-Case</a></li>
+      <li><a href="#sec6">6.&nbsp;Knowledge Check</a></li>
+      <li><a href="#sec7">7.&nbsp;Summary</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main id="main">
+
+<!-- ═══ MODULE HEADER ═══════════════════════════════════════ -->
+<header class="mhdr">
+  <div class="crumb">CSC 240: Discrete Structures &rsaquo; Week 11 &rsaquo; Module 11.3</div>
+  <h1>Proving Recursive Algorithms Correct:<br>Recursion and Mathematical Induction</h1>
+  <p class="intro">Modules 11.1 and 11.2 introduced recursive algorithm design and execution tracing. This module reveals <em>why</em> recursive algorithms work — and why mathematical induction is not merely a proof technique <em>applied to</em> algorithms, but the very logical structure that makes recursive correctness arguments possible.</p>
+  <span class="badge">CSLO 4</span>
+  <span class="badge">Prereqs: Modules 11.1 &amp; 11.2</span>
+  <span class="badge">Core: PS-07</span>
+</header>
+
+
+<!-- ═══ SECTION 1: STRUCTURAL PARALLEL ═════════════════════ -->
+<section class="sec" id="sec1" aria-labelledby="h-sec1">
+<div class="sec-hd">
+  <span class="sec-num" aria-hidden="true">1</span>
+  <h2 id="h-sec1">The Structural Parallel</h2>
+</div>
+
+<p>Mathematical induction and recursive algorithms are <strong>isomorphic in structure</strong>: every component of an induction proof maps directly onto a corresponding component of the recursive algorithm. This is not an analogy we impose — it is a logical identity we discover. The table below makes the correspondence explicit.</p>
+
+<div style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin:1rem 0">
+<table class="ptbl" aria-describedby="ptbl-cap">
+<caption id="ptbl-cap">Table 1 &mdash; Induction Structure &harr; Recursive Algorithm Structure</caption>
+<thead>
+<tr>
+  <th scope="col" class="hc">Component</th>
+  <th scope="col" class="hi">Mathematical Induction</th>
+  <th scope="col" class="ha">Recursive Algorithm</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <th scope="row" class="rl">Base&nbsp;Case</th>
+  <td>Prove <span class="mi">P</span>(0) — establish the claim for the smallest value directly, without using any prior instance of the claim.</td>
+  <td>Handle the simplest input (e.g., <code>n&nbsp;=&nbsp;0</code>) directly — return a result with <strong>no</strong> recursive call.</td>
+</tr>
+<tr>
+  <th scope="row" class="rl">Inductive Hypothesis</th>
+  <td>Assume <span class="mi">P</span>(<span class="mi">k</span>) is true for some arbitrary <span class="mi">k</span> &ge; 0. You <em>borrow</em> this truth temporarily — you are not proving it here.</td>
+  <td>Assume the recursive call on a <em>strictly smaller</em> input already returns the correct answer. The correctness proof borrows this assumption.</td>
+</tr>
+<tr>
+  <th scope="row" class="rl">Inductive&nbsp;Step</th>
+  <td>Using <span class="mi">P</span>(<span class="mi">k</span>), prove <span class="mi">P</span>(<span class="mi">k</span>+1). Show <em>constructively</em> how truth at <span class="mi">k</span> forces truth at <span class="mi">k</span>+1.</td>
+  <td>Show that the current call (input size <span class="mi">k</span>+1) correctly combines the recursive result (input size <span class="mi">k</span>) with the current input to produce the right answer.</td>
+</tr>
+<tr>
+  <th scope="row" class="rl">Conclusion</th>
+  <td>By the principle of induction, <span class="mi">P</span>(<span class="mi">n</span>) is true for all <span class="mi">n</span> &ge; 0.</td>
+  <td>The algorithm returns the correct result for all valid inputs.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="box bx-k">
+  <div class="lbl">&#x1F511; Key Insight</div>
+  <p>This is <strong>not merely an analogy</strong>. When you write a correctness proof for a recursive algorithm, you are literally constructing a proof by mathematical induction. The base case of the proof <em>is</em> the base case of the algorithm. The inductive hypothesis <em>is</em> the assumption that the recursive call is correct. The inductive step <em>is</em> the argument that the algorithm correctly computes its result using that recursive call.</p>
+  <p><strong>Proving the algorithm correct IS the induction proof.</strong></p>
+</div>
+
+<div class="box bx-i">
+  <div class="lbl">&#x2139;&#xFE0F; Why This Shapes How You Code</div>
+  <p>Knowing this parallel enforces disciplined design. Before writing any recursive function, ask: <em>Have I identified the base case?</em> <em>Is my recursive call on a genuinely smaller input?</em> <em>Does combining the recursive result with the current state produce the right answer?</em> These are the exact questions a correctness proof must answer — and they are the same questions that prevent bugs.</p>
+</div>
+</section>
+
+
+<!-- ═══ SECTION 2: CORRECTNESS PROOFS ═══════════════════════ -->
+<section class="sec" id="sec2" aria-labelledby="h-sec2">
+<div class="sec-hd">
+  <span class="sec-num" aria-hidden="true">2</span>
+  <h2 id="h-sec2">Correctness Proofs &mdash; Two Worked Examples</h2>
+</div>
+
+<p>Each proof follows the same four-part structure: <strong>Base Case &rarr; Inductive Hypothesis &rarr; Inductive Step &rarr; Conclusion</strong>. These labels are not decorative — each satisfies a specific, distinct logical obligation.</p>
+
+<!-- ─── Proof 1: Factorial ─── -->
+<h3>Proof 1 &mdash; Recursive Factorial</h3>
+
+<pre><code><span class="kw">function</span> <span class="fn">factorial</span>(n):
+  <span class="kw">if</span> n = 0 <span class="kw">then</span>
+    <span class="kw">return</span> <span class="nl">1</span>                          <span class="cm">-- base case</span>
+  <span class="kw">else</span>
+    <span class="kw">return</span> n &times; <span class="fn">factorial</span>(n &minus; <span class="nl">1</span>)       <span class="cm">-- recursive case</span></code></pre>
+
+<div class="claim">
+  <span class="cl">Claim</span>
+  For all integers <span class="mi">n</span> &ge; 0, <code>factorial(n)</code> returns <span class="mi">n</span>!
+</div>
+
+<div class="pb">
+  <div class="pb-t">Proof &mdash; by weak induction on <span class="mi">n</span></div>
+
+  <div class="pp bc">
+    <div class="ppl">Base Case <small>(n = 0)</small></div>
+    <div class="ppb">
+      <p>The <code>if</code>-branch executes, returning <code>1</code>.</p>
+      <p>By definition, 0! = 1.</p>
+      <p>Therefore <code>factorial(0)</code> = 1 = 0! &nbsp;&#x2713;</p>
+    </div>
+  </div>
+
+  <div class="pp ih">
+    <div class="ppl">Inductive Hypothesis</div>
+    <div class="ppb">
+      <p>Assume <code>factorial(k)</code> = <span class="mi">k</span>! for some arbitrary integer <span class="mi">k</span> &ge; 0.</p>
+    </div>
+  </div>
+
+  <div class="pp is">
+    <div class="ppl">Inductive Step <small>(show factorial(k+1) = (k+1)!)</small></div>
+    <div class="ppb">
+      <p>Since <span class="mi">k</span>+1 &gt; 0, the <code>else</code>-branch executes:</p>
+      <div class="eqc" aria-label="Equation chain: factorial inductive step">
+        <div class="eqr">
+          <span><code>factorial(k+1)</code></span>
+          <span>=</span>
+          <span><code>(k+1) &times; factorial(k)</code> <span class="wy">else-branch; k+1 &gt; 0</span></span>
+        </div>
+        <div class="eqr">
+          <span></span>
+          <span>=</span>
+          <span><code>(k+1) &times; k!</code> <span class="wy">Inductive Hypothesis</span></span>
+        </div>
+        <div class="eqr">
+          <span></span>
+          <span>=</span>
+          <span><code>(k+1)!</code> <span class="wy">definition: (k+1)! = (k+1) &middot; k!</span></span>
+        </div>
+      </div>
+      <p>So <code>factorial(k+1)</code> = (<span class="mi">k</span>+1)! &nbsp;&#x2713;</p>
+    </div>
+  </div>
+
+  <div class="pp cn">
+    <div class="ppl">Conclusion</div>
+    <div class="ppb">
+      <p>By the principle of mathematical induction, <code>factorial(n)</code> = <span class="mi">n</span>! for all integers <span class="mi">n</span> &ge; 0.</p>
+    </div>
+  </div>
+  <div class="qed">&square;</div>
+</div>
+
+<!-- ─── Proof 2: GCD ─── -->
+<h3>Proof 2 &mdash; Euclid&rsquo;s GCD Algorithm</h3>
+
+<pre><code><span class="kw">function</span> <span class="fn">gcd</span>(a, b):
+  <span class="kw">if</span> b = 0 <span class="kw">then</span>
+    <span class="kw">return</span> a                            <span class="cm">-- base case</span>
+  <span class="kw">else</span>
+    <span class="kw">return</span> <span class="fn">gcd</span>(b, a <span class="kw">mod</span> b)             <span class="cm">-- recursive case</span></code></pre>
+
+<div class="claim">
+  <span class="cl">Claim</span>
+  For all integers <span class="mi">a</span> &ge; 0 and <span class="mi">b</span> &ge; 0, <code>gcd(a,&thinsp;b)</code> returns the mathematical greatest common divisor of <span class="mi">a</span> and <span class="mi">b</span>.
+</div>
+
+<div class="box bx-i">
+  <div class="lbl">&#x2139;&#xFE0F; Proof Strategy</div>
+  <p>We induct on <span class="mi">b</span> (the second argument). The recursive call passes <code>a mod b</code> as the new second argument. Because <code>a&nbsp;mod&nbsp;b</code> can be any value from 0 to <span class="mi">b</span>&minus;1 — not necessarily <span class="mi">b</span>&minus;1 exactly — we need <strong>strong induction</strong>: assume correctness for <em>all</em> second-argument values strictly less than <span class="mi">b</span>.</p>
+</div>
+
+<div class="pb">
+  <div class="pb-t">Proof &mdash; by strong induction on <span class="mi">b</span></div>
+
+  <div class="pp bc">
+    <div class="ppl">Base Case <small>(b = 0)</small></div>
+    <div class="ppb">
+      <p>The <code>if</code>-branch executes, returning <code>a</code>.</p>
+      <p>By the mathematical definition, gcd(<span class="mi">a</span>,&thinsp;0) = <span class="mi">a</span> for any <span class="mi">a</span> &ge; 0. &nbsp;&#x2713;</p>
+    </div>
+  </div>
+
+  <div class="pp ih">
+    <div class="ppl">Inductive Hypothesis</div>
+    <div class="ppb">
+      <p>Assume that for all <span class="mi">a&prime;</span> &ge; 0 and all <span class="mi">b&prime;</span> with 0 &le; <span class="mi">b&prime;</span> &lt; <span class="mi">b</span>, the call <code>gcd(a&prime;,&thinsp;b&prime;)</code> correctly returns gcd(<span class="mi">a&prime;</span>,&thinsp;<span class="mi">b&prime;</span>).</p>
+    </div>
+  </div>
+
+  <div class="pp is">
+    <div class="ppl">Inductive Step <small>(b &gt; 0)</small></div>
+    <div class="ppb">
+      <p><strong>Step 1 &mdash; Validate the recursive call.</strong><br>
+      Since <span class="mi">b</span> &gt; 0, the property of integer division gives: 0 &le; <span class="mi">a</span> mod <span class="mi">b</span> &lt; <span class="mi">b</span>.
+      So the second argument of the recursive call is strictly less than <span class="mi">b</span>. The IH applies. &#x2713;</p>
+      <p><strong>Step 2 &mdash; Apply the IH.</strong><br>
+      The <code>else</code>-branch executes. Set <span class="mi">a&prime;</span> = <span class="mi">b</span> and <span class="mi">b&prime;</span> = <span class="mi">a</span> mod <span class="mi">b</span> (where <span class="mi">b&prime;</span> &lt; <span class="mi">b</span>). By the Inductive Hypothesis, the recursive call <code>gcd(b,&thinsp;a&thinsp;mod&thinsp;b)</code> correctly returns the mathematical value gcd(<span class="mi">b</span>,&thinsp;<span class="mi">a</span> mod <span class="mi">b</span>).</p>
+      <p><strong>Step 3 &mdash; Apply the GCD identity.</strong><br>
+      The mathematical identity states: gcd(<span class="mi">a</span>,&thinsp;<span class="mi">b</span>) = gcd(<span class="mi">b</span>,&thinsp;<span class="mi">a</span> mod <span class="mi">b</span>) for all <span class="mi">b</span> &gt; 0. Therefore:</p>
+      <div class="eqc" aria-label="Equation chain: GCD inductive step conclusion">
+        <div class="eqr">
+          <span>value returned</span>
+          <span>=</span>
+          <span>gcd(<span class="mi">b</span>,&thinsp;<span class="mi">a</span> mod <span class="mi">b</span>) <span class="wy">Step 2: IH applied to recursive call</span></span>
+        </div>
+        <div class="eqr">
+          <span></span>
+          <span>=</span>
+          <span>gcd(<span class="mi">a</span>,&thinsp;<span class="mi">b</span>) <span class="wy">GCD identity; b &gt; 0</span></span>
+        </div>
+      </div>
+      <p>Therefore <code>gcd(a,&thinsp;b)</code> returns gcd(<span class="mi">a</span>,&thinsp;<span class="mi">b</span>). &nbsp;&#x2713;</p>
+    </div>
+  </div>
+
+  <div class="pp cn">
+    <div class="ppl">Conclusion</div>
+    <div class="ppb">
+      <p>By strong induction on <span class="mi">b</span>, <code>gcd(a,&thinsp;b)</code> returns gcd(<span class="mi">a</span>,&thinsp;<span class="mi">b</span>) for all <span class="mi">a</span> &ge; 0 and <span class="mi">b</span> &ge; 0.</p>
+    </div>
+  </div>
+  <div class="qed">&square;</div>
+</div>
+
+<div class="box bx-p">
+  <div class="lbl">&#x26A0;&#xFE0F; Common Pitfall &mdash; GCD Inductive Step</div>
+  <p>Step 1 of the inductive step — establishing that 0 &le; <span class="mi">a</span> mod <span class="mi">b</span> &lt; <span class="mi">b</span> — is not optional detail. It is the prerequisite that permits the application of the strong inductive hypothesis. Omitting it leaves the IH application unjustified and the proof incomplete.</p>
+  <p>Observe also that this <em>same inequality</em> guarantees termination: the second argument strictly decreases toward 0 on every call. <strong>The inductive step doubles as the termination argument.</strong> This connection is developed further in Section 3.</p>
+</div>
+</section>
+
+
+<!-- ═══ SECTION 3: TERMINATION ══════════════════════════════ -->
+<section class="sec" id="sec3" aria-labelledby="h-sec3">
+<div class="sec-hd">
+  <span class="sec-num" aria-hidden="true">3</span>
+  <h2 id="h-sec3">Proving Termination</h2>
+</div>
+
+<p>A correctness proof establishes that <em>if</em> the algorithm terminates, it returns the right answer. But we also need to prove that it <em>does</em> terminate. Termination and correctness are <strong>separate logical obligations</strong> — neither implies the other. The standard technique is the <strong>termination measure argument</strong>.</p>
+
+<div class="box bx-k">
+  <div class="lbl">&#x1F511; Definition &mdash; Termination Measure</div>
+  <p>A <strong>termination measure</strong> (also called a <em>ranking function</em>) for a recursive algorithm is a function <span class="mi">m</span> that maps each possible input to a non-negative integer and satisfies:</p>
+  <ol>
+    <li><strong>Non-negative:</strong> <span class="mi">m</span>(input) &ge; 0 for every valid input.</li>
+    <li><strong>Strictly decreasing:</strong> For every recursive call, <span class="mi">m</span>(arguments of the recursive call) &lt; <span class="mi">m</span>(current arguments).</li>
+  </ol>
+  <p>If such a measure exists, the algorithm terminates on all valid inputs.</p>
+</div>
+
+<div class="box bx-i">
+  <div class="lbl">&#x2139;&#xFE0F; Why This Guarantees Termination &mdash; Well-Ordering</div>
+  <p>A non-negative integer cannot decrease strictly forever. This follows from the <strong>Well-Ordering Principle</strong>: every non-empty set of non-negative integers has a minimum element. A strictly decreasing sequence of non-negative integers is therefore finite — it must eventually reach the minimum, at which point the base case fires and no further recursive call is made.</p>
+</div>
+
+<h3>Worked Example 1 &mdash; Factorial Termination</h3>
+<p><strong>Proposed measure:</strong> <span class="mi">m</span>(<span class="mi">n</span>) = <span class="mi">n</span></p>
+<ol>
+  <li><strong>Non-negative:</strong> All valid inputs satisfy <span class="mi">n</span> &ge; 0, so <span class="mi">m</span>(<span class="mi">n</span>) = <span class="mi">n</span> &ge; 0. &#x2713;</li>
+  <li><strong>Base case fires at 0:</strong> When <span class="mi">n</span> = 0, <code>factorial</code> returns immediately with no recursive call. &#x2713;</li>
+  <li><strong>Strictly decreasing:</strong> The recursive call is <code>factorial(n&minus;1)</code>. Its measure is <span class="mi">m</span>(<span class="mi">n</span>&minus;1) = <span class="mi">n</span>&minus;1 &lt; <span class="mi">n</span> = <span class="mi">m</span>(<span class="mi">n</span>). &#x2713;</li>
+</ol>
+<p><strong>Conclusion:</strong> By the termination measure argument, <code>factorial</code> terminates for all <span class="mi">n</span> &ge; 0.</p>
+
+<h3>Worked Example 2 &mdash; GCD Termination</h3>
+<p><strong>Proposed measure:</strong> <span class="mi">m</span>(<span class="mi">a</span>,&thinsp;<span class="mi">b</span>) = <span class="mi">b</span> (the second argument)</p>
+<ol>
+  <li><strong>Non-negative:</strong> All valid inputs satisfy <span class="mi">b</span> &ge; 0, so <span class="mi">m</span>(<span class="mi">a</span>,&thinsp;<span class="mi">b</span>) = <span class="mi">b</span> &ge; 0. &#x2713;</li>
+  <li><strong>Base case fires at 0:</strong> When <span class="mi">b</span> = 0, <code>gcd</code> returns <code>a</code> immediately with no recursive call. &#x2713;</li>
+  <li><strong>Strictly decreasing:</strong> The recursive call is <code>gcd(b,&thinsp;a mod b)</code>. Its measure is <span class="mi">m</span>(<span class="mi">b</span>,&thinsp;<span class="mi">a</span> mod <span class="mi">b</span>) = <span class="mi">a</span> mod <span class="mi">b</span>.
+    <ul>
+      <li>Since <span class="mi">b</span> &gt; 0 in the recursive case: 0 &le; <span class="mi">a</span> mod <span class="mi">b</span> &lt; <span class="mi">b</span>.</li>
+      <li>Therefore <span class="mi">m</span>(<span class="mi">b</span>,&thinsp;<span class="mi">a</span> mod <span class="mi">b</span>) = <span class="mi">a</span> mod <span class="mi">b</span> &lt; <span class="mi">b</span> = <span class="mi">m</span>(<span class="mi">a</span>,&thinsp;<span class="mi">b</span>). &#x2713;</li>
+    </ul>
+  </li>
+</ol>
+<p><strong>Conclusion:</strong> By the termination measure argument, <code>gcd</code> terminates for all <span class="mi">a</span> &ge; 0 and <span class="mi">b</span> &ge; 0.</p>
+
+<div class="box bx-t">
+  <div class="lbl">&#x1F4A1; Strategy Tip</div>
+  <p>For most algorithms in this course, the termination measure is the value of one integer argument or a simple expression over it. Start by asking: <em>which parameter gets strictly smaller on every recursive call?</em> If more than one parameter changes, look for one that is (a) bounded below by 0 and (b) strictly decreases each call. If no single argument works, consider sums, maximums, or lexicographic pairs of arguments.</p>
+</div>
+</section>
+
+
+<!-- ═══ SECTION 4: STRUCTURAL INDUCTION ═════════════════════ -->
+<section class="sec" id="sec4" aria-labelledby="h-sec4">
+<div class="sec-hd">
+  <span class="sec-num" aria-hidden="true">4</span>
+  <h2 id="h-sec4">Structural Induction &mdash; A Conceptual Introduction</h2>
+</div>
+
+<p>Sections 1&ndash;3 used induction over the natural numbers (<span class="mi">n</span> = 0, 1, 2, &hellip;). This is natural when a recursive call decrements an integer argument. But many algorithms in computer science operate on <strong>structured data</strong> — lists, trees, binary strings, expressions — whose &ldquo;size&rdquo; is determined by their recursive structure, not a single integer counter.</p>
+
+<p>For such settings we use <strong>structural induction</strong>: rather than inducing over a numeric index, we induct over the recursive definition of the data object itself.</p>
+
+<div class="box bx-k">
+  <div class="lbl">&#x1F511; Structural Induction &mdash; Core Pattern</div>
+  <p>Let <span class="mi">S</span> be a recursively defined set and <span class="mi">P</span> a property of its elements. To prove <span class="mi">P</span> holds for every element of <span class="mi">S</span>:</p>
+  <ol>
+    <li><strong>Base case:</strong> Prove <span class="mi">P</span> holds for all <em>atomic</em> (smallest) elements of <span class="mi">S</span>.</li>
+    <li><strong>Inductive step:</strong> Prove that if <span class="mi">P</span> holds for every sub-component of a compound element, then <span class="mi">P</span> holds for the whole element.</li>
+  </ol>
+  <p>Validity rests on the <em>well-foundedness</em> of the recursive definition: every element is eventually decomposed into atomic parts through a finite number of steps.</p>
+</div>
+
+<h3>Example &mdash; Binary Strings</h3>
+<p>Let &Sigma; = {0, 1}. The set &Sigma;* of binary strings is defined recursively:</p>
+<ul>
+  <li><strong>Basis:</strong> &varepsilon; (the empty string) &isin; &Sigma;*.</li>
+  <li><strong>Recursive rule:</strong> If <span class="mi">w</span> &isin; &Sigma;*, then 0<span class="mi">w</span> &isin; &Sigma;* and 1<span class="mi">w</span> &isin; &Sigma;*.</li>
+</ul>
+
+<div class="claim">
+  <span class="cl">Claim</span>
+  For every <span class="mi">w</span> &isin; &Sigma;*, &nbsp;length(reverse(<span class="mi">w</span>)) = length(<span class="mi">w</span>).
+</div>
+
+<div class="pb">
+  <div class="pb-t">Proof &mdash; by structural induction on <span class="mi">w</span></div>
+
+  <div class="pp bc">
+    <div class="ppl">Base Case <small>(w = &varepsilon;)</small></div>
+    <div class="ppb">
+      <p>reverse(&varepsilon;) = &varepsilon; &nbsp;(reversing the empty string gives the empty string).</p>
+      <p>length(reverse(&varepsilon;)) = length(&varepsilon;) = 0. &#x2713;</p>
+    </div>
+  </div>
+
+  <div class="pp ih">
+    <div class="ppl">Inductive Hypothesis</div>
+    <div class="ppb">
+      <p>Assume length(reverse(<span class="mi">w&prime;</span>)) = length(<span class="mi">w&prime;</span>) for some arbitrary <span class="mi">w&prime;</span> &isin; &Sigma;*.</p>
+    </div>
+  </div>
+
+  <div class="pp is">
+    <div class="ppl">Inductive Step <small>(w = cw&prime;, c &isin; {0,1})</small></div>
+    <div class="ppb">
+      <div class="eqc" aria-label="Equation chain: structural induction step">
+        <div class="eqr">
+          <span>length(reverse(<span class="mi">cw&prime;</span>))</span>
+          <span>=</span>
+          <span>length(reverse(<span class="mi">w&prime;</span>) &middot; <span class="mi">c</span>) <span class="wy">def. of reverse: rev(cw) = rev(w) &middot; c</span></span>
+        </div>
+        <div class="eqr">
+          <span></span>
+          <span>=</span>
+          <span>length(reverse(<span class="mi">w&prime;</span>)) + 1 <span class="wy">length of concatenation</span></span>
+        </div>
+        <div class="eqr">
+          <span></span>
+          <span>=</span>
+          <span>length(<span class="mi">w&prime;</span>) + 1 <span class="wy">Inductive Hypothesis</span></span>
+        </div>
+        <div class="eqr">
+          <span></span>
+          <span>=</span>
+          <span>length(<span class="mi">cw&prime;</span>) <span class="wy">def. of length: len(cw) = len(w) + 1</span></span>
+        </div>
+      </div>
+      <p>So length(reverse(<span class="mi">cw&prime;</span>)) = length(<span class="mi">cw&prime;</span>). &#x2713;</p>
+    </div>
+  </div>
+
+  <div class="pp cn">
+    <div class="ppl">Conclusion</div>
+    <div class="ppb">
+      <p>By structural induction, length(reverse(<span class="mi">w</span>)) = length(<span class="mi">w</span>) for every <span class="mi">w</span> &isin; &Sigma;*.</p>
+    </div>
+  </div>
+  <div class="qed">&square;</div>
+</div>
+
+<div class="box bx-i">
+  <div class="lbl">&#x1F5D3;&#xFE0F; Forward Reference &mdash; Trees (Weeks 12&ndash;15)</div>
+  <p>Structural induction generalizes naturally to richer data structures. In <strong>Weeks 12&ndash;15</strong> you will work with binary trees, expression trees, and parse trees. Properties such as tree height, node count, and traversal correctness are all established by structural induction on the tree definition. The pattern is the same as here: base case on leaf nodes, inductive step on internal nodes using the sub-tree hypotheses. Keep this string example as your concrete reference point when those proofs arise.</p>
+</div>
+</section>
+
+
+<!-- ═══ SECTION 5: MINI-CASE ════════════════════════════════ -->
+<section class="sec" id="sec5" aria-labelledby="h-sec5">
+<div class="sec-hd">
+  <span class="sec-num" aria-hidden="true">5</span>
+  <h2 id="h-sec5">Mini-Case: Find the Error</h2>
+</div>
+
+<p>The following is a complete-looking correctness proof — but it contains a <strong>subtle flaw</strong> in the inductive step. Your task is to identify the error, explain precisely why the proof fails, and describe how to correct it. <em>This activity is ungraded and is direct preparation for PS-07.</em></p>
+
+<div class="mcb" aria-label="Flawed proof identification activity">
+  <div class="mc-h"><span aria-hidden="true">&#x1F50D;</span> Activity &mdash; Identify the Flaw in This Proof</div>
+
+  <p>Consider this recursive algorithm for computing Fibonacci numbers:</p>
+
+  <pre><code><span class="kw">function</span> <span class="fn">fib</span>(n):
+  <span class="kw">if</span> n = 0 <span class="kw">then</span> <span class="kw">return</span> <span class="nl">0</span>
+  <span class="kw">if</span> n = 1 <span class="kw">then</span> <span class="kw">return</span> <span class="nl">1</span>
+  <span class="kw">else</span>          <span class="kw">return</span> <span class="fn">fib</span>(n &minus; <span class="nl">1</span>) + <span class="fn">fib</span>(n &minus; <span class="nl">2</span>)</code></pre>
+
+  <div class="claim">
+    <span class="cl">Claim</span>
+    For all <span class="mi">n</span> &ge; 0, <code>fib(n)</code> = F<sub><span class="mi">n</span></sub>, where F<sub>0</sub>&nbsp;=&nbsp;0, F<sub>1</sub>&nbsp;=&nbsp;1, and F<sub><span class="mi">n</span></sub>&nbsp;=&nbsp;F<sub><span class="mi">n</span>&minus;1</sub>&nbsp;+&nbsp;F<sub><span class="mi">n</span>&minus;2</sub> for <span class="mi">n</span>&nbsp;&ge;&nbsp;2.
+  </div>
+
+  <p>A student submits the following proof:</p>
+
+  <div class="fp" aria-label="Student's flawed proof">
+    <p><strong>Base Case (n&nbsp;=&nbsp;0):</strong><br>
+    <code>fib(0)</code> = 0 = F<sub>0</sub>. &#x2713;</p>
+
+    <p><strong>Inductive Hypothesis:</strong><br>
+    Assume <code>fib(k)</code>&nbsp;=&nbsp;F<sub><span class="mi">k</span></sub> for some arbitrary <span class="mi">k</span>&nbsp;&ge;&nbsp;0.</p>
+
+    <p><strong>Inductive Step</strong> (show <code>fib(k+1)</code>&nbsp;=&nbsp;F<sub><span class="mi">k</span>+1</sub>):</p>
+    <p>For <span class="mi">k</span>+1&nbsp;&ge;&nbsp;2, the <code>else</code>-branch executes:</p>
+    <div class="eqc" style="margin:.35rem 0 .35rem .3rem">
+      <div class="eqr">
+        <span><code>fib(k+1)</code></span>
+        <span>=</span>
+        <span><code>fib(k) + fib(k&minus;1)</code></span>
+      </div>
+      <div class="eqr">
+        <span></span>
+        <span>=</span>
+        <span>F<sub><span class="mi">k</span></sub> <code>+ fib(k&minus;1)</code> <span class="wy">Inductive Hypothesis</span></span>
+      </div>
+      <div class="eqr">
+        <span></span>
+        <span>=</span>
+        <span>F<sub><span class="mi">k</span></sub> + F<sub><span class="mi">k</span>&minus;1</sub> <span class="wy">&hellip; (see note below)</span></span>
+      </div>
+      <div class="eqr">
+        <span></span>
+        <span>=</span>
+        <span>F<sub><span class="mi">k</span>+1</sub> <span class="wy">definition of Fibonacci numbers</span></span>
+      </div>
+    </div>
+    <p class="fp-note">The &ldquo;&hellip;&rdquo; in line&nbsp;3 silently replaces <code>fib(k&minus;1)</code> with F<sub><span class="mi">k</span>&minus;1</sub>. The student treats this as justified by the Inductive Hypothesis.</p>
+    <p><strong>Conclusion:</strong> By induction, <code>fib(n)</code>&nbsp;=&nbsp;F<sub><span class="mi">n</span></sub> for all <span class="mi">n</span>&nbsp;&ge;&nbsp;0. &square;</p>
+  </div>
+
+  <h4 style="color:#7d3c98;margin-top:1.1rem">Your Task</h4>
+  <p>In the response box, address all three questions:</p>
+  <ol>
+    <li>What is the specific logical error in the inductive step?</li>
+    <li>Why does the stated Inductive Hypothesis fail to justify replacing <code>fib(k&minus;1)</code> with F<sub>k&minus;1</sub>?</li>
+    <li>What corrected form of inductive hypothesis would fix the proof? State it precisely.</li>
+  </ol>
+
+  <div>
+    <label for="mc-txt" style="font-weight:600;font-size:.9rem">
+      Your Response
+      <span style="font-weight:400;color:#666;font-size:.85em">(ungraded &mdash; practice only)</span>
+    </label>
+    <textarea class="wrtxt" id="mc-txt" aria-describedby="mc-hint"
+              placeholder="Write your analysis here&hellip;"></textarea>
+    <p id="mc-hint" style="font-size:.79rem;color:#666;margin:.3rem 0 0">
+      Hint: The IH says &ldquo;for some arbitrary <span class="mi">k</span> &ge; 0.&rdquo; What exactly does that give you &mdash; and what does it <em>not</em> give you?
+    </p>
+  </div>
+
+  <button class="rvl-btn" id="mc-rvl"
+          onclick="toggleReveal('mc-rvl','mc-ans')"
+          aria-expanded="false" aria-controls="mc-ans"
+          data-show="Show Error Explanation"
+          data-hide="Hide Error Explanation">
+    Show Error Explanation
+  </button>
+
+  <div class="mans" id="mc-ans" role="region" aria-label="Error explanation">
+    <p><strong>The Error: Weak Induction Cannot Support a Two-Step Recursion</strong></p>
+    <p>The stated hypothesis &mdash; <em>&ldquo;Assume <code>fib(k)</code>&nbsp;=&nbsp;F<sub>k</sub> for some arbitrary k&nbsp;&ge;&nbsp;0&rdquo;</em> &mdash; is <strong>weak induction</strong>. It asserts the claim for exactly <em>one</em> specific value, <span class="mi">k</span>.</p>
+    <p>The inductive step, however, requires two facts simultaneously:</p>
+    <ul>
+      <li><code>fib(k)</code>&nbsp;=&nbsp;F<sub>k</sub> &nbsp;&larr; provided by the IH &#x2713;</li>
+      <li><code>fib(k&minus;1)</code>&nbsp;=&nbsp;F<sub>k&minus;1</sub> &nbsp;&larr; <strong>NOT provided by the IH</strong> &#x2717;</li>
+    </ul>
+    <p>The IH says nothing about <span class="mi">k</span>&minus;1. Line&nbsp;3 silently substitutes F<sub>k&minus;1</sub> for <code>fib(k&minus;1)</code> without any logical basis. The proof simply <em>assumes</em> what it needs to prove, making the argument circular and invalid.</p>
+    <p><strong>Fixes:</strong></p>
+    <ul>
+      <li><strong>Strong induction:</strong> Assume <code>fib(j)</code>&nbsp;=&nbsp;F<sub>j</sub> for <em>all</em> <span class="mi">j</span> with 0 &le; <span class="mi">j</span> &le; <span class="mi">k</span>. This gives both <code>fib(k)</code>&nbsp;=&nbsp;F<sub>k</sub> (setting <span class="mi">j</span>&nbsp;=&nbsp;<span class="mi">k</span>) and <code>fib(k&minus;1)</code>&nbsp;=&nbsp;F<sub>k&minus;1</sub> (setting <span class="mi">j</span>&nbsp;=&nbsp;<span class="mi">k</span>&minus;1) as special cases.</li>
+      <li><strong>Two-step induction:</strong> Prove both <span class="mi">n</span>&nbsp;=&nbsp;0 and <span class="mi">n</span>&nbsp;=&nbsp;1 as base cases (both already verified in the student's proof), and take the hypothesis to be the joint assumption <code>fib(k)</code>&nbsp;=&nbsp;F<sub>k</sub> <em>and</em> <code>fib(k&minus;1)</code>&nbsp;=&nbsp;F<sub>k&minus;1</sub>.</li>
+    </ul>
+    <p><strong>General principle:</strong> match the strength of your induction to the depth of your recursion. A two-step recursion (calling at both <span class="mi">k</span> and <span class="mi">k</span>&minus;1) requires a two-step &mdash; or strong &mdash; inductive hypothesis.</p>
+  </div>
+</div>
+</section>
+
+
+<!-- ═══ SECTION 6: KNOWLEDGE CHECK ══════════════════════════ -->
+<section class="sec" id="sec6" aria-labelledby="h-sec6">
+<div class="sec-hd">
+  <span class="sec-num" aria-hidden="true">6</span>
+  <h2 id="h-sec6">Knowledge Check</h2>
+</div>
+
+<p>These three questions are <strong>ungraded</strong>. They are designed as direct practice for PS-07. Select an answer and click <em>Check</em> for immediate, explanatory feedback.</p>
+
+<div class="kcw">
+  <div class="kc-h">Knowledge Check &mdash; Module 11.3 &nbsp;<span style="font-weight:400;font-size:.88em">(Ungraded)</span></div>
+
+  <!-- ─── Q1: Written Response ─── -->
+  <div class="kc-q" id="kcq1">
+    <p style="font-weight:600;margin-bottom:.6rem">Question 1 of 3 &mdash; Termination Proof (Written Practice)</p>
+    <p>Consider this recursive linear search:</p>
+    <pre><code><span class="kw">function</span> <span class="fn">search</span>(A, n, target):
+  <span class="kw">if</span> n = 0 <span class="kw">then</span> <span class="kw">return</span> <span class="kw">false</span>
+  <span class="kw">if</span> A[n&minus;1] = target <span class="kw">then</span> <span class="kw">return</span> <span class="kw">true</span>
+  <span class="kw">else</span>               <span class="kw">return</span> <span class="fn">search</span>(A, n&minus;<span class="nl">1</span>, target)</code></pre>
+    <p>In the response box, identify a termination measure for <code>search</code> and write a brief argument (2&ndash;3 sentences) showing that the measure satisfies both required conditions.</p>
+    <div>
+      <label for="kc1txt" class="vh">Your termination proof for search (question 1 of 3)</label>
+      <textarea class="wrtxt" id="kc1txt" aria-describedby="kc1hint"
+                placeholder="State your termination measure and argue that it is non-negative and strictly decreasing&hellip;"></textarea>
+      <p id="kc1hint" style="font-size:.79rem;color:#666;margin:.3rem 0 0">Hint: Which argument changes on every recursive call?</p>
+    </div>
+    <button class="rvl-btn" id="kc1rvl"
+            onclick="toggleReveal('kc1rvl','kc1ans')"
+            aria-expanded="false" aria-controls="kc1ans"
+            data-show="Show Model Answer"
+            data-hide="Hide Model Answer">
+      Show Model Answer
+    </button>
+    <div class="mans" id="kc1ans" role="region" aria-label="Model answer for question 1">
+      <p><strong>Termination measure:</strong> <span class="mi">m</span>(A,&thinsp;<span class="mi">n</span>,&thinsp;target) = <span class="mi">n</span>.</p>
+      <ul>
+        <li><strong>Non-negative:</strong> All valid calls have <span class="mi">n</span> &ge; 0 (<span class="mi">n</span> represents the number of array positions remaining). &#x2713;</li>
+        <li><strong>Base case fires at 0:</strong> When <span class="mi">n</span> = 0, the function returns <code>false</code> directly with no recursive call. &#x2713;</li>
+        <li><strong>Strictly decreasing:</strong> The recursive call is <code>search(A,&thinsp;n&minus;1,&thinsp;target)</code>. Its measure is <span class="mi">n</span>&minus;1 &lt; <span class="mi">n</span> = <span class="mi">m</span>(A,&thinsp;<span class="mi">n</span>,&thinsp;target). &#x2713;</li>
+      </ul>
+      <p>By the termination measure argument, <code>search</code> terminates for all valid inputs with <span class="mi">n</span> &ge; 0.</p>
+    </div>
+  </div><!-- end q1 -->
+
+  <!-- ─── Q2: Fill in the Step ─── -->
+  <fieldset class="kc-q" id="kcq2">
+    <legend>Question 2 of 3 &mdash; Fill in the Inductive Step</legend>
+    <p>Consider this algorithm, claimed to compute the sum 2&thinsp;+&thinsp;4&thinsp;+&thinsp;6&thinsp;+&thinsp;&hellip;&thinsp;+&thinsp;2<span class="mi">n</span>:</p>
+    <pre><code><span class="kw">function</span> <span class="fn">evenSum</span>(n):
+  <span class="kw">if</span> n = 0 <span class="kw">then</span> <span class="kw">return</span> <span class="nl">0</span>
+  <span class="kw">else</span>          <span class="kw">return</span> 2n + <span class="fn">evenSum</span>(n &minus; <span class="nl">1</span>)</code></pre>
+    <div class="claim">
+      <span class="cl">Claim</span>
+      <code>evenSum(n)</code> = <span class="mi">n</span>(<span class="mi">n</span>+1) for all <span class="mi">n</span> &ge; 0.
+    </div>
+    <p>The inductive step begins:</p>
+    <div class="fp" style="border-color:#c8d6e0;background:#f7f9fb">
+      <div class="eqc">
+        <div class="eqr">
+          <span><code>evenSum(k+1)</code></span>
+          <span>=</span>
+          <span><code>2(k+1) + evenSum(k)</code> <span class="wy">else-branch</span></span>
+        </div>
+        <div class="eqr">
+          <span></span>
+          <span>=</span>
+          <span><code>2(k+1) +</code> <strong style="color:#8e44ad">&nbsp;___?___&nbsp;</strong> <span class="wy">Inductive Hypothesis</span></span>
+        </div>
+        <div class="eqr">
+          <span></span>
+          <span>=</span>
+          <span><strong style="color:#8e44ad">&nbsp;___?___&nbsp;</strong> <span class="wy">algebra</span></span>
+        </div>
+        <div class="eqr">
+          <span></span>
+          <span>=</span>
+          <span><code>(k+1)(k+2)</code> <span class="wy">since (k+1)(k+2) = (k+1)((k+1)+1)</span></span>
+        </div>
+      </div>
+    </div>
+    <p>Which expression correctly fills the <strong>first blank</strong> (the IH substitution for <code>evenSum(k)</code>)?</p>
+    <ul class="kc-opts">
+      <li><label><input type="radio" name="kc2" value="A"><span>(A)&nbsp; <span class="mi">k</span>(<span class="mi">k</span>+1) &divide; 2</span></label></li>
+      <li><label><input type="radio" name="kc2" value="B"><span>(B)&nbsp; <span class="mi">k</span>(<span class="mi">k</span>+1)</span></label></li>
+      <li><label><input type="radio" name="kc2" value="C"><span>(C)&nbsp; (<span class="mi">k</span>+1)(<span class="mi">k</span>+2)</span></label></li>
+      <li><label><input type="radio" name="kc2" value="D"><span>(D)&nbsp; <span class="mi">k</span><sup>2</sup> + <span class="mi">k</span> + 2</span></label></li>
+    </ul>
+    <button class="kc-btn" onclick="checkMC('kc2','B')" aria-label="Check your answer for question 2">Check</button>
+    <div class="kc-fb" id="kc2-fb-A" data-question="kc2">
+      <strong>Incorrect.</strong> <span class="mi">k</span>(<span class="mi">k</span>+1)&nbsp;&divide;&nbsp;2 is the formula for the triangular numbers (1&thinsp;+&thinsp;2&thinsp;+&thinsp;&hellip;&thinsp;+&thinsp;<span class="mi">k</span>). The Claim states <code>evenSum(n)</code> = <span class="mi">n</span>(<span class="mi">n</span>+1) with no factor of 2 in the denominator. Re-read the Claim before applying the IH.
+    </div>
+    <div class="kc-fb" id="kc2-fb-B" data-question="kc2">
+      <strong>&#x2713; Correct!</strong> By the IH, <code>evenSum(k)</code> = <span class="mi">k</span>(<span class="mi">k</span>+1). Substituting: 2(<span class="mi">k</span>+1) + <span class="mi">k</span>(<span class="mi">k</span>+1) = (<span class="mi">k</span>+1)(2+<span class="mi">k</span>) = (<span class="mi">k</span>+1)(<span class="mi">k</span>+2). Since (<span class="mi">k</span>+1)(<span class="mi">k</span>+2) = (<span class="mi">k</span>+1)((<span class="mi">k</span>+1)+1), this confirms <code>evenSum(k+1)</code> = (<span class="mi">k</span>+1)((<span class="mi">k</span>+1)+1). &#x2713;
+    </div>
+    <div class="kc-fb" id="kc2-fb-C" data-question="kc2">
+      <strong>Incorrect &mdash; Circular Reasoning.</strong> (<span class="mi">k</span>+1)(<span class="mi">k</span>+2) is the expression we are trying to <em>derive</em> for <code>evenSum(k+1)</code>. Using it as the IH substitution for <code>evenSum(k)</code> assumes the conclusion before proving it. You must substitute the IH value for <code>evenSum(k)</code> and then derive (<span class="mi">k</span>+1)(<span class="mi">k</span>+2) by algebra.
+    </div>
+    <div class="kc-fb" id="kc2-fb-D" data-question="kc2">
+      <strong>Incorrect.</strong> <span class="mi">k</span><sup>2</sup>+<span class="mi">k</span>+2 &ne; <span class="mi">k</span>(<span class="mi">k</span>+1). Expanding <span class="mi">k</span>(<span class="mi">k</span>+1) gives <span class="mi">k</span><sup>2</sup>+<span class="mi">k</span> — there is no &ldquo;+2.&rdquo; Check your arithmetic.
+    </div>
+  </fieldset><!-- end q2 -->
+
+  <!-- ─── Q3: Termination Determination ─── -->
+  <fieldset class="kc-q" id="kcq3">
+    <legend>Question 3 of 3 &mdash; Does This Function Terminate for All Inputs?</legend>
+    <p>Consider the following function defined on non-negative integers:</p>
+    <pre><code><span class="kw">function</span> <span class="fn">collatz</span>(n):
+  <span class="kw">if</span> n &le; 1 <span class="kw">then</span> <span class="kw">return</span> n
+  <span class="kw">if</span> n <span class="kw">mod</span> 2 = 0 <span class="kw">then</span> <span class="kw">return</span> <span class="fn">collatz</span>(n / 2)
+  <span class="kw">else</span>               <span class="kw">return</span> <span class="fn">collatz</span>(3n + 1)</code></pre>
+    <p>Which statement best describes whether the termination measure technique can prove that <code>collatz</code> terminates for <em>all</em> <span class="mi">n</span> &ge; 0?</p>
+    <ul class="kc-opts">
+      <li><label><input type="radio" name="kc3" value="A"><span>(A)&nbsp; Yes &mdash; <span class="mi">m</span>(<span class="mi">n</span>) = <span class="mi">n</span> works: <span class="mi">n</span>/2 &lt; <span class="mi">n</span>, and 3<span class="mi">n</span>+1 can be shown to eventually decrease as calls chain together.</span></label></li>
+      <li><label><input type="radio" name="kc3" value="B"><span>(B)&nbsp; No &mdash; <span class="mi">m</span>(<span class="mi">n</span>) = <span class="mi">n</span> fails because 3<span class="mi">n</span>+1 &gt; <span class="mi">n</span> for odd <span class="mi">n</span> &gt; 0, and no simple termination measure is known to work for all inputs.</span></label></li>
+      <li><label><input type="radio" name="kc3" value="C"><span>(C)&nbsp; Yes &mdash; both <span class="mi">n</span>/2 and 3<span class="mi">n</span>+1 are smaller than <span class="mi">n</span> for all <span class="mi">n</span> &gt; 1.</span></label></li>
+      <li><label><input type="radio" name="kc3" value="D"><span>(D)&nbsp; Yes &mdash; <span class="mi">m</span>(<span class="mi">n</span>) = &lfloor;log<sub>2</sub><span class="mi">n</span>&rfloor; is a valid termination measure for both branches.</span></label></li>
+    </ul>
+    <button class="kc-btn" onclick="checkMC('kc3','B')" aria-label="Check your answer for question 3">Check</button>
+    <div class="kc-fb" id="kc3-fb-A" data-question="kc3">
+      <strong>Incorrect.</strong> A termination measure must decrease on <em>every single recursive call</em> &mdash; &ldquo;eventually decreases across multiple calls&rdquo; is not sufficient. For any odd <span class="mi">n</span> &gt; 0, the call is to <code>collatz(3n+1)</code>. Since 3<span class="mi">n</span>+1 &gt; <span class="mi">n</span>, the measure <span class="mi">m</span>(<span class="mi">n</span>) = <span class="mi">n</span> strictly <em>increases</em> on this branch. The proposed measure fails immediately on any odd input greater than 1.
+    </div>
+    <div class="kc-fb" id="kc3-fb-B" data-question="kc3">
+      <strong>&#x2713; Correct!</strong> <span class="mi">m</span>(<span class="mi">n</span>) = <span class="mi">n</span> fails because 3<span class="mi">n</span>+1 &gt; <span class="mi">n</span> for any odd <span class="mi">n</span> &gt; 0. This is the <strong>Collatz conjecture</strong> (1937): despite being verified for every tested input up to at least 2<sup>68</sup>, no proof of universal termination has ever been found. It is one of the most celebrated open problems in all of mathematics. The key lesson: <em>empirical testing is not a termination proof</em>. A function can behave correctly on every tested input and still lack a valid formal termination argument.
+    </div>
+    <div class="kc-fb" id="kc3-fb-C" data-question="kc3">
+      <strong>Incorrect.</strong> For any odd <span class="mi">n</span> &gt; 1, 3<span class="mi">n</span>+1 &gt; <span class="mi">n</span>. For example: <span class="mi">n</span> = 3 &rarr; 3(3)+1 = 10 &gt; 3. The odd branch always <em>increases</em> the argument &mdash; it does not decrease it.
+    </div>
+    <div class="kc-fb" id="kc3-fb-D" data-question="kc3">
+      <strong>Incorrect.</strong> &lfloor;log<sub>2</sub><span class="mi">n</span>&rfloor; is undefined for <span class="mi">n</span> = 0. More critically, for odd <span class="mi">n</span>: &lfloor;log<sub>2</sub>(3<span class="mi">n</span>+1)&rfloor; &gt; &lfloor;log<sub>2</sub><span class="mi">n</span>&rfloor; in general &mdash; e.g., <span class="mi">n</span> = 3 gives &lfloor;log<sub>2</sub>&thinsp;3&rfloor; = 1 but &lfloor;log<sub>2</sub>&thinsp;10&rfloor; = 3. This measure also fails on the odd branch.
+    </div>
+  </fieldset><!-- end q3 -->
+
+</div><!-- end kcw -->
+</section>
+
+
+<!-- ═══ SECTION 7: SUMMARY & BRIDGE ═════════════════════════ -->
+<section class="sec" id="sec7" aria-labelledby="h-sec7">
+<div class="sec-hd">
+  <span class="sec-num" aria-hidden="true">7</span>
+  <h2 id="h-sec7">Module Summary &amp; Bridge to Module 11.4</h2>
+</div>
+
+<p>Module 11.3 established the logical core of recursive algorithm verification. Carry these six ideas forward:</p>
+
+<div class="sgrid" role="list" aria-label="Key concepts from Module 11.3">
+  <div class="sc" role="listitem">
+    <h4>The Structural Parallel</h4>
+    <p>Proving a recursive algorithm correct is constructing an induction proof. Base case &harr; algorithm base; IH &harr; recursive-call assumption; inductive step &harr; combining result with current input.</p>
+  </div>
+  <div class="sc" role="listitem">
+    <h4>Four-Part Proof Format</h4>
+    <p>Every correctness proof must label all four parts: Base Case, Inductive Hypothesis, Inductive Step, Conclusion. Each satisfies a distinct logical obligation and is not cosmetic.</p>
+  </div>
+  <div class="sc" role="listitem">
+    <h4>Termination is Separate</h4>
+    <p>Correctness (right answer, given termination) and termination (the algorithm stops) are independent obligations. A non-negative, strictly decreasing integer measure guarantees termination.</p>
+  </div>
+  <div class="sc" role="listitem">
+    <h4>Match IH to Recursion Depth</h4>
+    <p>A two-step recursion (calling at depths <span class="mi">k</span> and <span class="mi">k</span>&minus;1) requires strong induction or a two-step hypothesis. Weak induction provides only a single-step guarantee and is insufficient.</p>
+  </div>
+  <div class="sc" role="listitem">
+    <h4>Structural Induction</h4>
+    <p>For algorithms over structured data (strings, trees), induct on the object&rsquo;s structure: base case on atomic elements; step on compound objects using sub-component hypotheses.</p>
+  </div>
+  <div class="sc" role="listitem">
+    <h4>Termination Can Be Hard</h4>
+    <p>Some recursive functions resist all formal termination arguments (Collatz). Empirical testing is never a substitute for a proof &mdash; this is precisely why the termination measure argument exists.</p>
+  </div>
+</div>
+
+<div class="bridge">
+  <h3>&#9654; Up Next &mdash; Module 11.4</h3>
+  <p><strong>Module 11.4</strong> applies the correctness and termination proof techniques developed here to more complex recursive structures: mutually recursive functions, algorithms with multiple recursive branches, and the first steps toward connecting recursion depth to runtime via recurrence relations. That connection bridges directly to the algorithm complexity topics in Weeks 12&ndash;13. Make sure you can write the complete four-part proof structure confidently before proceeding to Module 11.4.</p>
+</div>
+
+<div class="box bx-i" style="margin-top:1.5rem">
+  <div class="lbl">&#x1F4CB; PS-07 Preparation Checklist</div>
+  <p>Before beginning PS-07, confirm that you can:</p>
+  <ul>
+    <li>Write a complete four-part correctness proof for a simple recursive algorithm.</li>
+    <li>Identify and formally justify a termination measure for a given algorithm.</li>
+    <li>Recognize when weak induction is insufficient and state the corrected hypothesis form.</li>
+    <li>Apply the structural induction pattern to a property of a recursively defined set.</li>
+  </ul>
+</div>
+</section>
+
+</main>
+
+<script>
+(function () {
+  'use strict';
+
+  window.toggleReveal = function (btnId, targetId) {
+    var btn = document.getElementById(btnId);
+    var tgt = document.getElementById(targetId);
+    var opening = tgt.style.display !== 'block';
+    tgt.style.display = opening ? 'block' : 'none';
+    btn.setAttribute('aria-expanded', String(opening));
+    btn.textContent = btn.getAttribute(opening ? 'data-hide' : 'data-show');
+  };
+
+  window.checkMC = function (name, correct) {
+    var radios = document.querySelectorAll('input[name="' + name + '"]');
+    var chosen = null;
+    for (var i = 0; i < radios.length; i++) {
+      if (radios[i].checked) { chosen = radios[i].value; break; }
+    }
+    if (!chosen) {
+      alert('Please select an answer before clicking Check.');
+      return;
+    }
+    var fbs = document.querySelectorAll('[data-question="' + name + '"]');
+    for (var j = 0; j < fbs.length; j++) {
+      fbs[j].style.display = 'none';
+      fbs[j].classList.remove('ok', 'no');
+    }
+    var fb = document.getElementById(name + '-fb-' + chosen);
+    if (fb) {
+      fb.style.display = 'block';
+      fb.classList.add(chosen === correct ? 'ok' : 'no');
+      fb.setAttribute('tabindex', '-1');
+      setTimeout(function () { fb.focus(); }, 60);
+    }
+  };
+
+}());
+</script>
+</body>
+</html>

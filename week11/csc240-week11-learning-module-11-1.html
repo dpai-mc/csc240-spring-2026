@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Module 11.1 – Recursive Definitions and Structures | CSC 240</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy: #1e3a5f; --blue: #2d5282; --mid: #3182ce; --sky: #bee3f8;
+      --bg: #f4f6f9; --white: #ffffff; --text: #1a202c; --muted: #4a5568;
+      --border: #e2e8f0; --nav-h: 56px; --r: 8px;
+    }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; font-size: 16px; }
+
+    .skip-link { position: absolute; left: -999px; top: 8px; padding: 8px 16px; background: var(--navy); color: #fff; border-radius: var(--r); z-index: 9999; font-weight: 700; text-decoration: none; }
+    .skip-link:focus { left: 8px; }
+
+    nav { position: sticky; top: 0; z-index: 100; background: var(--navy); height: var(--nav-h); display: flex; align-items: center; padding: 0 18px; box-shadow: 0 2px 8px rgba(0,0,0,.22); }
+    .nav-inner { display: flex; align-items: center; gap: 2px; overflow-x: auto; width: 100%; scrollbar-width: none; }
+    .nav-inner::-webkit-scrollbar { display: none; }
+    .nav-brand { color: var(--sky); font-weight: 700; font-size: .8rem; white-space: nowrap; margin-right: 10px; flex-shrink: 0; }
+    nav a { color: #bee3f8; text-decoration: none; font-size: .79rem; padding: 6px 9px; border-radius: 4px; white-space: nowrap; transition: background .15s; flex-shrink: 0; }
+    nav a:hover { background: rgba(255,255,255,.15); color: #fff; }
+    nav a:focus-visible { outline: 2px solid var(--sky); outline-offset: 2px; background: rgba(255,255,255,.1); }
+
+    main { max-width: 900px; margin: 0 auto; padding: 28px 18px 64px; }
+    section { scroll-margin-top: calc(var(--nav-h) + 14px); margin-bottom: 44px; }
+
+    .page-header { background: linear-gradient(135deg, var(--navy) 0%, #2b6cb0 100%); color: #fff; padding: 30px 32px; border-radius: var(--r); margin-bottom: 36px; }
+    .page-header .mod-label { font-size: .76rem; text-transform: uppercase; letter-spacing: .09em; color: var(--sky); margin-bottom: 6px; }
+    .page-header h1 { font-size: 1.65rem; font-weight: 700; margin-bottom: 6px; }
+    .page-header .subtitle { color: #bfdbfe; font-size: .89rem; }
+
+    .card { background: var(--white); border-radius: var(--r); padding: 24px 26px; box-shadow: 0 1px 4px rgba(0,0,0,.09); }
+    h2 { font-size: 1.28rem; color: var(--navy); font-weight: 700; border-bottom: 2px solid var(--sky); padding-bottom: 6px; margin-bottom: 18px; }
+    h3 { font-size: 1.03rem; color: var(--blue); font-weight: 600; margin: 18px 0 9px; }
+    p { margin-bottom: 12px; }
+
+    .callout { border-left: 4px solid; border-radius: 0 var(--r) var(--r) 0; padding: 14px 18px; margin: 16px 0; }
+    .callout-title { font-weight: 700; font-size: .82rem; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 5px; }
+    .cb-def { background: #ebf8ff; border-color: var(--mid); }
+    .cb-def .callout-title { color: #2b6cb0; }
+    .cb-key { background: #faf5ff; border-color: #805ad5; }
+    .cb-key .callout-title { color: #553c9a; }
+    .cb-tip { background: #f0fff4; border-color: #38a169; }
+    .cb-tip .callout-title { color: #276749; }
+    .cb-err { background: #fff5f5; border-color: #e53e3e; }
+    .cb-err .callout-title { color: #c53030; }
+
+    .two-part { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 18px 0; }
+    @media (max-width: 560px) { .two-part { grid-template-columns: 1fr; } }
+    .pt-box { border-radius: var(--r); padding: 16px 18px; text-align: center; }
+    .pt-base { background: #ebf8ff; border: 2px solid var(--mid); }
+    .pt-rec  { background: #faf5ff; border: 2px solid #805ad5; }
+    .pt-label { font-size: .72rem; text-transform: uppercase; letter-spacing: .09em; font-weight: 700; margin-bottom: 6px; }
+    .pt-base .pt-label { color: #2b6cb0; }
+    .pt-rec  .pt-label { color: #553c9a; }
+    .pt-name { font-size: 1.1rem; font-weight: 700; margin-bottom: 5px; }
+    .pt-base .pt-name { color: #2b6cb0; }
+    .pt-rec  .pt-name { color: #553c9a; }
+    .pt-desc { font-size: .85rem; color: var(--muted); }
+
+    .fb { background: #1a202c; color: #e2e8f0; border-radius: var(--r); padding: 13px 17px; font-family: 'Courier New', monospace; font-size: .88rem; margin: 11px 0; overflow-x: auto; line-height: 1.95; }
+    .fb .cmt { color: #68d391; }
+
+    .tt { width: 100%; border-collapse: collapse; font-size: .87rem; margin: 10px 0; }
+    .tt th { background: var(--navy); color: #fff; padding: 8px 11px; text-align: left; font-weight: 600; }
+    .tt td { padding: 7px 11px; border-bottom: 1px solid var(--border); font-family: 'Courier New', monospace; }
+    .tt tr:nth-child(even) td { background: #f7fafc; }
+    .tt tr:last-child td { background: #ebf8ff; font-weight: 700; }
+
+    details { border: 1px solid var(--border); border-radius: var(--r); margin: 12px 0; overflow: hidden; }
+    summary { background: #edf2f7; padding: 10px 15px; cursor: pointer; font-weight: 600; font-size: .89rem; color: var(--navy); list-style: none; display: flex; align-items: center; gap: 7px; user-select: none; }
+    summary::-webkit-details-marker { display: none; }
+    summary::before { content: '▶'; font-size: .66rem; transition: transform .2s; flex-shrink: 0; }
+    details[open] summary::before { transform: rotate(90deg); }
+    summary:hover { background: #e2e8f0; }
+    summary:focus-visible { outline: 2px solid var(--mid); outline-offset: -2px; }
+    .db { padding: 16px 18px; background: var(--white); }
+
+    .ex-card { border: 1px solid var(--border); border-radius: var(--r); padding: 20px 22px; margin-bottom: 16px; background: var(--white); box-shadow: 0 1px 3px rgba(0,0,0,.07); }
+    .ex-head { display: flex; align-items: center; margin-bottom: 11px; }
+    .ex-num  { background: var(--navy); color: #fff; width: 26px; height: 26px; border-radius: 50%; font-size: .76rem; font-weight: 700; text-align: center; line-height: 26px; margin-right: 8px; flex-shrink: 0; }
+    .ex-title { font-size: 1rem; font-weight: 700; color: var(--navy); }
+
+    .fm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; margin: 13px 0; }
+    @media (max-width: 560px) { .fm-grid { grid-template-columns: 1fr; } }
+
+    .ann { border: 2px solid #e53e3e; border-radius: var(--r); padding: 12px 16px; background: #fff5f5; margin: 12px 0; }
+    .ann-tag { display: inline-block; background: #e53e3e; color: #fff; font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; padding: 2px 8px; border-radius: 3px; margin-bottom: 7px; }
+    .ann-note { font-size: .87rem; margin-top: 7px; color: #742a2a; }
+
+    .activity { background: #fffdf0; border: 2px solid #d97706; border-radius: var(--r); padding: 18px 20px; margin: 18px 0; }
+    .act-label { font-size: .74rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: #b45309; margin-bottom: 10px; }
+    .mini-case { background: var(--white); border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px; margin: 10px 0; }
+    .mc-q { font-weight: 600; margin-bottom: 7px; font-size: .94rem; }
+
+    .reveal-btn { background: var(--navy); color: #fff; border: none; padding: 7px 15px; border-radius: 4px; cursor: pointer; font-size: .85rem; font-weight: 600; margin-top: 8px; transition: background .15s; }
+    .reveal-btn:hover { background: var(--blue); }
+    .reveal-btn:focus-visible { outline: 2px solid var(--mid); outline-offset: 2px; }
+    .reveal-content { display: none; margin-top: 10px; padding: 11px 14px; background: #f0fff4; border-left: 3px solid #38a169; border-radius: 0 4px 4px 0; font-size: .89rem; line-height: 1.65; }
+    .reveal-content.vis { display: block; }
+
+    .ll-diag { display: flex; align-items: center; flex-wrap: wrap; gap: 0; margin: 14px 0; }
+    .ll-node { border: 2px solid var(--navy); border-radius: 4px; overflow: hidden; display: flex; flex-shrink: 0; }
+    .ll-data { padding: 7px 12px; background: #ebf8ff; font-weight: 700; font-size: .87rem; color: var(--navy); }
+    .ll-ptr  { padding: 7px 8px; background: var(--sky); font-size: .76rem; color: #2b6cb0; border-left: 1px solid var(--navy); }
+    .ll-arr  { padding: 0 5px; color: var(--navy); font-size: 1rem; display: flex; align-items: center; }
+    .ll-null { padding: 7px 11px; border: 2px solid #718096; border-radius: 4px; background: #edf2f7; color: #718096; font-size: .85rem; font-weight: 700; }
+
+    .kc-wrap { background: var(--white); border: 2px solid var(--mid); border-radius: var(--r); padding: 22px 26px; }
+    .kc-hdr  { display: flex; align-items: center; gap: 9px; margin-bottom: 6px; }
+    .kc-hdr h2 { border: none; margin: 0; padding: 0; font-size: 1.2rem; }
+    .kc-badge { background: var(--blue); color: #fff; font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; padding: 3px 9px; border-radius: 12px; flex-shrink: 0; }
+    .kc-intro { font-size: .89rem; color: var(--muted); margin-bottom: 18px; }
+    .kc-q { border: 1px solid var(--border); border-radius: 6px; padding: 16px 18px; margin-bottom: 15px; background: #fafafa; }
+    .kc-qlabel { font-size: .73rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--blue); margin-bottom: 6px; }
+    .kc-qtext { font-weight: 600; margin-bottom: 12px; font-size: .93rem; }
+
+    .opts { display: flex; flex-direction: column; gap: 7px; margin-bottom: 10px; }
+    .opt { display: flex; align-items: flex-start; gap: 9px; padding: 9px 13px; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; background: var(--white); transition: border-color .15s; font-size: .9rem; }
+    .opt:hover { border-color: var(--mid); background: #ebf8ff; }
+    .opt input[type="radio"] { margin-top: 3px; flex-shrink: 0; accent-color: var(--mid); }
+    .opt.correct  { border-color: #38a169; background: #f0fff4; }
+    .opt.incorrect { border-color: #e53e3e; background: #fff5f5; }
+
+    .kc-ta { width: 100%; min-height: 74px; border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; font-size: .9rem; font-family: inherit; resize: vertical; margin-bottom: 8px; }
+    .kc-ta:focus { outline: 2px solid var(--mid); outline-offset: 1px; }
+
+    .kc-btn { background: var(--blue); color: #fff; border: none; padding: 8px 20px; border-radius: 4px; cursor: pointer; font-size: .88rem; font-weight: 600; transition: background .15s; }
+    .kc-btn:hover { background: var(--navy); }
+    .kc-btn:focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; }
+    .kc-btn:disabled { opacity: .55; cursor: not-allowed; }
+
+    .kc-fb { display: none; margin-top: 11px; padding: 11px 14px; border-radius: 6px; font-size: .9rem; line-height: 1.65; }
+    .kc-fb.show { display: block; }
+    .fb-ok { background: #f0fff4; border-left: 4px solid #38a169; }
+    .fb-no { background: #fff5f5; border-left: 4px solid #e53e3e; }
+    .fb-icon { font-weight: 700; }
+
+    .no-sel { color: #c53030; font-size: .84rem; margin-top: 5px; display: none; }
+    .no-sel.show { display: block; }
+
+    .recap { list-style: none; padding: 0; }
+    .recap li { display: flex; align-items: flex-start; gap: 9px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: .92rem; }
+    .recap li:last-child { border-bottom: none; }
+    .rc-icon { flex-shrink: 0; color: var(--mid); margin-top: 2px; }
+
+    .bridge { background: linear-gradient(135deg, #2b6cb0, var(--navy)); color: #fff; border-radius: var(--r); padding: 18px 22px; display: flex; align-items: flex-start; gap: 14px; margin-top: 20px; }
+    .bridge-icon { font-size: 1.6rem; flex-shrink: 0; }
+    .bridge-text { font-size: .91rem; line-height: 1.6; }
+    .bridge-text strong { display: block; font-size: .99rem; margin-bottom: 3px; }
+
+    footer { text-align: center; color: var(--muted); font-size: .77rem; padding: 22px 16px; border-top: 1px solid var(--border); margin-top: 28px; }
+    .mono { font-family: 'Courier New', monospace; }
+  </style>
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<nav aria-label="Module 11.1 section navigation">
+  <div class="nav-inner">
+    <span class="nav-brand">CSC 240 · Mod 11.1</span>
+    <a href="#s1">1 · What Is Recursion?</a>
+    <a href="#s2">2 · Example Gallery</a>
+    <a href="#s3">3 · Well vs. Ill-Defined</a>
+    <a href="#s4">4 · Recursive Structures</a>
+    <a href="#s5">5 · Knowledge Check</a>
+    <a href="#s6">6 · Summary &amp; Bridge</a>
+  </div>
+</nav>
+
+<main id="main-content">
+
+  <header class="page-header">
+    <div class="mod-label">CSC 240 – Discrete Structures · Week 11 · Module 11.1</div>
+    <h1>Recursive Definitions and Structures</h1>
+    <div class="subtitle">Mendocino College · Spring 2026 · Foundation for recursion, recurrence relations, and recursive algorithms</div>
+  </header>
+
+  <!-- ═══════════════════════════════════════════════════
+       SECTION 1 · What Is a Recursive Definition?
+  ════════════════════════════════════════════════════ -->
+  <section id="s1" aria-labelledby="s1-title">
+    <div class="card">
+      <h2 id="s1-title">1 · What Is a Recursive Definition?</h2>
+
+      <p>A <strong>recursive definition</strong> defines an object — a function, a sequence, or a set — partly in terms of <em>itself</em>. This is not circular because the self-reference always points to a <em>simpler or smaller</em> version of the same object, and a separate <strong>base case</strong> provides a direct answer that stops the chain.</p>
+
+      <div class="callout cb-def">
+        <div class="callout-title">📘 Definition</div>
+        A <strong>recursive definition</strong> consists of exactly two parts:
+        <ol style="margin-top:8px;padding-left:20px;line-height:2.1;">
+          <li><strong>Base case</strong> — gives the value (or membership) directly for the simplest input(s), with no self-reference whatsoever.</li>
+          <li><strong>Recursive case</strong> — expresses the value (or membership) for a general input in terms of the same function or set applied to a <em>strictly smaller</em> input.</li>
+        </ol>
+      </div>
+
+      <h3>The Two-Part Structure</h3>
+
+      <div class="two-part" role="img" aria-label="Two-part diagram: the base case anchors the definition; the recursive case reduces the problem toward the base case">
+        <div class="pt-box pt-base">
+          <div class="pt-label">Part 1</div>
+          <div class="pt-name">Base Case</div>
+          <div class="pt-desc">Anchors the definition. Gives a direct answer for the smallest input — no self-reference, no infinite chain.</div>
+        </div>
+        <div class="pt-box pt-rec">
+          <div class="pt-label">Part 2</div>
+          <div class="pt-name">Recursive Case</div>
+          <div class="pt-desc">Reduces the problem. Expresses a larger input in terms of a smaller one, always moving toward the base case.</div>
+        </div>
+      </div>
+
+      <div class="callout cb-key">
+        <div class="callout-title">🔑 Well-Definedness Principle</div>
+        A recursive definition is <strong>well-defined</strong> if and only if two conditions hold:
+        <ul style="margin-top:7px;padding-left:20px;line-height:2.1;">
+          <li><strong>At least one base case exists</strong> — providing a direct, non-recursive answer for the smallest input(s).</li>
+          <li><strong>Every recursive chain terminates</strong> — the argument becomes strictly smaller with each call, so every chain reaches a base case in finitely many steps.</li>
+        </ul>
+        When both conditions hold, the definition assigns a <em>unique, unambiguous value</em> to every valid input.
+      </div>
+
+      <p>The critical intuition: each recursive call must make the problem <em>strictly smaller</em>. This same progress guarantee is what you will analyze formally as algorithm termination in Module 11.2.</p>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════
+       SECTION 2 · Example Gallery
+  ════════════════════════════════════════════════════ -->
+  <section id="s2" aria-labelledby="s2-title">
+    <div class="card">
+      <h2 id="s2-title">2 · Example Gallery</h2>
+      <p>Three examples, increasing in complexity. Read each definition first, then open the collapsible trace to see a step-by-step expansion.</p>
+
+      <!-- Example 1: Factorial -->
+      <div class="ex-card">
+        <div class="ex-head">
+          <span class="ex-num" aria-hidden="true">1</span>
+          <span class="ex-title">The Factorial Function</span>
+        </div>
+        <p>The factorial of a non-negative integer <span class="mono">n</span> counts the number of ways to arrange <span class="mono">n</span> distinct objects. Its recursive definition:</p>
+
+        <div class="fb" aria-label="Recursive definition of factorial: base case 0 factorial equals 1; recursive case n factorial equals n times n minus 1 factorial for n at least 1">
+          <span class="cmt">// Base case</span><br>
+          0! = 1<br><br>
+          <span class="cmt">// Recursive case &nbsp;(n ≥ 1)</span><br>
+          n! = n · (n−1)!
+        </div>
+
+        <p>The argument decreases by 1 on every recursive call, so every chain reaches <span class="mono">0!</span> in exactly <span class="mono">n</span> steps.</p>
+
+        <details>
+          <summary>Show Trace — computing 4!</summary>
+          <div class="db">
+            <p style="margin-bottom:10px;font-size:.87rem;color:#4a5568;">The recursion unwinds to the base case, then multiplies back up as each call returns.</p>
+            <table class="tt" aria-label="Step-by-step trace of 4 factorial">
+              <thead><tr><th>Step</th><th>Expression</th><th>Rule applied</th><th>Value</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>4!</td><td>Recursive: 4 · 3!</td><td>—</td></tr>
+                <tr><td>2</td><td>3!</td><td>Recursive: 3 · 2!</td><td>—</td></tr>
+                <tr><td>3</td><td>2!</td><td>Recursive: 2 · 1!</td><td>—</td></tr>
+                <tr><td>4</td><td>1!</td><td>Recursive: 1 · 0!</td><td>—</td></tr>
+                <tr><td>5</td><td>0!</td><td>Base case</td><td>1</td></tr>
+                <tr><td>6</td><td>1! = 1 · 1</td><td>Return from step 5</td><td>1</td></tr>
+                <tr><td>7</td><td>2! = 2 · 1</td><td>Return from step 6</td><td>2</td></tr>
+                <tr><td>8</td><td>3! = 3 · 2</td><td>Return from step 7</td><td>6</td></tr>
+                <tr><td>9</td><td>4! = 4 · 6</td><td>Return from step 8</td><td>24</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+      </div>
+
+      <!-- Example 2: Fibonacci -->
+      <div class="ex-card">
+        <div class="ex-head">
+          <span class="ex-num" aria-hidden="true">2</span>
+          <span class="ex-title">The Fibonacci Sequence</span>
+        </div>
+        <p>Fibonacci requires <strong>two</strong> base cases because the recursive case references the two preceding terms:</p>
+
+        <div class="fb" aria-label="Recursive definition of Fibonacci: base cases F of 0 equals 0 and F of 1 equals 1; recursive case F of n equals F of n minus 1 plus F of n minus 2 for n at least 2">
+          <span class="cmt">// Base cases</span><br>
+          F(0) = 0<br>
+          F(1) = 1<br><br>
+          <span class="cmt">// Recursive case &nbsp;(n ≥ 2)</span><br>
+          F(n) = F(n−1) + F(n−2)
+        </div>
+
+        <p>This example demonstrates that <em>more than one base case can be necessary</em> — a key point revisited in the Knowledge Check.</p>
+
+        <details>
+          <summary>Show Trace — first eight terms</summary>
+          <div class="db">
+            <table class="tt" aria-label="First eight Fibonacci terms with computation">
+              <thead><tr><th>n</th><th>F(n−1)</th><th>F(n−2)</th><th>F(n)</th></tr></thead>
+              <tbody>
+                <tr><td>0</td><td>—</td><td>—</td><td>0 &nbsp;(base case)</td></tr>
+                <tr><td>1</td><td>—</td><td>—</td><td>1 &nbsp;(base case)</td></tr>
+                <tr><td>2</td><td>F(1) = 1</td><td>F(0) = 0</td><td>1</td></tr>
+                <tr><td>3</td><td>F(2) = 1</td><td>F(1) = 1</td><td>2</td></tr>
+                <tr><td>4</td><td>F(3) = 2</td><td>F(2) = 1</td><td>3</td></tr>
+                <tr><td>5</td><td>F(4) = 3</td><td>F(3) = 2</td><td>5</td></tr>
+                <tr><td>6</td><td>F(5) = 5</td><td>F(4) = 3</td><td>8</td></tr>
+                <tr><td>7</td><td>F(6) = 8</td><td>F(5) = 5</td><td>13</td></tr>
+              </tbody>
+            </table>
+            <p style="margin-top:9px;font-size:.85rem;color:#4a5568;">Sequence: 0, 1, 1, 2, 3, 5, 8, 13, …</p>
+          </div>
+        </details>
+
+        <div class="callout cb-tip" style="margin-top:12px;">
+          <div class="callout-title">🔭 Coming Up in Module 11.4</div>
+          Fibonacci has a surprising closed-form — <strong>Binet's formula</strong> — which expresses F(n) directly using powers of the golden ratio φ = (1 + √5) / 2, with no recursion required. You will derive and verify it in Module 11.4 when we study solving recurrence relations.
+        </div>
+      </div>
+
+      <!-- Example 3: Binary strings -->
+      <div class="ex-card">
+        <div class="ex-head">
+          <span class="ex-num" aria-hidden="true">3</span>
+          <span class="ex-title">The Set of Binary Strings of Length ≤ n</span>
+        </div>
+        <p>Recursive definitions work for <strong>sets</strong> too. Let <span class="mono">B<sub>n</sub></span> denote the set of all binary strings whose length is at most <span class="mono">n</span>:</p>
+
+        <div class="fb" aria-label="Recursive definition of B sub n, the set of binary strings of length at most n">
+          <span class="cmt">// Base case: strings of length 0</span><br>
+          B<sub>0</sub> = { ε } &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cmt">// ε is the empty string</span><br><br>
+          <span class="cmt">// Recursive case (n ≥ 1)</span><br>
+          B<sub>n</sub> = B<sub>n−1</sub><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;∪ { s·"0" | s ∈ B<sub>n−1</sub>, |s| = n−1 }<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;∪ { s·"1" | s ∈ B<sub>n−1</sub>, |s| = n−1 }
+        </div>
+
+        <p>Here <span class="mono">s·"0"</span> means appending the character <span class="mono">0</span> to string <span class="mono">s</span>. The recursive case says: keep all shorter strings already in B<sub>n−1</sub>, then add every string of length exactly <span class="mono">n</span> by extending each length-<span class="mono">(n−1)</span> string with a <span class="mono">0</span> or a <span class="mono">1</span>.</p>
+
+        <details>
+          <summary>Show Trace — building up to B<sub>2</sub></summary>
+          <div class="db">
+            <p style="margin-bottom:7px;font-weight:600;font-size:.89rem;color:#2d5282;">Step 1 — B<sub>0</sub> (base case):</p>
+            <div class="fb" style="margin-bottom:12px;">B<sub>0</sub> = { ε }</div>
+
+            <p style="margin-bottom:7px;font-weight:600;font-size:.89rem;color:#2d5282;">Step 2 — B<sub>1</sub> (extend ε with "0" and "1"):</p>
+            <div class="fb" style="margin-bottom:12px;">B<sub>1</sub> = B<sub>0</sub> ∪ { "0", "1" }<br>&nbsp;&nbsp;&nbsp;&nbsp;= { ε, "0", "1" }</div>
+
+            <p style="margin-bottom:7px;font-weight:600;font-size:.89rem;color:#2d5282;">Step 3 — B<sub>2</sub> (extend "0" and "1" each with "0" and "1"):</p>
+            <div class="fb">B<sub>2</sub> = B<sub>1</sub> ∪ { "00", "01", "10", "11" }<br>&nbsp;&nbsp;&nbsp;&nbsp;= { ε, "0", "1", "00", "01", "10", "11" }</div>
+
+            <p style="margin-top:10px;font-size:.84rem;color:#4a5568;">|B<sub>2</sub>| = 7 = 2<sup>0</sup> + 2<sup>1</sup> + 2<sup>2</sup> = 2<sup>3</sup> − 1. This counting pattern returns in Module 11.3.</p>
+          </div>
+        </details>
+
+        <div class="callout cb-tip" style="margin-top:12px;">
+          <div class="callout-title">💡 Set Recursion Pattern</div>
+          Set-based recursive definitions follow the same two-part structure: the base case establishes the smallest members; the recursive case builds new, larger members from existing ones. This approach — called <strong>structural recursion</strong> — is the foundation for the formal grammar and tree material in Weeks 12–13.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════
+       SECTION 3 · Well-Defined vs. Ill-Defined Recursion
+  ════════════════════════════════════════════════════ -->
+  <section id="s3" aria-labelledby="s3-title">
+    <div class="card">
+      <h2 id="s3-title">3 · Well-Defined vs. Ill-Defined Recursion</h2>
+
+      <p>Not every recursive-looking definition actually works. Two failure modes are especially common:</p>
+
+      <div class="fm-grid">
+        <div class="callout cb-err" style="margin:0;">
+          <div class="callout-title">⚠ Failure Mode 1</div>
+          <strong>Missing base case</strong><br>
+          <span style="font-size:.87rem;">No direct answer is ever given. The recursion unwinds indefinitely with nothing to anchor it.</span>
+        </div>
+        <div class="callout cb-err" style="margin:0;">
+          <div class="callout-title">⚠ Failure Mode 2</div>
+          <strong>Recursive case moves away from the base case</strong><br>
+          <span style="font-size:.87rem;">A base case exists, but the argument grows (or never shrinks) with each call, so the chain is still infinite.</span>
+        </div>
+      </div>
+
+      <h3>Annotated Counter-Examples</h3>
+
+      <div class="ann">
+        <span class="ann-tag">Ill-Defined · Failure Mode 1 · Missing Base Case</span>
+        <div class="fb" style="margin:8px 0 4px;" aria-label="Ill-defined: f of n equals f of n minus 1 plus 3 for all integers n, with no base case">
+          f(n) = f(n−1) + 3 &nbsp;&nbsp;<span class="cmt">// for all integers n</span>
+        </div>
+        <div class="ann-note"><strong>Problem:</strong> There is no base case. Computing f(5) requires f(4), which requires f(3), and so on, forever. No starting value is ever given, so f is undefined for every input.</div>
+      </div>
+
+      <div class="ann">
+        <span class="ann-tag">Ill-Defined · Failure Mode 2 · Recursive Case Diverges</span>
+        <div class="fb" style="margin:8px 0 4px;" aria-label="Ill-defined: g of 0 equals 1 as base case, but g of n equals 2 times g of n plus 1 which moves away from base case">
+          g(0) = 1 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cmt">// Base case</span><br>
+          g(n) = 2 · g(n+1) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cmt">// for n ≥ 0</span>
+        </div>
+        <div class="ann-note"><strong>Problem:</strong> The base case is at n = 0, but the recursive case calls g(n+1) — a <em>larger</em> argument. Computing g(0) requires g(1), which requires g(2), and so on. The argument moves <em>away</em> from the base case and never terminates.</div>
+      </div>
+
+      <h3 style="margin-top:22px;">🧪 Mini-Case Activity</h3>
+      <p>For each definition below, decide whether it is <strong>well-defined</strong> or <strong>ill-defined</strong> and justify your answer before revealing the explanation.</p>
+
+      <div class="activity" aria-label="Mini-case activity: is the definition well-defined?">
+        <div class="act-label">Activity · Is It Well-Defined?</div>
+
+        <div class="mini-case">
+          <div class="mc-q">Case 1. Consider this definition for non-negative integers:</div>
+          <div class="fb" aria-label="Case 1: h of 0 equals 1, h of n equals h of n minus 1 plus h of n minus 2 for n at least 1">
+            h(0) = 1<br>
+            h(n) = h(n−1) + h(n−2) &nbsp;<span class="cmt">// for n ≥ 1</span>
+          </div>
+          <p style="font-size:.91rem;margin:4px 0 0;">Is this definition well-defined for all non-negative integers? Justify your reasoning first, then reveal.</p>
+          <button class="reveal-btn" id="mc1-btn" onclick="toggleReveal('mc1-btn','mc1')" aria-expanded="false" aria-controls="mc1">Show Explanation</button>
+          <div class="reveal-content" id="mc1" role="region" aria-label="Case 1 explanation">
+            <strong>Ill-defined.</strong> The recursive case for n ≥ 1 references both h(n−1) and h(n−2). When n = 1, it requires h(0) — which is defined as 1 — <em>and</em> h(−1), which lies outside the non-negative integer domain and has no base case covering it. So h(1) cannot be computed.<br><br>
+            <strong>Fix:</strong> Add a second base case h(1) = 1, and restrict the recursive case to n ≥ 2. Then both h(n−1) and h(n−2) are non-negative integers smaller than n, and every chain terminates. This produces the Fibonacci-like sequence 1, 1, 2, 3, 5, …
+          </div>
+        </div>
+
+        <div class="mini-case" style="margin-top:12px;">
+          <div class="mc-q">Case 2. Consider this definition for positive integers:</div>
+          <div class="fb" aria-label="Case 2: p of 1 equals 0, p of n equals p of n divided by 2 plus 1 for n at least 2">
+            p(1) = 0<br>
+            p(n) = p(n / 2) + 1 &nbsp;&nbsp;<span class="cmt">// for n ≥ 2, n a positive integer</span>
+          </div>
+          <p style="font-size:.91rem;margin:4px 0 0;">Is this definition well-defined for all positive integers? Justify your reasoning first, then reveal.</p>
+          <button class="reveal-btn" id="mc2-btn" onclick="toggleReveal('mc2-btn','mc2')" aria-expanded="false" aria-controls="mc2">Show Explanation</button>
+          <div class="reveal-content" id="mc2" role="region" aria-label="Case 2 explanation">
+            <strong>Ill-defined as stated.</strong> When n is odd (e.g., n = 3), the expression n / 2 = 1.5 is not a positive integer, placing it outside the domain. The definition is silent about fractional inputs.<br><br>
+            <strong>Fix:</strong> Use integer (floor) division: p(n) = p(⌊n/2⌋) + 1 for n ≥ 2. Under this reading, ⌊n/2⌋ &lt; n for all n ≥ 2, so every chain terminates at the base case p(1) = 0. This is precisely the recursive definition of the number of bits required to represent n in binary.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════
+       SECTION 4 · Structural Preview
+  ════════════════════════════════════════════════════ -->
+  <section id="s4" aria-labelledby="s4-title">
+    <div class="card">
+      <h2 id="s4-title">4 · Structural Preview — Recursive Data Structures</h2>
+
+      <p>The two-part pattern extends naturally to the data structures you will study in Weeks 12–15. As a brief preview, consider the <strong>linked list</strong>.</p>
+
+      <div class="callout cb-def">
+        <div class="callout-title">📘 Recursive Definition — Linked List</div>
+        A <strong>linked list</strong> over a value set V is defined recursively:
+        <ul style="margin-top:7px;padding-left:20px;line-height:2.15;">
+          <li><strong>Base case:</strong> The empty list (<span class="mono">null</span>) is a linked list.</li>
+          <li><strong>Recursive case:</strong> If L is a linked list and v ∈ V, then a node holding value v with its next-pointer set to L is a linked list.</li>
+        </ul>
+      </div>
+
+      <p>The concrete list [3 → 7 → 2 → null] is built by three applications of the recursive case on top of the base case:</p>
+
+      <div class="ll-diag" role="img" aria-label="Linked list diagram: node containing 3 points to node containing 7 points to node containing 2 points to null">
+        <div class="ll-node"><div class="ll-data">3</div><div class="ll-ptr">next</div></div>
+        <div class="ll-arr">→</div>
+        <div class="ll-node"><div class="ll-data">7</div><div class="ll-ptr">next</div></div>
+        <div class="ll-arr">→</div>
+        <div class="ll-node"><div class="ll-data">2</div><div class="ll-ptr">next</div></div>
+        <div class="ll-arr">→</div>
+        <div class="ll-null">null</div>
+      </div>
+
+      <p style="margin-top:14px;">Every operation on a linked list — length, search, insertion, reversal — can be written as a recursive algorithm that mirrors this definition directly. The central insight: <strong>when a data structure is defined recursively, algorithms that operate on it are naturally recursive too.</strong></p>
+
+      <div class="callout cb-tip">
+        <div class="callout-title">👀 Looking Ahead — Weeks 12–15</div>
+        Trees, graphs, and formal grammars are all defined recursively. When you encounter those structures, return to this module's two-part template. Every recursive definition you meet will fit the same base-case / recursive-case pattern established here.
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════
+       SECTION 5 · Knowledge Check
+  ════════════════════════════════════════════════════ -->
+  <section id="s5" aria-labelledby="s5-title">
+    <div class="kc-wrap">
+      <div class="kc-hdr">
+        <span class="kc-badge">Ungraded</span>
+        <h2 id="s5-title">5 · Knowledge Check</h2>
+      </div>
+      <p class="kc-intro">Three questions to consolidate Module 11.1 concepts. Responses are not recorded. Take your time and read the feedback for each question carefully.</p>
+
+      <!-- Q1 ─ Open response -->
+      <div class="kc-q" id="q1">
+        <div class="kc-qlabel">Question 1 of 3 · Open Response</div>
+        <div class="kc-qtext">
+          Write a recursive definition for the function f(n) = 2<sup>n</sup>, where n is a non-negative integer. Use the two-part format: state the base case and the recursive case. Draft your answer below, then reveal the model answer to compare.
+        </div>
+        <label for="q1-ta" style="font-size:.82rem;color:#4a5568;display:block;margin-bottom:4px;">Your draft (ungraded — for self-reflection only):</label>
+        <textarea class="kc-ta" id="q1-ta" aria-label="Draft your recursive definition for 2 to the n here" placeholder="Base case:     f(  ) = &#10;Recursive case: f(n) = "></textarea>
+        <button class="kc-btn" id="q1-btn" onclick="showQ1()" aria-expanded="false" aria-controls="q1-fb">Show Model Answer</button>
+        <div class="kc-fb" id="q1-fb" aria-live="polite">
+          <span class="fb-icon">📋 Model Answer</span><br><br>
+          <div class="fb" style="margin:8px 0;">
+            <span class="cmt">// Base case</span><br>
+            f(0) = 1 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cmt">// 2<sup>0</sup> = 1</span><br><br>
+            <span class="cmt">// Recursive case (n ≥ 1)</span><br>
+            f(n) = 2 · f(n−1) &nbsp;<span class="cmt">// 2<sup>n</sup> = 2 · 2<sup>n−1</sup></span>
+          </div>
+          <strong>Why it works:</strong>
+          <ul style="padding-left:20px;line-height:1.95;margin-top:6px;font-size:.89rem;">
+            <li>Base case: f(0) = 1 because 2<sup>0</sup> = 1 by definition of integer exponentiation.</li>
+            <li>Recursive case: f(n) = 2 · f(n−1) follows from 2<sup>n</sup> = 2 · 2<sup>n−1</sup>. The argument decreases by 1 each call, so every chain terminates at f(0).</li>
+          </ul>
+          <p style="margin-top:9px;font-size:.88rem;color:#276749;"><strong>✔ Spot check:</strong> f(3) = 2·f(2) = 2·2·f(1) = 2·2·2·f(0) = 2·2·2·1 = 8 = 2<sup>3</sup> ✓</p>
+        </div>
+      </div>
+
+      <!-- Q2 ─ Multiple choice -->
+      <div class="kc-q" id="q2">
+        <div class="kc-qlabel">Question 2 of 3 · Multiple Choice</div>
+        <div class="kc-qtext">
+          Consider the recursive definition:
+          <div class="mono" style="display:block;background:#f0f4f8;padding:9px 13px;border-radius:4px;margin:8px 0;line-height:2.1;">
+            T(0) = 1<br>
+            T(n) = 3 · T(n−1) + 2 &nbsp; for n ≥ 1
+          </div>
+          Which option correctly identifies the base case and the recursive case?
+        </div>
+        <div class="opts" id="q2-opts" role="radiogroup" aria-label="Question 2 answer options">
+          <label class="opt" id="q2a"><input type="radio" name="q2" value="a"> <span>Base case: T(0) = 1 &nbsp;·&nbsp; Recursive case: T(n) = 3·T(n−1)+2 for n ≥ 1</span></label>
+          <label class="opt" id="q2b"><input type="radio" name="q2" value="b"> <span>Base case: T(n) = 3·T(n−1)+2 &nbsp;·&nbsp; Recursive case: T(0) = 1</span></label>
+          <label class="opt" id="q2c"><input type="radio" name="q2" value="c"> <span>This definition has no base case and is ill-defined.</span></label>
+          <label class="opt" id="q2d"><input type="radio" name="q2" value="d"> <span>Base case: T(1) = 5 &nbsp;·&nbsp; Recursive case: T(n) = 3·T(n−1)+2 for n ≥ 2</span></label>
+        </div>
+        <div class="no-sel" id="q2-nosel" role="alert" aria-live="assertive">Please select an answer before checking.</div>
+        <button class="kc-btn" id="q2-btn" onclick="checkQ2()">Check Answer</button>
+        <div class="kc-fb" id="q2-fb" aria-live="polite"></div>
+      </div>
+
+      <!-- Q3 ─ True / False -->
+      <div class="kc-q" id="q3">
+        <div class="kc-qlabel">Question 3 of 3 · True / False</div>
+        <div class="kc-qtext">True or False: <em>"A recursive definition is well-defined only if it has exactly one base case."</em></div>
+        <div class="opts" id="q3-opts" role="radiogroup" aria-label="Question 3 true or false">
+          <label class="opt" id="q3t"><input type="radio" name="q3" value="true">  <span>True — exactly one base case is required for well-definedness.</span></label>
+          <label class="opt" id="q3f"><input type="radio" name="q3" value="false"> <span>False — the number of base cases depends on the structure of the recursive case.</span></label>
+        </div>
+        <div class="no-sel" id="q3-nosel" role="alert" aria-live="assertive">Please select an answer before checking.</div>
+        <button class="kc-btn" id="q3-btn" onclick="checkQ3()">Check Answer</button>
+        <div class="kc-fb" id="q3-fb" aria-live="polite"></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════
+       SECTION 6 · Summary and Bridge
+  ════════════════════════════════════════════════════ -->
+  <section id="s6" aria-labelledby="s6-title">
+    <div class="card">
+      <h2 id="s6-title">6 · Summary and Bridge</h2>
+
+      <ul class="recap" aria-label="Module 11.1 key takeaways">
+        <li><span class="rc-icon" aria-hidden="true">✦</span><span><strong>Recursive definition</strong> — defines an object in terms of a simpler version of itself, anchored by at least one base case.</span></li>
+        <li><span class="rc-icon" aria-hidden="true">✦</span><span><strong>Base case</strong> — provides a direct, non-recursive answer for the simplest input(s); no self-reference allowed.</span></li>
+        <li><span class="rc-icon" aria-hidden="true">✦</span><span><strong>Recursive case</strong> — reduces the input strictly, guaranteeing every chain eventually reaches the base case.</span></li>
+        <li><span class="rc-icon" aria-hidden="true">✦</span><span><strong>Well-definedness</strong> — requires at least one base case and finitely terminating chains. Multiple base cases are sometimes necessary (Fibonacci is the canonical example).</span></li>
+        <li><span class="rc-icon" aria-hidden="true">✦</span><span><strong>Two failure modes</strong> — (1) missing base case; (2) recursive case that moves <em>away</em> from the base case rather than toward it.</span></li>
+        <li><span class="rc-icon" aria-hidden="true">✦</span><span><strong>Recursive structures</strong> — linked lists, trees, and grammars obey the same two-part pattern, making recursive algorithms a natural fit for them.</span></li>
+      </ul>
+
+      <div class="bridge" role="complementary" aria-label="Bridge to Module 11.2">
+        <div class="bridge-icon" aria-hidden="true">▶</div>
+        <div class="bridge-text">
+          <strong>Next: Module 11.2 — Recursive Algorithms and Tracing</strong>
+          Module 11.2 translates the definitions from this module into executable Java code. You will trace recursive call stacks, map execution frames to the base-case / recursive-case structure, and see how well-definedness directly guarantees algorithm termination. The factorial and Fibonacci definitions reappear as running programs.
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <p>CSC 240 – Discrete Structures · Module 11.1 · Mendocino College · Spring 2026</p>
+  <p style="margin-top:3px;">Questions? Contact your instructor through Canvas or during office hours.</p>
+</footer>
+
+<script>
+  function toggleReveal(btnId, contentId) {
+    var el  = document.getElementById(contentId);
+    var btn = document.getElementById(btnId);
+    var opening = !el.classList.contains('vis');
+    el.classList.toggle('vis');
+    btn.setAttribute('aria-expanded', String(opening));
+    btn.textContent = opening ? 'Hide Explanation' : 'Show Explanation';
+    if (opening) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function showQ1() {
+    var fb  = document.getElementById('q1-fb');
+    var btn = document.getElementById('q1-btn');
+    fb.classList.add('show', 'fb-ok');
+    btn.setAttribute('aria-expanded', 'true');
+    btn.disabled = true;
+    btn.textContent = 'Answer Revealed';
+    fb.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function checkQ2() {
+    var sel   = document.querySelector('input[name="q2"]:checked');
+    var nosel = document.getElementById('q2-nosel');
+    if (!sel) { nosel.classList.add('show'); return; }
+    nosel.classList.remove('show');
+
+    var btn = document.getElementById('q2-btn');
+    btn.disabled = true;
+    document.querySelectorAll('input[name="q2"]').forEach(function(r){ r.disabled = true; });
+
+    document.getElementById('q2a').classList.add('correct');
+    if (sel.value !== 'a') {
+      document.getElementById('q2' + sel.value).classList.add('incorrect');
+    }
+
+    var fb  = document.getElementById('q2-fb');
+    fb.classList.add('show');
+    if (sel.value === 'a') {
+      fb.classList.add('fb-ok');
+      fb.innerHTML = '<span class="fb-icon">✓ Correct!</span> <strong>T(0) = 1</strong> is the base case — it gives a direct value with no recursive call. <strong>T(n) = 3·T(n−1)+2</strong> is the recursive case — it expresses T(n) in terms of the strictly smaller T(n−1), so every chain terminates at T(0).';
+    } else {
+      fb.classList.add('fb-no');
+      var msg = '<span class="fb-icon">✗ Incorrect.</span> The correct answer is A. ';
+      if (sel.value === 'b') {
+        msg += 'Option B reverses the roles. The expression with <em>no recursive call</em> is the base case; the one that references a smaller argument is the recursive case.';
+      } else if (sel.value === 'c') {
+        msg += 'Option C is wrong — T(0) = 1 is clearly a base case providing a direct value. This definition is well-defined.';
+      } else {
+        msg += 'Option D invents a base case at T(1) = 5, but T(1) is derivable: T(1) = 3·T(0)+2 = 3·1+2 = 5. It follows from the recursive rule applied to T(0) = 1, so it is a computed value, not an independent base case. Moreover, Option D leaves T(0) undefined.';
+      }
+      fb.innerHTML = msg;
+    }
+    fb.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function checkQ3() {
+    var sel   = document.querySelector('input[name="q3"]:checked');
+    var nosel = document.getElementById('q3-nosel');
+    if (!sel) { nosel.classList.add('show'); return; }
+    nosel.classList.remove('show');
+
+    var btn = document.getElementById('q3-btn');
+    btn.disabled = true;
+    document.querySelectorAll('input[name="q3"]').forEach(function(r){ r.disabled = true; });
+
+    document.getElementById('q3f').classList.add('correct');
+    if (sel.value !== 'false') {
+      document.getElementById('q3t').classList.add('incorrect');
+    }
+
+    var fb = document.getElementById('q3-fb');
+    fb.classList.add('show');
+    if (sel.value === 'false') {
+      fb.classList.add('fb-ok');
+      fb.innerHTML = '<span class="fb-icon">✓ Correct!</span> The statement is <strong>false</strong>. Well-definedness requires <em>at least one</em> base case, not exactly one. Fibonacci requires <em>two</em> base cases — F(0) = 0 and F(1) = 1 — because its recursive case references both F(n−1) and F(n−2). In general, you need as many base cases as the "reach" of the recursive step: if the recursive case looks back k positions, at least k base cases are needed.';
+    } else {
+      fb.classList.add('fb-no');
+      fb.innerHTML = '<span class="fb-icon">✗ Incorrect.</span> The statement is <strong>false</strong>. Well-definedness requires <em>at least one</em> base case, but allows more than one. Fibonacci is the canonical counterexample: providing only F(0) = 0 leaves F(1) unreachable — computing F(2) = F(1)+F(0) requires F(1), which has no base case. Adding F(1) = 1 as a second base case fixes the definition completely.';
+    }
+    fb.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Module 11.5 – Master Theorem, PE-08 / PS-07 Guides, and Quiz 4 Preview | CSC 240</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Segoe UI',Arial,sans-serif;font-size:16px;line-height:1.65;color:#1a1a1a;background:#f2f4f8}
+
+/* ── NAV ─────────────────────────────────────────────────── */
+#topnav{position:fixed;top:0;left:0;right:0;z-index:200;background:#1b3a5e;display:flex;align-items:center;flex-wrap:wrap;min-height:50px;padding:0 .75rem;box-shadow:0 2px 6px rgba(0,0,0,.4);gap:.05rem}
+.nav-brand{color:#f5c518;font-weight:700;font-size:.82rem;letter-spacing:.5px;padding:.45rem .65rem .45rem 0;border-right:1px solid #2d5a8e;margin-right:.35rem;white-space:nowrap;flex-shrink:0}
+#topnav a{color:#b8d0ef;text-decoration:none;font-size:.75rem;padding:.45rem .46rem;border-radius:4px;white-space:nowrap;transition:background .15s,color .15s}
+#topnav a:hover{background:#2d5a8e;color:#fff}
+#topnav a:focus-visible{outline:2px solid #f5c518;outline-offset:1px;background:#2d5a8e;color:#fff}
+
+/* ── LAYOUT ──────────────────────────────────────────────── */
+.page-wrap{max-width:1000px;margin:0 auto;padding:66px 1.2rem 3rem}
+.sec{scroll-margin-top:58px}
+
+/* ── MODULE HEADER ───────────────────────────────────────── */
+.mod-hdr{background:linear-gradient(135deg,#1b3a5e 0%,#2563a8 100%);color:#fff;border-radius:10px;padding:1.85rem 2.2rem;margin-bottom:1.6rem}
+.mod-badge{display:inline-block;background:#f5c518;color:#1a1a1a;font-size:.75rem;font-weight:700;padding:.18rem .65rem;border-radius:12px;letter-spacing:.5px;margin-bottom:.7rem;text-transform:uppercase}
+.mod-hdr h1{font-size:1.5rem;font-weight:700;margin-bottom:.45rem;line-height:1.3}
+.mod-hdr .desc{font-size:.93rem;opacity:.88;max-width:740px}
+.mod-meta{display:flex;flex-wrap:wrap;gap:.55rem;margin-top:.9rem}
+.meta-chip{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);border-radius:12px;font-size:.75rem;padding:.18rem .72rem;color:#d8eafe}
+
+/* ── CARDS ───────────────────────────────────────────────── */
+.card{background:#fff;border-radius:10px;padding:1.85rem 2.2rem;margin-bottom:1.6rem;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.card h2{font-size:1.22rem;font-weight:700;color:#1b3a5e;border-bottom:2px solid #e0e9f5;padding-bottom:.5rem;margin-bottom:1.2rem;display:flex;align-items:center;gap:.55rem}
+.sec-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;min-width:28px;background:#1b3a5e;color:#fff;border-radius:50%;font-size:.78rem;font-weight:700}
+.card h3{font-size:1rem;font-weight:700;color:#1b3a5e;margin:1.15rem 0 .55rem}
+.card p{margin-bottom:.8rem}
+.card p:last-child{margin-bottom:0}
+
+/* ── MATH ────────────────────────────────────────────────── */
+.m{font-family:'Courier New',monospace;font-size:.94em;background:#eef2f8;padding:.04em .28em;border-radius:3px;white-space:nowrap}
+.mblk{font-family:'Courier New',monospace;background:#eef2f8;border-left:4px solid #2563a8;border-radius:0 7px 7px 0;padding:.75rem 1.1rem;margin:.85rem 0;overflow-x:auto;font-size:.98rem}
+.mblk .row{display:block;text-align:center;margin:.15rem 0}
+
+/* ── CALLOUTS ────────────────────────────────────────────── */
+.cb{border-radius:8px;padding:.88rem 1.12rem;margin:.85rem 0;border-left:5px solid}
+.cbt{font-weight:700;font-size:.82rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:.3rem}
+.cb-info{background:#e8f2fb;border-color:#2563a8}.cb-info .cbt{color:#1b3a5e}
+.cb-ok{background:#e9f7ef;border-color:#1d8348}.cb-ok .cbt{color:#145a32}
+.cb-warn{background:#fef9e7;border-color:#d4ac0d}.cb-warn .cbt{color:#7d6608}
+.cb-err{background:#fdedec;border-color:#be2f2a}.cb-err .cbt{color:#7b241c}
+.cb-tip{background:#f5eef8;border-color:#6c3483}.cb-tip .cbt{color:#4a235a}
+.cb-asgn{background:#fffbea;border-color:#b5890a}.cb-asgn .cbt{color:#7d5a08}
+
+/* ── CASE CARDS ──────────────────────────────────────────── */
+.case-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:1rem;margin:1.1rem 0}
+.cc{border-radius:9px;padding:1.1rem;border-top:5px solid}
+.cc h4{font-size:.97rem;font-weight:700;margin-bottom:.45rem}
+.cc .formal{font-family:'Courier New',monospace;font-size:.84rem;background:rgba(255,255,255,.65);border-radius:5px;padding:.42rem .7rem;margin:.42rem 0;line-height:1.6}
+.cc .plain{font-size:.84rem;font-style:italic;margin-top:.4rem;line-height:1.5}
+.cc1{background:#fff7e6;border-color:#e07b22}.cc1 h4{color:#7d3a08}
+.cc2{background:#e9f7ef;border-color:#1d8348}.cc2 h4{color:#145a32}
+.cc3{background:#e8f0fb;border-color:#1f6fb5}.cc3 h4{color:#1b3a5e}
+
+/* ── FLOWCHART ───────────────────────────────────────────── */
+.flow{display:flex;flex-direction:column;align-items:center;margin:1.2rem 0;font-size:.86rem}
+.fb{border-radius:7px;padding:.55rem 1.1rem;text-align:center;max-width:450px;width:100%;border:2px solid}
+.fb-start{background:#1b3a5e;color:#fff;border-color:#1b3a5e;font-weight:700}
+.fb-step{background:#eef2f8;border-color:#2563a8;color:#1b3a5e;font-weight:600}
+.fb-q{background:#fef9e7;border-color:#d4ac0d;color:#6b4c08;font-weight:700}
+.farr{font-size:1.45rem;color:#2563a8;line-height:1;padding:.04rem 0}
+.br-row{display:flex;gap:.85rem;width:100%;justify-content:center;flex-wrap:wrap;margin-top:.05rem}
+.br{display:flex;flex-direction:column;align-items:center;flex:1;min-width:155px;max-width:230px}
+.br-lbl{font-size:.74rem;color:#666;font-style:italic;padding:.05rem 0;text-align:center}
+.fb-r1{background:#fff7e6;border:2px solid #e07b22;color:#7d3a08;font-weight:700;border-radius:7px;padding:.48rem .8rem;text-align:center;width:100%;font-size:.83rem}
+.fb-r2{background:#e9f7ef;border:2px solid #1d8348;color:#145a32;font-weight:700;border-radius:7px;padding:.48rem .8rem;text-align:center;width:100%;font-size:.83rem}
+.fb-r3{background:#e8f0fb;border:2px solid #1f6fb5;color:#1b3a5e;font-weight:700;border-radius:7px;padding:.48rem .8rem;text-align:center;width:100%;font-size:.83rem}
+
+/* ── TABLES ──────────────────────────────────────────────── */
+.tbl-wrap{overflow-x:auto;margin:.85rem 0}
+.tbl{width:100%;border-collapse:collapse;font-size:.87rem}
+.tbl th{background:#1b3a5e;color:#fff;padding:.5rem .72rem;text-align:left;font-weight:600}
+.tbl td{padding:.55rem .72rem;border-bottom:1px solid #dde8f0;vertical-align:top}
+.tbl tr:nth-child(even) td{background:#f4f8fc}
+.rtd{font-family:'Courier New',monospace;font-weight:700;color:#145a32}
+.cbdg{display:inline-block;font-size:.72rem;font-weight:700;padding:.1rem .42rem;border-radius:10px;color:#fff;white-space:nowrap}
+.cbdg-1{background:#e07b22}.cbdg-2{background:#1d8348}.cbdg-3{background:#1f6fb5}
+
+/* ── ACCORDION ───────────────────────────────────────────── */
+.acc{border:1px solid #dde8f0;border-radius:8px;margin:.65rem 0;overflow:hidden}
+.acc-btn{width:100%;background:#f2f5fa;border:none;text-align:left;padding:.75rem 1rem;font-size:.91rem;font-weight:600;color:#1b3a5e;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:background .15s}
+.acc-btn:hover{background:#e0e9f5}
+.acc-btn:focus-visible{outline:2px solid #2563a8;outline-offset:-2px}
+.acc-icon{transition:transform .25s;font-style:normal}
+.acc-btn[aria-expanded="true"] .acc-icon{transform:rotate(180deg)}
+.acc-body{display:none;padding:.88rem 1.1rem;border-top:1px solid #dde8f0}
+.acc-body.open{display:block}
+
+/* ── STEP LIST ───────────────────────────────────────────── */
+.steps{list-style:none;padding:0;margin:.7rem 0;counter-reset:step}
+.steps li{counter-increment:step;display:flex;gap:.72rem;margin-bottom:.62rem;align-items:flex-start}
+.steps li::before{content:counter(step);display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:24px;background:#2563a8;color:#fff;border-radius:50%;font-size:.76rem;font-weight:700;flex-shrink:0;margin-top:.18rem}
+
+/* ── PREP GRID ───────────────────────────────────────────── */
+.prep-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:.82rem;margin:.88rem 0}
+.pc{background:#f2f5fa;border-radius:8px;padding:.78rem .95rem;border-top:4px solid #2563a8}
+.pc .plbl{font-size:.7rem;font-weight:700;color:#2563a8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:.28rem}
+.pc .ptitle{font-size:.86rem;font-weight:700;color:#1b3a5e;margin-bottom:.32rem}
+.pc ul{font-size:.8rem;color:#333;padding-left:.92rem;margin:0}
+.pc li{margin-bottom:.17rem}
+
+/* ── GRADE CHIPS ─────────────────────────────────────────── */
+.grade-row{display:flex;flex-wrap:wrap;gap:.55rem;margin:.7rem 0}
+.gchip{display:flex;flex-direction:column;align-items:center;background:#f2f5fa;border-radius:8px;padding:.42rem .78rem;min-width:86px;border-top:3px solid #2563a8}
+.gchip .gpct{font-size:1.08rem;font-weight:700;color:#1b3a5e}
+.gchip .glbl{font-size:.69rem;color:#555;text-align:center}
+
+/* ── CHECKLIST ───────────────────────────────────────────── */
+.chk{list-style:none;padding:0;margin:.7rem 0}
+.chk li{display:flex;align-items:flex-start;gap:.52rem;padding:.37rem 0;border-bottom:1px solid #f0f4f8;font-size:.9rem}
+.chk li:last-child{border-bottom:none}
+.chk li::before{content:"☐";font-size:.95rem;color:#2563a8;flex-shrink:0;margin-top:.06rem}
+
+/* ── QUIZ TABLE ──────────────────────────────────────────── */
+.qt-mc{color:#7d6608;font-weight:600}
+.qt-ps{color:#145a32;font-weight:600}
+.qt-sa{color:#1b3a5e;font-weight:600}
+.qt-mp{color:#6c3483;font-weight:600}
+
+/* ── SELF-ASSESSMENT ─────────────────────────────────────── */
+.sa-item{background:#f8fafb;border:1px solid #dde8f0;border-radius:8px;padding:.78rem 1rem;margin-bottom:.58rem}
+.sa-obj{font-size:.7rem;font-weight:700;color:#2563a8;text-transform:uppercase;letter-spacing:.4px;margin-bottom:.22rem}
+.sa-txt{font-size:.9rem;margin-bottom:.42rem}
+.sa-btns{display:flex;gap:.42rem;flex-wrap:wrap}
+.sa-b{border:2px solid #ccc;background:#fff;border-radius:18px;padding:.2rem .78rem;font-size:.79rem;font-weight:600;cursor:pointer;color:#555;transition:all .13s}
+.sa-b:hover{border-color:#2563a8;color:#2563a8}
+.sa-b:focus-visible{outline:2px solid #2563a8;outline-offset:2px}
+.sa-b.s1{background:#fdedec;border-color:#be2f2a;color:#7b241c}
+.sa-b.s2{background:#fef9e7;border-color:#d4ac0d;color:#7d6608}
+.sa-b.s3{background:#e9f7ef;border-color:#1d8348;color:#145a32}
+#sa-msg{margin-top:1rem;padding:.78rem 1rem;background:#e8f2fb;border-radius:8px;border-left:4px solid #2563a8;font-size:.9rem;display:none}
+
+/* ── MODULE SUMMARY ──────────────────────────────────────── */
+.mod-sum{background:linear-gradient(135deg,#1b3a5e 0%,#2563a8 100%);color:#fff;border-radius:10px;padding:1.85rem 2.2rem;margin-top:1.6rem}
+.mod-sum h2{font-size:1.12rem;font-weight:700;color:#f5c518;margin-bottom:.9rem}
+.sum-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(192px,1fr));gap:.88rem;margin:.88rem 0}
+.si{background:rgba(255,255,255,.11);border-radius:8px;padding:.78rem .95rem}
+.si .slbl{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#f5c518;margin-bottom:.26rem}
+.si p{font-size:.84rem;color:#cde4ff;margin:0}
+.sum-close{margin-top:1.05rem;font-size:.89rem;color:#b8d0ef;font-style:italic;border-top:1px solid rgba(255,255,255,.18);padding-top:.88rem}
+
+/* ── WORKED EXAMPLES ─────────────────────────────────────── */
+.wex{background:#f8fafb;border:1px solid #dde8f0;border-radius:8px;padding:.85rem 1.05rem;margin:.72rem 0}
+.wex-hdr{font-weight:700;color:#1b3a5e;font-size:.89rem;margin-bottom:.5rem;display:flex;align-items:center;gap:.42rem}
+.wex-icon{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;min-width:20px;background:#2563a8;color:#fff;border-radius:50%;font-size:.68rem;font-weight:700}
+
+/* ── NA LIST ─────────────────────────────────────────────── */
+.na-list{list-style:none;padding:0;margin:.7rem 0;counter-reset:na}
+.na-list li{counter-increment:na;display:flex;gap:.68rem;align-items:flex-start;padding:.5rem 0;border-bottom:1px solid #f0f4f8;font-size:.9rem}
+.na-list li:last-child{border-bottom:none}
+.na-list li::before{content:counter(na);display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;background:#be2f2a;color:#fff;border-radius:50%;font-size:.72rem;font-weight:700;flex-shrink:0;margin-top:.12rem}
+
+/* ── MISC ────────────────────────────────────────────────── */
+.tag{display:inline-block;font-size:.7rem;font-weight:700;padding:.08rem .5rem;border-radius:10px;text-transform:uppercase;letter-spacing:.4px}
+.tag-p{background:#e8f0fb;color:#1b3a5e;border:1px solid #b0c8e8}
+.tag-u{background:#e9f7ef;color:#145a32;border:1px solid #a8d5b5}
+.tag-a{background:#fef5e7;color:#784212;border:1px solid #f5cba7}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:1.05rem;margin:.7rem 0}
+code{font-family:'Courier New',monospace;background:#eef2f8;padding:.08em .32em;border-radius:3px;font-size:.88em}
+hr.div{border:none;border-top:1px solid #e0e9f5;margin:1.1rem 0}
+
+@media(max-width:640px){
+  .two-col{grid-template-columns:1fr}
+  .br-row{flex-direction:column;align-items:center}
+  #topnav{flex-wrap:nowrap;overflow-x:auto}
+  .mod-hdr h1{font-size:1.22rem}
+  .card{padding:1.35rem 1.1rem}
+  .mod-hdr{padding:1.4rem 1.2rem}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ NAVIGATION ═══════════════════════════════════════════ -->
+<nav id="topnav" role="navigation" aria-label="Module 11.5 section navigation">
+  <span class="nav-brand">CSC 240 · 11.5</span>
+  <a href="#sec1">1 · D&amp;C Setup</a>
+  <a href="#sec2">2 · Master Thm</a>
+  <a href="#sec3">3 · Applications</a>
+  <a href="#sec4">4 · Exceptions</a>
+  <a href="#sec5">5 · Efficiency</a>
+  <a href="#sec6">6 · PE-08</a>
+  <a href="#sec7">7 · PS-07</a>
+  <a href="#sec8">8 · Quiz 4</a>
+  <a href="#sec9">9 · Self-Check</a>
+</nav>
+
+<div class="page-wrap">
+
+<!-- ═══ MODULE HEADER ════════════════════════════════════════ -->
+<header class="mod-hdr" role="banner">
+  <span class="mod-badge">Module 11.5 · Week 11 of 17</span>
+  <h1>Master Theorem, PE-08 / PS-07 Assignment Guides, and Quiz 4 Preview</h1>
+  <p class="desc">This culminating module introduces the Master Theorem as a practical pattern-matching tool for divide-and-conquer recurrences, applies it to the merge sort and binary search examples required by PE-08, maps all five modules to graded deliverables, and previews the Week 11 portion of Quiz 4. It closes the Week 11 dependency chain.</p>
+  <div class="mod-meta">
+    <span class="meta-chip">CSLO 4 — Induction &amp; Recursion</span>
+    <span class="meta-chip">Objectives 9 &amp; 10</span>
+    <span class="meta-chip">Prereq: Module 11.4</span>
+    <span class="meta-chip">Approx. 2.0 hrs</span>
+    <span class="meta-chip">Final module of Week 11</span>
+  </div>
+</header>
+
+<div class="cb cb-warn" role="note" aria-label="Dependency reminder">
+  <div class="cbt">⛓ Dependency Reminder</div>
+  This module is the <strong>fifth and final</strong> in a strict chain: 11.1 → 11.2 → 11.3 → 11.4 → <strong>11.5</strong>. It assumes fluency with recursive definitions (11.1), recursive algorithm tracing (11.2), induction-based proofs (11.3), and characteristic equation solving (11.4). If any of those feel uncertain, revisit those modules before continuing here.
+</div>
+
+<main>
+
+<!-- ════════════════════════════════════════════════════════════
+     SECTION 1  DIVIDE-AND-CONQUER RECURRENCES — SETUP
+     ════════════════════════════════════════════════════════════ -->
+<section id="sec1" class="card sec" aria-labelledby="h1">
+  <h2><span class="sec-num" aria-hidden="true">1</span><span id="h1">Divide-and-Conquer Recurrences — Setup</span></h2>
+
+  <p>A <strong>divide-and-conquer algorithm</strong> solves a problem of size <span class="m">n</span> by splitting it into <span class="m">a</span> subproblems each of size <span class="m">n/b</span>, solving them recursively, and combining the results. Every such algorithm has a running time that satisfies a standard recurrence form.</p>
+
+  <h3>Standard Form</h3>
+  <div class="mblk" role="img" aria-label="Standard divide-and-conquer recurrence: T of n equals a times T of n over b plus f of n">
+    <span class="row"><strong>T(n) = a · T(n/b) + f(n)</strong></span>
+    <span class="row" style="font-size:.82rem;color:#555">with base case T(1) = Θ(1)</span>
+  </div>
+
+  <h3>Annotated Parameter Meanings</h3>
+  <div class="tbl-wrap">
+    <table class="tbl" aria-label="Parameter meanings for the standard divide-and-conquer recurrence">
+      <thead>
+        <tr>
+          <th scope="col">Symbol</th>
+          <th scope="col">Constraint</th>
+          <th scope="col">Algorithmic Meaning</th>
+          <th scope="col">Merge Sort Example</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="m">T(n)</span></td><td>—</td><td>Running time on input of size <span class="m">n</span></td><td>Time to sort <span class="m">n</span> elements</td></tr>
+        <tr><td><span class="m">a</span></td><td>a ≥ 1, integer</td><td>Number of recursive subproblems created per call</td><td>2 — sort left half and right half</td></tr>
+        <tr><td><span class="m">b</span></td><td>b &gt; 1, real</td><td>Factor by which input size is reduced per subproblem</td><td>2 — each half has n/2 elements</td></tr>
+        <tr><td><span class="m">f(n)</span></td><td>Asymptotically positive</td><td>Work done <em>outside</em> the recursive calls (divide + combine steps)</td><td>Θ(n) — the merge step</td></tr>
+        <tr><td><span class="m">n/b</span></td><td>—</td><td>Size of each subproblem (floor or ceiling — same asymptotic result)</td><td>n/2 elements per half</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="cb cb-info">
+    <div class="cbt">ℹ Exactness vs. Asymptotics</div>
+    In practice <span class="m">n/b</span> may not be an integer. The Master Theorem holds for both ⌊n/b⌋ and ⌈n/b⌉ — the asymptotic class is unchanged. We write <span class="m">T(n/b)</span> as convenient shorthand throughout this module.
+  </div>
+
+  <h3>Worked Setup — Merge Sort</h3>
+  <div class="acc">
+    <button class="acc-btn" aria-expanded="false" aria-controls="ac-ms" id="btn-ms">
+      Expand: Merge Sort Recurrence Setup <em class="acc-icon" aria-hidden="true">▼</em>
+    </button>
+    <div class="acc-body" id="ac-ms" role="region" aria-labelledby="btn-ms">
+      <p><strong>Algorithm description:</strong> Split the array in half, sort each half recursively, then merge the two sorted halves into one sorted array.</p>
+      <ol class="steps">
+        <li><strong>Count subproblems (a):</strong> Two recursive calls are made — one on the left half, one on the right half. → <strong>a = 2</strong></li>
+        <li><strong>Determine size reduction (b):</strong> Each half contains n/2 elements. → <strong>b = 2</strong></li>
+        <li><strong>Identify combine work f(n):</strong> Merging two sorted halves requires a single linear pass — Θ(n) comparisons and element moves. → <strong>f(n) = Θ(n)</strong></li>
+        <li><strong>Write the recurrence:</strong></li>
+      </ol>
+      <div class="mblk">
+        <span class="row"><strong>T(n) = 2 · T(n/2) + Θ(n)</strong></span>
+        <span class="row" style="font-size:.8rem;color:#555">a = 2 &nbsp;|&nbsp; b = 2 &nbsp;|&nbsp; f(n) = Θ(n)</span>
+      </div>
+      <p>The Master Theorem resolves this recurrence in Section 3. The result — Θ(n log n) — confirms merge sort is optimal for comparison-based sorting.</p>
+    </div>
+  </div>
+
+  <h3>Worked Setup — Binary Search</h3>
+  <div class="acc">
+    <button class="acc-btn" aria-expanded="false" aria-controls="ac-bs" id="btn-bs">
+      Expand: Binary Search Recurrence Setup <em class="acc-icon" aria-hidden="true">▼</em>
+    </button>
+    <div class="acc-body" id="ac-bs" role="region" aria-labelledby="btn-bs">
+      <p><strong>Algorithm description:</strong> Compare the target to the middle element of a sorted array; recurse on the left half or the right half — never both.</p>
+      <ol class="steps">
+        <li><strong>Count subproblems (a):</strong> Only <em>one</em> recursive call is made — either left or right, never both. → <strong>a = 1</strong></li>
+        <li><strong>Determine size reduction (b):</strong> The search space is halved each call. → <strong>b = 2</strong></li>
+        <li><strong>Identify combine work f(n):</strong> One comparison per call — constant work outside the recursion. → <strong>f(n) = Θ(1)</strong></li>
+        <li><strong>Write the recurrence:</strong></li>
+      </ol>
+      <div class="mblk">
+        <span class="row"><strong>T(n) = T(n/2) + Θ(1)</strong></span>
+        <span class="row" style="font-size:.8rem;color:#555">a = 1 &nbsp;|&nbsp; b = 2 &nbsp;|&nbsp; f(n) = Θ(1)</span>
+      </div>
+      <p><strong>Note:</strong> <span class="m">a = 1</span> is perfectly valid — it means only one subproblem is created, which is characteristic of search-reduction algorithms.</p>
+    </div>
+  </div>
+
+</section>
+
+<!-- ════════════════════════════════════════════════════════════
+     SECTION 2  THE MASTER THEOREM
+     ════════════════════════════════════════════════════════════ -->
+<section id="sec2" class="card sec" aria-labelledby="h2">
+  <h2><span class="sec-num" aria-hidden="true">2</span><span id="h2">The Master Theorem</span></h2>
+
+  <p>The <strong>Master Theorem</strong> provides a direct, closed-form asymptotic result for any recurrence of the form <span class="m">T(n) = a·T(n/b) + f(n)</span>, provided the relationship between <span class="m">f(n)</span> and the critical function <span class="m">n<sup>p</sup></span> falls into one of three cases. It replaces the need to expand the recursion tree or apply the characteristic equation for this entire class of algorithms.</p>
+
+  <div class="mblk" role="img" aria-label="Define p equals log base b of a">
+    <span class="row"><strong>Define: p = log<sub>b</sub> a</strong></span>
+    <span class="row" style="font-size:.82rem;color:#555">p is the <em>critical exponent</em> — the rate at which total subproblem work accumulates across all recursion levels</span>
+  </div>
+
+  <h3>Formal Statement — Three Cases</h3>
+
+  <div class="case-row" role="list">
+
+    <div class="cc cc1" role="listitem">
+      <h4>Case 1 — Recursion Dominates</h4>
+      <div class="formal">
+        If  f(n) = O(n<sup>p − ε</sup>)<br>
+        for some constant  ε &gt; 0,<br><br>
+        then  <strong>T(n) = Θ(n<sup>p</sup>)</strong>
+      </div>
+      <p class="plain">f(n) grows <em>polynomially slower</em> than n<sup>p</sup>. The total cost of all recursive subproblems at the leaves dominates; the combining work is negligible by comparison. The recursion tree is "bottom-heavy."</p>
+    </div>
+
+    <div class="cc cc2" role="listitem">
+      <h4>Case 2 — Work is Balanced</h4>
+      <div class="formal">
+        If  f(n) = Θ(n<sup>p</sup> · log<sup>k</sup> n)<br>
+        for some constant  k ≥ 0,<br><br>
+        then  <strong>T(n) = Θ(n<sup>p</sup> · log<sup>k+1</sup> n)</strong>
+      </div>
+      <p class="plain">f(n) and n<sup>p</sup> grow at the <em>same rate</em>. Every level of the recursion tree contributes roughly equal cost — they share the work, adding exactly one log factor. Most common subcase: k = 0 → T(n) = Θ(n<sup>p</sup> log n).</p>
+    </div>
+
+    <div class="cc cc3" role="listitem">
+      <h4>Case 3 — Combining Dominates</h4>
+      <div class="formal">
+        If  f(n) = Ω(n<sup>p + ε</sup>)  for ε &gt; 0<br>
+        AND  a·f(n/b) ≤ c·f(n)  for some c &lt; 1<br>
+        (regularity condition),<br><br>
+        then  <strong>T(n) = Θ(f(n))</strong>
+      </div>
+      <p class="plain">f(n) grows <em>polynomially faster</em> than n<sup>p</sup>. The work at the top level of the recursion tree swamps the combined cost of all sub-levels. The tree is "top-heavy."</p>
+    </div>
+
+  </div>
+
+  <div class="cb cb-ok">
+    <div class="cbt">✔ Most Common Subcase of Case 2</div>
+    When <span class="m">k = 0</span> (i.e., <span class="m">f(n) = Θ(n<sup>p</sup>)</span>), Case 2 simplifies to <span class="m"><strong>T(n) = Θ(n<sup>p</sup> log n)</strong></span>. This is the version you will encounter most frequently — including merge sort and binary search.
+  </div>
+
+  <div class="cb cb-warn">
+    <div class="cbt">⚠ Regularity Condition — Case 3</div>
+    The condition <span class="m">a·f(n/b) ≤ c·f(n)</span> ensures <span class="m">f(n)</span> does not oscillate. For all standard functions (polynomials, polynomials × logs) it holds automatically whenever <span class="m">f(n) = Ω(n<sup>p+ε</sup>)</span>. You rarely need to verify it explicitly for textbook problems — but always mention it when stating the theorem formally.
+  </div>
+
+  <h3>Case-Identification Decision Guide</h3>
+  <p>Follow these steps every time you encounter a divide-and-conquer recurrence:</p>
+
+  <div class="flow" role="img" aria-label="Master Theorem case identification flowchart: start with the recurrence, compute p, compare f of n to n to the p, branch to one of three cases">
+    <div class="fb fb-start">START &nbsp;·&nbsp; T(n) = a · T(n/b) + f(n) &nbsp;·&nbsp; a ≥ 1, b &gt; 1</div>
+    <span class="farr" aria-hidden="true">↓</span>
+    <div class="fb fb-step">Step 1 &nbsp;—&nbsp; Compute  p = log<sub>b</sub> a</div>
+    <span class="farr" aria-hidden="true">↓</span>
+    <div class="fb fb-step">Step 2 &nbsp;—&nbsp; Express f(n) as Θ(n<sup>c</sup>) or Θ(n<sup>c</sup> · log<sup>k</sup> n)<br>and compare exponent c  to  p</div>
+    <span class="farr" aria-hidden="true">↓</span>
+    <div class="fb fb-q">❓ How does f(n) compare to n<sup>p</sup> ?</div>
+    <span class="farr" aria-hidden="true">↓</span>
+    <div class="br-row">
+      <div class="br">
+        <span class="br-lbl">f(n) polynomially<br><em>SLOWER</em> than n<sup>p</sup><br>(c &lt; p)</span>
+        <span class="farr" aria-hidden="true">↓</span>
+        <div class="fb-r1">Case 1<br>T(n) = Θ(n<sup>p</sup>)</div>
+        <span class="farr" aria-hidden="true">↓</span>
+        <div style="font-size:.74rem;color:#7d3a08;text-align:center;max-width:185px;padding:.1rem 0">Subproblem cost dominates.<br>Recursion tree is bottom-heavy.</div>
+      </div>
+      <div class="br">
+        <span class="br-lbl">f(n) same rate<br>as n<sup>p</sup><br>(c = p)</span>
+        <span class="farr" aria-hidden="true">↓</span>
+        <div class="fb-r2">Case 2<br>T(n) = Θ(n<sup>p</sup> log n)<br><span style="font-size:.75rem;font-weight:400">(k = 0 subcase)</span></div>
+        <span class="farr" aria-hidden="true">↓</span>
+        <div style="font-size:.74rem;color:#145a32;text-align:center;max-width:185px;padding:.1rem 0">Balanced work across<br>all log n levels.</div>
+      </div>
+      <div class="br">
+        <span class="br-lbl">f(n) polynomially<br><em>FASTER</em> than n<sup>p</sup><br>(c &gt; p)</span>
+        <span class="farr" aria-hidden="true">↓</span>
+        <div class="fb-r3">Case 3 + regularity<br>T(n) = Θ(f(n))</div>
+        <span class="farr" aria-hidden="true">↓</span>
+        <div style="font-size:.74rem;color:#1b3a5e;text-align:center;max-width:185px;padding:.1rem 0">Top-level combining<br>dominates everything.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cb cb-tip">
+    <div class="cbt">💡 Quick Check Technique</div>
+    After computing <span class="m">p</span>, ask: <em>"Is the exponent of n in f(n) less than, equal to, or greater than p?"</em> For any polynomial f(n) = Θ(n<sup>c</sup>), compare c to p directly. You do not need ε — it only appears in the formal statement to establish the polynomial gap.
+  </div>
+
+  <h3>Knowledge Check — Try It Before Continuing</h3>
+  <div class="acc">
+    <button class="acc-btn" aria-expanded="false" aria-controls="ac-kc" id="btn-kc">
+      Two Quick Practice Problems (ungraded — expand to see) <em class="acc-icon" aria-hidden="true">▼</em>
+    </button>
+    <div class="acc-body" id="ac-kc" role="region" aria-labelledby="btn-kc">
+      <p><strong>Problem A.</strong> Given <span class="m">T(n) = 4T(n/2) + Θ(n)</span>, what case of the Master Theorem applies and what is the result?</p>
+      <div class="acc">
+        <button class="acc-btn" aria-expanded="false" aria-controls="ac-ka" id="btn-ka" style="font-size:.83rem">
+          Show Answer for Problem A <em class="acc-icon" aria-hidden="true">▼</em>
+        </button>
+        <div class="acc-body" id="ac-ka" role="region" aria-labelledby="btn-ka">
+          <p><strong>Step 1:</strong> p = log<sub>2</sub> 4 = 2, so n<sup>p</sup> = n<sup>2</sup>.</p>
+          <p><strong>Step 2:</strong> f(n) = Θ(n) = Θ(n<sup>1</sup>). Exponent c = 1 &lt; p = 2.</p>
+          <p><strong>Step 3:</strong> f(n) grows polynomially slower than n<sup>p</sup> (ε = 1). → <strong>Case 1.</strong></p>
+          <div class="cb cb-ok" style="margin-top:.5rem"><div class="cbt">Result</div><strong>T(n) = Θ(n²)</strong></div>
+        </div>
+      </div>
+      <p style="margin-top:.85rem"><strong>Problem B.</strong> Given <span class="m">T(n) = 3T(n/3) + Θ(n)</span>, what case applies?</p>
+      <div class="acc">
+        <button class="acc-btn" aria-expanded="false" aria-controls="ac-kb" id="btn-kb" style="font-size:.83rem">
+          Show Answer for Problem B <em class="acc-icon" aria-hidden="true">▼</em>
+        </button>
+        <div class="acc-body" id="ac-kb" role="region" aria-labelledby="btn-kb">
+          <p><strong>Step 1:</strong> p = log<sub>3</sub> 3 = 1, so n<sup>p</sup> = n.</p>
+          <p><strong>Step 2:</strong> f(n) = Θ(n) = Θ(n<sup>1</sup>). Exponent c = 1 = p = 1.</p>
+          <p><strong>Step 3:</strong> Same rate, k = 0. → <strong>Case 2.</strong></p>
+          <div class="cb cb-ok" style="margin-top:.5rem"><div class="cbt">Result</div><strong>T(n) = Θ(n log n)</strong> — same complexity class as merge sort, even though the branching factor is different.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ════════════════════════════════════════════════════════════
+     SECTION 3  CLASSIC APPLICATIONS
+     ════════════════════════════════════════════════════════════ -->
+<section id="sec3" class="card sec" aria-labelledby="h3">
+  <h2><span class="sec-num" aria-hidden="true">3</span><span id="h3">Classic Applications</span></h2>
+
+  <p>The three algorithms below collectively illustrate all three Master Theorem cases. The analysis structure is identical in every column — practice reading across each row before opening the step-by-step accordions.</p>
+
+  <div class="tbl-wrap">
+    <table class="tbl" aria-label="Master Theorem applied to merge sort, binary search, and naive matrix multiplication">
+      <thead>
+        <tr>
+          <th scope="col">Algorithm</th>
+          <th scope="col">Recurrence</th>
+          <th scope="col">a, b, f(n)</th>
+          <th scope="col">p = log<sub>b</sub> a</th>
+          <th scope="col">Compare f(n) vs n<sup>p</sup></th>
+          <th scope="col">Case</th>
+          <th scope="col">Result</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Merge Sort</strong></td>
+          <td><span class="m">T(n)=2T(n/2)+Θ(n)</span></td>
+          <td><span class="m">a=2, b=2</span><br><span class="m">f(n)=Θ(n)</span></td>
+          <td><span class="m">log<sub>2</sub> 2 = 1</span><br>n<sup>p</sup> = n</td>
+          <td>f(n)=Θ(n)=Θ(n<sup>1</sup>)<br><em>Same rate</em> as n<sup>p</sup></td>
+          <td><span class="cbdg cbdg-2">Case 2</span></td>
+          <td class="rtd">Θ(n log n)</td>
+        </tr>
+        <tr>
+          <td><strong>Binary Search</strong></td>
+          <td><span class="m">T(n)=T(n/2)+Θ(1)</span></td>
+          <td><span class="m">a=1, b=2</span><br><span class="m">f(n)=Θ(1)</span></td>
+          <td><span class="m">log<sub>2</sub> 1 = 0</span><br>n<sup>p</sup> = 1</td>
+          <td>f(n)=Θ(1)=Θ(n<sup>0</sup>)<br><em>Same rate</em> as n<sup>p</sup></td>
+          <td><span class="cbdg cbdg-2">Case 2</span></td>
+          <td class="rtd">Θ(log n)</td>
+        </tr>
+        <tr>
+          <td><strong>Naive D&amp;C Matrix Multiply</strong></td>
+          <td><span class="m">T(n)=8T(n/2)+Θ(n²)</span></td>
+          <td><span class="m">a=8, b=2</span><br><span class="m">f(n)=Θ(n²)</span></td>
+          <td><span class="m">log<sub>2</sub> 8 = 3</span><br>n<sup>p</sup> = n<sup>3</sup></td>
+          <td>f(n)=Θ(n²)=O(n<sup>3−1</sup>)<br><em>Polynomially slower</em> than n<sup>3</sup></td>
+          <td><span class="cbdg cbdg-1">Case 1</span></td>
+          <td class="rtd">Θ(n³)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Step-by-Step Walkthroughs</h3>
+
+  <!-- Merge Sort -->
+  <div class="acc">
+    <button class="acc-btn" aria-expanded="false" aria-controls="wk-ms" id="btn-wk-ms">
+      Full Walkthrough — Merge Sort → Θ(n log n) <em class="acc-icon" aria-hidden="true">▼</em>
+    </button>
+    <div class="acc-body" id="wk-ms" role="region" aria-labelledby="btn-wk-ms">
+      <div class="wex"><div class="wex-hdr"><span class="wex-icon" aria-hidden="true">1</span>Identify parameters</div>
+      <p><span class="m">T(n) = 2·T(n/2) + Θ(n)</span> &nbsp;→&nbsp; a = 2, b = 2, f(n) = Θ(n)</p></div>
+      <div class="wex"><div class="wex-hdr"><span class="wex-icon" aria-hidden="true">2</span>Compute p</div>
+      <p><span class="m">p = log<sub>2</sub> 2 = 1</span> &nbsp;→&nbsp; n<sup>p</sup> = n<sup>1</sup> = n</p></div>
+      <div class="wex"><div class="wex-hdr"><span class="wex-icon" aria-hidden="true">3</span>Compare f(n) to n<sup>p</sup></div>
+      <p>f(n) = Θ(n) and n<sup>p</sup> = n. The exponent of n in f(n) equals p = 1. <strong>Same rate → Case 2, k = 0.</strong></p></div>
+      <div class="wex"><div class="wex-hdr"><span class="wex-icon" aria-hidden="true">4</span>Apply Case 2 (k = 0)</div>
+      <p>T(n) = Θ(n<sup>p</sup> · log<sup>0+1</sup> n) = Θ(n<sup>1</sup> · log n)</p></div>
+      <div class="cb cb-ok" style="margin-top:.5rem"><div class="cbt">Result</div><strong>T(n) = Θ(n log n)</strong> — Merge sort is comparison-optimal; this matches the Ω(n log n) lower bound for comparison-based sorting.</div>
+    </div>
+  </div>
+
+  <!-- Binary Search -->
+  <div class="acc">
+    <button class="acc-btn" aria-expanded="false" aria-controls="wk-bs" id="btn-wk-bs">
+      Full Walkthrough — Binary Search → Θ(log n) <em class="acc-icon" aria-hidden="true">▼</em>
+    </button>
+    <div class="acc-body" id="wk-bs" role="region" aria-labelledby="btn-wk-bs">
+      <div class="wex"><div class="wex-hdr"><span class="wex-icon" aria-hidden="true">1</span>Identify parameters</div>
+      <p><span class="m">T(n) = T(n/2) + Θ(1)</span> &nbsp;→&nbsp; a = 1, b = 2, f(n) = Θ(1)</p></div>
+      <div class="wex"><div class="wex-hdr"><span class="wex-icon" aria-hidden="true">2</span>Compute p</div>
+      <p><span class="m">p = log<sub>2</sub> 1 = 0</span> &nbsp;→&nbsp; n<sup>p</sup> = n<sup>0</sup> = 1</p></div>
+      <div class="wex"><div class="wex-hdr"><span class="wex-icon" aria-hidden="true">3</span>Compare f(n) to n<sup>p</sup></div>
+      <p>f(n) = Θ(1) = Θ(n<sup>0</sup>) and n<sup>p</sup> = 1 = n<sup>0</sup>. Exponents match: p = 0. <strong>Same rate → Case 2, k = 0.</strong></p></div>
+      <div class="wex"><div class="wex-hdr"><span class="wex-icon" aria-hidden="true">4</span>Apply Case 2 (k = 0)</div>
+      <p>T(n) = Θ(n<sup>0</sup> · log<sup>1</sup> n) = Θ(1 · log n) = Θ(log n)</p></div>
+      <div class="cb cb-ok" style="margin-top:.5rem"><div class="cbt">Result</div><strong>T(n) = Θ(log n)</strong> — Each call eliminates half the candidates; only about log<sub>2</sub> n calls are made regardless of n.</div>
+    </div>
+  </div>
+
+  <!-- Matrix Multiply -->
+  <div class="acc">
+    <button class="acc-btn" aria-expanded="false" aria-controls="wk-mm" id="btn-wk-mm">
+      Full Walkthrough — Naive D&amp;C Matrix Multiply → Θ(n³) <em class="acc-icon" aria-hidden="true">▼</em>
+    </button>
+    <div class="acc-body" id="wk-mm" role="region" aria-labelledby="btn-wk-mm">
+      <div class="cb cb-info" style="margin-bottom:.75rem"><div class="cbt">Algorithm Overview</div>
+      To multiply two n×n matrices, partition each into four (n/2)×(n/2) blocks and perform <strong>8 sub-matrix multiplications</strong> plus an O(n²) matrix addition. This <em>schoolbook</em> D&amp;C approach confirms that dividing the problem without reducing the number of multiplications yields no improvement over iterative methods.</div>
+      <div class="wex"><div class="wex-hdr"><span class="wex-icon" aria-hidden="true">1</span>Identify parameters</div>
+      <p><span class="m">T(n) = 8·T(n/2) + Θ(n²)</span> &nbsp;→&nbsp; a = 8, b = 2, f(n) = Θ(n²)</p></div>
+      <div class="wex"><div class="wex-hdr"><span class="wex-icon" aria-hidden="true">2</span>Compute p</div>
+      <p><span class="m">p = log<sub>2</sub> 8 = 3</span> &nbsp;→&nbsp; n<sup>p</sup> = n<sup>3</sup></p></div>
+      <div class="wex"><div class="wex-hdr"><span class="wex-icon" aria-hidden="true">3</span>Compare f(n) to n<sup>p</sup></div>
+      <p>f(n) = Θ(n²) and n<sup>p</sup> = n<sup>3</sup>. Exponent 2 &lt; p = 3. f(n) = O(n<sup>3−1</sup>) with ε = 1. <strong>Polynomially slower → Case 1.</strong></p></div>
+      <div class="wex"><div class="wex-hdr"><span class="wex-icon" aria-hidden="true">4</span>Apply Case 1</div>
+      <p>T(n) = Θ(n<sup>p</sup>) = Θ(n<sup>3</sup>)</p></div>
+      <div class="cb cb-ok" style="margin-top:.5rem"><div class="cbt">Result</div><strong>T(n) = Θ(n³)</strong> — The 8 sub-multiplications dominate; the Θ(n²) addition cost is negligible. Strassen's algorithm (1969) reduces to 7 sub-multiplications, yielding T(n) = Θ(n<sup>log<sub>2</sub> 7</sup>) ≈ Θ(n<sup>2.807</sup>).</div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ════════════════════════════════════════════════════════════
+     SECTION 4  WHEN THE MASTER THEOREM DOES NOT APPLY
+     ════════════════════════════════════════════════════════════ -->
+<section id="sec4" class="card sec" aria-labelledby="h4">
+  <h2><span class="sec-num" aria-hidden="true">4</span><span id="h4">When the Master Theorem Does Not Apply</span></h2>
+
+  <p>The Master Theorem is powerful within its domain — but that domain has real boundaries. Before applying it, verify that none of the following disqualifying conditions holds.</p>
+
+  <h3>Disqualifying Conditions</h3>
+  <ol class="na-list" aria-label="Conditions that prevent Master Theorem application">
+    <li><strong>Subtraction form — not divide-and-conquer.</strong> Recurrences such as <span class="m">T(n) = T(n−1) + f(n)</span> use <span class="m">T(n−c)</span>, not <span class="m">T(n/b)</span>. The subproblem size decreases by a constant rather than a multiplicative factor. The Master Theorem is not applicable.</li>
+    <li><strong>a &lt; 1.</strong> You cannot create fewer than one subproblem. Values of a &lt; 1 have no valid algorithmic interpretation in a divide-and-conquer context.</li>
+    <li><strong>b ≤ 1.</strong> If b = 1, each subproblem has the same size as the original — the algorithm never terminates. If b &lt; 1, the subproblem grows, which is impossible in this model.</li>
+    <li><strong>f(n) is not asymptotically positive.</strong> The theorem requires f(n) &gt; 0 for all sufficiently large n. Oscillating or sign-changing functions violate this condition.</li>
+    <li><strong>f(n) falls in the gap between cases.</strong> There exist functions — such as <span class="m">n / log n</span> when p = 1 — that are neither polynomially smaller than, equal to, nor polynomially larger than n<sup>p</sup>. For such recurrences, none of the three cases applies.</li>
+  </ol>
+
+  <h3>Illustrative Examples</h3>
+
+  <div class="acc">
+    <button class="acc-btn" aria-expanded="false" aria-controls="dna1" id="btn-dna1">
+      Example 1 — T(n) = T(n−1) + 1 &nbsp; (Subtraction Form — Not Applicable) <em class="acc-icon" aria-hidden="true">▼</em>
+    </button>
+    <div class="acc-body" id="dna1" role="region" aria-labelledby="btn-dna1">
+      <p><strong>Recurrence:</strong> <span class="m">T(n) = T(n−1) + 1</span>, with <span class="m">T(1) = 1</span>.</p>
+      <p><strong>Why the Master Theorem does not apply:</strong> The recursive call is on <span class="m">T(n−1)</span>, not <span class="m">T(n/b)</span>. There is no multiplicative size reduction — the problem shrinks by a constant at each step. Condition 1 is violated.</p>
+      <p><strong>Correct method — direct unrolling:</strong></p>
+      <div class="mblk">
+        <span class="row">T(n) = T(n−1) + 1</span>
+        <span class="row">     = T(n−2) + 2</span>
+        <span class="row">     = T(n−3) + 3</span>
+        <span class="row">     &nbsp;⋮</span>
+        <span class="row">     = T(1) + (n−1) = 1 + (n−1) = n</span>
+      </div>
+      <div class="cb cb-ok"><div class="cbt">Actual Result</div><strong>T(n) = Θ(n)</strong> — This models a simple linear scan, such as counting elements one by one.</div>
+    </div>
+  </div>
+
+  <div class="acc">
+    <button class="acc-btn" aria-expanded="false" aria-controls="dna2" id="btn-dna2">
+      Example 2 — T(n) = 2T(n/2) + n / log n &nbsp; (The Gap Between Cases) <em class="acc-icon" aria-hidden="true">▼</em>
+    </button>
+    <div class="acc-body" id="dna2" role="region" aria-labelledby="btn-dna2">
+      <p><strong>Recurrence:</strong> <span class="m">T(n) = 2·T(n/2) + n / log n</span>.</p>
+      <p><strong>Parameters:</strong> a = 2, b = 2, f(n) = n / log n</p>
+      <p><strong>Critical exponent:</strong> p = log<sub>2</sub> 2 = 1, so n<sup>p</sup> = n.</p>
+      <hr class="div">
+      <p><strong>Check Case 1:</strong> Is f(n) = O(n<sup>1−ε</sup>) for some ε &gt; 0? &nbsp;<em>No</em> — n / log n grows faster than n<sup>1−ε</sup> for every fixed ε &gt; 0, because log n grows slower than n<sup>ε</sup>.</p>
+      <p><strong>Check Case 2:</strong> Is f(n) = Θ(n)? &nbsp;<em>No</em> — n / log n &lt; n asymptotically; f(n) ≠ Θ(n).</p>
+      <p><strong>Check Case 3:</strong> Is f(n) = Ω(n<sup>1+ε</sup>)? &nbsp;<em>No</em> — n / log n &lt; n &lt; n<sup>1+ε</sup>.</p>
+      <div class="cb cb-err"><div class="cbt">Verdict — Not Applicable</div>
+      f(n) = n / log n falls in the gap between Case 1 and Case 2. None of the three cases applies. The Akra–Bazzi method or direct recursion-tree analysis is required. The correct result (for reference only) is <strong>T(n) = Θ(n log log n)</strong>.</div>
+    </div>
+  </div>
+
+  <div class="cb cb-tip">
+    <div class="cbt">💡 Rule of Thumb</div>
+    If f(n) contains any function other than a pure polynomial or a polynomial multiplied by an integer power of log — for example, f(n) = n / log n, f(n) = n log log n, or f(n) = 2<sup>n</sup> — verify all three cases carefully before concluding the Master Theorem applies.
+  </div>
+
+</section>
+
+<!-- ════════════════════════════════════════════════════════════
+     SECTION 5  CONNECTING RESULTS TO ALGORITHM EFFICIENCY
+     ════════════════════════════════════════════════════════════ -->
+<section id="sec5" class="card sec" aria-labelledby="h5">
+  <h2><span class="sec-num" aria-hidden="true">5</span><span id="h5">Connecting Results to Algorithm Efficiency</span></h2>
+
+  <p>Solving a recurrence tells you which <strong>complexity class</strong> an algorithm belongs to. That classification directly governs whether an algorithm is practical for large inputs. The table below maps common divide-and-conquer results to their efficiency context.</p>
+
+  <div class="tbl-wrap">
+    <table class="tbl" aria-label="Complexity classes mapped to their divide-and-conquer sources">
+      <thead>
+        <tr>
+          <th scope="col">Complexity Class</th>
+          <th scope="col">Typical Recurrence</th>
+          <th scope="col">Representative Algorithm</th>
+          <th scope="col">MT Case</th>
+          <th scope="col">Operations at n = 10⁶</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="rtd">Θ(log n)</td>
+          <td><span class="m">T(n) = T(n/2) + Θ(1)</span></td>
+          <td>Binary search</td>
+          <td><span class="cbdg cbdg-2">Case 2</span></td>
+          <td>≈ 20 operations</td>
+        </tr>
+        <tr>
+          <td class="rtd">Θ(n)</td>
+          <td><span class="m">T(n) = 2T(n/2) + Θ(1)</span></td>
+          <td>Min/max by repeated halving</td>
+          <td><span class="cbdg cbdg-1">Case 1</span></td>
+          <td>1,000,000 operations</td>
+        </tr>
+        <tr>
+          <td class="rtd">Θ(n log n)</td>
+          <td><span class="m">T(n) = 2T(n/2) + Θ(n)</span></td>
+          <td>Merge sort, heap sort</td>
+          <td><span class="cbdg cbdg-2">Case 2</span></td>
+          <td>≈ 20,000,000 operations</td>
+        </tr>
+        <tr>
+          <td class="rtd">Θ(n<sup>log<sub>2</sub> 7</sup>) ≈ Θ(n<sup>2.807</sup>)</td>
+          <td><span class="m">T(n) = 7T(n/2) + Θ(n²)</span></td>
+          <td>Strassen matrix multiply</td>
+          <td><span class="cbdg cbdg-1">Case 1</span></td>
+          <td>≈ 10<sup>16.8</sup> operations</td>
+        </tr>
+        <tr>
+          <td class="rtd">Θ(n²)</td>
+          <td><span class="m">T(n) = 4T(n/2) + Θ(n)</span></td>
+          <td>Certain grid D&amp;C strategies</td>
+          <td><span class="cbdg cbdg-1">Case 1</span></td>
+          <td>10<sup>12</sup> operations</td>
+        </tr>
+        <tr>
+          <td class="rtd">Θ(n³)</td>
+          <td><span class="m">T(n) = 8T(n/2) + Θ(n²)</span></td>
+          <td>Naive D&amp;C matrix multiply</td>
+          <td><span class="cbdg cbdg-1">Case 1</span></td>
+          <td>10<sup>18</sup> operations</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Practical Algorithm Selection</h3>
+
+  <div class="two-col">
+    <div class="cb cb-ok" style="margin:0">
+      <div class="cbt">✔ When D&amp;C Helps</div>
+      <ul style="padding-left:1.1rem;font-size:.89rem;line-height:1.7">
+        <li>The problem naturally splits into independent, equal-sized subproblems.</li>
+        <li>The combining step is cheap relative to the subproblem work (Case 1 or Case 2 outcome).</li>
+        <li>A logarithmic number of recursion levels is the key insight — eliminating half the work per level compounds into a huge advantage.</li>
+      </ul>
+    </div>
+    <div class="cb cb-err" style="margin:0">
+      <div class="cbt">⚠ When to Reconsider</div>
+      <ul style="padding-left:1.1rem;font-size:.89rem;line-height:1.7">
+        <li>The combining step is as expensive as the original problem — you may recover the same complexity (as in naive matrix multiply).</li>
+        <li>Subproblems share overlapping computations — dynamic programming is likely superior.</li>
+        <li>The recurrence form is non-standard — asymptotic behavior may be worse than anticipated.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="cb cb-info" style="margin-top:1rem">
+    <div class="cbt">📊 Growth Rate Ordering</div>
+    For algorithm selection, keep this ordering in mind — every step represents an exponential practical difference at large n:
+    <div class="mblk" style="margin-top:.5rem">
+      <span class="row">Θ(1) &lt; Θ(log n) &lt; Θ(n) &lt; Θ(n log n) &lt; Θ(n²) &lt; Θ(n³) &lt; Θ(2<sup>n</sup>)</span>
+    </div>
+    Divide-and-conquer algorithms typically land in the Θ(log n) to Θ(n log n) range — far superior to the Θ(n²) or Θ(n³) of naive iterative approaches on the same problems.
+  </div>
+
+</section>
+
+<!-- ════════════════════════════════════════════════════════════
+     SECTION 6  PE-08 ASSIGNMENT GUIDE
+     ════════════════════════════════════════════════════════════ -->
+<section id="sec6" class="card sec" aria-labelledby="h6">
+  <h2><span class="sec-num" aria-hidden="true">6</span><span id="h6">PE-08 Assignment Guide</span></h2>
+  <p>
+    <span class="tag tag-p">Preparation Resource</span>
+    &nbsp;<span class="tag tag-a" style="margin-left:.2rem">Supports Graded Assignment</span>
+  </p>
+  <p style="margin-top:.65rem">This section is a <strong>study and preparation resource</strong> — it is not itself a graded item. Use it to map the Week 11 modules to each PE-08 requirement before you begin coding.</p>
+
+  <div class="cb cb-asgn">
+    <div class="cbt">📋 Assignment: PE-08 — Recurrence Relation Solver</div>
+    <strong>Points:</strong> 30 &nbsp;|&nbsp;
+    <strong>Due:</strong> End of Week 11, 11:59 PM &nbsp;|&nbsp;
+    <strong>Submit:</strong> Canvas — <code>LastName_FirstName_PE08_Week11.zip</code><br>
+    <strong>Language:</strong> Java or C++ (your choice) &nbsp;|&nbsp;
+    <strong>CSLO:</strong> CSLO 4
+  </div>
+
+  <h3>Module Preparation Map</h3>
+  <p>Each PE-08 requirement was prepared by a specific module. Use this map to know exactly where to review before coding a given part:</p>
+
+  <div class="prep-grid">
+    <div class="pc">
+      <div class="plbl">Module 11.1</div>
+      <div class="ptitle">Recursive Definitions</div>
+      <ul>
+        <li>Design the recurrence input format</li>
+        <li>Distinguish base case from recursive rule</li>
+        <li>Input validation logic</li>
+      </ul>
+    </div>
+    <div class="pc">
+      <div class="plbl">Module 11.2</div>
+      <div class="ptitle">Recursive Algorithms</div>
+      <ul>
+        <li>Implement the recursive term generator</li>
+        <li>Convert to iterative generation</li>
+        <li>Trace execution to verify output</li>
+      </ul>
+    </div>
+    <div class="pc">
+      <div class="plbl">Module 11.4</div>
+      <div class="ptitle">Recurrence Relations</div>
+      <ul>
+        <li>Generate first n terms</li>
+        <li>Solve via characteristic equation</li>
+        <li>Handle degree-1 and degree-2 cases</li>
+      </ul>
+    </div>
+    <div class="pc" style="border-color:#e07b22">
+      <div class="plbl" style="color:#e07b22">Module 11.5 — You Are Here</div>
+      <div class="ptitle">Master Theorem</div>
+      <ul>
+        <li>Apply the Master Theorem to D&amp;C input</li>
+        <li>Identify case and output result symbolically</li>
+        <li>Validate merge sort and binary search examples</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>PE-08 Requirements Map</h3>
+  <div class="tbl-wrap">
+    <table class="tbl" aria-label="PE-08 parts and the modules that prepare them">
+      <thead>
+        <tr><th scope="col">Part</th><th scope="col">Task Description</th><th scope="col">Prepared By</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Part 1</strong></td><td>Accept a recurrence relation as user input (base case value + recursive rule coefficients)</td><td>Module 11.1</td></tr>
+        <tr><td><strong>Part 2</strong></td><td>Generate and display the first n terms of the input recurrence</td><td>Modules 11.2, 11.4</td></tr>
+        <tr><td><strong>Part 3</strong></td><td>Solve a linear homogeneous recurrence using the characteristic equation method; display the closed-form solution</td><td>Module 11.4</td></tr>
+        <tr><td><strong>Part 4</strong></td><td>Accept a divide-and-conquer recurrence (a, b, and exponent c for f(n) = Θ(n<sup>c</sup>)) and apply the Master Theorem to determine and print the complexity class</td><td>Module 11.5</td></tr>
+        <tr><td><strong>Part 5</strong></td><td>Demonstrate Part 4 on merge sort (a=2, b=2, c=1) and binary search (a=1, b=2, c=0) with expected outputs verified in a test case file</td><td>Module 11.5</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Implementation Tips</h3>
+  <div class="acc">
+    <button class="acc-btn" aria-expanded="false" aria-controls="pe-tips" id="btn-pe-tips">
+      Expand: Implementation Tips for Parts 4 and 5 <em class="acc-icon" aria-hidden="true">▼</em>
+    </button>
+    <div class="acc-body" id="pe-tips" role="region" aria-labelledby="btn-pe-tips">
+      <ol class="steps">
+        <li><strong>Represent f(n) as an exponent.</strong> The simplest input model for Part 4 asks the user to enter the exponent c where f(n) = Θ(n<sup>c</sup>). Accept c as a <code>double</code>. This avoids complex symbolic expression parsing while covering all standard examples.</li>
+        <li><strong>Compute p with the change-of-base formula.</strong> Use <code>Math.log(a) / Math.log(b)</code> (Java) or <code>log(a) / log(b)</code> (C++) to compute p = log<sub>b</sub> a in floating-point. Never assume base 2 unless b = 2.</li>
+        <li><strong>Use a tolerance for case comparison.</strong> Define a small epsilon (e.g., 1e-9) and test: if <code>c &lt; p - eps</code> → Case 1; if <code>Math.abs(c - p) &lt; eps</code> → Case 2 (k=0); if <code>c &gt; p + eps</code> → Case 3. Never use <code>==</code> for floating-point equality.</li>
+        <li><strong>Print results symbolically, not numerically.</strong> Output strings such as <code>"Theta(n^3)"</code>, <code>"Theta(n log n)"</code>, or <code>"Theta(log n)"</code>. A numeric approximation is insufficient — the question asks for the complexity class.</li>
+        <li><strong>Handle the log n special case.</strong> When Case 2 applies with p = 0 (binary search), the result is Θ(log n), not Θ(n<sup>0</sup> log n). Add a conditional to print "Theta(log n)" when p ≈ 0.</li>
+        <li><strong>Validate b &gt; 1.</strong> If the user enters b ≤ 1, print an error: "Invalid: b must be greater than 1 for divide-and-conquer recurrences." Do not attempt to apply the theorem.</li>
+      </ol>
+    </div>
+  </div>
+
+  <h3>Common Mistakes to Avoid</h3>
+  <div class="cb cb-err">
+    <div class="cbt">⚠ Most Common PE-08 Errors</div>
+    <ul style="padding-left:1.1rem;font-size:.89rem;line-height:1.8">
+      <li><strong>Floating-point equality for case selection</strong> — Always use a tolerance, never <code>==</code>.</li>
+      <li><strong>Wrong log base</strong> — log<sub>b</sub> a ≠ log<sub>2</sub> a unless b = 2. Use the change-of-base formula.</li>
+      <li><strong>Not mentioning the regularity condition for Case 3</strong> — Even if you do not verify it, include a printed note that it should be checked.</li>
+      <li><strong>Numeric output for complexity class</strong> — Print symbolic strings like "Theta(n log n)", not a decimal approximation of p.</li>
+      <li><strong>Off-by-one in term generation</strong> — If T(1) is your base case, index your output array starting at 1, or document clearly that you start at index 0.</li>
+      <li><strong>Fewer than three test cases submitted</strong> — Include at least merge sort, binary search, and one additional example. All three cover different cases.</li>
+    </ul>
+  </div>
+
+  <h3>Grading Criteria</h3>
+  <div class="grade-row" role="list" aria-label="PE-08 grading weights">
+    <div class="gchip" role="listitem"><span class="gpct">50%</span><span class="glbl">Correctness</span></div>
+    <div class="gchip" role="listitem"><span class="gpct">25%</span><span class="glbl">Code Quality &amp; Style</span></div>
+    <div class="gchip" role="listitem"><span class="gpct">15%</span><span class="glbl">Documentation</span></div>
+    <div class="gchip" role="listitem"><span class="gpct">10%</span><span class="glbl">Test Cases</span></div>
+  </div>
+
+  <h3>Submission Checklist</h3>
+  <ul class="chk" aria-label="PE-08 submission checklist">
+    <li>All source files compile and run without errors or warnings</li>
+    <li>README describes program usage, input format, and expected output format</li>
+    <li>Part 4 Master Theorem case-selection logic is clearly commented in code</li>
+    <li>Test case file includes merge sort, binary search, and at least one additional example</li>
+    <li>Merge sort input (a=2, b=2, c=1) produces output: Theta(n log n)</li>
+    <li>Binary search input (a=1, b=2, c=0) produces output: Theta(log n)</li>
+    <li>Edge cases tested: a=1, b=1 (invalid), Case 1, Case 3</li>
+    <li>Submission zip named <code>LastName_FirstName_PE08_Week11.zip</code></li>
+  </ul>
+
+</section>
+
+<!-- ════════════════════════════════════════════════════════════
+     SECTION 7  PS-07 ASSIGNMENT GUIDE
+     ════════════════════════════════════════════════════════════ -->
+<section id="sec7" class="card sec" aria-labelledby="h7">
+  <h2><span class="sec-num" aria-hidden="true">7</span><span id="h7">PS-07 Assignment Guide</span></h2>
+  <p>
+    <span class="tag tag-p">Preparation Resource</span>
+    &nbsp;<span class="tag tag-a" style="margin-left:.2rem">Supports Graded Assignment</span>
+  </p>
+  <p style="margin-top:.65rem">This section is a <strong>study and preparation resource</strong> — it is not itself a graded item. Use the module preparation map and proof-writing checklist before you begin writing any PS-07 problem.</p>
+
+  <div class="cb cb-asgn">
+    <div class="cbt">📋 Assignment: PS-07 — Recursion and Mathematical Induction</div>
+    <strong>Points:</strong> 20 &nbsp;|&nbsp;
+    <strong>Due:</strong> End of Week 11, 11:59 PM &nbsp;|&nbsp;
+    <strong>Submit:</strong> Canvas — PDF (typed or clearly handwritten and scanned)<br>
+    <strong>CSLO:</strong> CSLO 1 (proof methods) and CSLO 4 (induction and recursion)
+  </div>
+
+  <h3>Module Preparation Map</h3>
+  <div class="prep-grid">
+    <div class="pc">
+      <div class="plbl">Module 11.1</div>
+      <div class="ptitle">Recursive Definitions</div>
+      <ul>
+        <li>Write formal recursive definitions</li>
+        <li>Identify base cases precisely</li>
+        <li>Set up structural induction framework</li>
+      </ul>
+    </div>
+    <div class="pc">
+      <div class="plbl">Module 11.2</div>
+      <div class="ptitle">Recursive Algorithms</div>
+      <ul>
+        <li>Analyze algorithm behavior by tracing</li>
+        <li>State pre/post conditions clearly</li>
+        <li>Build intuition for inductive arguments</li>
+      </ul>
+    </div>
+    <div class="pc">
+      <div class="plbl">Module 11.3</div>
+      <div class="ptitle">Recursion ↔ Induction</div>
+      <ul>
+        <li>Write full correctness proofs (primary focus)</li>
+        <li>Write termination proofs with decreasing measure</li>
+        <li>Apply strong vs. weak induction as needed</li>
+      </ul>
+    </div>
+    <div class="pc">
+      <div class="plbl">Module 11.4</div>
+      <div class="ptitle">Recurrence Relations</div>
+      <ul>
+        <li>Set up T(n) recurrences from descriptions</li>
+        <li>Solve via characteristic equation</li>
+        <li>Verify solutions by substitution</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Proof-Writing Checklist</h3>
+  <p>Verify every item below for each proof before you submit PS-07. Missing any item is the most common source of point deductions.</p>
+
+  <div class="acc">
+    <button class="acc-btn" aria-expanded="false" aria-controls="ps-chk" id="btn-ps-chk">
+      Expand: Complete Proof-Writing Checklist <em class="acc-icon" aria-hidden="true">▼</em>
+    </button>
+    <div class="acc-body" id="ps-chk" role="region" aria-labelledby="btn-ps-chk">
+
+      <p><strong>For ALL proof types:</strong></p>
+      <ul class="chk">
+        <li>The claim to be proved is stated explicitly at the top of your solution.</li>
+        <li>The proof technique is named (direct proof, contradiction, weak induction, strong induction).</li>
+        <li>Every logical step follows clearly from the previous one — no unexplained jumps.</li>
+        <li>Definitions are cited when first used: "by the recursive definition of factorial…", "by the induction hypothesis…"</li>
+        <li>The final line explicitly states that the proof is complete and what was shown.</li>
+      </ul>
+
+      <p style="margin-top:.85rem"><strong>For Induction Proofs (primary PS-07 type):</strong></p>
+      <ul class="chk">
+        <li><strong>Base case:</strong> Verified explicitly for the smallest valid input (usually n = 0 or n = 1). Never omit it even if "obvious."</li>
+        <li><strong>Induction hypothesis:</strong> Stated as a formal assumption: "Assume the claim holds for n = k" (weak) or "Assume the claim holds for all values up to k" (strong).</li>
+        <li><strong>Inductive step:</strong> The induction hypothesis is invoked explicitly — mark exactly where you use it in your proof.</li>
+        <li><strong>Strong vs. weak induction:</strong> If the recursive case depends on values other than just k, switch to strong induction and restate the hypothesis accordingly.</li>
+        <li>The conclusion of the inductive step matches the statement of the claim at n = k+1 exactly.</li>
+      </ul>
+
+      <p style="margin-top:.85rem"><strong>For Correctness Proofs (Module 11.3 style):</strong></p>
+      <ul class="chk">
+        <li>Pre-condition stated: what is guaranteed about the input before the function call.</li>
+        <li>Post-condition stated: what the function is required to return or produce.</li>
+        <li>Correctness argument: given that recursive sub-calls return correct results (induction hypothesis), show the full function returns the correct result.</li>
+        <li>Termination proof: name a strictly decreasing non-negative integer measure (e.g., the value of n) and show each recursive call strictly reduces it.</li>
+      </ul>
+
+      <p style="margin-top:.85rem"><strong>For Recurrence Setup and Solving Problems (Module 11.4 style):</strong></p>
+      <ul class="chk">
+        <li>Recurrence written with all terms shown (not just the final form).</li>
+        <li>Characteristic equation derived and written out explicitly.</li>
+        <li>All factoring steps shown — do not skip from equation to roots.</li>
+        <li>General solution written with undetermined constants c₁, c₂, …</li>
+        <li>Initial conditions applied and constants solved — all algebra shown.</li>
+        <li>Final solution verified by substituting back into the original recurrence for at least the base case and one recursive step.</li>
+      </ul>
+
+    </div>
+  </div>
+
+  <h3>Grading Criteria</h3>
+  <div class="grade-row" role="list" aria-label="PS-07 grading weights">
+    <div class="gchip" role="listitem"><span class="gpct">70%</span><span class="glbl">Problem Accuracy</span></div>
+    <div class="gchip" role="listitem"><span class="gpct">20%</span><span class="glbl">Proof Rigor &amp; Completeness</span></div>
+    <div class="gchip" role="listitem"><span class="gpct">10%</span><span class="glbl">Notation &amp; Clarity</span></div>
+  </div>
+
+  <div class="cb cb-err">
+    <div class="cbt">⚠ Most Common PS-07 Deductions</div>
+    <ul style="padding-left:1.1rem;font-size:.89rem;line-height:1.8">
+      <li><strong>Missing base case</strong> — A proof without a verified base case is structurally incomplete, even when the inductive step is correct.</li>
+      <li><strong>Circular reasoning</strong> — Treating the claim you are trying to prove as an established step within the same proof.</li>
+      <li><strong>"It is clear that…" without justification</strong> — Every algebraic manipulation must be shown. What is clear to the author is not always clear to the reader.</li>
+      <li><strong>Using weak induction when strong is needed</strong> — If your recursive function calls itself on two or more smaller values (e.g., Fibonacci), weak induction only covers one of those calls. State the strong induction hypothesis explicitly.</li>
+    </ul>
+  </div>
+
+</section>
+
+<!-- ════════════════════════════════════════════════════════════
+     SECTION 8  QUIZ 4 PREVIEW
+     ════════════════════════════════════════════════════════════ -->
+<section id="sec8" class="card sec" aria-labelledby="h8">
+  <h2><span class="sec-num" aria-hidden="true">8</span><span id="h8">Quiz 4 Preview</span></h2>
+  <p><span class="tag tag-u">Preparation Only — No Actual Quiz Questions</span></p>
+  <p style="margin-top:.65rem">Quiz 4 covers Weeks 11–13 and is administered at the end of Week 13. The Week 11 material contributes approximately one-third of the total point value. This section previews the <strong>Week 11 portion only.</strong></p>
+
+  <div class="cb cb-info">
+    <div class="cbt">📅 Quiz 4 At a Glance</div>
+    <strong>Administered:</strong> End of Week 13 &nbsp;|&nbsp;
+    <strong>Coverage:</strong> Weeks 11, 12, and 13 &nbsp;|&nbsp;
+    <strong>Week 11 Contribution:</strong> Approximately ⅓ of total (&asymp; 20 points)<br>
+    <strong>Format:</strong> Multiple choice, short answer, and problem-solving questions
+  </div>
+
+  <h3>Week 11 Topic List and Expected Question Types</h3>
+  <div class="tbl-wrap">
+    <table class="tbl" aria-label="Quiz 4 Week 11 topics with expected question types">
+      <thead>
+        <tr>
+          <th scope="col">Topic</th>
+          <th scope="col">Source Module(s)</th>
+          <th scope="col">Expected Question Type</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Identify the base case and recursive case in a given recursive definition</td>
+          <td>11.1</td>
+          <td><span class="qt-mc">Multiple Choice</span></td>
+        </tr>
+        <tr>
+          <td>Trace a recursive algorithm by hand — show the call stack, intermediate values, and final returned result</td>
+          <td>11.2</td>
+          <td><span class="qt-ps">Problem-Solving</span></td>
+        </tr>
+        <tr>
+          <td>Explain the structural correspondence between a recursive algorithm and a mathematical induction proof</td>
+          <td>11.3</td>
+          <td><span class="qt-mc">Multiple Choice</span></td>
+        </tr>
+        <tr>
+          <td>Write an induction-based correctness or termination proof for a given recursive function</td>
+          <td>11.3</td>
+          <td><span class="qt-sa">Short Answer / Problem-Solving</span></td>
+        </tr>
+        <tr>
+          <td>Write the recurrence relation T(n) for an algorithm described in pseudocode or plain English</td>
+          <td>11.4, 11.5</td>
+          <td><span class="qt-ps">Problem-Solving</span></td>
+        </tr>
+        <tr>
+          <td>Solve a degree-2 linear homogeneous recurrence using the characteristic equation method</td>
+          <td>11.4</td>
+          <td><span class="qt-ps">Problem-Solving</span></td>
+        </tr>
+        <tr>
+          <td>Apply the Master Theorem: compute p, identify the case, and state the asymptotic result</td>
+          <td>11.5</td>
+          <td><span class="qt-mp">Multiple Choice + Problem-Solving</span></td>
+        </tr>
+        <tr>
+          <td>Recognize when the Master Theorem does not apply and explain the disqualifying condition</td>
+          <td>11.5</td>
+          <td><span class="qt-mc">Multiple Choice</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Best Preparation Strategy</h3>
+  <div class="cb cb-ok">
+    <div class="cbt">✔ Recommended Approach — In Priority Order</div>
+    <ol style="padding-left:1.1rem;font-size:.89rem;line-height:1.9">
+      <li><strong>Complete PE-08 and PS-07 thoroughly before Quiz 4.</strong> Implementing the Master Theorem in code and writing induction proofs are the most effective reviews possible. If you can do the graded work well, you can do the quiz.</li>
+      <li><strong>Rework all ungraded knowledge checks from Modules 11.1–11.5.</strong> These are designed to match quiz question difficulty and format.</li>
+      <li><strong>Practice the Master Theorem on new recurrences you invent yourself.</strong> Choose random values of a, b, and c; apply the theorem; verify. Three practice problems per case builds the pattern-matching skill the quiz tests.</li>
+      <li><strong>Review your Week 6 induction notes</strong> before the Week 13 quiz date. The Module 11.3 correctness proof structure builds directly on Week 6 induction mechanics.</li>
+      <li><strong>Begin your review this week.</strong> Quiz 4 is not until Week 13, but the Week 11 content is freshest right now. Brief daily review (15–20 minutes) through Week 13 is more effective than a single cramming session.</li>
+    </ol>
+  </div>
+
+  <div class="cb cb-warn">
+    <div class="cbt">⚠ No Actual Quiz Questions in This Preview</div>
+    This section describes question <em>types</em> and <em>topics</em> only. No Quiz 4 questions are disclosed here. Focus your preparation on understanding the underlying concepts — not on memorizing answers from this page.
+  </div>
+
+</section>
+
+<!-- ════════════════════════════════════════════════════════════
+     SECTION 9  WEEK 11 SELF-ASSESSMENT CHECKLIST
+     ════════════════════════════════════════════════════════════ -->
+<section id="sec9" class="card sec" aria-labelledby="h9">
+  <h2><span class="sec-num" aria-hidden="true">9</span><span id="h9">Week 11 Self-Assessment Checklist</span></h2>
+  <p><span class="tag tag-u">Ungraded — For Your Own Use</span></p>
+  <p style="margin-top:.65rem">Rate your confidence on each of the ten items below. <strong>Any item rated 1 or 2 should be revisited before you submit PE-08, submit PS-07, or sit for Quiz 4.</strong> Be honest — this assessment is only visible to you.</p>
+
+  <div class="cb cb-info" style="margin-bottom:1.05rem">
+    <strong>Rating Scale: &nbsp;</strong>
+    <span style="background:#fdedec;border:1px solid #be2f2a;padding:.1rem .48rem;border-radius:4px;font-size:.83rem;font-weight:700;color:#7b241c">1 — Not Yet</span>
+    &ensp;
+    <span style="background:#fef9e7;border:1px solid #d4ac0d;padding:.1rem .48rem;border-radius:4px;font-size:.83rem;font-weight:700;color:#7d6608">2 — Mostly</span>
+    &ensp;
+    <span style="background:#e9f7ef;border:1px solid #1d8348;padding:.1rem .48rem;border-radius:4px;font-size:.83rem;font-weight:700;color:#145a32">3 — Confident</span>
+  </div>
+
+  <div id="sa-list">
+
+    <div class="sa-item">
+      <div class="sa-obj">Objectives 1 – 2 &nbsp;·&nbsp; Module 11.1</div>
+      <div class="sa-txt">I can write a <strong>recursive definition</strong> for a sequence or set structure, clearly identifying the base case and the recursive case with correct notation.</div>
+      <div class="sa-btns" role="group" aria-label="Confidence rating for item 1">
+        <button class="sa-b" data-val="1" aria-pressed="false">1 — Not Yet</button>
+        <button class="sa-b" data-val="2" aria-pressed="false">2 — Mostly</button>
+        <button class="sa-b" data-val="3" aria-pressed="false">3 — Confident</button>
+      </div>
+    </div>
+
+    <div class="sa-item">
+      <div class="sa-obj">Objective 3 &nbsp;·&nbsp; Module 11.2</div>
+      <div class="sa-txt">I can <strong>trace a recursive algorithm by hand</strong> — including factorial, Fibonacci, and binary search — showing each call frame, intermediate values, and the final returned result.</div>
+      <div class="sa-btns" role="group" aria-label="Confidence rating for item 2">
+        <button class="sa-b" data-val="1" aria-pressed="false">1 — Not Yet</button>
+        <button class="sa-b" data-val="2" aria-pressed="false">2 — Mostly</button>
+        <button class="sa-b" data-val="3" aria-pressed="false">3 — Confident</button>
+      </div>
+    </div>
+
+    <div class="sa-item">
+      <div class="sa-obj">Objective 4 &nbsp;·&nbsp; Module 11.2</div>
+      <div class="sa-txt">I can <strong>implement a recursive algorithm</strong> in Java or C++ and convert it to an equivalent iterative version, understanding the stack-depth and performance tradeoffs between the two forms.</div>
+      <div class="sa-btns" role="group" aria-label="Confidence rating for item 3">
+        <button class="sa-b" data-val="1" aria-pressed="false">1 — Not Yet</button>
+        <button class="sa-b" data-val="2" aria-pressed="false">2 — Mostly</button>
+        <button class="sa-b" data-val="3" aria-pressed="false">3 — Confident</button>
+      </div>
+    </div>
+
+    <div class="sa-item">
+      <div class="sa-obj">Objective 5 &nbsp;·&nbsp; Module 11.3</div>
+      <div class="sa-txt">I can explain why <strong>recursive algorithms and mathematical induction share the same logical structure</strong>: base case ↔ inductive base; recursive call ↔ inductive step; no mutual circularity because the sub-input is strictly smaller.</div>
+      <div class="sa-btns" role="group" aria-label="Confidence rating for item 4">
+        <button class="sa-b" data-val="1" aria-pressed="false">1 — Not Yet</button>
+        <button class="sa-b" data-val="2" aria-pressed="false">2 — Mostly</button>
+        <button class="sa-b" data-val="3" aria-pressed="false">3 — Confident</button>
+      </div>
+    </div>
+
+    <div class="sa-item">
+      <div class="sa-obj">Objective 5 &nbsp;·&nbsp; Module 11.3</div>
+      <div class="sa-txt">I can write a complete <strong>induction-based correctness proof</strong> for a recursive function, including a stated pre-condition, post-condition, explicit induction hypothesis, verified base case, and a complete inductive step.</div>
+      <div class="sa-btns" role="group" aria-label="Confidence rating for item 5">
+        <button class="sa-b" data-val="1" aria-pressed="false">1 — Not Yet</button>
+        <button class="sa-b" data-val="2" aria-pressed="false">2 — Mostly</button>
+        <button class="sa-b" data-val="3" aria-pressed="false">3 — Confident</button>
+      </div>
+    </div>
+
+    <div class="sa-item">
+      <div class="sa-obj">Objective 6 &nbsp;·&nbsp; Module 11.3</div>
+      <div class="sa-txt">I can write a complete <strong>termination proof</strong> for a recursive algorithm by naming a strictly decreasing non-negative integer measure and showing that each recursive call strictly reduces that measure.</div>
+      <div class="sa-btns" role="group" aria-label="Confidence rating for item 6">
+        <button class="sa-b" data-val="1" aria-pressed="false">1 — Not Yet</button>
+        <button class="sa-b" data-val="2" aria-pressed="false">2 — Mostly</button>
+        <button class="sa-b" data-val="3" aria-pressed="false">3 — Confident</button>
+      </div>
+    </div>
+
+    <div class="sa-item">
+      <div class="sa-obj">Objective 7 &nbsp;·&nbsp; Module 11.4</div>
+      <div class="sa-txt">I can <strong>model the running time of an algorithm as a recurrence relation</strong> — correctly counting the number and size of subproblems and identifying the cost of all work performed outside the recursive calls.</div>
+      <div class="sa-btns" role="group" aria-label="Confidence rating for item 7">
+        <button class="sa-b" data-val="1" aria-pressed="false">1 — Not Yet</button>
+        <button class="sa-b" data-val="2" aria-pressed="false">2 — Mostly</button>
+        <button class="sa-b" data-val="3" aria-pressed="false">3 — Confident</button>
+      </div>
+    </div>
+
+    <div class="sa-item">
+      <div class="sa-obj">Objective 8 &nbsp;·&nbsp; Module 11.4</div>
+      <div class="sa-txt">I can <strong>solve a degree-2 linear homogeneous recurrence</strong> using the characteristic equation method — finding roots, writing the general solution, applying initial conditions, and verifying the closed-form result by substitution.</div>
+      <div class="sa-btns" role="group" aria-label="Confidence rating for item 8">
+        <button class="sa-b" data-val="1" aria-pressed="false">1 — Not Yet</button>
+        <button class="sa-b" data-val="2" aria-pressed="false">2 — Mostly</button>
+        <button class="sa-b" data-val="3" aria-pressed="false">3 — Confident</button>
+      </div>
+    </div>
+
+    <div class="sa-item">
+      <div class="sa-obj">Objective 9 &nbsp;·&nbsp; Module 11.5</div>
+      <div class="sa-txt">I can <strong>apply the Master Theorem</strong> to a divide-and-conquer recurrence: correctly compute p = log<sub>b</sub> a, compare f(n) to n<sup>p</sup>, identify the case, and state the closed-form asymptotic complexity.</div>
+      <div class="sa-btns" role="group" aria-label="Confidence rating for item 9">
+        <button class="sa-b" data-val="1" aria-pressed="false">1 — Not Yet</button>
+        <button class="sa-b" data-val="2" aria-pressed="false">2 — Mostly</button>
+        <button class="sa-b" data-val="3" aria-pressed="false">3 — Confident</button>
+      </div>
+    </div>
+
+    <div class="sa-item">
+      <div class="sa-obj">Objective 10 &nbsp;·&nbsp; Module 11.5</div>
+      <div class="sa-txt">I can <strong>recognize common recurrence patterns</strong> — merge sort → Θ(n log n), binary search → Θ(log n), naive matrix multiply → Θ(n³) — and explain why the Master Theorem does not apply to subtraction-form recurrences such as T(n) = T(n−1) + 1.</div>
+      <div class="sa-btns" role="group" aria-label="Confidence rating for item 10">
+        <button class="sa-b" data-val="1" aria-pressed="false">1 — Not Yet</button>
+        <button class="sa-b" data-val="2" aria-pressed="false">2 — Mostly</button>
+        <button class="sa-b" data-val="3" aria-pressed="false">3 — Confident</button>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="sa-msg" role="status" aria-live="polite"></div>
+
+</section>
+
+</main>
+
+<!-- ════════════════════════════════════════════════════════════
+     MODULE SUMMARY
+     ════════════════════════════════════════════════════════════ -->
+<footer class="mod-sum" role="contentinfo">
+  <h2>✔ Week 11 Complete — Module 11.5 Summary</h2>
+  <p style="font-size:.9rem;color:#b8d0ef;margin-bottom:.88rem">This module closes the five-module Week 11 sequence. There is no bridge to a next module this week — you have completed the full 11.1 → 11.2 → 11.3 → 11.4 → 11.5 chain. The summary below records what was built and what comes next.</p>
+
+  <div class="sum-grid">
+    <div class="si">
+      <div class="slbl">Covered This Module</div>
+      <p>Standard D&amp;C recurrence form &nbsp;·&nbsp; Master Theorem (3 formal cases) &nbsp;·&nbsp; Merge sort, binary search, and matrix multiply applications &nbsp;·&nbsp; When the theorem does not apply &nbsp;·&nbsp; Complexity class connections and algorithm selection</p>
+    </div>
+    <div class="si">
+      <div class="slbl">Graded Work Due — End of Week 11</div>
+      <p><strong>PE-08</strong> Recurrence Relation Solver (30 pts) — submit as <code>LastName_FirstName_PE08_Week11.zip</code><br>
+      <strong>PS-07</strong> Recursion and Mathematical Induction (20 pts) — submit PDF via Canvas</p>
+    </div>
+    <div class="si">
+      <div class="slbl">Looking Ahead — Week 12</div>
+      <p>Week 12 begins Introduction to Graphs: vertices, edges, representations, degree sequences, and the handshaking lemma. The recurrence analysis skills from Week 11 will reappear when analyzing BFS and DFS traversal complexity in Weeks 12–13.</p>
+    </div>
+    <div class="si">
+      <div class="slbl">Quiz 4 Reminder</div>
+      <p>Covers Weeks 11–13 &nbsp;·&nbsp; Administered end of Week 13 &nbsp;·&nbsp; Week 11 contributes &asymp; ⅓ of total points. Begin your review now — this content is freshest today.</p>
+    </div>
+  </div>
+
+  <div class="sum-close">
+    Questions? Contact your instructor through Canvas or during office hours.
+    &nbsp;·&nbsp;
+    <em>You have reached the end of Week 11. Submit PE-08 and PS-07 before the deadline, start your Quiz 4 review, and carry these recurrence-analysis tools into Week 12. Good luck!</em>
+  </div>
+</footer>
+
+</div><!-- /.page-wrap -->
+
+<script>
+(function () {
+  'use strict';
+
+  /* ── Accordion ──────────────────────────────────────────── */
+  document.querySelectorAll('.acc-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var open = this.getAttribute('aria-expanded') === 'true';
+      var body = document.getElementById(this.getAttribute('aria-controls'));
+      this.setAttribute('aria-expanded', String(!open));
+      if (body) body.classList.toggle('open', !open);
+    });
+    btn.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.click(); }
+    });
+  });
+
+  /* ── Self-Assessment ────────────────────────────────────── */
+  function updateSA() {
+    var counts = { '1': 0, '2': 0, '3': 0 };
+    var total = 0;
+    document.querySelectorAll('.sa-b[aria-pressed="true"]').forEach(function (b) {
+      counts[b.dataset.val]++;
+      total++;
+    });
+    var msg = document.getElementById('sa-msg');
+    if (!msg) return;
+    if (total === 0) { msg.style.display = 'none'; return; }
+    msg.style.display = 'block';
+    var t = 'You have rated ' + total + ' of 10 items. ';
+    if (total === 10 && counts['1'] === 0 && counts['2'] === 0) {
+      t = '\u2705 All 10 items rated Confident \u2014 you are well-prepared for PE-08, PS-07, and the Week\u00a011 portion of Quiz\u00a04!';
+    } else {
+      if (counts['1'] > 0) t += counts['1'] + ' item' + (counts['1'] > 1 ? 's' : '') + ' rated \u201cNot Yet\u201d \u2014 revisit those modules before submitting graded work or taking Quiz\u00a04. ';
+      if (counts['2'] > 0) t += counts['2'] + ' item' + (counts['2'] > 1 ? 's' : '') + ' rated \u201cMostly\u201d \u2014 a second pass through those sections would help. ';
+      if (counts['3'] > 0) t += counts['3'] + ' item' + (counts['3'] > 1 ? 's' : '') + ' rated \u201cConfident\u201d \u2014 great work!';
+    }
+    msg.textContent = t;
+  }
+
+  document.querySelectorAll('.sa-b').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var group = this.closest('.sa-btns');
+      group.querySelectorAll('.sa-b').forEach(function (b) {
+        b.classList.remove('s1', 's2', 's3');
+        b.setAttribute('aria-pressed', 'false');
+      });
+      this.classList.add('s' + this.dataset.val);
+      this.setAttribute('aria-pressed', 'true');
+      updateSA();
+    });
+  });
+
+}());
+</script>
+</body>
+</html>

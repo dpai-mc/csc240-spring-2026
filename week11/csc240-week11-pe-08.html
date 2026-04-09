@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PE-08: Recurrence Relation Solver — CSC 240 Week 11</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --primary:#1a3a5c;--accent:#2e6da4;--accent-lt:#e8f0f8;
+  --warn-bg:#fff8ec;--warn-fg:#7a3b00;
+  --ok-bg:#f0f7f1;--ok-fg:#1b5e20;
+  --border:#c8d6e3;--text:#1a1a1a;--muted:#5a6470;
+  --nav-h:54px;--r:6px;
+  --font:system-ui,-apple-system,Segoe UI,Arial,sans-serif
+}
+body{font-family:var(--font);color:var(--text);background:#f4f6fa;line-height:1.65}
+
+/* Skip link */
+.skip{position:absolute;top:-999px;left:8px;background:var(--primary);color:#fff;
+  padding:8px 18px;border-radius:0 0 var(--r) var(--r);font-weight:700;z-index:9999;
+  text-decoration:none;font-size:.9rem}
+.skip:focus{top:0}
+
+/* Nav */
+nav{position:sticky;top:0;background:var(--primary);border-bottom:3px solid var(--accent);z-index:100}
+.nav-in{max-width:1060px;margin:0 auto;display:flex;align-items:center;
+  flex-wrap:wrap;gap:2px;padding:0 14px;min-height:var(--nav-h)}
+.nav-brand{color:#fff;font-weight:700;font-size:.9rem;margin-right:10px;white-space:nowrap}
+nav a{color:#b8d4f0;text-decoration:none;font-size:.8rem;padding:6px 9px;
+  border-radius:var(--r);white-space:nowrap;transition:background .15s,color .15s}
+nav a:hover,nav a:focus{background:var(--accent);color:#fff;
+  outline:2px solid #fff;outline-offset:2px}
+
+/* Anchor offset */
+[id]{scroll-margin-top:calc(var(--nav-h) + 14px)}
+
+/* Main */
+main{max-width:880px;margin:0 auto;padding:30px 18px 80px}
+
+/* Page header */
+.pg-head{background:var(--primary);color:#fff;border-radius:var(--r);
+  padding:26px 30px;margin-bottom:28px}
+.pg-head .badge{display:inline-block;background:var(--accent);font-size:.75rem;
+  font-weight:700;padding:3px 11px;border-radius:20px;margin-bottom:10px;letter-spacing:.06em}
+.pg-head h1{font-size:1.7rem;margin-bottom:4px}
+.pg-head .meta{font-size:.85rem;opacity:.85;display:flex;flex-wrap:wrap;gap:18px;margin-top:10px}
+.pg-head .meta span+span::before{content:"·  "}
+
+/* Sections */
+section{background:#fff;border:1px solid var(--border);border-radius:var(--r);
+  padding:26px 30px;margin-bottom:24px}
+h2{color:var(--primary);font-size:1.2rem;border-bottom:2px solid var(--accent-lt);
+  padding-bottom:7px;margin-bottom:16px}
+h3{color:var(--accent);font-size:1rem;margin:18px 0 7px}
+h4{font-size:.93rem;color:var(--primary);margin:14px 0 5px;font-weight:700}
+p{margin-bottom:11px}
+ul,ol{padding-left:22px;margin-bottom:11px}
+li{margin-bottom:4px}
+
+/* Table */
+table{width:100%;border-collapse:collapse;font-size:.9rem;margin:12px 0}
+th{background:var(--primary);color:#fff;padding:9px 13px;text-align:left}
+td{padding:8px 13px;border-bottom:1px solid var(--border)}
+tr:last-child td{border-bottom:none}
+tr:nth-child(even) td{background:var(--accent-lt)}
+
+/* Phase card */
+.pcard{border:1px solid var(--border);border-left:4px solid var(--accent);
+  border-radius:var(--r);padding:18px 20px;margin-bottom:20px;background:#fafcff}
+.phead{display:flex;align-items:center;gap:11px;margin-bottom:12px}
+.pnum{background:var(--accent);color:#fff;font-weight:700;width:32px;height:32px;
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:.95rem;flex-shrink:0}
+.ptitle{font-size:1rem;font-weight:700;color:var(--primary)}
+.psub{font-size:.8rem;color:var(--muted);margin-top:2px}
+
+/* Info boxes */
+.box{border-radius:var(--r);padding:12px 16px;margin:11px 0;font-size:.9rem}
+.tip{background:var(--ok-bg);border-left:4px solid #43a047;color:var(--ok-fg)}
+.ref{background:var(--accent-lt);border-left:4px solid var(--accent);color:#1a3a5c}
+.warn{background:var(--warn-bg);border-left:4px solid #f57c00;color:var(--warn-fg)}
+.box strong{display:block;margin-bottom:3px;font-size:.88rem}
+
+/* Formula blocks */
+.formula{font-family:'Courier New',Courier,monospace;background:#f0f4f8;
+  border:1px solid var(--border);border-radius:4px;padding:11px 16px;margin:10px 0;
+  font-size:.92rem;overflow-x:auto;white-space:pre;line-height:1.55}
+code{font-family:'Courier New',Courier,monospace;background:#f0f4f8;
+  padding:1px 5px;border-radius:3px;font-size:.88em}
+
+/* Notes textarea */
+.notes-lbl{display:block;font-weight:600;font-size:.88rem;color:var(--primary);
+  margin-bottom:5px;margin-top:14px}
+textarea{width:100%;min-height:96px;padding:9px 11px;border:2px solid var(--border);
+  border-radius:var(--r);font-family:var(--font);font-size:.9rem;resize:vertical;
+  color:var(--text);background:#fff;transition:border-color .15s}
+textarea:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
+textarea::placeholder{color:#aaa}
+.hint{font-size:.78rem;color:var(--muted);margin-top:4px}
+
+/* Print-only note mirror */
+.pnotes{display:none;border:1px solid #ccc;border-radius:4px;padding:8px 10px;
+  min-height:54px;font-size:.85rem;white-space:pre-wrap;background:#fafafa;
+  color:var(--text);margin-top:4px}
+
+/* Checklist */
+.cklist{list-style:none;padding:0}
+.cklist li{display:flex;align-items:flex-start;gap:9px;padding:7px 0;
+  border-bottom:1px solid var(--accent-lt)}
+.cklist li:last-child{border-bottom:none}
+.cklist input[type=checkbox]{margin-top:3px;width:17px;height:17px;flex-shrink:0;
+  cursor:pointer;accent-color:var(--accent)}
+.cklist input[type=checkbox]:focus{outline:2px solid var(--accent);outline-offset:2px}
+.cklist label{font-size:.9rem;cursor:pointer;line-height:1.45}
+
+/* Test grid */
+.tgrid{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin:12px 0}
+@media(max-width:580px){.tgrid{grid-template-columns:1fr}}
+.tcase{background:#f7fafb;border:1px solid var(--border);border-radius:var(--r);padding:13px 15px}
+.tcase h4{margin-top:0;font-size:.88rem}
+
+/* Pitfall card */
+.pitfall{border:1px solid #f0c070;background:#fffbf0;border-radius:var(--r);
+  padding:15px 17px;margin-bottom:14px}
+.pitfall h4{color:var(--warn-fg);margin-top:0;font-size:.95rem}
+
+/* PDF button */
+.pdf-bar{position:fixed;bottom:22px;right:22px;z-index:200}
+.btn-pdf{background:var(--accent);color:#fff;border:none;border-radius:28px;
+  padding:11px 22px;font-size:.92rem;font-weight:700;cursor:pointer;
+  box-shadow:0 4px 18px rgba(0,0,0,.28);display:flex;align-items:center;gap:7px;
+  transition:background .15s}
+.btn-pdf:hover{background:var(--primary)}
+.btn-pdf:focus{outline:3px solid #fff;outline-offset:3px}
+
+/* Responsive nav */
+@media(max-width:640px){
+  .pg-head h1{font-size:1.35rem}
+  nav a{font-size:.74rem;padding:5px 7px}
+  section{padding:20px 16px}
+  .pcard{padding:15px 14px}
+}
+
+/* Print */
+@media print{
+  nav,.pdf-bar{display:none!important}
+  body{background:#fff}
+  main{max-width:100%;padding:8px}
+  section,.pcard,.pitfall,.tcase{break-inside:avoid}
+  textarea{display:none!important}
+  .pnotes{display:block!important}
+  .pg-head{background:var(--primary)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  th{background:var(--primary)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  a{text-decoration:none;color:inherit}
+}
+</style>
+</head>
+<body>
+
+<a href="#main" class="skip">Skip to main content</a>
+
+<nav role="navigation" aria-label="Page section navigation">
+  <div class="nav-in">
+    <span class="nav-brand">CSC 240 · PE-08</span>
+    <a href="#overview">1 Overview</a>
+    <a href="#scenario">2 Scenario</a>
+    <a href="#phases">3 Phases</a>
+    <a href="#testing">4 Testing</a>
+    <a href="#mistakes">5 Pitfalls</a>
+    <a href="#submission">6 Submit</a>
+  </div>
+</nav>
+
+<main id="main">
+
+  <!-- ── Page Header ─────────────────────────────────── -->
+  <div class="pg-head" role="banner">
+    <span class="badge">Week 11 · Programming Exercise</span>
+    <h1>PE-08: Recurrence Relation Solver</h1>
+    <div class="meta">
+      <span>CSC 240 – Discrete Structures</span>
+      <span>30 Points</span>
+      <span>Due: End of Week 11 · 11:59 PM</span>
+      <span>Submit: Canvas (zip file)</span>
+    </div>
+  </div>
+
+  <!-- ── Section 1: Overview ─────────────────────────── -->
+  <section id="overview" aria-labelledby="h-overview">
+    <h2 id="h-overview">1 · Overview and Objectives</h2>
+
+    <p>
+      PE-08 asks you to build a <strong>Recurrence Relation Solver</strong> — a
+      program that accepts a recurrence relation as structured input, generates
+      its first <em>n</em> terms numerically, solves it symbolically using the
+      <strong>characteristic equation method</strong>, classifies
+      divide-and-conquer recurrences using the <strong>Master Theorem</strong>,
+      and benchmarks recursive versus iterative implementations of the same
+      recurrence.
+    </p>
+
+    <h3>What This Assignment Demonstrates</h3>
+    <ul>
+      <li>Parsing and internally representing recurrence relations</li>
+      <li>Iterative evaluation of recurrences from initial conditions</li>
+      <li>Applying the characteristic equation method to derive closed-form solutions</li>
+      <li>Classifying divide-and-conquer recurrences with the Master Theorem</li>
+      <li>Understanding the practical performance gap between naive recursive and iterative implementations</li>
+      <li>Writing well-tested, clearly documented mathematical software</li>
+    </ul>
+
+    <h3>Grading Criteria</h3>
+    <table aria-label="PE-08 grading criteria">
+      <thead>
+        <tr>
+          <th scope="col">Category</th>
+          <th scope="col">Weight</th>
+          <th scope="col">Points</th>
+          <th scope="col">What Is Evaluated</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Correctness</strong></td>
+          <td>50 %</td>
+          <td>15</td>
+          <td>All five requirements produce accurate outputs; test cases pass; characteristic roots, closed-form constants, and Master Theorem classifications are correct</td>
+        </tr>
+        <tr>
+          <td><strong>Code Quality</strong></td>
+          <td>25 %</td>
+          <td>7.5</td>
+          <td>Clear modular structure; meaningful identifiers; no dead code; appropriate use of functions or methods; readable logic flow</td>
+        </tr>
+        <tr>
+          <td><strong>Documentation</strong></td>
+          <td>15 %</td>
+          <td>4.5</td>
+          <td>Docstrings or header comments on every function; algorithm explanation for each component; inline comments on non-obvious logic</td>
+        </tr>
+        <tr>
+          <td><strong>Testing</strong></td>
+          <td>10 %</td>
+          <td>3</td>
+          <td>At least two labeled test cases per component; edge cases covered; test output included in submission as <code>test_output.txt</code></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="box ref" role="note">
+      <strong>📖 Module Span</strong>
+      This assignment covers
+      <em>Module 11.1 – Recurrence Relations and Recursive Algorithms</em>
+      through
+      <em>Module 11.5 – Comparing Recursive and Iterative Implementations</em>.
+      Review all five modules before starting Phase 1.
+    </div>
+  </section>
+
+  <!-- ── Section 2: Scenario ─────────────────────────── -->
+  <section id="scenario" aria-labelledby="h-scenario">
+    <h2 id="h-scenario">2 · Scenario</h2>
+
+    <p>
+      You have joined a small software consultancy as a junior tools engineer.
+      The team frequently needs to verify the time-complexity claims of client
+      algorithms before presenting proofs to stakeholders. Your manager asks you
+      to prototype a <strong>recurrence analysis tool</strong> that:
+    </p>
+    <ol>
+      <li>Accepts a linear recurrence defined by its coefficients and initial conditions</li>
+      <li>Generates the first <em>n</em> terms so analysts can spot-check behavior</li>
+      <li>Solves the recurrence symbolically via the characteristic equation to produce a closed form</li>
+      <li>Classifies standard divide-and-conquer recurrences (merge sort, binary search) via the Master Theorem</li>
+      <li>Profiles the runtime difference between a recursive and an iterative implementation of the same recurrence</li>
+    </ol>
+    <p>
+      The tool will be used to validate complexity proofs before client delivery.
+      <strong>Accuracy, clear documentation, and testability are
+      non-negotiable.</strong>
+    </p>
+  </section>
+
+  <!-- ── Section 3: Phases ────────────────────────────── -->
+  <section id="phases" aria-labelledby="h-phases">
+    <h2 id="h-phases">3 · Phase Breakdown</h2>
+    <p>
+      Complete phases in order. Each maps to one PE-08 requirement. Record your
+      design decisions in the notes field <strong>before writing code</strong> —
+      graders may review these notes as evidence of planning. Save this page as a
+      PDF when your notes are complete.
+    </p>
+
+    <!-- Phase 1 -->
+    <div class="pcard" aria-labelledby="p1t">
+      <div class="phead">
+        <div class="pnum" aria-hidden="true">1</div>
+        <div>
+          <div class="ptitle" id="p1t">Requirement 1 — Accept a Recurrence as Input</div>
+          <div class="psub">Module 11.1 · Recurrence Relations and Recursive Algorithms</div>
+        </div>
+      </div>
+
+      <p>
+        Implement an input interface (command-line, function parameters, or a
+        configuration object) that accepts a recurrence relation specified by:
+      </p>
+      <ul>
+        <li>The <strong>order</strong> k of the recurrence</li>
+        <li>Coefficients c₁, c₂, …, cₖ for terms T(n−1), T(n−2), …, T(n−k)</li>
+        <li>Initial conditions T(0), T(1), …, T(k−1) (exactly k base cases required)</li>
+        <li>A non-homogeneous term f(n) — may be zero for homogeneous recurrences</li>
+      </ul>
+      <div class="formula" aria-label="General linear recurrence">T(n) = c₁·T(n−1) + c₂·T(n−2) + … + cₖ·T(n−k) + f(n)
+        where k is the order and T(0)…T(k−1) are given initial conditions</div>
+
+      <div class="box ref" role="note">
+        <strong>📖 Module 11.1 Cross-Reference</strong>
+        Review the definitions of recurrence order, homogeneous vs.
+        non-homogeneous recurrences, and the role of initial conditions before
+        designing your input structure.
+      </div>
+      <div class="box tip" role="note">
+        <strong>💡 Implementation Tip (Module 11.5)</strong>
+        Represent the recurrence as a single structured object — for example,
+        a dictionary or dataclass holding <code>coeffs</code>, <code>init</code>,
+        and <code>f</code>. Passing one object to every subsequent function keeps
+        your interfaces clean and prevents parameter-list drift between phases.
+        Validate on construction that <code>len(init) == len(coeffs)</code>.
+      </div>
+
+      <label class="notes-lbl" for="n1">✏️ Design Notes — Phase 1</label>
+      <textarea id="n1" name="n1"
+        placeholder="Describe your internal representation. What data structure will you use? How will you validate that enough initial conditions were provided? How will you represent f(n) — as a callable, a string, or a category flag? Note any edge cases you anticipate."
+        aria-describedby="n1h"></textarea>
+      <p class="hint" id="n1h">Notes are for your planning only — not graded directly. They are captured when you Save as PDF.</p>
+      <div class="pnotes" aria-hidden="true" id="pn1"></div>
+    </div>
+
+    <!-- Phase 2 -->
+    <div class="pcard" aria-labelledby="p2t">
+      <div class="phead">
+        <div class="pnum" aria-hidden="true">2</div>
+        <div>
+          <div class="ptitle" id="p2t">Requirement 2 — Generate the First n Terms</div>
+          <div class="psub">Module 11.2 · Solving Recurrences: Iteration and Telescoping</div>
+        </div>
+      </div>
+
+      <p>
+        Using the recurrence object from Phase 1, implement a function that
+        computes and returns T(0), T(1), …, T(n−1) for a caller-supplied
+        value of n. Requirements:
+      </p>
+      <ul>
+        <li>Return terms in a list or array indexed from 0</li>
+        <li>Use only the coefficients and initial conditions — no hard-coded formulas</li>
+        <li>Handle n ≤ k gracefully (return only the available base cases)</li>
+      </ul>
+
+      <p>Example — Fibonacci: T(n) = T(n−1) + T(n−2), T(0) = 0, T(1) = 1</p>
+      <div class="formula" aria-label="Fibonacci first 10 terms">n:    0  1  2  3  4   5   6   7   8   9
+T(n): 0  1  1  2  3   5   8  13  21  34</div>
+
+      <div class="box ref" role="note">
+        <strong>📖 Module 11.2 Cross-Reference</strong>
+        The iterative method discussed in Module 11.2 is the direct basis for
+        this phase. Pay careful attention to how array positions map to n values
+        — the most common source of off-by-one errors.
+      </div>
+      <div class="box tip" role="note">
+        <strong>💡 Implementation Tip (Module 11.5)</strong>
+        Seed your output array with the k initial conditions, then loop from
+        index k to n−1. At each step, compute the new term as the dot product of
+        <code>coeffs</code> and the preceding k terms (in reverse order). Keep
+        this function <em>pure</em> — no print statements, no side effects — so
+        Phase 3 and Phase 5 can call it freely for validation.
+      </div>
+
+      <label class="notes-lbl" for="n2">✏️ Design Notes — Phase 2</label>
+      <textarea id="n2" name="n2"
+        placeholder="Sketch your loop structure. Which index does the array start at? How will you compute the dot product with the coefficient list? How will you handle n ≤ k? Write pseudocode or a brief description of each step."
+        aria-describedby="n2h"></textarea>
+      <p class="hint" id="n2h">Notes are for your planning only. Captured when you Save as PDF.</p>
+      <div class="pnotes" aria-hidden="true" id="pn2"></div>
+    </div>
+
+    <!-- Phase 3 -->
+    <div class="pcard" aria-labelledby="p3t">
+      <div class="phead">
+        <div class="pnum" aria-hidden="true">3</div>
+        <div>
+          <div class="ptitle" id="p3t">Requirement 3 — Solve via the Characteristic Equation</div>
+          <div class="psub">Module 11.3 · Characteristic Equations and Closed-Form Solutions</div>
+        </div>
+      </div>
+
+      <p>
+        Implement the characteristic equation method for
+        <strong>homogeneous linear recurrences with constant coefficients</strong>.
+        Your solver must:
+      </p>
+      <ol>
+        <li>Build the characteristic polynomial from the coefficient list</li>
+        <li>Find roots r₁, r₂, …, rₖ (distinct roots required; repeated roots optional for bonus credit)</li>
+        <li>Express the general solution: T(n) = A₁·r₁ⁿ + A₂·r₂ⁿ + … + Aₖ·rₖⁿ</li>
+        <li>Apply initial conditions to solve the linear system for A₁ … Aₖ</li>
+        <li>Verify the closed form against Phase 2 output (tolerance &lt; 10⁻⁶)</li>
+      </ol>
+
+      <p>Worked example — Fibonacci characteristic equation:</p>
+      <div class="formula" aria-label="Fibonacci characteristic equation derivation">Recurrence:        T(n) = T(n−1) + T(n−2)
+Characteristic eq: r² − r − 1 = 0
+Roots:             r₁ = (1 + √5) / 2 ≈  1.61803   (φ, golden ratio)
+                   r₂ = (1 − √5) / 2 ≈ −0.61803
+General form:      T(n) = A·r₁ⁿ + B·r₂ⁿ
+Apply T(0)=0, T(1)=1 → A = 1/√5,  B = −1/√5
+Closed form:       T(n) = (φⁿ − (1−φ)ⁿ) / √5</div>
+
+      <div class="box ref" role="note">
+        <strong>📖 Module 11.3 Cross-Reference</strong>
+        Study the step-by-step construction of the characteristic polynomial and
+        how the Vandermonde-style linear system is formed from the roots and
+        initial conditions to solve for the constants Aᵢ.
+      </div>
+      <div class="box tip" role="note">
+        <strong>💡 Implementation Tip (Module 11.5)</strong>
+        Use your language's numeric root-finder (e.g., NumPy <code>np.roots()</code>)
+        on the characteristic polynomial, then assemble the Vandermonde matrix
+        V where V[i][j] = rⱼⁱ for i = 0…k−1. Solve V · A = init_conditions
+        with a linear-algebra solver. Validate by calling your Phase 2
+        term-generator and comparing element-wise — any discrepancy larger than
+        10⁻⁶ indicates an indexing or sign error in the polynomial construction.
+      </div>
+
+      <label class="notes-lbl" for="n3">✏️ Design Notes — Phase 3</label>
+      <textarea id="n3" name="n3"
+        placeholder="How will you convert the coefficient list into a characteristic polynomial (watch the sign convention)? Which root-finding tool will you use? How will you set up and solve the linear system for A₁…Aₖ? What will you do if roots are complex? Describe your verification step."
+        aria-describedby="n3h"></textarea>
+      <p class="hint" id="n3h">Notes are for your planning only. Captured when you Save as PDF.</p>
+      <div class="pnotes" aria-hidden="true" id="pn3"></div>
+    </div>
+
+    <!-- Phase 4 -->
+    <div class="pcard" aria-labelledby="p4t">
+      <div class="phead">
+        <div class="pnum" aria-hidden="true">4</div>
+        <div>
+          <div class="ptitle" id="p4t">Requirement 4 — Apply the Master Theorem</div>
+          <div class="psub">Module 11.4 · The Master Theorem</div>
+        </div>
+      </div>
+
+      <p>
+        Implement a <strong>Master Theorem classifier</strong> that accepts
+        parameters a, b, and a growth-rate category for f(n), then returns the
+        asymptotic complexity class Θ(·). The classifier must correctly handle
+        all three cases and must include built-in analysis of:
+      </p>
+      <ul>
+        <li><strong>Merge Sort:</strong> T(n) = 2·T(n/2) + Θ(n)</li>
+        <li><strong>Binary Search:</strong> T(n) = T(n/2) + Θ(1)</li>
+      </ul>
+
+      <div class="formula" aria-label="Master Theorem statement and cases">Master Theorem — T(n) = a·T(n/b) + f(n),   a ≥ 1,  b > 1
+
+Critical exponent:  E = log_b(a)
+
+Case 1:  f(n) = O(nᴱ⁻ᵋ)  for some ε > 0
+         ──▶  T(n) = Θ(nᴱ)
+
+Case 2:  f(n) = Θ(nᴱ · logᵏ n)  for some k ≥ 0
+         ──▶  T(n) = Θ(nᴱ · logᵏ⁺¹ n)
+
+Case 3:  f(n) = Ω(nᴱ⁺ᵋ)  for some ε > 0
+         AND  a·f(n/b) ≤ c·f(n)  for some c &lt; 1  [regularity condition]
+         ──▶  T(n) = Θ(f(n))
+
+────────────────────────────────────────────────────────────────
+Merge Sort:    a=2, b=2, f(n)=n,  E = log₂(2) = 1
+               f(n) = Θ(n¹) = Θ(nᴱ)  →  Case 2 (k=0)  →  Θ(n log n)
+
+Binary Search: a=1, b=2, f(n)=1,  E = log₂(1) = 0
+               f(n) = Θ(1) = Θ(n⁰) = Θ(nᴱ)  →  Case 2 (k=0)  →  Θ(log n)</div>
+
+      <div class="box ref" role="note">
+        <strong>📖 Module 11.4 Cross-Reference</strong>
+        Study each case carefully. Note that Case 2 generalizes beyond k = 0;
+        your classifier should handle any non-negative integer k. Review the
+        examples in Module 11.4 for T(n) = 4T(n/2) + n (Case 1) and
+        T(n) = 2T(n/2) + n² (Case 3) to calibrate your implementation.
+      </div>
+      <div class="box warn" role="note">
+        <strong>⚠️ Regularity Condition — Case 3</strong>
+        Case 3 has <em>two</em> requirements. Many students check only that
+        f(n) grows faster than n<sup>E</sup> and immediately conclude Case 3.
+        You must also verify (or at minimum flag) that a·f(n/b) ≤ c·f(n) for
+        some c &lt; 1. Omitting the regularity condition will cost points in
+        both Correctness and Documentation.
+      </div>
+
+      <label class="notes-lbl" for="n4">✏️ Design Notes — Phase 4</label>
+      <textarea id="n4" name="n4"
+        placeholder="How will you represent f(n) — as a polynomial degree, a symbolic string, or an enum? How will your classifier compute E = log_b(a) and compare growth rates? How will you check the regularity condition for Case 3? What output format will you use for the result (e.g., 'Case 2 → Θ(n log n)')? Describe your plan for the merge sort and binary search built-in demos."
+        aria-describedby="n4h"></textarea>
+      <p class="hint" id="n4h">Notes are for your planning only. Captured when you Save as PDF.</p>
+      <div class="pnotes" aria-hidden="true" id="pn4"></div>
+    </div>
+
+    <!-- Phase 5 -->
+    <div class="pcard" aria-labelledby="p5t">
+      <div class="phead">
+        <div class="pnum" aria-hidden="true">5</div>
+        <div>
+          <div class="ptitle" id="p5t">Requirement 5 — Compare Recursive vs. Iterative Implementations</div>
+          <div class="psub">Module 11.5 · Comparing Recursive and Iterative Implementations</div>
+        </div>
+      </div>
+
+      <p>
+        Implement <strong>three variants</strong> of a recurrence evaluator for
+        the same recurrence (Fibonacci is the canonical choice, but any
+        second-order recurrence is acceptable):
+      </p>
+      <ol>
+        <li><strong>Naive recursive</strong> — direct translation of the recurrence; no caching</li>
+        <li><strong>Iterative</strong> — single left-to-right pass (reuse your Phase 2 function)</li>
+        <li><strong>Memoized (top-down)</strong> — recursive with a cache to eliminate redundant calls</li>
+      </ol>
+      <p>
+        Time all three for n = 10, 20, 30, and 35 (lower the cap if naive
+        recursive exceeds 10 seconds on your machine). Report runtimes in a
+        clearly labeled table in your program output. Include a comment block
+        explaining the observed differences.
+      </p>
+
+      <div class="formula" aria-label="Complexity comparison of three implementations">Implementation    Time Complexity   Space Complexity   Notes
+──────────────    ───────────────   ────────────────   ─────────────────────────
+Naive recursive   O(2ⁿ)            O(n) stack         Exponential call tree
+Iterative         O(n)             O(1) extra          Phase 2 function reused
+Memoized          O(n)             O(n) cache          Each subproblem once
+
+Expected timing ratio at n=35 (Fibonacci):
+  naive recursive ≫ memoized ≈ iterative
+  (factor of thousands to millions vs. microseconds)</div>
+
+      <div class="box ref" role="note">
+        <strong>📖 Module 11.5 Cross-Reference</strong>
+        Module 11.5 provides the theoretical basis for why naive recursion on
+        recurrences runs in exponential time and how memoization recovers linear
+        performance. Use the profiling methodology described in Module 11.5
+        for your timing code.
+      </div>
+      <div class="box tip" role="note">
+        <strong>💡 Implementation Tip (Module 11.5)</strong>
+        Use your language's high-resolution timer (Python:
+        <code>time.perf_counter()</code>; Java: <code>System.nanoTime()</code>;
+        C++: <code>std::chrono::high_resolution_clock</code>). Run each variant
+        at least three times per n value and report the <em>minimum</em> elapsed
+        time to reduce scheduling noise. Cap naive recursion at n = 35 — the
+        point is to <em>observe</em> exponential growth, not to wait for the
+        result.
+      </div>
+
+      <label class="notes-lbl" for="n5">✏️ Design Notes — Phase 5</label>
+      <textarea id="n5" name="n5"
+        placeholder="Which recurrence will you use? How will you implement the memoized version (dictionary cache, decorator, etc.)? What n values will you test and why? How will you format the timing results table? What ratio do you predict between naive recursive and iterative at n=35? What does this tell you about algorithm design?"
+        aria-describedby="n5h"></textarea>
+      <p class="hint" id="n5h">Notes are for your planning only. Captured when you Save as PDF.</p>
+      <div class="pnotes" aria-hidden="true" id="pn5"></div>
+    </div>
+
+  </section>
+
+  <!-- ── Section 4: Testing ──────────────────────────── -->
+  <section id="testing" aria-labelledby="h-testing">
+    <h2 id="h-testing">4 · Testing Your Implementation</h2>
+
+    <p>
+      Testing is worth <strong>10 % (3 points)</strong> of your PE-08 grade.
+      You must include at least <strong>two labeled test cases per component</strong>
+      in a file named <code>test_output.txt</code> inside your submission zip.
+      Each test case must show the input, expected output, and actual output.
+    </p>
+
+    <h3>Required Test Cases by Phase</h3>
+    <div class="tgrid">
+
+      <div class="tcase">
+        <h4>Phase 1 · Input Parsing</h4>
+        <ul>
+          <li><strong>Test 1-A:</strong> Valid second-order recurrence with two initial conditions → recurrence object created with correct fields</li>
+          <li><strong>Test 1-B:</strong> Provide only one initial condition for a second-order recurrence → error or descriptive warning raised; program does not crash</li>
+        </ul>
+      </div>
+
+      <div class="tcase">
+        <h4>Phase 2 · Term Generation</h4>
+        <ul>
+          <li><strong>Test 2-A:</strong> Fibonacci (coeffs=[1,1], init=[0,1]) for n=10 → [0, 1, 1, 2, 3, 5, 8, 13, 21, 34]</li>
+          <li><strong>Test 2-B:</strong> T(n) = 2·T(n−1), T(0)=1 for n=6 → [1, 2, 4, 8, 16, 32]</li>
+        </ul>
+      </div>
+
+      <div class="tcase">
+        <h4>Phase 3 · Characteristic Equation</h4>
+        <ul>
+          <li><strong>Test 3-A:</strong> Fibonacci roots ≈ 1.61803 and −0.61803; closed form agrees with iterative terms to &lt; 10⁻⁶</li>
+          <li><strong>Test 3-B:</strong> T(n) = 3T(n−1) − 2T(n−2), T(0)=1, T(1)=2 → roots r=1, r=2; closed form T(n) = 2ⁿ; verify for n=0…7</li>
+        </ul>
+      </div>
+
+      <div class="tcase">
+        <h4>Phase 4 · Master Theorem</h4>
+        <ul>
+          <li><strong>Test 4-A:</strong> Merge sort a=2, b=2, f(n)=Θ(n) → Case 2 → Θ(n log n)</li>
+          <li><strong>Test 4-B:</strong> Binary search a=1, b=2, f(n)=Θ(1) → Case 2 → Θ(log n)</li>
+          <li><strong>Test 4-C:</strong> a=4, b=2, f(n)=Θ(n) → E=2, f(n)=O(n¹)=O(n²⁻¹) → Case 1 → Θ(n²)</li>
+          <li><strong>Test 4-D:</strong> a=2, b=2, f(n)=Θ(n²) → E=1, f(n)=Ω(n²) → Case 3 → Θ(n²)</li>
+        </ul>
+      </div>
+
+      <div class="tcase">
+        <h4>Phase 5 · Recursive vs. Iterative</h4>
+        <ul>
+          <li><strong>Test 5-A:</strong> All three implementations return identical values for n = 0, 1, 10, 20, 30</li>
+          <li><strong>Test 5-B:</strong> Timing at n = 35: naive recursive is measurably slower than iterative and memoized (observe at least 100× difference; record actual ratios)</li>
+        </ul>
+      </div>
+
+      <div class="tcase">
+        <h4>Edge Cases (All Phases)</h4>
+        <ul>
+          <li>n = 0 or n = 1 in Phase 2 → return only available base cases</li>
+          <li>f(n) = 0 (homogeneous) → handled without errors</li>
+          <li>Complex characteristic roots → graceful message, no crash</li>
+          <li>Master Theorem input that does not fit Cases 1–3 → output "indeterminate" rather than a forced classification</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── Section 5: Common Mistakes ─────────────────── -->
+  <section id="mistakes" aria-labelledby="h-mistakes">
+    <h2 id="h-mistakes">5 · Common Mistakes and Pitfalls</h2>
+
+    <div class="pitfall">
+      <h4>⚠️ Pitfall 1 — Off-by-One Errors in Initial Conditions</h4>
+      <p>
+        The most frequent error in Phase 2 is indexing the initial conditions
+        incorrectly. For a recurrence of order k you need exactly k base cases:
+        T(0), T(1), …, T(k−1). If your array is 1-indexed instead of 0-indexed
+        (or the reverse), every term <em>after</em> the base cases will be
+        computed from the wrong predecessor values. The resulting sequence will
+        still satisfy the recurrence — it will just be shifted by one position —
+        so the bug is invisible until you verify against a known sequence. All
+        downstream tests in Phases 3 and 5 will then fail silently.
+      </p>
+      <p>
+        <strong>How to avoid it:</strong> As your very first test, print the
+        first ten Fibonacci terms and confirm by hand that index 0 maps to 0
+        and index 9 maps to 34. Fix any shift before moving to Phase 3.
+      </p>
+    </div>
+
+    <div class="pitfall">
+      <h4>⚠️ Pitfall 2 — Omitting the Regularity Condition for Master Theorem Case 3</h4>
+      <p>
+        Case 3 of the Master Theorem has <strong>two</strong> requirements, not
+        one. Many students check only that f(n) grows asymptotically faster than
+        n<sup>log_b(a)</sup> and immediately conclude Case 3 applies. The second
+        requirement — the <em>regularity condition</em>
+        a · f(n/b) ≤ c · f(n) for some constant c &lt; 1 and all sufficiently
+        large n — must also hold. For polynomial f(n) this condition is
+        automatically satisfied, but your classifier must at minimum document
+        why. Omitting it will cost points in both Correctness and Documentation.
+      </p>
+      <p>
+        <strong>How to avoid it:</strong> Add an explicit comment or a check
+        for every Case 3 classification that states the value of c and confirms
+        the regularity condition holds.
+      </p>
+    </div>
+
+    <div class="pitfall">
+      <h4>⚠️ Pitfall 3 — Conflating f(n) with T(n)</h4>
+      <p>
+        In T(n) = a · T(n/b) + f(n), the term f(n) is the
+        <strong>cost of the non-recursive work done at each level</strong> — it
+        is <em>not</em> the total complexity T(n). A common error is substituting
+        the overall result (e.g., Θ(n log n) for merge sort) back in as f(n),
+        producing circular reasoning. For merge sort the correct f(n) is Θ(n)
+        (the cost of the merge step), <em>not</em> Θ(n log n).
+      </p>
+      <p>
+        <strong>How to avoid it:</strong> Before applying the Master Theorem,
+        explicitly identify which part of your algorithm corresponds to
+        recursive sub-calls and which part is the non-recursive work. Only
+        the non-recursive work is f(n).
+      </p>
+    </div>
+
+  </section>
+
+  <!-- ── Section 6: Submission ───────────────────────── -->
+  <section id="submission" aria-labelledby="h-submission">
+    <h2 id="h-submission">6 · Submission Checklist and Instructions</h2>
+
+    <h3>File Naming Convention</h3>
+    <p>Name your zip file exactly as shown (substitute your own name):</p>
+    <div class="formula" aria-label="Required zip file name">LastName_FirstName_PE08_Week11.zip</div>
+
+    <h3>Required Contents of the Zip</h3>
+    <ul>
+      <li>All source files needed to run your program</li>
+      <li><code>README.txt</code> — describes how to compile and run your program, lists dependencies, and identifies which file contains each phase</li>
+      <li><code>test_output.txt</code> — labeled output of all required test cases (at least two per phase)</li>
+    </ul>
+
+    <h3>Due Date and Submission</h3>
+    <p>
+      PE-08 is due at <strong>11:59 PM at the end of Week 11</strong>.
+      Submit your zip file to the <strong>PE-08 assignment in Canvas</strong>.
+      Do not email submissions. Late submissions are subject to the course late
+      policy as stated in the Course Syllabus.
+    </p>
+
+    <h3>Pre-Submission Checklist</h3>
+    <ul class="cklist" aria-label="Pre-submission checklist">
+      <li>
+        <input type="checkbox" id="ck1">
+        <label for="ck1">Phase 1 — Program accepts a recurrence as structured input with coefficients and initial conditions; input validation is present</label>
+      </li>
+      <li>
+        <input type="checkbox" id="ck2">
+        <label for="ck2">Phase 2 — Term generator produces correct output for at least two different recurrences; off-by-one verified against known sequences</label>
+      </li>
+      <li>
+        <input type="checkbox" id="ck3">
+        <label for="ck3">Phase 3 — Characteristic equation solver returns correct roots; closed-form constants are computed; verification against Phase 2 output passes (tolerance &lt; 10⁻⁶)</label>
+      </li>
+      <li>
+        <input type="checkbox" id="ck4">
+        <label for="ck4">Phase 4 — Master Theorem classifier handles Cases 1, 2, and 3; regularity condition is checked or documented for Case 3; merge sort and binary search built-in examples produce correct output</label>
+      </li>
+      <li>
+        <input type="checkbox" id="ck5">
+        <label for="ck5">Phase 5 — Recursive, iterative, and memoized variants all return identical values; timing comparison is present and clearly labeled; comment block explains observed differences</label>
+      </li>
+      <li>
+        <input type="checkbox" id="ck6">
+        <label for="ck6">At least two labeled test cases per phase are present in <code>test_output.txt</code>; each shows input, expected output, and actual output</label>
+      </li>
+      <li>
+        <input type="checkbox" id="ck7">
+        <label for="ck7">All functions or methods have docstrings or header comments stating purpose, parameters, and return value</label>
+      </li>
+      <li>
+        <input type="checkbox" id="ck8">
+        <label for="ck8">Non-obvious logic has inline comments; no unexplained magic numbers</label>
+      </li>
+      <li>
+        <input type="checkbox" id="ck9">
+        <label for="ck9"><code>README.txt</code> is present and explains how to run the program</label>
+      </li>
+      <li>
+        <input type="checkbox" id="ck10">
+        <label for="ck10">Zip file is named exactly <code>LastName_FirstName_PE08_Week11.zip</code></label>
+      </li>
+      <li>
+        <input type="checkbox" id="ck11">
+        <label for="ck11">Zip file has been submitted to the PE-08 assignment in Canvas before 11:59 PM end of Week 11</label>
+      </li>
+    </ul>
+
+    <div class="box tip" role="note" style="margin-top:18px">
+      <strong>📋 Reminder — Save Your Notes</strong>
+      Use the <strong>Save as PDF</strong> button after completing all five
+      design-notes fields. Keep the PDF open while coding — your notes serve as
+      your personal spec and will help you write accurate documentation.
+    </div>
+
+  </section>
+
+</main>
+
+<!-- Fixed Save-as-PDF button -->
+<div class="pdf-bar">
+  <button class="btn-pdf" id="pdfBtn" aria-label="Save this page including all notes as a PDF">
+    <span aria-hidden="true">⬇</span> Save as PDF
+  </button>
+</div>
+
+<script>
+(function () {
+  // Map textarea ids to their print-mirror div ids
+  var pairs = [
+    ['n1','pn1'], ['n2','pn2'], ['n3','pn3'], ['n4','pn4'], ['n5','pn5']
+  ];
+
+  function syncAll() {
+    pairs.forEach(function (p) {
+      var ta = document.getElementById(p[0]);
+      var mirror = document.getElementById(p[1]);
+      if (ta && mirror) {
+        mirror.textContent = ta.value.trim() || '(no notes entered)';
+      }
+    });
+  }
+
+  document.getElementById('pdfBtn').addEventListener('click', function () {
+    syncAll();
+    window.print();
+  });
+
+  // Also fires for Ctrl+P / browser print
+  if (window.matchMedia) {
+    var mq = window.matchMedia('print');
+    if (mq.addEventListener) {
+      mq.addEventListener('change', function (e) { if (e.matches) syncAll(); });
+    }
+  }
+  window.addEventListener('beforeprint', syncAll);
+}());
+</script>
+
+</body>
+</html>

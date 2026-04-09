@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSC 240 – Week 11: Recursion and Recurrence Relations</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--navy:#1a3a5c;--teal:#0d7377;--bg:#f4f6f9;--card:#fff;--text:#1e2937;--muted:#4b5563;--border:#dce3ea;--nh:56px;--r:8px}
+html{scroll-padding-top:calc(var(--nh) + 16px);scroll-behavior:smooth}
+body{font-family:Georgia,'Times New Roman',serif;background:var(--bg);color:var(--text);line-height:1.7;font-size:1rem}
+.skip{position:absolute;top:-200%;left:0;background:var(--navy);color:#fff;padding:8px 18px;font:600 .875rem/1 sans-serif;text-decoration:none;z-index:200;border-radius:0 0 6px 0}
+.skip:focus{top:0}
+:focus-visible{outline:3px solid #f59e0b;outline-offset:2px;border-radius:3px}
+nav{position:sticky;top:0;z-index:100;background:var(--navy);height:var(--nh);display:flex;align-items:center;padding:0 20px;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.nlbl{color:#94a3b8;font:700 .7rem/1 sans-serif;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;margin-right:14px;flex-shrink:0}
+.nlinks{list-style:none;display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+.nlinks::-webkit-scrollbar{display:none}
+.nlinks a{color:#bfdbfe;font:500 .78rem/1 sans-serif;text-decoration:none;padding:7px 10px;border-radius:4px;white-space:nowrap;display:block;transition:background .15s,color .15s}
+.nlinks a:hover{background:rgba(255,255,255,.15);color:#fff}
+.hero{background:linear-gradient(135deg,#1a3a5c 0%,#0d7377 100%);color:#fff;padding:52px 24px 44px;text-align:center}
+.badge{display:inline-block;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.4);border-radius:20px;padding:4px 16px;font:700 .72rem/1 sans-serif;letter-spacing:.1em;text-transform:uppercase;margin-bottom:14px}
+.hero h1{font:700 clamp(1.5rem,4vw,2.3rem)/1.2 sans-serif;margin-bottom:10px}
+.hero p{font:400 .95rem/1.55 sans-serif;opacity:.85;max-width:640px;margin:0 auto 22px}
+.hmeta{display:flex;justify-content:center;gap:20px;flex-wrap:wrap}
+.hmeta span{font:400 .8rem/1 sans-serif;opacity:.9}
+main{max-width:900px;margin:0 auto;padding:36px 20px 72px}
+section{margin-bottom:52px}
+.sh{display:flex;align-items:center;gap:12px;border-bottom:3px solid var(--teal);padding-bottom:10px;margin-bottom:22px}
+.sn{background:var(--teal);color:#fff;font:700 .8rem/1 sans-serif;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+h2{font:700 1.25rem/1.2 sans-serif;color:var(--navy)}
+h3{font:700 1rem/1.3 sans-serif;color:var(--navy);margin:22px 0 10px}
+p{margin-bottom:12px}
+ul,ol{padding-left:22px;margin-bottom:12px}
+li{margin-bottom:6px}
+code{font-family:'Courier New',Courier,monospace;background:#eef2f7;padding:1px 5px;border-radius:3px;font-size:.875em}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px 24px;margin-bottom:16px}
+.card>*:last-child{margin-bottom:0}
+.og{background:var(--card);border:1px solid var(--border);border-radius:var(--r);margin-bottom:14px;overflow:hidden}
+.og-hd{background:var(--navy);color:#fff;font:700 .82rem/1.3 sans-serif;padding:10px 18px}
+.og-bd{padding:16px 20px}
+.og-bd ol{margin:0}
+.cslo-q{background:var(--card);border-left:4px solid var(--navy);border-top:1px solid var(--border);border-right:1px solid var(--border);border-bottom:1px solid var(--border);border-radius:0 var(--r) var(--r) 0;padding:12px 16px;margin:14px 0;font-style:italic;font-size:.92rem;color:var(--muted)}
+.ctag{display:inline-block;background:var(--navy);color:#fff;font:700 .7rem/1 sans-serif;padding:2px 8px;border-radius:4px;letter-spacing:.04em;vertical-align:middle}
+.alist{list-style:none;padding:0}
+.aitem{display:flex;gap:14px;align-items:flex-start;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:10px}
+.aico{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.05rem;flex-shrink:0;margin-top:2px}
+.im{background:#dbeafe}.ip{background:#dcfce7}.iq{background:#fce7f3}
+.abdy{flex:1;min-width:0}
+.atit{font:700 .93rem/1.35 sans-serif;color:var(--navy);margin-bottom:4px}
+.adsc{font-size:.875rem;color:var(--muted);margin:0;line-height:1.55}
+.abg{display:inline-block;font:700 .68rem/1 sans-serif;padding:2px 7px;border-radius:10px;margin-left:5px;vertical-align:middle;white-space:nowrap}
+.bm{background:#dbeafe;color:#1d4ed8}.bg{background:#dcfce7;color:#15803d}.bq{background:#fce7f3;color:#9d174d}
+.ci{background:var(--card);border-left:4px solid var(--teal);border-top:1px solid var(--border);border-right:1px solid var(--border);border-bottom:1px solid var(--border);border-radius:0 var(--r) var(--r) 0;padding:14px 18px;margin-bottom:12px}
+.cn{font:700 .95rem/1.3 sans-serif;color:var(--navy);margin-bottom:5px}
+.math{background:#f1f5f9;border:1px solid var(--border);border-radius:6px;padding:12px 16px;font:400 .85rem/1.75 'Courier New',Courier,monospace;margin:8px 0 0;overflow-x:auto;white-space:pre}
+.cl{border-radius:var(--r);padding:18px 20px;margin-bottom:16px}
+.cl-t{font:700 .9rem/1.3 sans-serif;margin-bottom:8px}
+.cl p,.cl ul,.cl ol{font-size:.9rem}
+.cl>*:last-child{margin-bottom:0}
+.tip{background:#fffbeb;border:1px solid #fcd34d;border-left:4px solid #f59e0b}
+.tip .cl-t{color:#92400e}
+.bridge{background:#f0fdf4;border:1px solid #86efac;border-left:4px solid #22c55e}
+.bridge .cl-t{color:#14532d}
+.info{background:#eff6ff;border:1px solid #93c5fd;border-left:4px solid #3b82f6}
+.info .cl-t{color:#1e3a8a}
+.ahead{background:#faf5ff;border:1px solid #d8b4fe;border-left:4px solid #8b5cf6}
+.ahead .cl-t{color:#4c1d95}
+.chain{display:flex;flex-direction:column;gap:0;margin:14px 0 6px}
+.ch-row{display:flex;align-items:center;gap:12px;padding:3px 0}
+.ch-box{background:var(--navy);color:#fff;font:700 .8rem/1 sans-serif;padding:7px 12px;border-radius:5px;min-width:52px;text-align:center;flex-shrink:0}
+.ch-lbl{font:400 .85rem/1.4 sans-serif;color:var(--muted)}
+.ch-arr{color:var(--teal);font-size:1.2rem;padding-left:18px;line-height:1;user-select:none}
+.cklist{list-style:none;padding:0;font-size:.9rem}
+.cklist li{padding:7px 0;border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:flex-start}
+.cklist li:last-child{border-bottom:none}
+.ck{color:var(--teal);font-size:1rem;flex-shrink:0;margin-top:2px}
+footer{max-width:900px;margin:0 auto;padding:20px;border-top:1px solid var(--border);text-align:center;font:400 .78rem/1.6 sans-serif;color:var(--muted)}
+@media(max-width:600px){.hero{padding:36px 16px 32px}main{padding:24px 16px 56px}.hmeta{gap:10px}}
+</style>
+</head>
+<body>
+
+<a class="skip" href="#main-content">Skip to main content</a>
+
+<nav aria-label="Page sections">
+  <span class="nlbl" aria-hidden="true">Week 11</span>
+  <ul class="nlinks">
+    <li><a href="#welcome">Welcome</a></li>
+    <li><a href="#goals">Learning Goals</a></li>
+    <li><a href="#activities">Activities</a></li>
+    <li><a href="#concepts">Key Concepts</a></li>
+    <li><a href="#connections">Prior Knowledge</a></li>
+    <li><a href="#ahead">Looking Ahead</a></li>
+    <li><a href="#tips">Study Tips</a></li>
+  </ul>
+</nav>
+
+<header class="hero">
+  <div class="badge">Week 11 of 17</div>
+  <h1>Recursion and Recurrence Relations</h1>
+  <p>The bridge between mathematical proof and algorithmic analysis — where the tools of the first half connect directly to algorithm design, correctness, and complexity.</p>
+  <div class="hmeta">
+    <span><strong>Course:</strong> CSC 240 – Discrete Structures</span>
+    <span><strong>CSLO:</strong> CSLO 4</span>
+    <span><strong>Modules:</strong> 11.1 – 11.5</span>
+    <span><strong>Graded:</strong> PE-08 · PS-07</span>
+  </div>
+</header>
+
+<main id="main-content">
+
+<!-- ══════════════════ 1. WELCOME ══════════════════ -->
+<section id="welcome" aria-labelledby="h-welcome">
+  <div class="sh"><div class="sn" aria-hidden="true">1</div><h2 id="h-welcome">Welcome and Weekly Focus</h2></div>
+
+  <div class="card">
+    <p>Welcome to <strong>Week 11</strong> — the pivotal transition point of the semester. This is the <em>bridge week</em>: the first content week of the second half of CSC 240, and the week where the mathematical tools you have been building since Week 1 connect directly to how algorithms are designed, analyzed, and proven correct.</p>
+    <p>The first ten weeks gave you the foundations — sets, relations, logic, proof techniques, counting, and probability. Starting this week, those foundations drive algorithm analysis. <strong>Mathematical induction meets recursive programming. Recurrence relations become your primary language for expressing and measuring algorithmic complexity.</strong></p>
+    <p>Week 11 combines what were originally two separate weeks of content into one intensive week per the Rev 1 course restructure. You will move through recursive definitions, algorithm tracing, induction-based correctness proofs, the characteristic equation method, and the Master Theorem. By the end of this week, you will be able to derive — not just recite — why merge sort runs in Θ(n log n).</p>
+  </div>
+
+  <div class="cl bridge">
+    <p class="cl-t">🌉 Why Week 11 Is the Bridge Week</p>
+    <p>Weeks 1–10 developed the <em>language and logic</em> of discrete mathematics. Weeks 12–17 apply that logic to graph and tree algorithms. Week 11 is the explicit link. The induction structure from Week 6 becomes the formal tool for proving recursive algorithms correct. Recurrence relations become the method for expressing and solving algorithm complexity. Every remaining week in the course builds directly on what you learn here.</p>
+  </div>
+</section>
+
+<!-- ══════════════════ 2. LEARNING GOALS ══════════════════ -->
+<section id="goals" aria-labelledby="h-goals">
+  <div class="sh"><div class="sn" aria-hidden="true">2</div><h2 id="h-goals">What You Will Be Able to Do</h2></div>
+
+  <p>By the end of Week 11, you will have achieved ten learning objectives organized into three thematic groups. All ten map to <span class="ctag">CSLO 4</span>.</p>
+
+  <div class="cslo-q" role="note">
+    <strong>CSLO 4 (verbatim):</strong> Explain the relationship between mathematical induction and recursion/recurrence equations, and their relationship to computing systems.
+  </div>
+
+  <div class="og">
+    <div class="og-hd">Group A — Recursion Fundamentals &nbsp;·&nbsp; Objectives 1–4</div>
+    <div class="og-bd">
+      <ol>
+        <li>Write recursive definitions for sequences, sets, and structures.</li>
+        <li>Implement and trace recursive algorithms using recursion tree diagrams.</li>
+        <li>Convert between recursive and iterative implementations and identify tail recursion.</li>
+        <li>Prove recursive algorithm correctness and termination using mathematical induction.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="og">
+    <div class="og-hd">Group B — Recurrence Relations &nbsp;·&nbsp; Objectives 5–8</div>
+    <div class="og-bd">
+      <ol start="5">
+        <li>Define recurrence relations precisely, including initial conditions needed to guarantee a unique solution.</li>
+        <li>Model algorithmic problems using recurrence relations.</li>
+        <li>Solve linear homogeneous recurrence relations using the characteristic equation method.</li>
+        <li>Identify and solve linear non-homogeneous recurrences using the particular-solution approach.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="og">
+    <div class="og-hd">Group C — Master Theorem and Complexity Patterns &nbsp;·&nbsp; Objectives 9–10</div>
+    <div class="og-bd">
+      <ol start="9">
+        <li>Apply the Master Theorem to determine the time complexity of divide-and-conquer algorithms.</li>
+        <li>Recognize common recurrence patterns — Fibonacci, sequential search, merge sort, binary search — and connect their closed-form solutions to Big-O and Θ complexity classes.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ 3. ACTIVITIES ══════════════════ -->
+<section id="activities" aria-labelledby="h-activities">
+  <div class="sh"><div class="sn" aria-hidden="true">3</div><h2 id="h-activities">This Week's Activities</h2></div>
+
+  <p>All items below are required this week. Complete the learning modules <strong>in order</strong> before submitting graded work — each module depends on the one before it.</p>
+
+  <h3>Learning Modules — Complete in Order</h3>
+  <ul class="alist" role="list">
+    <li class="aitem">
+      <div class="aico im" aria-hidden="true">📖</div>
+      <div class="abdy">
+        <div class="atit">Module 11.1 — Recursive Definitions and Structures <span class="abg bm">Module</span></div>
+        <p class="adsc">Establishes the precise mathematical meaning of recursion using base-case / recursive-case form for sequences, sets, and structures. Complete the knowledge check before proceeding to Module 11.2. Supports PE-08 and PS-07.</p>
+      </div>
+    </li>
+    <li class="aitem">
+      <div class="aico im" aria-hidden="true">📖</div>
+      <div class="abdy">
+        <div class="atit">Module 11.2 — Recursive Algorithms: Implementation, Tracing, and Iteration <span class="abg bm">Module</span></div>
+        <p class="adsc">Write and trace recursive algorithms in pseudocode and Java/C++. Build recursion trees level by level. Compare recursive and iterative implementations and identify tail recursion. Supports the recursive-vs-iterative comparison component of PE-08.</p>
+      </div>
+    </li>
+    <li class="aitem">
+      <div class="aico im" aria-hidden="true">📖</div>
+      <div class="abdy">
+        <div class="atit">Module 11.3 — Recursion ↔ Mathematical Induction: Correctness Proofs <span class="abg bm">Module</span></div>
+        <p class="adsc">Formalizes the structural parallel between recursion and induction. Proves recursive algorithm correctness and termination using induction. Work through both the factorial and Fibonacci correctness proof examples. This module is the primary foundation for PS-07.</p>
+      </div>
+    </li>
+    <li class="aitem">
+      <div class="aico im" aria-hidden="true">📖</div>
+      <div class="abdy">
+        <div class="atit">Module 11.4 — Recurrence Relations: Definitions, Modeling, and Solving <span class="abg bm">Module</span></div>
+        <p class="adsc">Defines recurrence relations precisely and models algorithm running times as recurrences. Applies the characteristic equation method for homogeneous and non-homogeneous cases. Complete the characteristic equation knowledge check before proceeding to Module 11.5.</p>
+      </div>
+    </li>
+    <li class="aitem">
+      <div class="aico im" aria-hidden="true">📖</div>
+      <div class="abdy">
+        <div class="atit">Module 11.5 — Master Theorem, PE-08 Preparation, and Quiz 4 Preview <span class="abg bm">Module</span></div>
+        <p class="adsc">Applies the Master Theorem to classic divide-and-conquer algorithms across all three cases. Complete the module self-assessment before submitting PE-08. Use the Quiz 4 preview materials to begin preparation for the Week 13 assessment.</p>
+      </div>
+    </li>
+  </ul>
+
+  <h3>Graded Assignments</h3>
+  <ul class="alist" role="list">
+    <li class="aitem">
+      <div class="aico ip" aria-hidden="true">💻</div>
+      <div class="abdy">
+        <div class="atit">PE-08 — Recurrence Relation Solver <span class="abg bg">30 pts</span></div>
+        <p class="adsc">Implement a program in Java or C++ with four components: (1) accept a recurrence relation as input and generate the first <em>n</em> terms; (2) apply the characteristic equation method to solve a linear homogeneous recurrence; (3) apply the Master Theorem to merge sort and binary search, identifying which case applies; (4) compare recursive and iterative implementations for at least one algorithm. Submit as <code>LastName_FirstName_PE08_Week11.zip</code>. Graded: correctness 50%, code quality 25%, documentation 15%, testing 10%.</p>
+      </div>
+    </li>
+    <li class="aitem">
+      <div class="aico ip" aria-hidden="true">✏️</div>
+      <div class="abdy">
+        <div class="atit">PS-07 — Recursion and Mathematical Induction <span class="abg bg">20 pts</span></div>
+        <p class="adsc">Written problem set covering: writing and interpreting recursive definitions; proving a recursive algorithm correct and terminating using induction; setting up and iterating recurrence relations; explaining the structural correspondence between induction and recursion. Submit as <code>LastName_FirstName_PS07.pdf</code>. Graded: mathematical correctness 60%, proof structure 20%, clarity 15%, completeness 5%.</p>
+      </div>
+    </li>
+  </ul>
+
+  <h3>Upcoming Assessment — Begin Preparation This Week</h3>
+  <ul class="alist" role="list">
+    <li class="aitem">
+      <div class="aico iq" aria-hidden="true">📝</div>
+      <div class="abdy">
+        <div class="atit">Quiz 4 — Early Preparation Note <span class="abg bq">Administered End of Week 13</span></div>
+        <p class="adsc">Quiz 4 covers Weeks 11–13: Recursion, Recurrence Relations, Graph Introduction, and Graph Traversal. Approximately one-third of the quiz draws directly from this week's content. The most effective preparation strategy is to rework PE-08 and PS-07 problems after submission and to complete the self-assessment in Module 11.5. Do not wait until Week 13 to begin reviewing Week 11 material.</p>
+      </div>
+    </li>
+  </ul>
+</section>
+
+<!-- ══════════════════ 4. KEY CONCEPTS ══════════════════ -->
+<section id="concepts" aria-labelledby="h-concepts">
+  <div class="sh"><div class="sn" aria-hidden="true">4</div><h2 id="h-concepts">Key Concepts to Focus On</h2></div>
+
+  <p>These are the conceptual core of Week 11. Each one appears in both graded assignments and in Quiz 4.</p>
+
+  <div class="ci">
+    <p class="cn">The Recursion ↔ Induction Structural Parallel</p>
+    <p>A recursive algorithm and an induction proof share an identical two-part structure: the <em>base case</em> in recursion corresponds to the <em>inductive base</em>, and the <em>recursive case</em> corresponds to the <em>inductive step</em>. This is a formal correspondence — not a loose analogy — that allows you to use mathematical induction to prove any recursive algorithm correct. This is the central CSLO 4 theme and the conceptual core of Module 11.3. If you internalize one idea this week, make it this one.</p>
+  </div>
+
+  <div class="ci">
+    <p class="cn">The Characteristic Equation Method</p>
+    <p>Given a linear homogeneous recurrence such as F(n) = F(n−1) + F(n−2), you find an exact closed-form solution by forming and solving the characteristic polynomial, then applying initial conditions to determine the unknown constants. This is the algebraic core of Module 11.4 and is directly required by PE-08 component (2). Make sure your polynomial algebra is solid before starting Module 11.4.</p>
+    <div class="math" aria-label="Fibonacci characteristic equation derivation">Fibonacci closed form:
+  Recurrence:   F(n) = F(n−1) + F(n−2),   F(0) = 0,  F(1) = 1
+  Char. eqn:    r² − r − 1 = 0
+  Roots:        r = (1 ± √5) / 2   →   φ = (1+√5)/2,  ψ = (1−√5)/2
+  General soln: F(n) = A·φⁿ + B·ψⁿ
+  Apply I.C.:   A = 1/√5,  B = −1/√5     (Binet's formula)</div>
+  </div>
+
+  <div class="ci">
+    <p class="cn">The Master Theorem</p>
+    <p>The Master Theorem provides a fast, pattern-based method to determine the complexity of divide-and-conquer algorithms from a recurrence of standard form — without working through the full characteristic equation. You must know all three cases and be able to identify which applies. This is the primary topic of Module 11.5 and is required in PE-08 component (3).</p>
+    <div class="math" aria-label="Master Theorem statement and classic applications">Standard form:   T(n) = a·T(n/b) + f(n),   a ≥ 1,  b > 1
+
+  Case 1:  f(n) = O(n^(log_b(a) − ε))   →   T(n) = Θ(n^(log_b(a)))
+  Case 2:  f(n) = Θ(n^(log_b(a)))        →   T(n) = Θ(n^(log_b(a)) · log n)
+  Case 3:  f(n) = Ω(n^(log_b(a) + ε))   →   T(n) = Θ(f(n))
+
+  Merge sort:    T(n) = 2T(n/2) + Θ(n)   →  a=2, b=2  →  Case 2  →  Θ(n log n)
+  Binary search: T(n) = T(n/2)  + Θ(1)   →  a=1, b=2  →  Case 2  →  Θ(log n)</div>
+  </div>
+
+  <div class="ci">
+    <p class="cn">PE-08 Four-Component Structure</p>
+    <p>PE-08 has four distinct components, each drawing from a specific module: (1) input and term generation from Modules 11.1 and 11.4; (2) characteristic equation solver from Module 11.4; (3) Master Theorem demonstration from Module 11.5; (4) recursive vs. iterative comparison from Module 11.2. Plan your program structure around these four requirements <em>before</em> writing any code. Building one component after completing each relevant module is far more effective than writing everything at the end of the week.</p>
+  </div>
+
+  <div class="ci">
+    <p class="cn">Four Common Recurrence Patterns</p>
+    <p>These four patterns appear throughout algorithm analysis and should be recognizable by sight by the end of this week. Knowing them will significantly speed up both Quiz 4 and the Final Project analysis document.</p>
+    <div class="math" aria-label="Four common recurrence patterns">Fibonacci:          T(n) = T(n−1) + T(n−2)           →  exponential growth
+Sequential search:  T(n) = T(n−1) + 1,   T(1) = 1   →  Θ(n)
+Merge sort:         T(n) = 2T(n/2) + n,  T(1) = 1   →  Θ(n log n)
+Binary search:      T(n) = T(n/2) + 1,   T(1) = 1   →  Θ(log n)</div>
+  </div>
+</section>
+
+<!-- ══════════════════ 5. PRIOR KNOWLEDGE ══════════════════ -->
+<section id="connections" aria-labelledby="h-connections">
+  <div class="sh"><div class="sn" aria-hidden="true">5</div><h2 id="h-connections">Connecting to What You Already Know</h2></div>
+
+  <div class="cl bridge">
+    <p class="cl-t">🔗 Week 6 — Mathematical Induction (Direct Foundation)</p>
+    <p>In Week 6, you proved summation formulas and divisibility properties using mathematical induction: establish a base case, assume the statement true for <em>k</em>, then show it must hold for <em>k + 1</em>. That exact two-part structure — base case and inductive step — is the structure of every recursive algorithm you encounter this week.</p>
+    <p>When Module 11.3 asks you to prove that a recursive factorial function correctly computes n!, you are writing a Week 6 induction proof applied to code. Strong induction — also from Week 6 — is the foundation for structural induction on recursively defined sets. If your Week 6 induction proofs felt unsteady, review them before starting Module 11.3.</p>
+  </div>
+
+  <div class="cl info">
+    <p class="cl-t">📋 Week 10 — Review Week (Immediate Prior Week)</p>
+    <p>Week 10 was an ungraded review week designed to consolidate Weeks 1–9 and bridge into Week 11. If you completed the suggested Week 10 activities, you reviewed induction proofs and worked through early recurrence examples. If not, do so now — your fluency with induction directly determines how quickly Module 11.3 will click.</p>
+  </div>
+
+  <h3>Prior Knowledge Map</h3>
+  <div class="card">
+    <ul style="margin:0">
+      <li><strong>Weeks 5–6 — Proof Techniques and Induction:</strong> Direct foundation for Module 11.3 — correctness proofs and termination arguments for recursive algorithms.</li>
+      <li><strong>Week 6 — Well-Ordering Principle:</strong> Used to prove termination — every recursive call must strictly reduce toward the base case.</li>
+      <li><strong>Weeks 3–4 — Predicate Logic and Quantifiers:</strong> Formal language for stating induction hypotheses precisely in written proofs.</li>
+      <li><strong>CSC 221 prerequisite — Recursive Programming:</strong> You have already written recursive functions in Java or C++. This week formalizes what you already know how to do — and proves it correct.</li>
+      <li><strong>MTH 80 prerequisite — Intermediate Algebra:</strong> Solving quadratic and polynomial equations is essential for the characteristic equation method in Module 11.4. Review polynomial factoring and the quadratic formula before starting Module 11.4 if needed.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ══════════════════ 6. LOOKING AHEAD ══════════════════ -->
+<section id="ahead" aria-labelledby="h-ahead">
+  <div class="sh"><div class="sn" aria-hidden="true">6</div><h2 id="h-ahead">Looking Ahead</h2></div>
+
+  <div class="cl ahead">
+    <p class="cl-t">🗺 Week 12 — Introduction to Graphs (and beyond)</p>
+    <p>Week 12 introduces graph terminology, representations (adjacency matrix and adjacency list), the handshaking lemma, and special graph types — shifting the course into CSLO 3 territory. The recurrence and complexity skills you develop this week carry directly forward: analyzing graph traversal algorithms in Weeks 13 and 14 requires exactly the same practice of expressing and solving recurrences that you build in Week 11. Every graph algorithm you encounter in Weeks 12–17 has a complexity story told in the same language you are learning now.</p>
+  </div>
+</section>
+
+<!-- ══════════════════ 7. STUDY TIPS ══════════════════ -->
+<section id="tips" aria-labelledby="h-tips">
+  <div class="sh"><div class="sn" aria-hidden="true">7</div><h2 id="h-tips">How to Approach This Week</h2></div>
+
+  <div class="cl tip">
+    <p class="cl-t">💡 Suggested Study Strategy</p>
+    <p>Week 11 combines two weeks of original content. The modules have a strict conceptual dependency chain — do not skip ahead or attempt graded work before completing the relevant modules. Here is the recommended approach:</p>
+    <ul>
+      <li><strong>Start with Module 11.1</strong> even if recursion feels familiar from CSC 221. The mathematical formalism here is different from programming — it is the foundation for the correctness proofs in Module 11.3.</li>
+      <li><strong>After Module 11.2</strong>, begin outlining the recursive-vs-iterative component of PE-08 (component 4). You have everything you need for that piece.</li>
+      <li><strong>After Module 11.3</strong>, start drafting PS-07. The proof-writing is freshest immediately after the module.</li>
+      <li><strong>After Module 11.4</strong>, implement PE-08 components 1 and 2 (term generation and characteristic equation solver).</li>
+      <li><strong>After Module 11.5</strong>, implement PE-08 component 3 (Master Theorem), complete the full PE-08 submission, and review the Quiz 4 preview materials.</li>
+    </ul>
+  </div>
+
+  <h3>Module Dependency Chain</h3>
+  <div class="chain" aria-label="Module dependency order">
+    <div class="ch-row"><div class="ch-box">11.1</div><div class="ch-lbl">Recursive Definitions — mathematical foundation for everything that follows</div></div>
+    <div class="ch-row"><div class="ch-arr" aria-hidden="true">↓</div></div>
+    <div class="ch-row"><div class="ch-box">11.2</div><div class="ch-lbl">Recursive Algorithms — implementation, tracing, tail recursion, iteration</div></div>
+    <div class="ch-row"><div class="ch-arr" aria-hidden="true">↓</div></div>
+    <div class="ch-row"><div class="ch-box">11.3</div><div class="ch-lbl">Recursion ↔ Induction — correctness and termination proofs</div></div>
+    <div class="ch-row"><div class="ch-arr" aria-hidden="true">↓</div></div>
+    <div class="ch-row"><div class="ch-box">11.4</div><div class="ch-lbl">Recurrence Relations — modeling, characteristic equations, solving</div></div>
+    <div class="ch-row"><div class="ch-arr" aria-hidden="true">↓</div></div>
+    <div class="ch-row"><div class="ch-box">11.5</div><div class="ch-lbl">Master Theorem — PE-08 and Quiz 4 preparation</div></div>
+  </div>
+
+  <h3>Week 11 Completion Checklist</h3>
+  <ul class="cklist" role="list">
+    <li><span class="ck" aria-hidden="true">☐</span>Module 11.1 complete — including knowledge check</li>
+    <li><span class="ck" aria-hidden="true">☐</span>Module 11.2 complete — including recursion tree tool exploration</li>
+    <li><span class="ck" aria-hidden="true">☐</span>Module 11.3 complete — including both worked proofs and knowledge check</li>
+    <li><span class="ck" aria-hidden="true">☐</span>Module 11.4 complete — including characteristic equation knowledge check</li>
+    <li><span class="ck" aria-hidden="true">☐</span>Module 11.5 complete — including all application examples and self-assessment</li>
+    <li><span class="ck" aria-hidden="true">☐</span>PE-08 (Recurrence Relation Solver) submitted — all four components working</li>
+    <li><span class="ck" aria-hidden="true">☐</span>PS-07 (Recursion and Mathematical Induction) submitted as PDF</li>
+    <li><span class="ck" aria-hidden="true">☐</span>Quiz 4 preview materials reviewed — Week 11 portion noted for ongoing study</li>
+    <li><span class="ck" aria-hidden="true">☐</span>Ready to begin Week 12: Introduction to Graphs</li>
+  </ul>
+</section>
+
+</main>
+
+<footer>
+  <p>CSC 240 – Discrete Structures &nbsp;·&nbsp; Mendocino College &nbsp;·&nbsp; Spring 2026 &nbsp;·&nbsp; Week 11 of 17</p>
+  <p>Questions? Contact your instructor through Canvas or during office hours.</p>
+</footer>
+
+</body>
+</html>
