@@ -434,6 +434,51 @@ Closed form:       T(n) = (φⁿ − (1−φ)ⁿ) / √5</div>
         10⁻⁶ indicates an indexing or sign error in the polynomial construction.
       </div>
 
+      <div class="box warn" role="note">
+        <strong>⚙️ C++ Implementation Scope — Phase 3</strong>
+        For this C++ assignment, your Phase 3 solver should operate within
+        the following scope. Each constraint is explained so you understand
+        why the boundary exists, not just where it is.
+        <ul style="margin-top:7px;margin-bottom:4px">
+          <li>
+            <strong>Orders 1 and 2 only.</strong> Your solver only needs to
+            support first- and second-order recurrences. For order 1, the
+            characteristic equation is linear (<code>r − c₁ = 0</code>)
+            and the root is read directly. For order 2, apply the standard
+            quadratic formula to <code>r² − c₁r − c₂ = 0</code>. Solving
+            recurrences of order 3 or higher requires finding roots of a
+            degree-3 (or higher) polynomial, which has no general closed-form
+            formula and must be handled with numerical root-finding methods
+            (e.g., Newton's method, companion-matrix eigenvalues) that are
+            beyond the scope of this course.
+          </li>
+          <li>
+            <strong>Cramer's Rule for the 2×2 constant system.</strong>
+            Once you have two distinct characteristic roots r₁ and r₂,
+            apply the two initial conditions to form the 2×2 Vandermonde
+            system below, then solve for A₁ and A₂ using Cramer's Rule
+            (det = r₂ − r₁, which is non-zero whenever the roots are distinct):
+            <pre style="margin:6px 0 2px;font-size:.87rem">[ 1   1  ] [A₁]   [T(0)]
+[ r₁  r₂ ] [A₂] = [T(1)]</pre>
+            For a first-order recurrence, no system is needed: set A₁ = T(0)
+            directly.
+          </li>
+          <li>
+            <strong>Complex roots — detect and report, do not solve.</strong>
+            A second-order recurrence has complex characteristic roots when
+            the discriminant D = c₁² + 4c₂ is negative. Your solver should
+            check the discriminant, print a clear descriptive message
+            explaining that complex roots are out of scope, and exit the
+            characteristic-equation routine gracefully without crashing.
+            Full support for complex roots would require representing numbers
+            in a + bi form and applying Euler's formula to convert to a
+            sinusoidal closed form — both topics that are beyond this course.
+          </li>
+        </ul>
+        You may exceed these constraints for bonus credit (see the
+        repeated-root note in item 2 of the requirement list above).
+      </div>
+
       <label class="notes-lbl" for="n3">✏️ Design Notes — Phase 3</label>
       <textarea id="n3" name="n3"
         placeholder="How will you convert the coefficient list into a characteristic polynomial (watch the sign convention)? Which root-finding tool will you use? How will you set up and solve the linear system for A₁…Aₖ? What will you do if roots are complex? Describe your verification step."
