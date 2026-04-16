@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 12.4 – Special Graphs, Degree Properties, and Isomorphism | CSC 240</title>
+<style>
+/* ============================================================
+   BASE RESET & TYPOGRAPHY  (matches Module 12.1 template)
+   ============================================================ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:1rem;line-height:1.65;color:#1e1e1e;background:#f9f9fb;padding:0;margin:0}
+.page-wrap{max-width:960px;margin:0 auto;padding:1.25rem 1.5rem 3rem}
+h1,h2,h3,h4{color:#1a2238;font-weight:700;line-height:1.25}
+h1{font-size:1.75rem;margin-bottom:.35rem}
+h2{font-size:1.4rem;margin-top:2.25rem;margin-bottom:.75rem;padding-bottom:.35rem;border-bottom:2px solid #3366cc}
+h3{font-size:1.15rem;margin-top:1.5rem;margin-bottom:.5rem}
+p{margin-bottom:.85rem}
+a{color:#3366cc;text-decoration:underline}
+a:focus{outline:2px solid #3366cc;outline-offset:2px}
+ul,ol{margin:0 0 .85rem 1.5rem}
+li{margin-bottom:.35rem}
+strong{color:#1a2238}
+code{background:#eef1f7;padding:.15em .35em;border-radius:3px;font-size:.92em}
+
+/* ============================================================
+   TOP NAV BAR
+   ============================================================ */
+.top-nav{background:#1a2238;padding:.6rem 1.25rem;display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;position:sticky;top:0;z-index:100}
+.top-nav a{color:#fff;text-decoration:none;font-size:.85rem;padding:.3rem .65rem;border-radius:4px;transition:background .2s}
+.top-nav a:hover,.top-nav a:focus{background:#3366cc;outline:none}
+.top-nav .nav-title{font-weight:700;font-size:.95rem;margin-right:auto;color:#b8c7e0}
+
+/* ============================================================
+   MODULE HEADER
+   ============================================================ */
+.mod-header{background:linear-gradient(135deg,#1a2238 0%,#2c4a7c 100%);color:#fff;padding:1.75rem 1.5rem;border-radius:8px;margin-bottom:1.75rem}
+.mod-header .mod-label{font-size:.85rem;text-transform:uppercase;letter-spacing:.08em;color:#93b5e0;margin-bottom:.25rem}
+.mod-header h1{color:#fff;margin-bottom:.5rem}
+.mod-header .mod-meta{font-size:.88rem;color:#c4d4ec;line-height:1.5}
+
+/* ============================================================
+   CALLOUT BOXES
+   ============================================================ */
+.callout{border-left:4px solid #3366cc;background:#eef3fc;padding:1rem 1.15rem;border-radius:0 6px 6px 0;margin:1.15rem 0}
+.callout-title{font-weight:700;margin-bottom:.35rem;font-size:1rem}
+.callout-connect{border-left-color:#6a1b9a;background:#f3ecf8}
+.callout-connect .callout-title{color:#6a1b9a}
+.callout-warn{border-left-color:#e65100;background:#fff4e5}
+.callout-warn .callout-title{color:#bf360c}
+.callout-key{border-left-color:#2e7d32;background:#e8f5e9}
+.callout-key .callout-title{color:#2e7d32}
+.callout-example{border-left-color:#0277bd;background:#e1f5fe}
+.callout-example .callout-title{color:#01579b}
+
+/* ============================================================
+   DEFINITION BLOCK
+   ============================================================ */
+.def-block{background:#fff;border:1px solid #c8d6e5;border-left:4px solid #3366cc;padding:1rem 1.15rem;border-radius:0 6px 6px 0;margin:1rem 0}
+.def-block .def-label{font-weight:700;color:#3366cc;font-size:.88rem;text-transform:uppercase;letter-spacing:.04em;margin-bottom:.25rem}
+
+/* ============================================================
+   TABLES
+   ============================================================ */
+table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:.93rem}
+th,td{border:1px solid #c8d6e5;padding:.55rem .75rem;text-align:left}
+th{background:#1a2238;color:#fff;font-weight:600}
+tr:nth-child(even){background:#f4f6fa}
+caption{font-weight:700;margin-bottom:.35rem;text-align:left;font-size:1rem}
+
+/* ============================================================
+   SVG GRAPH DIAGRAMS
+   ============================================================ */
+.diagram-wrap{text-align:center;margin:1.15rem 0}
+.diagram-wrap svg{max-width:100%;height:auto}
+.diagram-caption{font-size:.85rem;color:#555;margin-top:.35rem;font-style:italic}
+
+/* ============================================================
+   COLLAPSIBLE SECTIONS  (details/summary)
+   ============================================================ */
+details{background:#fff;border:1px solid #c8d6e5;border-radius:6px;margin:.85rem 0;padding:0}
+details>summary{cursor:pointer;font-weight:700;padding:.75rem 1rem;list-style:none;display:flex;align-items:center;gap:.45rem;user-select:none;font-size:1rem;color:#1a2238;background:#f4f6fa;border-radius:6px}
+details>summary::-webkit-details-marker{display:none}
+details>summary::before{content:'▶';font-size:.75rem;transition:transform .2s;display:inline-block;width:1rem;text-align:center;flex-shrink:0}
+details[open]>summary::before{transform:rotate(90deg)}
+details>summary:focus{outline:2px solid #3366cc;outline-offset:-2px}
+details .detail-body{padding:.75rem 1rem 1rem}
+
+/* ============================================================
+   KNOWLEDGE-CHECK BLOCKS
+   ============================================================ */
+.kc-block{background:#fff;border:2px solid #3366cc;border-radius:8px;padding:1.15rem;margin:1.5rem 0}
+.kc-block h3{color:#3366cc;margin-top:0}
+.kc-options{list-style:none;margin:0;padding:0}
+.kc-options li{margin-bottom:.45rem}
+.kc-btn{display:block;width:100%;text-align:left;background:#f4f6fa;border:2px solid #c8d6e5;border-radius:6px;padding:.6rem .85rem;font-size:.95rem;cursor:pointer;transition:border-color .2s,background .2s;color:#1e1e1e;font-family:inherit;line-height:1.45}
+.kc-btn:hover{border-color:#3366cc;background:#eef3fc}
+.kc-btn:focus{outline:2px solid #3366cc;outline-offset:2px}
+.kc-btn.correct{border-color:#2e7d32;background:#e8f5e9}
+.kc-btn.incorrect{border-color:#c62828;background:#fce4ec}
+.kc-btn:disabled{cursor:default;opacity:.85}
+.kc-feedback{display:none;padding:.75rem;margin-top:.65rem;border-radius:6px;font-size:.93rem;line-height:1.5}
+.kc-feedback.show{display:block}
+.correct-fb{color:#2e7d32;font-weight:700}
+.incorrect-fb{color:#c62828;font-weight:700}
+.kc-feedback.fb-correct{background:#e8f5e9;border:1px solid #a5d6a7}
+.kc-feedback.fb-incorrect{background:#fce4ec;border:1px solid #ef9a9a}
+
+/* ============================================================
+   PROOF / STEP BLOCKS
+   ============================================================ */
+.proof-block{background:#fff;border:1px solid #c8d6e5;border-left:4px solid #6a1b9a;padding:1rem 1.15rem;border-radius:0 6px 6px 0;margin:1rem 0}
+.proof-label{font-weight:700;color:#6a1b9a;font-size:.88rem;text-transform:uppercase;letter-spacing:.04em;margin-bottom:.35rem}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media(max-width:600px){
+  .page-wrap{padding:1rem .75rem 2rem}
+  .mod-header{padding:1.25rem 1rem}
+  h1{font-size:1.35rem}h2{font-size:1.2rem}
+  table{font-size:.82rem}
+  th,td{padding:.4rem .5rem}
+  .top-nav{padding:.5rem .75rem}
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     TOP NAVIGATION BAR
+     ============================================================ -->
+<nav class="top-nav" aria-label="Module section navigation">
+  <span class="nav-title">Module 12.4</span>
+  <a href="#handshaking">Handshaking Lemma</a>
+  <a href="#degree-seq">Degree Sequences</a>
+  <a href="#special-graphs">Special Graphs</a>
+  <a href="#isomorphism">Isomorphism</a>
+  <a href="#checks">Knowledge Checks</a>
+</nav>
+
+<div class="page-wrap">
+
+<!-- ============================================================
+     MODULE HEADER
+     ============================================================ -->
+<header class="mod-header">
+  <div class="mod-label">CSC 240 – Week 12, Module 4 of 4</div>
+  <h1>Special Graphs, Degree Properties, and Isomorphism</h1>
+  <div class="mod-meta">
+    Estimated time: 45–60 minutes &nbsp;|&nbsp; CSLO 3 &nbsp;|&nbsp;
+    Prepares you for PS-08 Problems 7–9 and Quiz 4
+  </div>
+</header>
+
+<!-- ============================================================
+     INTRODUCTION
+     ============================================================ -->
+<p>In Modules 12.1–12.3 you learned the vocabulary of graphs, distinguished among graph types, and built adjacency matrices and adjacency lists. This final module of Week 12 gives you three powerful tools for <em>analyzing</em> graphs rather than just describing them:</p>
+
+<ol>
+  <li><strong>The Handshaking Lemma</strong> — a universal counting identity that connects vertex degrees to the number of edges.</li>
+  <li><strong>Special graph families</strong> — named structures ($$K_n$$, $$K_{m,n}$$, $$C_n$$, $$P_n$$, $$W_n$$) whose properties you can recall instantly.</li>
+  <li><strong>Graph isomorphism</strong> — a formal way to decide whether two graphs that <em>look</em> different are really the same structure.</li>
+</ol>
+
+<p>Together, these ideas let you classify graphs, test whether a proposed degree list is even possible, and compare graphs rigorously. You will use every one of these skills on PS-08 and Quiz 4.</p>
+
+<div class="callout callout-connect">
+  <div class="callout-title">&#128279; Connections to Prior Weeks</div>
+  <p>The <strong>Handshaking Lemma proof</strong> uses the direct-proof technique from <strong>Week 5</strong>. The edge count of the complete graph $$K_n$$ is $$\binom{n}{2}$$, the same combination formula from <strong>Week 7</strong>. Graph isomorphism hinges on <strong>bijections</strong>, which you studied in <strong>Week 2</strong>. This module weaves those earlier ideas into a graph-theory setting.</p>
+</div>
+
+<!-- ============================================================
+     SECTION 1: THE HANDSHAKING LEMMA
+     ============================================================ -->
+<h2 id="handshaking">1 &nbsp; The Handshaking Lemma</h2>
+
+<h3>1.1 &nbsp; Statement</h3>
+
+<div class="def-block">
+  <div class="def-label">Theorem — Handshaking Lemma</div>
+  <p>For any undirected graph $$G = (V, E)$$,</p>
+  $$\sum_{v \in V} \deg(v) \;=\; 2\,|E|$$
+  <p>In words: the sum of the degrees of all vertices equals twice the number of edges.</p>
+</div>
+
+<h3>1.2 &nbsp; Intuition</h3>
+
+<p>Why does this work? Consider any single edge $$\{u, v\}$$. It is incident to vertex $$u$$ (adding 1 to $$\deg(u)$$) <em>and</em> incident to vertex $$v$$ (adding 1 to $$\deg(v)$$). So every edge contributes exactly <strong>2</strong> to the total degree sum — once for each endpoint. Since each of the $$|E|$$ edges contributes 2, the total is $$2|E|$$.</p>
+
+<p>Think of a handshake: every handshake involves two hands. If you count the total number of hands involved in all handshakes, you get twice the number of handshakes.</p>
+
+<h3>1.3 &nbsp; Proof Sketch (Direct Proof)</h3>
+
+<details>
+  <summary>Show proof sketch</summary>
+  <div class="detail-body">
+    <div class="proof-block">
+      <div class="proof-label">Proof (Direct)</div>
+      <p><strong>Goal:</strong> Show that $$\displaystyle\sum_{v \in V} \deg(v) = 2|E|$$.</p>
+      <p><strong>Step 1.</strong> Define a counting function. For each edge $$e \in E$$ and each vertex $$v \in V$$, let</p>
+      $$
+        f(v, e) = \begin{cases} 1 & \text{if } e \text{ is incident to } v \\ 0 & \text{otherwise} \end{cases}
+      $$
+      <p><strong>Step 2.</strong> Count by vertex. For a fixed vertex $$v$$,</p>
+      $$\sum_{e \in E} f(v, e) = \deg(v)$$
+      <p>because $$f(v,e) = 1$$ exactly for the edges incident to $$v$$.</p>
+      <p><strong>Step 3.</strong> Sum over all vertices:</p>
+      $$\sum_{v \in V}\sum_{e \in E} f(v, e) = \sum_{v \in V} \deg(v)$$
+      <p><strong>Step 4.</strong> Count by edge. For a fixed edge $$e = \{u, w\}$$,</p>
+      $$\sum_{v \in V} f(v, e) = 2$$
+      <p>because $$e$$ is incident to exactly its two endpoints $$u$$ and $$w$$.</p>
+      <p><strong>Step 5.</strong> Sum over all edges:</p>
+      $$\sum_{e \in E}\sum_{v \in V} f(v, e) = \sum_{e \in E} 2 = 2|E|$$
+      <p><strong>Step 6.</strong> The double sums in Steps 3 and 5 count the same quantity (just in different order), so:</p>
+      $$\sum_{v \in V} \deg(v) = 2|E| \qquad \blacksquare$$
+      <p><em>This is a direct proof — the same technique you practiced in Week 5. We assumed nothing beyond the definition of a graph and counted the same set of incidences two ways.</em></p>
+    </div>
+  </div>
+</details>
+
+<h3>1.4 &nbsp; Corollary: Even Number of Odd-Degree Vertices</h3>
+
+<div class="def-block">
+  <div class="def-label">Corollary</div>
+  <p>In any undirected graph, the number of vertices with <strong>odd degree</strong> is <strong>even</strong>.</p>
+</div>
+
+<details>
+  <summary>Why is this true?</summary>
+  <div class="detail-body">
+    <p>The Handshaking Lemma says the total degree sum is $$2|E|$$, which is even. Partition the vertices into two groups: those with even degree and those with odd degree.</p>
+    $$\underbrace{\sum_{\text{even-deg vertices}} \deg(v)}_{\text{even}} + \underbrace{\sum_{\text{odd-deg vertices}} \deg(v)}_{\text{must also be even}} = 2|E| \;(\text{even})$$
+    <p>The first group's sum is even (a sum of even numbers). For the total to be even, the second group's sum must also be even. A sum of odd numbers is even only when there is an <em>even count</em> of them. Therefore the number of odd-degree vertices is even.</p>
+  </div>
+</details>
+
+<h3>1.5 &nbsp; Worked Examples</h3>
+
+<div class="callout callout-example">
+  <div class="callout-title">&#9997; Example 1 — Edge Count from a Degree List</div>
+  <p><strong>Problem:</strong> A graph has five vertices with degrees 3, 3, 2, 2, 4. How many edges does it have?</p>
+  <p><strong>Solution:</strong></p>
+  $$\sum \deg(v) = 3 + 3 + 2 + 2 + 4 = 14$$
+  $$|E| = \frac{14}{2} = 7$$
+  <p>The graph has <strong>7 edges</strong>.</p>
+</div>
+
+<div class="callout callout-example">
+  <div class="callout-title">&#9997; Example 2 — Testing a Proposed Degree Sequence</div>
+  <p><strong>Problem:</strong> Can a graph on 5 vertices have degree sequence (3, 3, 3, 3, 1)?</p>
+  <p><strong>Solution:</strong></p>
+  $$\sum \deg(v) = 3 + 3 + 3 + 3 + 1 = 13$$
+  <p>Since 13 is <strong>odd</strong>, the Handshaking Lemma says no such graph can exist. The degree sum must be even ($$2|E|$$).</p>
+</div>
+
+<!-- ============================================================
+     SECTION 2: DEGREE SEQUENCES
+     ============================================================ -->
+<h2 id="degree-seq">2 &nbsp; Degree Sequences</h2>
+
+<h3>2.1 &nbsp; Definition</h3>
+
+<div class="def-block">
+  <div class="def-label">Definition — Degree Sequence</div>
+  <p>The <strong>degree sequence</strong> of a graph $$G$$ is the list of vertex degrees arranged in <strong>non-increasing order</strong>. For example, if a graph has vertices with degrees 2, 4, 3, 2, 3, its degree sequence is $$(4, 3, 3, 2, 2)$$.</p>
+</div>
+
+<h3>2.2 &nbsp; The Even-Sum Necessary Condition</h3>
+
+<p>From the Handshaking Lemma, a sequence of non-negative integers $$(d_1, d_2, \ldots, d_n)$$ can be the degree sequence of a graph <strong>only if</strong> the sum $$d_1 + d_2 + \cdots + d_n$$ is even. This is a <em>necessary</em> condition but not always <em>sufficient</em>.</p>
+
+<h3>2.3 &nbsp; The Erdős–Gallai Theorem (Stated Without Proof)</h3>
+
+<div class="callout callout-key">
+  <div class="callout-title">&#128273; Erdős–Gallai Theorem (For Awareness)</div>
+  <p>A non-increasing sequence of non-negative integers $$(d_1, d_2, \ldots, d_n)$$ is the degree sequence of a simple graph if and only if the sum is even <strong>and</strong> for each $$k = 1, 2, \ldots, n$$:</p>
+  $$\sum_{i=1}^{k} d_i \;\leq\; k(k-1) + \sum_{i=k+1}^{n} \min(d_i, k)$$
+  <p>You do <strong>not</strong> need to memorize or prove this theorem. It is included so you know that a complete characterization exists. For this course, the even-sum test (Handshaking Lemma) is your primary tool, and you can verify small cases by attempting to construct a graph.</p>
+</div>
+
+<h3>2.4 &nbsp; Worked Example — Verify and Construct</h3>
+
+<div class="callout callout-example">
+  <div class="callout-title">&#9997; Example 3 — Is (4, 3, 3, 2, 2) Realizable?</div>
+  <p><strong>Step 1 — Even-sum test:</strong> $$4 + 3 + 3 + 2 + 2 = 14$$. Since 14 is even, the sequence <em>might</em> be realizable.</p>
+  <p><strong>Step 2 — Attempt construction:</strong> Label the vertices $$a, b, c, d, e$$ with target degrees 4, 3, 3, 2, 2.</p>
+  <ul>
+    <li>Vertex $$a$$ needs degree 4 — connect $$a$$ to all other vertices: $$\{a,b\}, \{a,c\}, \{a,d\}, \{a,e\}$$. Now $$\deg(a) = 4$$ ✓</li>
+    <li>Remaining needs: $$b$$ needs 2 more, $$c$$ needs 2 more, $$d$$ needs 1 more, $$e$$ needs 1 more.</li>
+    <li>Connect $$b$$ to $$c$$ and $$d$$: $$\{b,c\}, \{b,d\}$$. Now $$\deg(b) = 3$$ ✓, $$\deg(c) = 2$$ (needs 1 more), $$\deg(d) = 2$$ ✓</li>
+    <li>Connect $$c$$ to $$e$$: $$\{c,e\}$$. Now $$\deg(c) = 3$$ ✓, $$\deg(e) = 2$$ ✓</li>
+  </ul>
+  <p><strong>Result:</strong> $$E = \{\{a,b\}, \{a,c\}, \{a,d\}, \{a,e\}, \{b,c\}, \{b,d\}, \{c,e\}\}$$ — that is 7 edges, matching $$14/2 = 7$$. The degree sequence (4, 3, 3, 2, 2) is <strong>realizable</strong>. ✓</p>
+</div>
+
+<!-- ============================================================
+     SECTION 3: SPECIAL GRAPH FAMILIES
+     ============================================================ -->
+<h2 id="special-graphs">3 &nbsp; Special Graph Families</h2>
+
+<p>Certain graph structures appear so frequently that they have standard names and well-known properties. Memorizing these families lets you instantly know edge counts, degree sequences, and connectivity — and they serve as benchmark examples when testing algorithms.</p>
+
+<h3>3.1 &nbsp; Reference Table</h3>
+
+<table>
+  <caption>Table 1 — Special Graph Families</caption>
+  <thead>
+    <tr>
+      <th scope="col">Graph</th>
+      <th scope="col">Notation</th>
+      <th scope="col">Vertices</th>
+      <th scope="col">Edges</th>
+      <th scope="col">Degree Sequence</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Complete graph</td>
+      <td>$$K_n$$</td>
+      <td>$$n$$</td>
+      <td>$$\binom{n}{2} = \frac{n(n-1)}{2}$$</td>
+      <td>All degrees $$= n - 1$$</td>
+    </tr>
+    <tr>
+      <td>Complete bipartite</td>
+      <td>$$K_{m,n}$$</td>
+      <td>$$m + n$$</td>
+      <td>$$m \cdot n$$</td>
+      <td>$$m$$ vertices of degree $$n$$; $$n$$ vertices of degree $$m$$</td>
+    </tr>
+    <tr>
+      <td>Cycle</td>
+      <td>$$C_n$$ &nbsp;($$n \geq 3$$)</td>
+      <td>$$n$$</td>
+      <td>$$n$$</td>
+      <td>All degrees $$= 2$$</td>
+    </tr>
+    <tr>
+      <td>Path</td>
+      <td>$$P_n$$ &nbsp;($$n \geq 1$$)</td>
+      <td>$$n$$</td>
+      <td>$$n - 1$$</td>
+      <td>Two vertices of degree 1; rest degree 2</td>
+    </tr>
+    <tr>
+      <td>Wheel</td>
+      <td>$$W_n$$ &nbsp;($$n \geq 3$$)</td>
+      <td>$$n + 1$$</td>
+      <td>$$2n$$</td>
+      <td>Hub has degree $$n$$; $$n$$ rim vertices each degree 3</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>3.2 &nbsp; Diagrams of Small Examples</h3>
+
+<!-- K5 -->
+<div class="diagram-wrap">
+  <svg xmlns="http://www.w3.org/2000/svg" width="180" height="180" viewBox="0 0 180 180" role="img" aria-label="Complete graph K5 with 5 vertices and 10 edges forming a fully connected pentagon shape.">
+    <title>Complete graph K5</title>
+    <!-- edges -->
+    <line x1="90" y1="18" x2="163" y2="71" stroke="#3366cc" stroke-width="2"/>
+    <line x1="90" y1="18" x2="135" y2="157" stroke="#3366cc" stroke-width="2"/>
+    <line x1="90" y1="18" x2="45" y2="157" stroke="#3366cc" stroke-width="2"/>
+    <line x1="90" y1="18" x2="17" y2="71" stroke="#3366cc" stroke-width="2"/>
+    <line x1="163" y1="71" x2="135" y2="157" stroke="#3366cc" stroke-width="2"/>
+    <line x1="163" y1="71" x2="45" y2="157" stroke="#3366cc" stroke-width="2"/>
+    <line x1="163" y1="71" x2="17" y2="71" stroke="#3366cc" stroke-width="2"/>
+    <line x1="135" y1="157" x2="45" y2="157" stroke="#3366cc" stroke-width="2"/>
+    <line x1="135" y1="157" x2="17" y2="71" stroke="#3366cc" stroke-width="2"/>
+    <line x1="45" y1="157" x2="17" y2="71" stroke="#3366cc" stroke-width="2"/>
+    <!-- vertices -->
+    <circle cx="90" cy="18" r="10" fill="#1a2238"/><text x="90" y="22" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">1</text>
+    <circle cx="163" cy="71" r="10" fill="#1a2238"/><text x="163" y="75" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">2</text>
+    <circle cx="135" cy="157" r="10" fill="#1a2238"/><text x="135" y="161" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">3</text>
+    <circle cx="45" cy="157" r="10" fill="#1a2238"/><text x="45" y="161" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">4</text>
+    <circle cx="17" cy="71" r="10" fill="#1a2238"/><text x="17" y="75" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">5</text>
+  </svg>
+  <div class="diagram-caption">$$K_5$$: 5 vertices, $$\binom{5}{2} = 10$$ edges, every vertex degree 4</div>
+</div>
+
+<!-- K3,3 -->
+<div class="diagram-wrap">
+  <svg xmlns="http://www.w3.org/2000/svg" width="220" height="160" viewBox="0 0 220 160" role="img" aria-label="Complete bipartite graph K3,3 with two groups of 3 vertices and 9 crossing edges.">
+    <title>Complete bipartite graph K3,3</title>
+    <!-- left partition -->
+    <circle cx="40" cy="25" r="10" fill="#6a1b9a"/><text x="40" y="29" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">a</text>
+    <circle cx="40" cy="80" r="10" fill="#6a1b9a"/><text x="40" y="84" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">b</text>
+    <circle cx="40" cy="135" r="10" fill="#6a1b9a"/><text x="40" y="139" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">c</text>
+    <!-- right partition -->
+    <circle cx="180" cy="25" r="10" fill="#2e7d32"/><text x="180" y="29" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">1</text>
+    <circle cx="180" cy="80" r="10" fill="#2e7d32"/><text x="180" y="84" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">2</text>
+    <circle cx="180" cy="135" r="10" fill="#2e7d32"/><text x="180" y="139" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">3</text>
+    <!-- edges: each left to each right -->
+    <line x1="50" y1="25" x2="170" y2="25" stroke="#999" stroke-width="1.5"/>
+    <line x1="50" y1="25" x2="170" y2="80" stroke="#999" stroke-width="1.5"/>
+    <line x1="50" y1="25" x2="170" y2="135" stroke="#999" stroke-width="1.5"/>
+    <line x1="50" y1="80" x2="170" y2="25" stroke="#999" stroke-width="1.5"/>
+    <line x1="50" y1="80" x2="170" y2="80" stroke="#999" stroke-width="1.5"/>
+    <line x1="50" y1="80" x2="170" y2="135" stroke="#999" stroke-width="1.5"/>
+    <line x1="50" y1="135" x2="170" y2="25" stroke="#999" stroke-width="1.5"/>
+    <line x1="50" y1="135" x2="170" y2="80" stroke="#999" stroke-width="1.5"/>
+    <line x1="50" y1="135" x2="170" y2="135" stroke="#999" stroke-width="1.5"/>
+    <!-- partition labels -->
+    <text x="40" y="158" text-anchor="middle" fill="#6a1b9a" font-size="10" font-weight="600">Part A</text>
+    <text x="180" y="158" text-anchor="middle" fill="#2e7d32" font-size="10" font-weight="600">Part B</text>
+  </svg>
+  <div class="diagram-caption">$$K_{3,3}$$: 6 vertices (two groups of 3), $$3 \times 3 = 9$$ edges, degrees: $$(3,3,3,3,3,3)$$</div>
+</div>
+
+<!-- C6, P5, W5 side by side -->
+<div class="diagram-wrap">
+  <svg xmlns="http://www.w3.org/2000/svg" width="560" height="170" viewBox="0 0 560 170" role="img" aria-label="Three diagrams side by side: cycle C6, path P5, and wheel W5.">
+    <title>Cycle C6, Path P5, and Wheel W5</title>
+    <!-- === C6 === -->
+    <text x="90" y="14" text-anchor="middle" font-size="13" font-weight="700" fill="#1a2238">C₆</text>
+    <line x1="90" y1="30" x2="140" y2="55" stroke="#3366cc" stroke-width="2"/>
+    <line x1="140" y1="55" x2="140" y2="105" stroke="#3366cc" stroke-width="2"/>
+    <line x1="140" y1="105" x2="90" y2="130" stroke="#3366cc" stroke-width="2"/>
+    <line x1="90" y1="130" x2="40" y2="105" stroke="#3366cc" stroke-width="2"/>
+    <line x1="40" y1="105" x2="40" y2="55" stroke="#3366cc" stroke-width="2"/>
+    <line x1="40" y1="55" x2="90" y2="30" stroke="#3366cc" stroke-width="2"/>
+    <circle cx="90" cy="30" r="8" fill="#1a2238"/><circle cx="140" cy="55" r="8" fill="#1a2238"/>
+    <circle cx="140" cy="105" r="8" fill="#1a2238"/><circle cx="90" cy="130" r="8" fill="#1a2238"/>
+    <circle cx="40" cy="105" r="8" fill="#1a2238"/><circle cx="40" cy="55" r="8" fill="#1a2238"/>
+    <text x="90" y="155" text-anchor="middle" font-size="10" fill="#555" font-style="italic">6 vertices, 6 edges, all deg 2</text>
+
+    <!-- === P5 === -->
+    <text x="280" y="14" text-anchor="middle" font-size="13" font-weight="700" fill="#1a2238">P₅</text>
+    <line x1="210" y1="80" x2="245" y2="80" stroke="#3366cc" stroke-width="2"/>
+    <line x1="245" y1="80" x2="280" y2="80" stroke="#3366cc" stroke-width="2"/>
+    <line x1="280" y1="80" x2="315" y2="80" stroke="#3366cc" stroke-width="2"/>
+    <line x1="315" y1="80" x2="350" y2="80" stroke="#3366cc" stroke-width="2"/>
+    <circle cx="210" cy="80" r="8" fill="#1a2238"/><circle cx="245" cy="80" r="8" fill="#1a2238"/>
+    <circle cx="280" cy="80" r="8" fill="#1a2238"/><circle cx="315" cy="80" r="8" fill="#1a2238"/>
+    <circle cx="350" cy="80" r="8" fill="#1a2238"/>
+    <text x="280" y="155" text-anchor="middle" font-size="10" fill="#555" font-style="italic">5 vertices, 4 edges, deg seq (2,2,2,1,1)</text>
+
+    <!-- === W5 === -->
+    <text x="470" y="14" text-anchor="middle" font-size="13" font-weight="700" fill="#1a2238">W₅</text>
+    <!-- rim edges (pentagon) -->
+    <line x1="470" y1="35" x2="518" y2="70" stroke="#3366cc" stroke-width="2"/>
+    <line x1="518" y1="70" x2="500" y2="125" stroke="#3366cc" stroke-width="2"/>
+    <line x1="500" y1="125" x2="440" y2="125" stroke="#3366cc" stroke-width="2"/>
+    <line x1="440" y1="125" x2="422" y2="70" stroke="#3366cc" stroke-width="2"/>
+    <line x1="422" y1="70" x2="470" y2="35" stroke="#3366cc" stroke-width="2"/>
+    <!-- spoke edges -->
+    <line x1="470" y1="82" x2="470" y2="35" stroke="#e65100" stroke-width="2"/>
+    <line x1="470" y1="82" x2="518" y2="70" stroke="#e65100" stroke-width="2"/>
+    <line x1="470" y1="82" x2="500" y2="125" stroke="#e65100" stroke-width="2"/>
+    <line x1="470" y1="82" x2="440" y2="125" stroke="#e65100" stroke-width="2"/>
+    <line x1="470" y1="82" x2="422" y2="70" stroke="#e65100" stroke-width="2"/>
+    <!-- hub -->
+    <circle cx="470" cy="82" r="9" fill="#e65100"/>
+    <!-- rim vertices -->
+    <circle cx="470" cy="35" r="8" fill="#1a2238"/><circle cx="518" cy="70" r="8" fill="#1a2238"/>
+    <circle cx="500" cy="125" r="8" fill="#1a2238"/><circle cx="440" cy="125" r="8" fill="#1a2238"/>
+    <circle cx="422" cy="70" r="8" fill="#1a2238"/>
+    <text x="470" y="155" text-anchor="middle" font-size="10" fill="#555" font-style="italic">6 vertices, 10 edges, hub deg 5, rim deg 3</text>
+  </svg>
+</div>
+
+<h3>3.3 &nbsp; Connecting $$K_n$$ to Counting (Week 7 Callback)</h3>
+
+<div class="callout callout-connect">
+  <div class="callout-title">&#128279; Connection to Week 7 — Combinations</div>
+  <p>The complete graph $$K_n$$ has one edge for every <em>unordered pair</em> of distinct vertices. Choosing 2 vertices from $$n$$ is exactly the combination $$\binom{n}{2}$$. So:</p>
+  $$|E(K_n)| = \binom{n}{2} = \frac{n(n-1)}{2}$$
+  <p>For $$K_5$$: $$\binom{5}{2} = 10$$ edges. For $$K_{10}$$: $$\binom{10}{2} = 45$$ edges. The counting tools from Week 7 give you instant edge counts for complete graphs.</p>
+</div>
+
+<h3>3.4 &nbsp; Quick Verification with the Handshaking Lemma</h3>
+
+<p>You can cross-check every row in Table 1 using the Handshaking Lemma. For instance, $$W_n$$ has degree sequence with one hub of degree $$n$$ and $$n$$ rim vertices each of degree 3:</p>
+$$\sum \deg(v) = n + 3n = 4n = 2 \cdot 2n = 2|E| \;\checkmark$$
+
+<h3>3.5 &nbsp; Recognition Exercise</h3>
+
+<details>
+  <summary>Quick exercise: Which special graph has exactly 2 vertices of degree 1 and all other vertices of degree 2?</summary>
+  <div class="detail-body">
+    <p><strong>Answer: The path graph $$P_n$$.</strong> The two endpoints have degree 1, and every interior vertex has degree 2. No other special family in our table has this degree pattern.</p>
+  </div>
+</details>
+
+<!-- ============================================================
+     SECTION 4: GRAPH ISOMORPHISM
+     ============================================================ -->
+<h2 id="isomorphism">4 &nbsp; Graph Isomorphism</h2>
+
+<h3>4.1 &nbsp; Formal Definition</h3>
+
+<div class="def-block">
+  <div class="def-label">Definition — Graph Isomorphism</div>
+  <p>Graphs $$G_1 = (V_1, E_1)$$ and $$G_2 = (V_2, E_2)$$ are <strong>isomorphic</strong>, written $$G_1 \cong G_2$$, if there exists a <strong>bijection</strong> $$f : V_1 \to V_2$$ such that:</p>
+  $$\{u, v\} \in E_1 \iff \{f(u), f(v)\} \in E_2$$
+  <p>In words: there is a one-to-one relabeling of vertices that perfectly preserves all edges.</p>
+</div>
+
+<div class="callout callout-connect">
+  <div class="callout-title">&#128279; Connection to Week 2 — Bijections</div>
+  <p>The mapping $$f$$ is a <strong>bijection</strong> — the same concept you studied in Week 2 when classifying functions as injective, surjective, or bijective. A graph isomorphism is simply a bijection with the extra requirement that it preserves adjacency.</p>
+</div>
+
+<h3>4.2 &nbsp; Necessary Invariants</h3>
+
+<p>If $$G_1 \cong G_2$$, then the two graphs <strong>must</strong> agree on all of the following properties (invariants):</p>
+
+<ol>
+  <li><strong>Same number of vertices:</strong> $$|V_1| = |V_2|$$</li>
+  <li><strong>Same number of edges:</strong> $$|E_1| = |E_2|$$</li>
+  <li><strong>Same degree sequence</strong></li>
+  <li><strong>Same number of connected components</strong></li>
+  <li><strong>Same cycle structure</strong> (same number of cycles of each length)</li>
+</ol>
+
+<div class="callout callout-key">
+  <div class="callout-title">&#128273; Key Insight</div>
+  <p>Invariants can <strong>disprove</strong> isomorphism (if any invariant differs, the graphs are <em>not</em> isomorphic), but invariants alone <strong>cannot prove</strong> isomorphism. Two non-isomorphic graphs can share all of the invariants above. To <em>prove</em> isomorphism, you must construct an explicit bijection and verify that it preserves all edges.</p>
+</div>
+
+<h3>4.3 &nbsp; Worked Example — Isomorphic Pair</h3>
+
+<div class="callout callout-example">
+  <div class="callout-title">&#9997; Example 4 — Proving Isomorphism</div>
+  <p>Consider the following two graphs:</p>
+  <p><strong>Graph $$G_1$$:</strong> $$V_1 = \{a, b, c, d\}$$, $$E_1 = \{\{a,b\}, \{b,c\}, \{c,d\}, \{d,a\}\}$$</p>
+  <p><strong>Graph $$G_2$$:</strong> $$V_2 = \{1, 2, 3, 4\}$$, $$E_2 = \{\{1,3\}, \{3,2\}, \{2,4\}, \{4,1\}\}$$</p>
+
+  <!-- Diagrams -->
+  <div class="diagram-wrap">
+    <svg xmlns="http://www.w3.org/2000/svg" width="380" height="130" viewBox="0 0 380 130" role="img" aria-label="Two 4-vertex cycle graphs G1 (square) and G2 (different vertex layout) that are isomorphic.">
+      <title>Isomorphic pair: G1 and G2</title>
+      <!-- G1: square -->
+      <text x="75" y="14" text-anchor="middle" font-size="12" font-weight="700" fill="#1a2238">G₁</text>
+      <line x1="30" y1="30" x2="120" y2="30" stroke="#3366cc" stroke-width="2"/>
+      <line x1="120" y1="30" x2="120" y2="110" stroke="#3366cc" stroke-width="2"/>
+      <line x1="120" y1="110" x2="30" y2="110" stroke="#3366cc" stroke-width="2"/>
+      <line x1="30" y1="110" x2="30" y2="30" stroke="#3366cc" stroke-width="2"/>
+      <circle cx="30" cy="30" r="10" fill="#1a2238"/><text x="30" y="34" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">a</text>
+      <circle cx="120" cy="30" r="10" fill="#1a2238"/><text x="120" y="34" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">b</text>
+      <circle cx="120" cy="110" r="10" fill="#1a2238"/><text x="120" y="114" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">c</text>
+      <circle cx="30" cy="110" r="10" fill="#1a2238"/><text x="30" y="114" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">d</text>
+
+      <!-- G2: diamond -->
+      <text x="295" y="14" text-anchor="middle" font-size="12" font-weight="700" fill="#1a2238">G₂</text>
+      <line x1="295" y1="25" x2="350" y2="70" stroke="#e65100" stroke-width="2"/>
+      <line x1="350" y1="70" x2="295" y2="115" stroke="#e65100" stroke-width="2"/>
+      <line x1="295" y1="115" x2="240" y2="70" stroke="#e65100" stroke-width="2"/>
+      <line x1="240" y1="70" x2="295" y2="25" stroke="#e65100" stroke-width="2"/>
+      <circle cx="295" cy="25" r="10" fill="#e65100"/><text x="295" y="29" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">1</text>
+      <circle cx="350" cy="70" r="10" fill="#e65100"/><text x="350" y="74" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">3</text>
+      <circle cx="295" cy="115" r="10" fill="#e65100"/><text x="295" y="119" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">2</text>
+      <circle cx="240" cy="70" r="10" fill="#e65100"/><text x="240" y="74" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">4</text>
+    </svg>
+  </div>
+
+  <p><strong>Step 1 — Check invariants:</strong></p>
+  <ul>
+    <li>$$|V_1| = |V_2| = 4$$ ✓</li>
+    <li>$$|E_1| = |E_2| = 4$$ ✓</li>
+    <li>Degree sequences: both are $$(2, 2, 2, 2)$$ ✓</li>
+    <li>Both are connected with one 4-cycle ✓</li>
+  </ul>
+  <p>Invariants match, so isomorphism is <em>possible</em>. We must now construct a bijection.</p>
+
+  <p><strong>Step 2 — Construct bijection:</strong> Define $$f : V_1 \to V_2$$ as:</p>
+  <table>
+    <thead><tr><th>$$v$$</th><th>$$f(v)$$</th></tr></thead>
+    <tbody>
+      <tr><td>$$a$$</td><td>$$1$$</td></tr>
+      <tr><td>$$b$$</td><td>$$3$$</td></tr>
+      <tr><td>$$c$$</td><td>$$2$$</td></tr>
+      <tr><td>$$d$$</td><td>$$4$$</td></tr>
+    </tbody>
+  </table>
+
+  <p><strong>Step 3 — Verify edge preservation:</strong></p>
+  <table>
+    <thead><tr><th>Edge in $$G_1$$</th><th>Mapped edge</th><th>In $$E_2$$?</th></tr></thead>
+    <tbody>
+      <tr><td>$$\{a, b\}$$</td><td>$$\{f(a), f(b)\} = \{1, 3\}$$</td><td>✓</td></tr>
+      <tr><td>$$\{b, c\}$$</td><td>$$\{f(b), f(c)\} = \{3, 2\}$$</td><td>✓</td></tr>
+      <tr><td>$$\{c, d\}$$</td><td>$$\{f(c), f(d)\} = \{2, 4\}$$</td><td>✓</td></tr>
+      <tr><td>$$\{d, a\}$$</td><td>$$\{f(d), f(a)\} = \{4, 1\}$$</td><td>✓</td></tr>
+    </tbody>
+  </table>
+
+  <p>Every edge maps correctly, and $$f$$ is a bijection. Therefore $$G_1 \cong G_2$$. ✓</p>
+</div>
+
+<h3>4.4 &nbsp; Worked Example — Non-Isomorphic Pair</h3>
+
+<div class="callout callout-example">
+  <div class="callout-title">&#9997; Example 5 — Disproving Isomorphism</div>
+  <p>Consider two graphs, both with 5 vertices and 5 edges:</p>
+  <p><strong>Graph $$H_1$$:</strong> $$C_5$$ — the cycle on 5 vertices. Degree sequence: $$(2, 2, 2, 2, 2)$$.</p>
+  <p><strong>Graph $$H_2$$:</strong> A "bowtie-tail" graph — a triangle $$\{a,b,c\}$$ plus a path $$c\text{–}d\text{–}e$$. Edges: $$\{a,b\}, \{b,c\}, \{a,c\}, \{c,d\}, \{d,e\}$$. Degree sequence: $$(3, 2, 2, 2, 1)$$.</p>
+
+  <!-- Diagrams -->
+  <div class="diagram-wrap">
+    <svg xmlns="http://www.w3.org/2000/svg" width="400" height="130" viewBox="0 0 400 130" role="img" aria-label="Two graphs H1 (pentagon cycle) and H2 (triangle with a tail) that are not isomorphic due to different degree sequences.">
+      <title>Non-isomorphic pair: H1 and H2</title>
+      <!-- H1: pentagon -->
+      <text x="80" y="14" text-anchor="middle" font-size="12" font-weight="700" fill="#1a2238">H₁ (C₅)</text>
+      <line x1="80" y1="28" x2="120" y2="58" stroke="#3366cc" stroke-width="2"/>
+      <line x1="120" y1="58" x2="105" y2="105" stroke="#3366cc" stroke-width="2"/>
+      <line x1="105" y1="105" x2="55" y2="105" stroke="#3366cc" stroke-width="2"/>
+      <line x1="55" y1="105" x2="40" y2="58" stroke="#3366cc" stroke-width="2"/>
+      <line x1="40" y1="58" x2="80" y2="28" stroke="#3366cc" stroke-width="2"/>
+      <circle cx="80" cy="28" r="7" fill="#1a2238"/><circle cx="120" cy="58" r="7" fill="#1a2238"/>
+      <circle cx="105" cy="105" r="7" fill="#1a2238"/><circle cx="55" cy="105" r="7" fill="#1a2238"/>
+      <circle cx="40" cy="58" r="7" fill="#1a2238"/>
+
+      <!-- H2: triangle + tail -->
+      <text x="300" y="14" text-anchor="middle" font-size="12" font-weight="700" fill="#1a2238">H₂</text>
+      <line x1="260" y1="40" x2="310" y2="40" stroke="#e65100" stroke-width="2"/>
+      <line x1="310" y1="40" x2="285" y2="90" stroke="#e65100" stroke-width="2"/>
+      <line x1="285" y1="90" x2="260" y2="40" stroke="#e65100" stroke-width="2"/>
+      <line x1="285" y1="90" x2="330" y2="110" stroke="#e65100" stroke-width="2"/>
+      <line x1="330" y1="110" x2="370" y2="110" stroke="#e65100" stroke-width="2"/>
+      <circle cx="260" cy="40" r="7" fill="#e65100"/><text x="248" y="38" font-size="10" fill="#1a2238" font-weight="600">a</text>
+      <circle cx="310" cy="40" r="7" fill="#e65100"/><text x="322" y="38" font-size="10" fill="#1a2238" font-weight="600">b</text>
+      <circle cx="285" cy="90" r="7" fill="#e65100"/><text x="273" y="95" font-size="10" fill="#1a2238" font-weight="600">c</text>
+      <circle cx="330" cy="110" r="7" fill="#e65100"/><text x="330" y="125" font-size="10" fill="#1a2238" font-weight="600">d</text>
+      <circle cx="370" cy="110" r="7" fill="#e65100"/><text x="370" y="125" font-size="10" fill="#1a2238" font-weight="600">e</text>
+    </svg>
+  </div>
+
+  <p><strong>Comparison:</strong></p>
+  <ul>
+    <li>$$|V| = 5$$ for both ✓</li>
+    <li>$$|E| = 5$$ for both ✓</li>
+    <li>Degree sequence of $$H_1$$: $$(2, 2, 2, 2, 2)$$</li>
+    <li>Degree sequence of $$H_2$$: $$(3, 2, 2, 2, 1)$$</li>
+  </ul>
+  <p>The degree sequences <strong>differ</strong>. Since degree sequence is an isomorphism invariant, $$H_1 \not\cong H_2$$. No bijection can map a degree-3 vertex in $$H_2$$ to any vertex in $$H_1$$ (all of which have degree 2).</p>
+</div>
+
+<h3>4.5 &nbsp; A Note on Computational Complexity</h3>
+
+<div class="callout callout-warn">
+  <div class="callout-title">&#9888; Complexity Note</div>
+  <p>Graph isomorphism is one of the few natural problems whose exact computational complexity is <strong>unknown</strong>. It is clearly in NP (a proposed bijection can be verified in polynomial time), but it has not been proven to be NP-complete, nor has a polynomial-time algorithm been found for the general case. In 2015, László Babai announced a quasipolynomial-time algorithm, but the problem's exact classification remains open.</p>
+  <p>For this course, you will work with small graphs where you can test invariants and construct bijections by hand. The key takeaway: invariants give you efficient <em>screening</em>, but a constructive bijection is the only way to <em>confirm</em> isomorphism.</p>
+</div>
+
+<!-- ============================================================
+     SECTION 5: KNOWLEDGE CHECKS
+     ============================================================ -->
+<h2 id="checks">5 &nbsp; Knowledge Checks</h2>
+
+<p>These four checks are <strong>ungraded</strong> — use them to test your understanding before starting PS-08 Problems 7–9. Click an answer to see immediate feedback.</p>
+
+<!-- ============================================================
+     CHECK 12.4a
+     ============================================================ -->
+<div class="kc-block" id="check-a">
+  <h3>Check 12.4a — Handshaking Lemma Application</h3>
+  <p>A graph has <strong>8 vertices</strong>, each of degree <strong>3</strong>. How many edges does it have, and is it a named special graph from Section 3?</p>
+  <ul class="kc-options">
+    <li><button type="button" class="kc-btn" data-correct="false" data-check="a" onclick="handleKC(this)">A. 24 edges; it is $$K_8$$</button></li>
+    <li><button type="button" class="kc-btn" data-correct="false" data-check="a" onclick="handleKC(this)">B. 12 edges; it is $$C_8$$</button></li>
+    <li><button type="button" class="kc-btn" data-correct="true" data-check="a" onclick="handleKC(this)">C. 12 edges; it is not one of the named families (it is 3-regular but not $$K_n$$, $$C_n$$, $$P_n$$, $$K_{m,n}$$, or $$W_n$$)</button></li>
+    <li><button type="button" class="kc-btn" data-correct="false" data-check="a" onclick="handleKC(this)">D. 12 edges; it is $$K_{4,4}$$</button></li>
+  </ul>
+  <div class="kc-feedback fb-correct" id="fb-a-correct" role="status" aria-live="polite">
+    <span class="correct-fb">✔ Correct.</span> By the Handshaking Lemma: $$\sum \deg(v) = 8 \times 3 = 24 = 2|E|$$, so $$|E| = 12$$. Checking the named families: $$K_8$$ would require degree 7 (not 3). $$C_8$$ has degree 2 (not 3). $$P_8$$ has two degree-1 vertices. $$K_{4,4}$$ has 16 edges and degree 4. $$W_7$$ has a hub of degree 7. None match. The graph is <strong>3-regular</strong> (every vertex has degree 3), but it is not one of our five named families.
+  </div>
+  <div class="kc-feedback fb-incorrect" id="fb-a-incorrect" role="status" aria-live="polite">
+    <span class="incorrect-fb">✘ Not quite.</span> Apply the Handshaking Lemma: $$\sum \deg(v) = 8 \times 3 = 24$$, so $$|E| = 24/2 = 12$$. Now check each named family. $$K_8$$ requires every vertex to have degree 7. $$C_8$$ has all degrees equal to 2. $$K_{4,4}$$ has $$4 \times 4 = 16$$ edges and all degrees equal to 4. None of the five named families produce an 8-vertex graph where every vertex has degree 3. The correct answer is <strong>C</strong>.
+  </div>
+</div>
+
+<!-- ============================================================
+     CHECK 12.4b
+     ============================================================ -->
+<div class="kc-block" id="check-b">
+  <h3>Check 12.4b — Special Graph Properties</h3>
+  <p>How many edges does $$K_5$$ have, and how many edges does $$K_{3,3}$$ have?</p>
+  <ul class="kc-options">
+    <li><button type="button" class="kc-btn" data-correct="false" data-check="b" onclick="handleKC(this)">A. $$K_5$$ has 5 edges; $$K_{3,3}$$ has 6 edges</button></li>
+    <li><button type="button" class="kc-btn" data-correct="true" data-check="b" onclick="handleKC(this)">B. $$K_5$$ has 10 edges; $$K_{3,3}$$ has 9 edges</button></li>
+    <li><button type="button" class="kc-btn" data-correct="false" data-check="b" onclick="handleKC(this)">C. $$K_5$$ has 10 edges; $$K_{3,3}$$ has 6 edges</button></li>
+    <li><button type="button" class="kc-btn" data-correct="false" data-check="b" onclick="handleKC(this)">D. $$K_5$$ has 20 edges; $$K_{3,3}$$ has 9 edges</button></li>
+  </ul>
+  <div class="kc-feedback fb-correct" id="fb-b-correct" role="status" aria-live="polite">
+    <span class="correct-fb">✔ Correct.</span> $$K_5$$: $$\binom{5}{2} = \frac{5 \times 4}{2} = 10$$ edges, degree sequence $$(4,4,4,4,4)$$. $$K_{3,3}$$: $$3 \times 3 = 9$$ edges, degree sequence $$(3,3,3,3,3,3)$$. You can verify both with the Handshaking Lemma: for $$K_5$$, $$\sum \deg = 5 \times 4 = 20 = 2 \times 10$$ ✓. For $$K_{3,3}$$, $$\sum \deg = 6 \times 3 = 18 = 2 \times 9$$ ✓.
+  </div>
+  <div class="kc-feedback fb-incorrect" id="fb-b-incorrect" role="status" aria-live="polite">
+    <span class="incorrect-fb">✘ Not quite.</span> Recall the formulas: $$K_n$$ has $$\binom{n}{2}$$ edges, so $$K_5$$ has $$\binom{5}{2} = 10$$. $$K_{m,n}$$ has $$m \cdot n$$ edges, so $$K_{3,3}$$ has $$3 \times 3 = 9$$. The correct answer is <strong>B</strong>.
+  </div>
+</div>
+
+<!-- ============================================================
+     CHECK 12.4c
+     ============================================================ -->
+<div class="kc-block" id="check-c">
+  <h3>Check 12.4c — Isomorphism Determination</h3>
+  <p>Two graphs are shown below. Both have 4 vertices and 4 edges.</p>
+  <p><strong>Graph $$R$$:</strong> $$V = \{1,2,3,4\}$$, $$E = \{\{1,2\}, \{2,3\}, \{3,4\}, \{4,1\}\}$$ — a 4-cycle.</p>
+  <p><strong>Graph $$S$$:</strong> $$V = \{a,b,c,d\}$$, $$E = \{\{a,b\}, \{a,c\}, \{a,d\}, \{b,c\}\}$$ — a "fan" shape.</p>
+  <p>Are $$R$$ and $$S$$ isomorphic?</p>
+  <ul class="kc-options">
+    <li><button type="button" class="kc-btn" data-correct="false" data-check="c" onclick="handleKC(this)">A. Yes — both have 4 vertices and 4 edges, so they must be isomorphic</button></li>
+    <li><button type="button" class="kc-btn" data-correct="true" data-check="c" onclick="handleKC(this)">B. No — their degree sequences differ: $$R$$ is (2,2,2,2) but $$S$$ is (3,2,2,1)</button></li>
+    <li><button type="button" class="kc-btn" data-correct="false" data-check="c" onclick="handleKC(this)">C. No — they have different numbers of edges</button></li>
+    <li><button type="button" class="kc-btn" data-correct="false" data-check="c" onclick="handleKC(this)">D. Yes — the bijection $$1 \mapsto a, 2 \mapsto b, 3 \mapsto c, 4 \mapsto d$$ works</button></li>
+  </ul>
+  <div class="kc-feedback fb-correct" id="fb-c-correct" role="status" aria-live="polite">
+    <span class="correct-fb">✔ Correct.</span> Both graphs have 4 vertices and 4 edges, so those invariants match. But the degree sequences differ. In $$R$$, every vertex has degree 2 → sequence $$(2,2,2,2)$$. In $$S$$, vertex $$a$$ has degree 3 and vertex $$d$$ has degree 1 → sequence $$(3,2,2,1)$$. Since degree sequence is an isomorphism invariant, $$R \not\cong S$$. This illustrates the key insight: matching vertex and edge counts is <em>not</em> sufficient — you must also check degree sequences (and potentially other invariants).
+  </div>
+  <div class="kc-feedback fb-incorrect" id="fb-c-incorrect" role="status" aria-live="polite">
+    <span class="incorrect-fb">✘ Not quite.</span> Compute the degree of each vertex. In $$R$$: $$\deg(1)=2, \deg(2)=2, \deg(3)=2, \deg(4)=2$$. In $$S$$: $$\deg(a)=3, \deg(b)=2, \deg(c)=2, \deg(d)=1$$. The degree sequences are $$(2,2,2,2)$$ vs. $$(3,2,2,1)$$ — they don't match. Since degree sequence must be preserved by any isomorphism, these graphs are <strong>not</strong> isomorphic. The correct answer is <strong>B</strong>.
+  </div>
+</div>
+
+<!-- ============================================================
+     CHECK 12.4d
+     ============================================================ -->
+<div class="kc-block" id="check-d">
+  <h3>Check 12.4d — Degree Sequence Feasibility</h3>
+  <p>Is the degree sequence $$(5, 3, 3, 3, 2, 2)$$ realizable as a simple graph? Select the best answer.</p>
+  <ul class="kc-options">
+    <li><button type="button" class="kc-btn" data-correct="false" data-check="d" onclick="handleKC(this)">A. No — the sum is odd, violating the Handshaking Lemma</button></li>
+    <li><button type="button" class="kc-btn" data-correct="false" data-check="d" onclick="handleKC(this)">B. No — a vertex of degree 5 is impossible in a 6-vertex simple graph</button></li>
+    <li><button type="button" class="kc-btn" data-correct="true" data-check="d" onclick="handleKC(this)">C. Yes — the sum is 18 (even), and we can construct a valid graph</button></li>
+    <li><button type="button" class="kc-btn" data-correct="false" data-check="d" onclick="handleKC(this)">D. Cannot be determined without the Erdős–Gallai theorem</button></li>
+  </ul>
+  <div class="kc-feedback fb-correct" id="fb-d-correct" role="status" aria-live="polite">
+    <span class="correct-fb">✔ Correct.</span> First, $$5+3+3+3+2+2 = 18$$, which is even, so the Handshaking Lemma is satisfied. The graph would have $$18/2 = 9$$ edges. The maximum degree is 5, and with 6 vertices, the highest possible degree is 5 (connected to all other 5 vertices), so that is valid. We can construct such a graph: label the vertices $$v_1, \ldots, v_6$$ with target degrees $$5,3,3,3,2,2$$. Connect $$v_1$$ to all others (degree 5). Remaining needs: $$v_2$$ needs 2 more, $$v_3$$ needs 2 more, $$v_4$$ needs 2 more, $$v_5$$ needs 1 more, $$v_6$$ needs 1 more. Connect $$v_2\text{–}v_3$$, $$v_2\text{–}v_4$$, $$v_3\text{–}v_4$$, $$v_5\text{–}v_6$$. Check: $$\deg(v_2) = 3$$ ✓, $$\deg(v_3) = 3$$ ✓, $$\deg(v_4) = 3$$ ✓, $$\deg(v_5) = 2$$ ✓, $$\deg(v_6) = 2$$ ✓. Total edges: 5 + 4 = 9 ✓.
+  </div>
+  <div class="kc-feedback fb-incorrect" id="fb-d-incorrect" role="status" aria-live="polite">
+    <span class="incorrect-fb">✘ Not quite.</span> Check the sum: $$5+3+3+3+2+2 = 18$$, which is even — so the Handshaking Lemma does <em>not</em> rule it out. The maximum degree is 5, which is valid for a 6-vertex simple graph (a vertex can be adjacent to at most 5 others). You can verify realizability by constructing: connect the degree-5 vertex to all others, then distribute the remaining edges. The correct answer is <strong>C</strong>.
+  </div>
+</div>
+
+<!-- ============================================================
+     MODULE SUMMARY
+     ============================================================ -->
+<h2>6 &nbsp; Module Summary</h2>
+
+<div class="callout callout-key">
+  <div class="callout-title">&#128218; Key Takeaways</div>
+  <ul>
+    <li><strong>Handshaking Lemma:</strong> $$\displaystyle\sum_{v \in V} \deg(v) = 2|E|$$. Each edge contributes 2 to the total degree. Corollary: the number of odd-degree vertices is always even.</li>
+    <li><strong>Degree sequences</strong> must have an even sum to be realizable. The Erdős–Gallai theorem gives a full characterization, but for this course the even-sum test plus construction attempts are your primary tools.</li>
+    <li><strong>Special graph families</strong> — $$K_n$$, $$K_{m,n}$$, $$C_n$$, $$P_n$$, $$W_n$$ — have known edge counts and degree sequences you can recall or derive instantly.</li>
+    <li><strong>Graph isomorphism</strong> requires a bijection $$f: V_1 \to V_2$$ preserving adjacency. Invariants (vertex count, edge count, degree sequence, components, cycle structure) can <em>disprove</em> but never <em>prove</em> isomorphism.</li>
+  </ul>
+</div>
+
+<h3>What to Do Next</h3>
+<ol>
+  <li><strong>PS-08 Problems 7–9</strong> cover special graph identification, Handshaking Lemma calculations, and isomorphism determination. You are now prepared for these problems.</li>
+  <li><strong>Review all of Week 12</strong> (Modules 12.1–12.4) to prepare for Quiz 4 at the end of Week 13. Approximately one-third of Quiz 4 questions will draw from Week 12 content.</li>
+  <li><strong>Look ahead:</strong> The Final Project is assigned at the start of Week 14. Component 1 (Graph Builder, 50 pts) builds directly on the representations from Module 12.3 and the special graph families from this module — use them as test cases.</li>
+</ol>
+
+<h3>Week 12 Completion Checklist</h3>
+<ul>
+  <li>☐ Module 12.1: Read all content, completed Checks 12.1a–12.1d</li>
+  <li>☐ Module 12.2: Read all content, completed Checks 12.2a–12.2c</li>
+  <li>☐ Module 12.3: Read all content, completed Checks 12.3a–12.3d</li>
+  <li>☐ <strong>Module 12.4: Read all content, completed Checks 12.4a–12.4d</strong> ← you are here</li>
+  <li>☐ PS-08 submitted (15 pts, due end of Week 12)</li>
+  <li>☐ Begin reviewing Week 11 + Week 12 content for Quiz 4 (end of Week 13)</li>
+</ul>
+
+</div><!-- end page-wrap -->
+
+<!-- ============================================================
+     JAVASCRIPT — Knowledge Check Interaction
+     ============================================================ -->
+<script>
+function handleKC(btn){
+  var check=btn.getAttribute('data-check');
+  var isCorrect=btn.getAttribute('data-correct')==='true';
+  var block=document.getElementById('check-'+check);
+  if(!block)return;
+  var buttons=block.querySelectorAll('.kc-btn');
+  for(var i=0;i<buttons.length;i++){
+    buttons[i].disabled=true;
+    buttons[i].classList.remove('correct','incorrect');
+  }
+  if(isCorrect){
+    btn.classList.add('correct');
+  }else{
+    btn.classList.add('incorrect');
+    for(var j=0;j<buttons.length;j++){
+      if(buttons[j].getAttribute('data-correct')==='true'){
+        buttons[j].classList.add('correct');
+      }
+    }
+  }
+  var fbCorrect=document.getElementById('fb-'+check+'-correct');
+  var fbIncorrect=document.getElementById('fb-'+check+'-incorrect');
+  if(fbCorrect)fbCorrect.classList.remove('show');
+  if(fbIncorrect)fbIncorrect.classList.remove('show');
+  if(isCorrect){
+    if(fbCorrect)fbCorrect.classList.add('show');
+  }else{
+    if(fbIncorrect)fbIncorrect.classList.add('show');
+  }
+}
+</script>
+
+<!-- ============================================================
+     KATEX  (lightweight, self-contained inline rendering)
+     ============================================================ -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js" crossorigin="anonymous"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'\$$',right:'\$$',display:true},{left:'\$$',right:'\$$',display:false}],throwOnError:false});"></script>
+
+</body>
+</html>

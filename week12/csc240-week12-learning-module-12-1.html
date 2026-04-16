@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 12.1 – Graph Fundamentals and Terminology | CSC 240</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;font-size:1rem;line-height:1.6;color:#1a1a2e;background:#fff}
+/* Nav */
+.top-nav{position:sticky;top:0;z-index:100;background:#1a1a2e;padding:.55rem 1rem;display:flex;flex-wrap:wrap;gap:.35rem .75rem;align-items:center}
+.top-nav span.nav-title{color:#eee;font-weight:700;font-size:.92rem;margin-right:.75rem;white-space:nowrap}
+.top-nav a{color:#a8d8ff;font-size:.85rem;text-decoration:none;padding:.25rem .45rem;border-radius:3px}
+.top-nav a:hover,.top-nav a:focus{background:#2d3561;outline:2px solid #f0c040;outline-offset:1px}
+/* Main */
+main{max-width:54rem;margin:0 auto;padding:1.25rem 1.5rem 3rem}
+h1{font-size:1.65rem;color:#1a1a2e;border-bottom:3px solid #4a6fa5;padding-bottom:.4rem;margin:1rem 0 .5rem}
+.subtitle{font-size:.95rem;color:#555;margin-bottom:1.25rem}
+h2{font-size:1.3rem;color:#22336b;margin:1.75rem 0 .6rem;scroll-margin-top:3.5rem}
+h3{font-size:1.1rem;color:#2e4a7a;margin:1.1rem 0 .4rem;scroll-margin-top:3.5rem}
+p{margin:.55rem 0}
+ul,ol{margin:.4rem 0 .6rem 1.4rem}
+li{margin-bottom:.3rem}
+/* Callout boxes */
+.callout{border-left:4px solid;border-radius:4px;padding:.75rem 1rem;margin:.85rem 0}
+.callout-def{border-color:#4a6fa5;background:#eaf1fb}
+.callout-warn{border-color:#d4a017;background:#fdf8e8}
+.callout-connect{border-color:#2e8b57;background:#eaf7ef}
+.callout-look{border-color:#7b5ea7;background:#f3eefa}
+.callout-title{font-weight:700;font-size:.92rem;margin-bottom:.25rem}
+.callout-def .callout-title{color:#2e4a7a}
+/* was #8a6d00 (~4.25:1 on #fdf8e8, fails WCAG AA); #6b5200 gives ~6.9:1 */
+.callout-warn .callout-title{color:#6b5200}
+.callout-connect .callout-title{color:#1e6b3a}
+.callout-look .callout-title{color:#5b3e8a}
+/* Diagram containers */
+.diagram-wrap{background:#f7f9fc;border:1px solid #d0d8e8;border-radius:6px;padding:1rem;margin:.85rem 0;text-align:center;overflow-x:auto}
+.diagram-wrap svg{max-width:100%;height:auto}
+.diagram-caption{font-size:.85rem;color:#555;margin-top:.4rem;font-style:italic}
+/* Vocab table */
+.vocab-grid{display:grid;gap:.75rem;margin:.75rem 0}
+.vocab-card{background:#f7f9fc;border:1px solid #d0d8e8;border-radius:5px;padding:.75rem 1rem}
+.vocab-card strong{color:#22336b}
+/* Collapsible / Accordion */
+.collapsible{margin:.6rem 0}
+.collapsible-toggle{background:#eaf1fb;border:1px solid #b8c9e0;border-radius:4px;padding:.55rem .85rem;width:100%;text-align:left;font-size:.95rem;font-weight:600;color:#22336b;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.collapsible-toggle:hover,.collapsible-toggle:focus{background:#d8e6f7;outline:2px solid #4a6fa5;outline-offset:1px}
+.collapsible-toggle::after{content:'+';font-size:1.15rem;font-weight:700;transition:transform .2s}
+.collapsible-toggle[aria-expanded="true"]::after{content:'−'}
+.collapsible-body{display:none;border:1px solid #d0d8e8;border-top:none;border-radius:0 0 4px 4px;padding:.75rem 1rem;background:#fff}
+.collapsible-body.open{display:block}
+/* Knowledge checks */
+.kc-block{background:#f9f9f2;border:1px solid #d4d0b0;border-radius:6px;padding:1rem 1.15rem;margin:.85rem 0}
+.kc-block h3{color:#555000;margin-top:0}
+.kc-options{list-style:none;margin:.5rem 0 .5rem 0;padding:0}
+.kc-options li{margin-bottom:.35rem}
+.kc-btn{display:inline-block;background:#fff;border:2px solid #b8c9e0;border-radius:4px;padding:.4rem .85rem;cursor:pointer;font-size:.92rem;text-align:left;width:100%;color:#1a1a2e}
+.kc-btn:hover,.kc-btn:focus{border-color:#4a6fa5;background:#eaf1fb;outline:2px solid #4a6fa5;outline-offset:1px}
+.kc-btn.correct{border-color:#2e8b57;background:#e0f5e9;font-weight:600}
+.kc-btn.incorrect{border-color:#c0392b;background:#fde8e8}
+.kc-feedback{margin-top:.45rem;padding:.5rem .75rem;border-radius:4px;font-size:.9rem;display:none}
+.kc-feedback.show{display:block}
+.kc-feedback.correct-fb{background:#e0f5e9;border-left:3px solid #2e8b57;color:#1a5e32}
+.kc-feedback.incorrect-fb{background:#fde8e8;border-left:3px solid #c0392b;color:#7a1a1a}
+/* TF buttons */
+.tf-group{display:flex;gap:.5rem;margin:.5rem 0}
+.tf-btn{padding:.4rem 1.2rem;border:2px solid #b8c9e0;border-radius:4px;background:#fff;cursor:pointer;font-size:.92rem;font-weight:600}
+.tf-btn:hover,.tf-btn:focus{border-color:#4a6fa5;background:#eaf1fb;outline:2px solid #4a6fa5;outline-offset:1px}
+.tf-btn.correct{border-color:#2e8b57;background:#e0f5e9}
+.tf-btn.incorrect{border-color:#c0392b;background:#fde8e8}
+/* Component list for mini-case */
+.component-list{margin:.5rem 0 .5rem 1.2rem}
+.component-list li{margin-bottom:.25rem}
+/* Utility */
+.text-sm{font-size:.88rem;color:#555}
+.mt-1{margin-top:1rem}
+.mb-05{margin-bottom:.5rem}
+code{background:#eef2f7;padding:.1rem .35rem;border-radius:3px;font-size:.9em}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+</style>
+</head>
+<body>
+
+<nav class="top-nav" aria-label="Module 12.1 section navigation">
+<span class="nav-title">Module 12.1</span>
+<a href="#why-graphs">Why Graphs?</a>
+<a href="#formal-def">Formal Definition</a>
+<a href="#vocabulary">Core Vocabulary</a>
+<a href="#directed">Directed Graphs</a>
+<a href="#mini-case">Mini-Case</a>
+<a href="#checks">Knowledge Checks</a>
+</nav>
+
+<main>
+
+<h1>Module 12.1 – Graph Fundamentals and Terminology</h1>
+<p class="subtitle">CSC 240 · Week 12 of 17 · Introduction to Graphs · Estimated time: 60–75 minutes<br>
+<strong>CSLO 3:</strong> Implement graph/tree traversal methods in a programming language.</p>
+
+<!-- ============================================================ -->
+<!-- SECTION 1: WHY GRAPHS? -->
+<!-- ============================================================ -->
+<h2 id="why-graphs">1 &nbsp; Why Graphs?</h2>
+
+<p>Think about your social-media feed, a GPS navigation app, or the dependency chain that determines the order your code compiles. Each of these systems is, at its core, a collection of <em>things</em> and <em>connections between things</em>. In mathematics and computer science, the structure that captures this idea is called a <strong>graph</strong>.</p>
+
+<div class="callout callout-connect">
+<div class="callout-title">&#128279; Connection to Prior Weeks</div>
+<p>In Weeks 1–2 you studied <strong>sets</strong>, <strong>ordered pairs</strong>, and <strong>binary relations</strong>. A graph is built from exactly those ingredients: a set of vertices and a relation (the edges) defined on that set. If you are comfortable writing a set in roster notation and identifying properties of a relation, you already have the prerequisites for this module.</p>
+</div>
+
+<div class="diagram-wrap">
+<svg width="560" height="170" viewBox="0 0 560 170" role="img" aria-label="Side-by-side comparison: a binary relation on a set shown as a table of ordered pairs on the left, and the same structure drawn as a graph on the right.">
+<!-- Relation side -->
+<text x="10" y="20" font-size="13" font-weight="bold" fill="#22336b">Relation R on {a, b, c, d}</text>
+<rect x="10" y="30" width="200" height="125" rx="5" fill="#eaf1fb" stroke="#b8c9e0"/>
+<text x="25" y="55" font-size="13" fill="#1a1a2e">{a, b} ∈ R</text>
+<text x="25" y="78" font-size="13" fill="#1a1a2e">{b, c} ∈ R</text>
+<text x="25" y="101" font-size="13" fill="#1a1a2e">{c, d} ∈ R</text>
+<text x="25" y="124" font-size="13" fill="#1a1a2e">{a, d} ∈ R</text>
+<!-- Arrow -->
+<text x="230" y="95" font-size="24" fill="#4a6fa5">⟶</text>
+<text x="228" y="115" font-size="11" fill="#555">same structure</text>
+<!-- Graph side -->
+<text x="300" y="20" font-size="13" font-weight="bold" fill="#22336b">Graph G = (V, E)</text>
+<!-- vertices -->
+<circle cx="370" cy="55" r="16" fill="#4a6fa5" stroke="#22336b" stroke-width="1.5"/>
+<text x="370" y="60" text-anchor="middle" font-size="13" fill="#fff" font-weight="bold">a</text>
+<circle cx="480" cy="55" r="16" fill="#4a6fa5" stroke="#22336b" stroke-width="1.5"/>
+<text x="480" y="60" text-anchor="middle" font-size="13" fill="#fff" font-weight="bold">b</text>
+<circle cx="480" cy="140" r="16" fill="#4a6fa5" stroke="#22336b" stroke-width="1.5"/>
+<text x="480" y="145" text-anchor="middle" font-size="13" fill="#fff" font-weight="bold">c</text>
+<circle cx="370" cy="140" r="16" fill="#4a6fa5" stroke="#22336b" stroke-width="1.5"/>
+<text x="370" y="145" text-anchor="middle" font-size="13" fill="#fff" font-weight="bold">d</text>
+<!-- edges -->
+<line x1="386" y1="55" x2="464" y2="55" stroke="#2e4a7a" stroke-width="2"/>
+<line x1="480" y1="71" x2="480" y2="124" stroke="#2e4a7a" stroke-width="2"/>
+<line x1="464" y1="140" x2="386" y2="140" stroke="#2e4a7a" stroke-width="2"/>
+<line x1="370" y1="71" x2="370" y2="124" stroke="#2e4a7a" stroke-width="2"/>
+</svg>
+<div class="diagram-caption">Figure 1 — A symmetric, irreflexive relation on {a, b, c, d} drawn as an undirected graph.</div>
+</div>
+
+<p>Graphs appear everywhere in computing: network routing, social-network analysis, compiler dependency resolution, web crawling, database query planning, and more. This module gives you the precise vocabulary you need to describe and reason about these structures. Every remaining week of CSC 240 builds on what you learn here.</p>
+
+<!-- ============================================================ -->
+<!-- SECTION 2: FORMAL DEFINITION -->
+<!-- ============================================================ -->
+<h2 id="formal-def">2 &nbsp; Formal Definition of a Graph</h2>
+
+<div class="callout callout-def">
+<div class="callout-title">&#128216; Definition — Graph</div>
+<p>A <strong>graph</strong> is an ordered pair <em>G</em> = (<em>V</em>, <em>E</em>) where:</p>
+<ul>
+<li><em>V</em> is a finite, non-empty set of <strong>vertices</strong> (also called <em>nodes</em>).</li>
+<li><em>E</em> is a set of <strong>edges</strong>. In an <em>undirected</em> graph, each edge is a 2-element subset of <em>V</em>, written {<em>u</em>, <em>v</em>}. In a <em>directed</em> graph, each edge is an ordered pair (<em>u</em>, <em>v</em>) ∈ <em>V</em> × <em>V</em>.</li>
+</ul>
+</div>
+
+<p>Notice how the definition relies on concepts from Week 1 (sets, subsets) and Week 2 (ordered pairs, Cartesian product). Edges are literally elements of the power set of <em>V</em> restricted to size 2, or elements of <em>V</em> × <em>V</em>.</p>
+
+<h3>Worked Example</h3>
+
+<p>Let <em>V</em> = {<em>a</em>, <em>b</em>, <em>c</em>, <em>d</em>} and <em>E</em> = { {<em>a</em>,<em>b</em>}, {<em>b</em>,<em>c</em>}, {<em>c</em>,<em>d</em>}, {<em>a</em>,<em>d</em>} }.</p>
+
+<div class="diagram-wrap">
+<svg width="300" height="200" viewBox="0 0 300 200" role="img" aria-label="Graph with vertices a, b, c, d forming a 4-cycle. Edges: a-b (top), b-c (right), c-d (bottom), a-d (left).">
+<circle cx="80" cy="45" r="18" fill="#4a6fa5" stroke="#22336b" stroke-width="2"/>
+<text x="80" y="50" text-anchor="middle" font-size="14" fill="#fff" font-weight="bold">a</text>
+<circle cx="220" cy="45" r="18" fill="#4a6fa5" stroke="#22336b" stroke-width="2"/>
+<text x="220" y="50" text-anchor="middle" font-size="14" fill="#fff" font-weight="bold">b</text>
+<circle cx="220" cy="155" r="18" fill="#4a6fa5" stroke="#22336b" stroke-width="2"/>
+<text x="220" y="160" text-anchor="middle" font-size="14" fill="#fff" font-weight="bold">c</text>
+<circle cx="80" cy="155" r="18" fill="#4a6fa5" stroke="#22336b" stroke-width="2"/>
+<text x="80" y="160" text-anchor="middle" font-size="14" fill="#fff" font-weight="bold">d</text>
+<line x1="98" y1="45" x2="202" y2="45" stroke="#2e4a7a" stroke-width="2.5"/>
+<line x1="220" y1="63" x2="220" y2="137" stroke="#2e4a7a" stroke-width="2.5"/>
+<line x1="202" y1="155" x2="98" y2="155" stroke="#2e4a7a" stroke-width="2.5"/>
+<line x1="80" y1="63" x2="80" y2="137" stroke="#2e4a7a" stroke-width="2.5"/>
+<!-- edge labels -->
+<text x="150" y="38" text-anchor="middle" font-size="11" fill="#555">{a,b}</text>
+<text x="243" y="103" font-size="11" fill="#555">{b,c}</text>
+<text x="150" y="175" text-anchor="middle" font-size="11" fill="#555">{c,d}</text>
+<text x="42" y="103" font-size="11" fill="#555">{a,d}</text>
+</svg>
+<div class="diagram-caption">Figure 2 — The graph <em>G</em> = (<em>V</em>, <em>E</em>) with |<em>V</em>| = 4 and |<em>E</em>| = 4. This is the cycle <em>C</em>₄.</div>
+</div>
+
+<p><strong>Adjacencies from the diagram:</strong></p>
+<ul>
+<li><em>a</em> is adjacent to <em>b</em> and <em>d</em>.</li>
+<li><em>b</em> is adjacent to <em>a</em> and <em>c</em>.</li>
+<li><em>c</em> is adjacent to <em>b</em> and <em>d</em>.</li>
+<li><em>d</em> is adjacent to <em>c</em> and <em>a</em>.</li>
+</ul>
+<p>Every vertex has exactly 2 neighbors, so this graph is a <strong>cycle</strong> — a concept we will define precisely in the next section.</p>
+
+<!-- ============================================================ -->
+<!-- SECTION 3: CORE VOCABULARY -->
+<!-- ============================================================ -->
+<h2 id="vocabulary">3 &nbsp; Core Vocabulary</h2>
+
+<p>The terms below form the language you will use for the rest of the course. Each definition includes a brief visual cue tied to the worked example above or a small supplementary diagram.</p>
+
+<!-- Adjacent Vertices -->
+<div class="collapsible">
+<button type="button" class="collapsible-toggle" aria-expanded="false" aria-controls="vocab-adjacent">Adjacent Vertices</button>
+<div class="collapsible-body" id="vocab-adjacent">
+<div class="callout callout-def">
+<div class="callout-title">&#128216; Definition</div>
+<p>Two vertices <em>u</em> and <em>v</em> are <strong>adjacent</strong> (or <em>neighbors</em>) if there is an edge {<em>u</em>,<em>v</em>} ∈ <em>E</em>.</p>
+</div>
+<p><em>In Figure 2:</em> <em>a</em> and <em>b</em> are adjacent because {<em>a</em>,<em>b</em>} ∈ <em>E</em>. Vertices <em>a</em> and <em>c</em> are <strong>not</strong> adjacent — there is no edge {<em>a</em>,<em>c</em>}.</p>
+</div>
+</div>
+
+<!-- Incident Edge -->
+<div class="collapsible">
+<button type="button" class="collapsible-toggle" aria-expanded="false" aria-controls="vocab-incident">Incident Edge</button>
+<div class="collapsible-body" id="vocab-incident">
+<div class="callout callout-def">
+<div class="callout-title">&#128216; Definition</div>
+<p>An edge <em>e</em> = {<em>u</em>,<em>v</em>} is <strong>incident</strong> to vertex <em>u</em> (and to vertex <em>v</em>). We also say <em>u</em> and <em>v</em> are the <strong>endpoints</strong> of <em>e</em>.</p>
+</div>
+<p><em>In Figure 2:</em> The edge {<em>a</em>,<em>b</em>} is incident to both <em>a</em> and <em>b</em>.</p>
+</div>
+</div>
+
+<!-- Degree -->
+<div class="collapsible">
+<button type="button" class="collapsible-toggle" aria-expanded="false" aria-controls="vocab-degree">Degree — deg(v)</button>
+<div class="collapsible-body" id="vocab-degree">
+<div class="callout callout-def">
+<div class="callout-title">&#128216; Definition</div>
+<p>The <strong>degree</strong> of a vertex <em>v</em>, written deg(<em>v</em>), is the number of edges incident to <em>v</em>.</p>
+</div>
+<p><em>In Figure 2:</em></p>
+<ul>
+<li>deg(<em>a</em>) = 2 &nbsp;(edges {<em>a</em>,<em>b</em>} and {<em>a</em>,<em>d</em>})</li>
+<li>deg(<em>b</em>) = 2, deg(<em>c</em>) = 2, deg(<em>d</em>) = 2</li>
+</ul>
+<p><strong>Quick check:</strong> ∑ deg(<em>v</em>) = 2 + 2 + 2 + 2 = 8 = 2 × |<em>E</em>| = 2 × 4. This is the <strong>Handshaking Lemma</strong> — you will study it formally in Module 12.4.</p>
+</div>
+</div>
+
+<!-- Walk, Trail, Path -->
+<div class="collapsible">
+<button type="button" class="collapsible-toggle" aria-expanded="false" aria-controls="vocab-paths">Walk, Trail, and Path</button>
+<div class="collapsible-body" id="vocab-paths">
+<div class="callout callout-def">
+<div class="callout-title">&#128216; Definitions</div>
+<ul>
+<li>A <strong>walk</strong> is a sequence of vertices <em>v</em>₀, <em>v</em>₁, …, <em>v</em>ₖ where each consecutive pair {<em>v</em>ᵢ, <em>v</em>ᵢ₊₁} ∈ <em>E</em>. Vertices and edges <em>may</em> repeat.</li>
+<li>A <strong>trail</strong> is a walk in which no <em>edge</em> is repeated (vertices may still repeat).</li>
+<li>A <strong>path</strong> is a walk in which no <em>vertex</em> (and therefore no edge) is repeated.</li>
+</ul>
+</div>
+<div class="diagram-wrap">
+<svg width="440" height="110" viewBox="0 0 440 110" role="img" aria-label="Diagram showing a walk a-b-c-d-a-b where vertex a and b repeat, illustrating that a walk allows repetition while a path does not.">
+<circle cx="40" cy="55" r="15" fill="#4a6fa5"/><text x="40" y="60" text-anchor="middle" font-size="12" fill="#fff" font-weight="bold">a</text>
+<circle cx="120" cy="55" r="15" fill="#4a6fa5"/><text x="120" y="60" text-anchor="middle" font-size="12" fill="#fff" font-weight="bold">b</text>
+<circle cx="200" cy="55" r="15" fill="#4a6fa5"/><text x="200" y="60" text-anchor="middle" font-size="12" fill="#fff" font-weight="bold">c</text>
+<circle cx="280" cy="55" r="15" fill="#4a6fa5"/><text x="280" y="60" text-anchor="middle" font-size="12" fill="#fff" font-weight="bold">d</text>
+<circle cx="360" cy="55" r="15" fill="#d4a017"/><text x="360" y="60" text-anchor="middle" font-size="12" fill="#fff" font-weight="bold">a</text>
+<circle cx="420" cy="55" r="15" fill="#d4a017"/><text x="420" y="60" text-anchor="middle" font-size="12" fill="#fff" font-weight="bold">b</text>
+<line x1="55" y1="55" x2="105" y2="55" stroke="#2e4a7a" stroke-width="2"/>
+<line x1="135" y1="55" x2="185" y2="55" stroke="#2e4a7a" stroke-width="2"/>
+<line x1="215" y1="55" x2="265" y2="55" stroke="#2e4a7a" stroke-width="2"/>
+<line x1="295" y1="55" x2="345" y2="55" stroke="#2e4a7a" stroke-width="2"/>
+<line x1="375" y1="55" x2="405" y2="55" stroke="#d4a017" stroke-width="2"/>
+<text x="220" y="95" text-anchor="middle" font-size="11" fill="#555">Walk: a → b → c → d → a → b (vertices a and b repeat — this is a walk, NOT a path)</text>
+</svg>
+</div>
+<p><strong>Key takeaway:</strong> Every path is a trail, and every trail is a walk — but not the other way around.</p>
+</div>
+</div>
+
+<!-- Cycle -->
+<div class="collapsible">
+<button type="button" class="collapsible-toggle" aria-expanded="false" aria-controls="vocab-cycle">Cycle</button>
+<div class="collapsible-body" id="vocab-cycle">
+<div class="callout callout-def">
+<div class="callout-title">&#128216; Definition</div>
+<p>A <strong>cycle</strong> is a path of length ≥ 3 that starts and ends at the same vertex (the only repeated vertex is the start/end vertex).</p>
+</div>
+<p><em>In Figure 2:</em> <em>a</em> → <em>b</em> → <em>c</em> → <em>d</em> → <em>a</em> is a cycle of length 4. The entire graph <em>is</em> a cycle.</p>
+</div>
+</div>
+
+<!-- Connected Graph -->
+<div class="collapsible">
+<button type="button" class="collapsible-toggle" aria-expanded="false" aria-controls="vocab-connected">Connected Graph</button>
+<div class="collapsible-body" id="vocab-connected">
+<div class="callout callout-def">
+<div class="callout-title">&#128216; Definition</div>
+<p>An undirected graph <em>G</em> is <strong>connected</strong> if there exists a path between every pair of vertices in <em>V</em>.</p>
+</div>
+<p><em>In Figure 2:</em> You can reach any vertex from any other vertex, so the graph is connected.</p>
+</div>
+</div>
+
+<!-- Connected Components -->
+<div class="collapsible">
+<button type="button" class="collapsible-toggle" aria-expanded="false" aria-controls="vocab-components">Connected Components</button>
+<div class="collapsible-body" id="vocab-components">
+<div class="callout callout-def">
+<div class="callout-title">&#128216; Definition</div>
+<p>A <strong>connected component</strong> of a graph <em>G</em> is a maximal connected subgraph — meaning you cannot add any more vertices or edges from <em>G</em> and keep it connected.</p>
+</div>
+<div class="diagram-wrap">
+<svg width="360" height="130" viewBox="0 0 360 130" role="img" aria-label="A disconnected graph with two connected components: vertices 1,2,3 forming a triangle on the left, and vertices 4,5 forming an edge on the right.">
+<!-- Component 1 -->
+<circle cx="50" cy="40" r="15" fill="#4a6fa5"/><text x="50" y="45" text-anchor="middle" font-size="12" fill="#fff" font-weight="bold">1</text>
+<circle cx="130" cy="40" r="15" fill="#4a6fa5"/><text x="130" y="45" text-anchor="middle" font-size="12" fill="#fff" font-weight="bold">2</text>
+<circle cx="90" cy="110" r="15" fill="#4a6fa5"/><text x="90" y="115" text-anchor="middle" font-size="12" fill="#fff" font-weight="bold">3</text>
+<line x1="65" y1="40" x2="115" y2="40" stroke="#2e4a7a" stroke-width="2"/>
+<line x1="55" y1="54" x2="78" y2="98" stroke="#2e4a7a" stroke-width="2"/>
+<line x1="125" y1="54" x2="102" y2="98" stroke="#2e4a7a" stroke-width="2"/>
+<text x="90" y="15" text-anchor="middle" font-size="11" fill="#2e8b57" font-weight="bold">Component 1</text>
+<!-- Component 2 -->
+<circle cx="250" cy="65" r="15" fill="#7b5ea7"/><text x="250" y="70" text-anchor="middle" font-size="12" fill="#fff" font-weight="bold">4</text>
+<circle cx="330" cy="65" r="15" fill="#7b5ea7"/><text x="330" y="70" text-anchor="middle" font-size="12" fill="#fff" font-weight="bold">5</text>
+<line x1="265" y1="65" x2="315" y2="65" stroke="#5b3e8a" stroke-width="2"/>
+<text x="290" y="40" text-anchor="middle" font-size="11" fill="#5b3e8a" font-weight="bold">Component 2</text>
+</svg>
+<div class="diagram-caption">Figure 3 — A disconnected graph with two connected components.</div>
+</div>
+<p>This graph has |<em>V</em>| = 5, |<em>E</em>| = 4, and <strong>2 connected components</strong>. There is no path from vertex 1 to vertex 4.</p>
+</div>
+</div>
+
+<!-- Subgraph -->
+<div class="collapsible">
+<button type="button" class="collapsible-toggle" aria-expanded="false" aria-controls="vocab-subgraph">Subgraph</button>
+<div class="collapsible-body" id="vocab-subgraph">
+<div class="callout callout-def">
+<div class="callout-title">&#128216; Definition</div>
+<p>A graph <em>H</em> = (<em>V</em>′, <em>E</em>′) is a <strong>subgraph</strong> of <em>G</em> = (<em>V</em>, <em>E</em>) if <em>V</em>′ ⊆ <em>V</em> and <em>E</em>′ ⊆ <em>E</em>, and every edge in <em>E</em>′ has both endpoints in <em>V</em>′.</p>
+</div>
+<p><em>Example from Figure 2:</em> Take <em>V</em>′ = {<em>a</em>, <em>b</em>, <em>c</em>} and <em>E</em>′ = { {<em>a</em>,<em>b</em>}, {<em>b</em>,<em>c</em>} }. This is a valid subgraph (a path <em>P</em>₃).</p>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 4: DIRECTED GRAPHS -->
+<!-- ============================================================ -->
+<h2 id="directed">4 &nbsp; Directed Graphs: In-Degree and Out-Degree</h2>
+
+<p>In a <strong>directed graph</strong> (or <em>digraph</em>), each edge is an ordered pair (<em>u</em>, <em>v</em>), meaning the edge goes <em>from</em> <em>u</em> <em>to</em> <em>v</em>. Direction matters: (<em>a</em>, <em>b</em>) and (<em>b</em>, <em>a</em>) are different edges.</p>
+
+<div class="callout callout-def">
+<div class="callout-title">&#128216; Definitions — In-Degree and Out-Degree</div>
+<ul>
+<li><strong>Out-degree</strong> deg⁺(<em>v</em>): the number of edges <em>leaving</em> <em>v</em>.</li>
+<li><strong>In-degree</strong> deg⁻(<em>v</em>): the number of edges <em>entering</em> <em>v</em>.</li>
+</ul>
+<p>For any directed graph: ∑ deg⁺(<em>v</em>) = ∑ deg⁻(<em>v</em>) = |<em>E</em>|</p>
+</div>
+
+<div class="diagram-wrap">
+<svg width="320" height="180" viewBox="0 0 320 180" role="img" aria-label="A directed graph with 4 vertices a,b,c,d. Edges: a to b, a to c, b to c, c to d. Arrows indicate direction.">
+<!-- Vertices -->
+<circle cx="80" cy="40" r="16" fill="#4a6fa5"/><text x="80" y="45" text-anchor="middle" font-size="13" fill="#fff" font-weight="bold">a</text>
+<circle cx="240" cy="40" r="16" fill="#4a6fa5"/><text x="240" y="45" text-anchor="middle" font-size="13" fill="#fff" font-weight="bold">b</text>
+<circle cx="160" cy="110" r="16" fill="#4a6fa5"/><text x="160" y="115" text-anchor="middle" font-size="13" fill="#fff" font-weight="bold">c</text>
+<circle cx="160" cy="165" r="16" fill="#4a6fa5"/><text x="160" y="170" text-anchor="middle" font-size="13" fill="#fff" font-weight="bold">d</text>
+<!-- Edges with arrows -->
+<defs><marker id="arw" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#2e4a7a"/></marker></defs>
+<line x1="96" y1="42" x2="222" y2="42" stroke="#2e4a7a" stroke-width="2" marker-end="url(#arw)"/>
+<line x1="88" y1="55" x2="148" y2="98" stroke="#2e4a7a" stroke-width="2" marker-end="url(#arw)"/>
+<line x1="232" y1="55" x2="172" y2="98" stroke="#2e4a7a" stroke-width="2" marker-end="url(#arw)"/>
+<line x1="160" y1="126" x2="160" y2="147" stroke="#2e4a7a" stroke-width="2" marker-end="url(#arw)"/>
+<!-- Labels -->
+<text x="160" y="30" text-anchor="middle" font-size="10" fill="#555">(a,b)</text>
+<text x="100" y="85" font-size="10" fill="#555">(a,c)</text>
+<text x="210" y="85" font-size="10" fill="#555">(b,c)</text>
+<text x="175" y="142" font-size="10" fill="#555">(c,d)</text>
+</svg>
+<div class="diagram-caption">Figure 4 — A directed graph. Edge (<em>a</em>,<em>b</em>) goes from <em>a</em> to <em>b</em> but not from <em>b</em> to <em>a</em>.</div>
+</div>
+
+<table style="border-collapse:collapse;margin:.75rem 0;font-size:.92rem" aria-label="Degree table for the directed graph in Figure 4">
+<thead><tr style="background:#eaf1fb">
+<th scope="col" style="padding:.4rem .75rem;border:1px solid #b8c9e0">Vertex</th>
+<th scope="col" style="padding:.4rem .75rem;border:1px solid #b8c9e0">deg⁺(<em>v</em>)</th>
+<th scope="col" style="padding:.4rem .75rem;border:1px solid #b8c9e0">deg⁻(<em>v</em>)</th>
+</tr></thead>
+<tbody>
+<tr><td style="padding:.35rem .75rem;border:1px solid #d0d8e8;text-align:center">a</td><td style="padding:.35rem .75rem;border:1px solid #d0d8e8;text-align:center">2</td><td style="padding:.35rem .75rem;border:1px solid #d0d8e8;text-align:center">0</td></tr>
+<tr><td style="padding:.35rem .75rem;border:1px solid #d0d8e8;text-align:center">b</td><td style="padding:.35rem .75rem;border:1px solid #d0d8e8;text-align:center">1</td><td style="padding:.35rem .75rem;border:1px solid #d0d8e8;text-align:center">1</td></tr>
+<tr><td style="padding:.35rem .75rem;border:1px solid #d0d8e8;text-align:center">c</td><td style="padding:.35rem .75rem;border:1px solid #d0d8e8;text-align:center">1</td><td style="padding:.35rem .75rem;border:1px solid #d0d8e8;text-align:center">2</td></tr>
+<tr><td style="padding:.35rem .75rem;border:1px solid #d0d8e8;text-align:center">d</td><td style="padding:.35rem .75rem;border:1px solid #d0d8e8;text-align:center">0</td><td style="padding:.35rem .75rem;border:1px solid #d0d8e8;text-align:center">1</td></tr>
+<tr style="background:#eaf1fb;font-weight:600"><td style="padding:.35rem .75rem;border:1px solid #b8c9e0;text-align:center">Total</td><td style="padding:.35rem .75rem;border:1px solid #b8c9e0;text-align:center">4</td><td style="padding:.35rem .75rem;border:1px solid #b8c9e0;text-align:center">4</td></tr>
+</tbody>
+</table>
+
+<p>Both columns sum to |<em>E</em>| = 4, confirming the directed-graph handshaking property.</p>
+
+<div class="callout callout-warn">
+<div class="callout-title">⚠️ Undirected vs. Directed — Don't Mix Them Up</div>
+<p>In an <em>undirected</em> graph, every vertex has a single degree value deg(<em>v</em>). In a <em>directed</em> graph, degree splits into deg⁺(<em>v</em>) and deg⁻(<em>v</em>). When a problem says "degree" without qualification, assume the graph is undirected unless stated otherwise.</p>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 5: MINI-CASE -->
+<!-- ============================================================ -->
+<h2 id="mini-case">5 &nbsp; Mini-Case: A Social Network as a Graph</h2>
+
+<p>Six friends — <strong>Ali, Bo, Cal, Dee, Eve, Fay</strong> — are connected by the following friendships (friendship is mutual, so this is an undirected graph):</p>
+
+<div class="diagram-wrap">
+<svg width="380" height="280" viewBox="0 0 380 280" role="img" aria-label="Social network graph with 6 vertices (Ali, Bo, Cal, Dee, Eve, Fay) and 8 edges representing friendships.">
+<!-- Vertices -->
+<circle cx="190" cy="30" r="18" fill="#4a6fa5"/><text x="190" y="35" text-anchor="middle" font-size="11" fill="#fff" font-weight="bold">Ali</text>
+<circle cx="320" cy="90" r="18" fill="#4a6fa5"/><text x="320" y="95" text-anchor="middle" font-size="11" fill="#fff" font-weight="bold">Bo</text>
+<circle cx="320" cy="200" r="18" fill="#4a6fa5"/><text x="320" y="205" text-anchor="middle" font-size="11" fill="#fff" font-weight="bold">Cal</text>
+<circle cx="190" cy="260" r="18" fill="#4a6fa5"/><text x="190" y="265" text-anchor="middle" font-size="11" fill="#fff" font-weight="bold">Dee</text>
+<circle cx="60" cy="200" r="18" fill="#4a6fa5"/><text x="60" y="205" text-anchor="middle" font-size="11" fill="#fff" font-weight="bold">Eve</text>
+<circle cx="60" cy="90" r="18" fill="#4a6fa5"/><text x="60" y="95" text-anchor="middle" font-size="11" fill="#fff" font-weight="bold">Fay</text>
+<!-- Edges (8 friendships) -->
+<line x1="206" y1="38" x2="304" y2="82" stroke="#2e4a7a" stroke-width="2"/>
+<line x1="174" y1="38" x2="76" y2="82" stroke="#2e4a7a" stroke-width="2"/>
+<line x1="190" y1="48" x2="190" y2="242" stroke="#2e4a7a" stroke-width="1.5" stroke-dasharray="5,3"/>
+<line x1="320" y1="108" x2="320" y2="182" stroke="#2e4a7a" stroke-width="2"/>
+<line x1="306" y1="100" x2="76" y2="100" stroke="#2e4a7a" stroke-width="2"/>
+<line x1="304" y1="208" x2="206" y2="252" stroke="#2e4a7a" stroke-width="2"/>
+<line x1="76" y1="208" x2="174" y2="252" stroke="#2e4a7a" stroke-width="2"/>
+<line x1="60" y1="108" x2="60" y2="182" stroke="#2e4a7a" stroke-width="2"/>
+</svg>
+<div class="diagram-caption">Figure 5 — Social network: <em>V</em> = {Ali, Bo, Cal, Dee, Eve, Fay}, |<em>E</em>| = 8.</div>
+</div>
+
+<p><strong>Formal notation:</strong></p>
+<p><em>E</em> = { {Ali,Bo}, {Ali,Fay}, {Ali,Dee}, {Bo,Cal}, {Bo,Fay}, {Cal,Dee}, {Eve,Dee}, {Fay,Eve} }</p>
+
+<div class="collapsible">
+<button type="button" class="collapsible-toggle" aria-expanded="false" aria-controls="mc-degree">Analyze: Degree of Each Person</button>
+<div class="collapsible-body" id="mc-degree">
+<table style="border-collapse:collapse;margin:.5rem 0;font-size:.92rem" aria-label="Degree of each vertex in the social network">
+<thead><tr style="background:#eaf1fb">
+<th scope="col" style="padding:.35rem .65rem;border:1px solid #b8c9e0">Person</th>
+<th scope="col" style="padding:.35rem .65rem;border:1px solid #b8c9e0">Friends</th>
+<th scope="col" style="padding:.35rem .65rem;border:1px solid #b8c9e0">deg(<em>v</em>)</th>
+</tr></thead>
+<tbody>
+<tr><td style="padding:.3rem .65rem;border:1px solid #d0d8e8">Ali</td><td style="padding:.3rem .65rem;border:1px solid #d0d8e8">Bo, Fay, Dee</td><td style="padding:.3rem .65rem;border:1px solid #d0d8e8;text-align:center">3</td></tr>
+<tr><td style="padding:.3rem .65rem;border:1px solid #d0d8e8">Bo</td><td style="padding:.3rem .65rem;border:1px solid #d0d8e8">Ali, Cal, Fay</td><td style="padding:.3rem .65rem;border:1px solid #d0d8e8;text-align:center">3</td></tr>
+<tr><td style="padding:.3rem .65rem;border:1px solid #d0d8e8">Cal</td><td style="padding:.3rem .65rem;border:1px solid #d0d8e8">Bo, Dee</td><td style="padding:.3rem .65rem;border:1px solid #d0d8e8;text-align:center">2</td></tr>
+<tr><td style="padding:.3rem .65rem;border:1px solid #d0d8e8">Dee</td><td style="padding:.3rem .65rem;border:1px solid #d0d8e8">Ali, Cal, Eve</td><td style="padding:.3rem .65rem;border:1px solid #d0d8e8;text-align:center">3</td></tr>
+<tr><td style="padding:.3rem .65rem;border:1px solid #d0d8e8">Eve</td><td style="padding:.3rem .65rem;border:1px solid #d0d8e8">Dee, Fay</td><td style="padding:.3rem .65rem;border:1px solid #d0d8e8;text-align:center">2</td></tr>
+<tr><td style="padding:.3rem .65rem;border:1px solid #d0d8e8">Fay</td><td style="padding:.3rem .65rem;border:1px solid #d0d8e8">Ali, Bo, Eve</td><td style="padding:.3rem .65rem;border:1px solid #d0d8e8;text-align:center">3</td></tr>
+<tr style="background:#eaf1fb;font-weight:600"><td colspan="2" style="padding:.3rem .65rem;border:1px solid #b8c9e0">Total</td><td style="padding:.3rem .65rem;border:1px solid #b8c9e0;text-align:center">16</td></tr>
+</tbody>
+</table>
+<p><strong>Handshaking check:</strong> ∑ deg(<em>v</em>) = 16 = 2 × 8 = 2|<em>E</em>|. ✓</p>
+</div>
+</div>
+
+<div class="collapsible">
+<button type="button" class="collapsible-toggle" aria-expanded="false" aria-controls="mc-connected">Analyze: Is the Network Connected?</button>
+<div class="collapsible-body" id="mc-connected">
+<p><strong>Yes.</strong> From any person, you can reach every other person by following friendship edges. For example, to get from Cal to Eve: Cal → Dee → Eve. The graph has <strong>1 connected component</strong>.</p>
+</div>
+</div>
+
+<div class="collapsible">
+<button type="button" class="collapsible-toggle" aria-expanded="false" aria-controls="mc-path">Analyze: Shortest Path from Bo to Eve</button>
+<div class="collapsible-body" id="mc-path">
+<p>There are several paths. Two short ones:</p>
+<ul>
+<li>Bo → Fay → Eve &nbsp;(length 2)</li>
+<li>Bo → Ali → Dee → Eve &nbsp;(length 3)</li>
+</ul>
+<p>The <strong>shortest path</strong> has length <strong>2</strong>: Bo → Fay → Eve.</p>
+</div>
+</div>
+
+<div class="collapsible">
+<button type="button" class="collapsible-toggle" aria-expanded="false" aria-controls="mc-cycle">Analyze: Find a Cycle</button>
+<div class="collapsible-body" id="mc-cycle">
+<p>One cycle: <strong>Ali → Bo → Fay → Ali</strong> (length 3). Another: Ali → Bo → Cal → Dee → Ali (length 4). Cycles indicate that there are multiple routes between people — the network has redundancy.</p>
+</div>
+</div>
+
+<div class="callout callout-look">
+<div class="callout-title">&#128301; Look Ahead</div>
+<p>In Module 12.2, you will classify this social network by graph type (undirected, unweighted, simple). In Module 12.3, you will learn how to store it in a computer using an adjacency matrix or adjacency list. In Week 13, you will implement BFS and DFS to find shortest paths and connected components algorithmically.</p>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 6: KNOWLEDGE CHECKS -->
+<!-- ============================================================ -->
+<h2 id="checks">6 &nbsp; Knowledge Checks</h2>
+
+<p>These checks are <strong>ungraded</strong> — use them to test your understanding before moving on. Click an answer to see immediate feedback.</p>
+
+<!-- Check 12.1a -->
+<div class="kc-block" id="check-a">
+<h3>Check 12.1a — Edge Set Notation</h3>
+<p>Consider the graph below with 5 vertices. List the edge set <em>E</em> using set notation.</p>
+<div class="diagram-wrap">
+<svg width="280" height="180" viewBox="0 0 280 180" role="img" aria-label="Graph with vertices v1 through v5. Edges: v1-v2, v1-v3, v2-v3, v2-v4, v4-v5.">
+<circle cx="60" cy="30" r="15" fill="#4a6fa5"/><text x="60" y="35" text-anchor="middle" font-size="11" fill="#fff" font-weight="bold">v₁</text>
+<circle cx="200" cy="30" r="15" fill="#4a6fa5"/><text x="200" y="35" text-anchor="middle" font-size="11" fill="#fff" font-weight="bold">v₂</text>
+<circle cx="130" cy="90" r="15" fill="#4a6fa5"/><text x="130" y="95" text-anchor="middle" font-size="11" fill="#fff" font-weight="bold">v₃</text>
+<circle cx="260" cy="100" r="15" fill="#4a6fa5"/><text x="260" y="105" text-anchor="middle" font-size="11" fill="#fff" font-weight="bold">v₄</text>
+<circle cx="260" cy="165" r="15" fill="#4a6fa5"/><text x="260" y="170" text-anchor="middle" font-size="11" fill="#fff" font-weight="bold">v₅</text>
+<line x1="75" y1="30" x2="185" y2="30" stroke="#2e4a7a" stroke-width="2"/>
+<line x1="68" y1="43" x2="118" y2="80" stroke="#2e4a7a" stroke-width="2"/>
+<line x1="145" y1="82" x2="192" y2="42" stroke="#2e4a7a" stroke-width="2"/>
+<line x1="215" y1="36" x2="248" y2="88" stroke="#2e4a7a" stroke-width="2"/>
+<line x1="260" y1="115" x2="260" y2="150" stroke="#2e4a7a" stroke-width="2"/>
+</svg>
+</div>
+<p>Which of the following correctly represents <em>E</em>?</p>
+<ul class="kc-options">
+<li><button type="button" class="kc-btn" data-correct="false" data-check="a" onclick="handleKC(this)">A. { {v₁,v₂}, {v₁,v₃}, {v₂,v₃}, {v₃,v₄}, {v₄,v₅} }</button></li>
+<li><button type="button" class="kc-btn" data-correct="true" data-check="a" onclick="handleKC(this)">B. { {v₁,v₂}, {v₁,v₃}, {v₂,v₃}, {v₂,v₄}, {v₄,v₅} }</button></li>
+<li><button type="button" class="kc-btn" data-correct="false" data-check="a" onclick="handleKC(this)">C. { {v₁,v₂}, {v₁,v₃}, {v₂,v₄}, {v₃,v₄}, {v₄,v₅} }</button></li>
+<li><button type="button" class="kc-btn" data-correct="false" data-check="a" onclick="handleKC(this)">D. { {v₁,v₂}, {v₁,v₃}, {v₂,v₃}, {v₂,v₄}, {v₃,v₅} }</button></li>
+</ul>
+<div class="kc-feedback" id="fb-a-correct" role="status" aria-live="polite">
+<span class="correct-fb">✔ Correct.</span> Reading the edges from the diagram: v₁–v₂ (top), v₁–v₃ (diagonal left), v₂–v₃ (diagonal right), v₂–v₄ (right), and v₄–v₅ (bottom). Option A incorrectly lists {v₃,v₄} instead of {v₂,v₄}. Options C and D also have edge mismatches.
+</div>
+<div class="kc-feedback" id="fb-a-incorrect" role="status" aria-live="polite">
+<span class="incorrect-fb">✘ Not quite.</span> Trace each line in the diagram carefully. The edge between the right-side vertices connects v₂ to v₄, not v₃ to v₄. The correct answer is <strong>B</strong>: { {v₁,v₂}, {v₁,v₃}, {v₂,v₃}, {v₂,v₄}, {v₄,v₅} }.
+</div>
+</div>
+
+<!-- Check 12.1b -->
+<div class="kc-block" id="check-b">
+<h3>Check 12.1b — Degree and the Handshaking Lemma</h3>
+<p>Using the same graph from Check 12.1a, compute deg(<em>v</em>) for every vertex and verify the Handshaking Lemma. Which row below is correct?</p>
+<ul class="kc-options">
+<li><button type="button" class="kc-btn" data-correct="false" data-check="b" onclick="handleKC(this)">A. deg(v₁)=2, deg(v₂)=2, deg(v₃)=2, deg(v₄)=2, deg(v₅)=2 → Sum=10</button></li>
+<li><button type="button" class="kc-btn" data-correct="true" data-check="b" onclick="handleKC(this)">B. deg(v₁)=2, deg(v₂)=3, deg(v₃)=2, deg(v₄)=2, deg(v₅)=1 → Sum=10</button></li>
+<li><button type="button" class="kc-btn" data-correct="false" data-check="b" onclick="handleKC(this)">C. deg(v₁)=2, deg(v₂)=3, deg(v₃)=3, deg(v₄)=2, deg(v₅)=1 → Sum=11</button></li>
+<li><button type="button" class="kc-btn" data-correct="false" data-check="b" onclick="handleKC(this)">D. deg(v₁)=3, deg(v₂)=3, deg(v₃)=2, deg(v₄)=1, deg(v₅)=1 → Sum=10</button></li>
+</ul>
+<div class="kc-feedback" id="fb-b-correct" role="status" aria-live="polite">
+<span class="correct-fb">✔ Correct.</span> v₁ touches edges {v₁,v₂} and {v₁,v₃} → degree 2. v₂ touches {v₁,v₂}, {v₂,v₃}, {v₂,v₄} → degree 3. v₃ touches {v₁,v₃}, {v₂,v₃} → degree 2. v₄ touches {v₂,v₄}, {v₄,v₅} → degree 2. v₅ touches {v₄,v₅} → degree 1. Sum = 10 = 2 × 5 = 2|<em>E</em>|. ✓ The Handshaking Lemma holds.
+</div>
+<div class="kc-feedback" id="fb-b-incorrect" role="status" aria-live="polite">
+<span class="incorrect-fb">✘ Not quite.</span> Count the edges touching each vertex carefully. v₂ is the most connected vertex with 3 edges. The sum of all degrees must equal 2|<em>E</em>| = 2 × 5 = 10. If your sum is odd (like 11 in option C), the Handshaking Lemma tells you something is wrong. The correct answer is <strong>B</strong>.
+</div>
+</div>
+
+<!-- Check 12.1c -->
+<div class="kc-block" id="check-c">
+<h3>Check 12.1c — Walk vs. Path (True / False)</h3>
+<p><strong>Statement:</strong> "Every walk is a path."</p>
+<div class="tf-group">
+<button type="button" class="tf-btn" data-correct="false" data-check="c" onclick="handleTF(this)">True</button>
+<button type="button" class="tf-btn" data-correct="true" data-check="c" onclick="handleTF(this)">False</button>
+</div>
+<div class="kc-feedback" id="fb-c-correct" role="status" aria-live="polite">
+<span class="correct-fb">✔ Correct — the statement is <strong>false</strong>.</span> A walk may repeat vertices and edges. A path requires all vertices to be distinct. For example, in the social network from Section 5, the walk Ali → Bo → Fay → Ali revisits Ali, so it is a walk (and actually a cycle) but not a path. The correct hierarchy is: every path is a trail, and every trail is a walk — but not every walk is a path.
+</div>
+<div class="kc-feedback" id="fb-c-incorrect" role="status" aria-live="polite">
+<span class="incorrect-fb">✘ Not quite.</span> A walk <em>allows</em> repeated vertices and edges, while a path requires all vertices to be distinct. Since walks are less restrictive, not every walk qualifies as a path. The statement is <strong>false</strong>.
+</div>
+</div>
+
+<!-- Check 12.1d -->
+<div class="kc-block" id="check-d">
+<h3>Check 12.1d — Connected Components</h3>
+<p>A graph has vertices {1, 2, 3, 4, 5, 6, 7} and edges { {1,2}, {2,3}, {1,3}, {4,5}, {6,7} }. How many connected components does this graph have?</p>
+<ul class="kc-options">
+<li><button type="button" class="kc-btn" data-correct="false" data-check="d" onclick="handleKC(this)">A. 1</button></li>
+<li><button type="button" class="kc-btn" data-correct="false" data-check="d" onclick="handleKC(this)">B. 2</button></li>
+<li><button type="button" class="kc-btn" data-correct="true" data-check="d" onclick="handleKC(this)">C. 3</button></li>
+<li><button type="button" class="kc-btn" data-correct="false" data-check="d" onclick="handleKC(this)">D. 7</button></li>
+</ul>
+<div class="kc-feedback" id="fb-d-correct" role="status" aria-live="polite">
+<span class="correct-fb">✔ Correct — 3 components.</span> Component 1: {1, 2, 3} (connected by edges {1,2}, {2,3}, {1,3}). Component 2: {4, 5} (connected by {4,5}). Component 3: {6, 7} (connected by {6,7}). There is no edge linking any vertex in one component to a vertex in another, so the graph is disconnected with exactly 3 maximal connected subgraphs.
+</div>
+<div class="kc-feedback" id="fb-d-incorrect" role="status" aria-live="polite">
+<span class="incorrect-fb">✘ Not quite.</span> Group the vertices by reachability. Vertices 1, 2, 3 are all connected to each other. Vertices 4 and 5 are connected only to each other. Vertices 6 and 7 are connected only to each other. No edges cross between these three groups, giving <strong>3 connected components</strong> (answer C).
+</div>
+</div>
+
+<div class="callout callout-look mt-1">
+<div class="callout-title">&#128301; What's Next</div>
+<p>In <strong>Module 12.2 – Types of Graphs and Real-World Modeling</strong>, you will learn to classify graphs as directed/undirected, weighted/unweighted, and simple/multigraph — and practice choosing the right type for a given real-world scenario. The vocabulary from this module is prerequisite for everything that follows.</p>
+</div>
+
+<p class="text-sm" style="margin-top:1.5rem;border-top:1px solid #ddd;padding-top:.75rem"><strong>Module 12.1</strong> · CSC 240 – Discrete Structures · Week 12 · Spring 2026<br>
+Questions? Contact your instructor through Canvas or during office hours.</p>
+
+</main>
+
+<script>
+/* Collapsible sections */
+document.querySelectorAll('.collapsible-toggle').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var expanded = this.getAttribute('aria-expanded') === 'true';
+    this.setAttribute('aria-expanded', String(!expanded));
+    var body = document.getElementById(this.getAttribute('aria-controls'));
+    if (!expanded) { body.classList.add('open'); } else { body.classList.remove('open'); }
+  });
+});
+
+/* MC knowledge checks */
+function handleKC(btn) {
+  var check = btn.getAttribute('data-check');
+  var isCorrect = btn.getAttribute('data-correct') === 'true';
+  var parent = btn.closest('.kc-block');
+  /* reset previous state */
+  parent.querySelectorAll('.kc-btn').forEach(function(b){
+    b.classList.remove('correct', 'incorrect');
+    b.disabled = false;
+  });
+  parent.querySelectorAll('.kc-feedback').forEach(function(f){
+    f.classList.remove('show', 'correct-fb', 'incorrect-fb');
+  });
+  /* mark selected and show feedback */
+  btn.classList.add(isCorrect ? 'correct' : 'incorrect');
+  var fb = document.getElementById('fb-' + check + '-' + (isCorrect ? 'correct' : 'incorrect'));
+  fb.classList.add('show', isCorrect ? 'correct-fb' : 'incorrect-fb');
+  /* disable all options after answering */
+  parent.querySelectorAll('.kc-btn').forEach(function(b){ b.disabled = true; });
+}
+
+/* TF knowledge checks */
+function handleTF(btn) {
+  var check = btn.getAttribute('data-check');
+  var isCorrect = btn.getAttribute('data-correct') === 'true';
+  var parent = btn.closest('.kc-block');
+  parent.querySelectorAll('.tf-btn').forEach(function(b){
+    b.classList.remove('correct', 'incorrect');
+    b.disabled = false;
+  });
+  parent.querySelectorAll('.kc-feedback').forEach(function(f){
+    f.classList.remove('show', 'correct-fb', 'incorrect-fb');
+  });
+  btn.classList.add(isCorrect ? 'correct' : 'incorrect');
+  var fb = document.getElementById('fb-' + check + '-' + (isCorrect ? 'correct' : 'incorrect'));
+  fb.classList.add('show', isCorrect ? 'correct-fb' : 'incorrect-fb');
+  parent.querySelectorAll('.tf-btn').forEach(function(b){ b.disabled = true; });
+}
+</script>
+
+</body>
+</html>

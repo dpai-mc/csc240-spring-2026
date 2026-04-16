@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 12 Overview – Introduction to Graphs | CSC 240</title>
+<style>
+:root {
+  --primary: #1a5276;
+  --primary-light: #2980b9;
+  --accent: #148f77;
+  --accent-light: #e8f6f3;
+  --bg: #ffffff;
+  --bg-alt: #f4f6f8;
+  --text: #212529;
+  --text-muted: #5a6270;
+  --border: #d5dce4;
+  --highlight: #fef9e7;
+  --highlight-border: #f1c40f;
+  --radius: 6px;
+  --shadow: 0 1px 3px rgba(0,0,0,.1);
+  --focus-ring: 0 0 0 3px rgba(41,128,185,.45);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;font-size:1rem;line-height:1.65;color:var(--text);background:var(--bg);}
+a{color:var(--primary-light);text-decoration:underline;}
+a:focus-visible{outline:none;box-shadow:var(--focus-ring);border-radius:2px;}
+
+/* ── top nav ── */
+.top-nav{background:var(--primary);padding:.65rem 1.25rem;display:flex;flex-wrap:wrap;align-items:center;gap:.35rem .9rem;position:sticky;top:0;z-index:100;box-shadow:0 2px 4px rgba(0,0,0,.15);}
+.top-nav .nav-title{color:#fff;font-weight:700;font-size:.95rem;margin-right:.6rem;white-space:nowrap;}
+.top-nav a{color:#d6eaf8;font-size:.85rem;text-decoration:none;padding:.2rem .35rem;border-radius:3px;white-space:nowrap;}
+.top-nav a:hover,.top-nav a:focus-visible{background:rgba(255,255,255,.15);color:#fff;text-decoration:underline;}
+
+/* ── layout ── */
+.container{max-width:54rem;margin:0 auto;padding:1.5rem 1.25rem 3rem;}
+h1{font-size:1.65rem;color:var(--primary);margin-bottom:.25rem;}
+h2{font-size:1.3rem;color:var(--primary);margin:2rem 0 .75rem;padding-bottom:.35rem;border-bottom:2px solid var(--primary-light);}
+h3{font-size:1.05rem;color:var(--primary);margin:1.25rem 0 .5rem;}
+p,.list-styled li{margin-bottom:.65rem;}
+.subtitle{color:var(--text-muted);font-size:.93rem;margin-bottom:1.5rem;line-height:1.55;}
+
+/* ── callout boxes ── */
+.callout{border-left:4px solid var(--primary-light);background:var(--bg-alt);padding:1rem 1.15rem;border-radius:var(--radius);margin:1rem 0;}
+.callout-accent{border-left-color:var(--accent);background:var(--accent-light);}
+.callout-highlight{border-left-color:var(--highlight-border);background:var(--highlight);}
+.callout-title{font-weight:700;font-size:.95rem;margin-bottom:.35rem;color:var(--primary);}
+.callout-accent .callout-title{color:var(--accent);}
+
+/* ── styled lists ── */
+.list-styled{padding-left:1.4rem;}
+.list-styled li{margin-bottom:.45rem;}
+.list-styled li::marker{color:var(--primary-light);}
+ol.list-styled li::marker{font-weight:600;}
+
+/* ── module cards ── */
+.module-card{background:var(--bg-alt);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.15rem;margin-bottom:.75rem;box-shadow:var(--shadow);}
+.module-card-title{font-weight:700;color:var(--primary);font-size:1rem;margin-bottom:.3rem;}
+.module-card p{margin-bottom:0;font-size:.93rem;}
+
+/* ── concept chips ── */
+.chip-group{display:flex;flex-wrap:wrap;gap:.5rem;margin:1rem 0;}
+.chip{display:inline-block;background:var(--primary);color:#fff;font-size:.82rem;padding:.3rem .7rem;border-radius:999px;font-weight:600;letter-spacing:.01em;}
+.chip-accent{background:var(--accent);}
+
+/* ── collapsible / details ── */
+details{border:1px solid var(--border);border-radius:var(--radius);margin:.75rem 0;background:var(--bg-alt);}
+details[open]{background:var(--bg);}
+summary{cursor:pointer;font-weight:700;font-size:.97rem;padding:.75rem 1rem;color:var(--primary);list-style:none;display:flex;align-items:center;gap:.5rem;}
+summary::-webkit-details-marker{display:none;}
+summary::before{content:"▸";font-size:.85rem;transition:transform .2s ease;display:inline-block;width:1rem;text-align:center;flex-shrink:0;}
+details[open]>summary::before{transform:rotate(90deg);}
+summary:focus-visible{outline:none;box-shadow:var(--focus-ring);border-radius:var(--radius);}
+.details-body{padding:.5rem 1rem 1rem;}
+
+/* ── week badge ── */
+.week-badge{display:inline-block;background:var(--primary);color:#fff;font-size:.78rem;font-weight:700;padding:.25rem .65rem;border-radius:999px;vertical-align:middle;margin-right:.4rem;letter-spacing:.03em;}
+
+/* ── arc visual ── */
+.arc-bar{display:flex;gap:0;margin:1rem 0;border-radius:var(--radius);overflow:hidden;font-size:.72rem;font-weight:700;color:#fff;text-align:center;}
+.arc-bar span{padding:.45rem .25rem;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.arc-past{background:#85929e;}
+.arc-current{background:var(--primary-light);outline:2px solid var(--primary);outline-offset:-2px;}
+.arc-future{background:#aab7b8;}
+
+/* ── responsive ── */
+@media(max-width:600px){
+  .top-nav{padding:.5rem .75rem;gap:.25rem .6rem;}
+  .container{padding:1rem .75rem 2rem;}
+  h1{font-size:1.35rem;}
+  h2{font-size:1.15rem;}
+  .arc-bar{font-size:.6rem;}
+  .arc-bar span{padding:.35rem .15rem;}
+}
+</style>
+</head>
+<body>
+
+<!-- ════════════════ TOP NAV ════════════════ -->
+<nav class="top-nav" aria-label="Week 12 overview section navigation">
+  <span class="nav-title">Week 12 Overview</span>
+  <a href="#welcome">Welcome</a>
+  <a href="#goals">Learning Goals</a>
+  <a href="#activities">Activities</a>
+  <a href="#concepts">Key Concepts</a>
+  <a href="#looking-ahead">Looking Ahead</a>
+</nav>
+
+<div class="container">
+
+<!-- ════════════════ §1  WELCOME ════════════════ -->
+<section id="welcome">
+  <p><span class="week-badge" aria-label="Week 12">WEEK 12</span> <strong>of 17</strong></p>
+  <h1>Introduction to Graphs</h1>
+  <p class="subtitle">
+    <strong>CSC 240 – Discrete Structures</strong> · Spring 2026<br>
+    <strong>CSLO 3:</strong> Implement graph/tree traversal methods in a programming language.
+  </p>
+
+  <div class="callout callout-highlight">
+    <p class="callout-title">Why This Week Matters</p>
+    <p>
+      Week 12 is the <strong>gateway</strong> to the graph-and-tree unit that spans the rest of the semester (Weeks&nbsp;12–17). Every concept you learn this week—graph vocabulary, representations, and structural properties—is <em>directly required</em> by the traversal algorithms in Week&nbsp;13, the advanced graph algorithms in Week&nbsp;14, the tree content in Weeks&nbsp;15–16, and the Final Project. Invest the time now and it will pay off every week that follows.
+    </p>
+  </div>
+
+  <!-- course arc bar -->
+  <h3>Where You Are in the Course</h3>
+  <div class="arc-bar" role="img" aria-label="Course arc: Weeks 1 through 9 complete, Week 10 review complete, Week 11 complete, Week 12 current, Weeks 13 through 17 ahead">
+    <span class="arc-past" title="Weeks 1–9: Sets, Logic, Proofs, Counting, Probability">Wk 1–9</span>
+    <span class="arc-past" title="Week 10: Review &amp; Integration">Wk 10</span>
+    <span class="arc-past" title="Week 11: Recursion &amp; Recurrences">Wk 11</span>
+    <span class="arc-current" title="Week 12: Introduction to Graphs (you are here)">★ Wk 12</span>
+    <span class="arc-future" title="Week 13: Graph Traversal (BFS/DFS)">Wk 13</span>
+    <span class="arc-future" title="Week 14: MST &amp; Shortest Path">Wk 14</span>
+    <span class="arc-future" title="Weeks 15–16: Trees, AVL, Hashing">Wk 15–16</span>
+    <span class="arc-future" title="Week 17: Final Project Due">Wk 17</span>
+  </div>
+
+  <div class="callout">
+    <p class="callout-title">Connection to What You Already Know</p>
+    <p>
+      You are not starting from scratch. The <strong>set notation and relations</strong> from Weeks&nbsp;1–2 give you the language for defining graphs. The <strong>proof techniques</strong> from Weeks&nbsp;5–6 will help you reason about graph properties like the Handshaking Lemma. And the <strong>Big-O analysis</strong> you practiced with recurrence relations in Week&nbsp;11 transfers directly to comparing graph data-structure tradeoffs this week.
+    </p>
+  </div>
+</section>
+
+<!-- ════════════════ §2  LEARNING GOALS ════════════════ -->
+<section id="goals">
+  <h2>Learning Goals for Week 12</h2>
+  <p>By the end of this week you will be able to:</p>
+  <ol class="list-styled">
+    <li><strong>Define fundamental graph terminology</strong> — vertex, edge, degree, path, cycle, connected graph, subgraph — and use these terms precisely in written and verbal descriptions.</li>
+    <li><strong>Distinguish among graph types</strong> — directed vs.&nbsp;undirected, weighted vs.&nbsp;unweighted, simple vs.&nbsp;multigraph — and identify when each type is appropriate for modeling a given problem.</li>
+    <li><strong>Construct adjacency matrix and adjacency list representations</strong> of a graph from a visual or verbal description, and convert between the two representations.</li>
+    <li><strong>Analyze space and time tradeoffs</strong> of adjacency matrix vs.&nbsp;adjacency list representations for sparse and dense graphs using Big-O notation.</li>
+    <li><strong>Apply the Handshaking Lemma</strong> to determine feasibility of degree sequences and solve related problems.</li>
+    <li><strong>Recognize and characterize special graph types</strong> — complete graphs $$K_n$$, complete bipartite graphs $$K_{m,n}$$, cycles $$C_n$$, paths $$P_n$$, and wheels $$W_n$$.</li>
+    <li><strong>Determine whether two graphs are isomorphic</strong> by comparing invariants (vertex count, edge count, degree sequence) and identifying a bijection when one exists.</li>
+  </ol>
+</section>
+
+<!-- ════════════════ §3  ACTIVITIES ════════════════ -->
+<section id="activities">
+  <h2>This Week's Activities</h2>
+
+  <p>Week&nbsp;12 contains <strong>four learning modules</strong> and <strong>one graded deliverable</strong>. Complete the modules in order — each one builds on the previous.</p>
+
+  <details>
+    <summary>Learning Modules (12.1 – 12.4)</summary>
+    <div class="details-body">
+      <div class="module-card">
+        <p class="module-card-title">Module 12.1 – Graph Fundamentals and Terminology</p>
+        <p>Learn the formal definition of a graph $$G = (V, E)$$ and the core vocabulary — vertices, edges, degree, paths, cycles, connectivity — that you will use for the rest of the course. <em>Estimated time: 60–75 min.</em></p>
+      </div>
+      <div class="module-card">
+        <p class="module-card-title">Module 12.2 – Types of Graphs and Real-World Modeling</p>
+        <p>Explore directed vs.&nbsp;undirected, weighted vs.&nbsp;unweighted, and simple vs.&nbsp;multigraph distinctions. Practice selecting the right graph type for real-world scenarios. <em>Estimated time: 30–40 min.</em></p>
+      </div>
+      <div class="module-card">
+        <p class="module-card-title">Module 12.3 – Graph Representations and Tradeoff Analysis</p>
+        <p>Build adjacency matrices and adjacency lists by hand, convert between them, and compare their space and time complexity. This is the most implementation-critical module of the week and directly prepares you for the Final Project. <em>Estimated time: 60–75 min.</em></p>
+      </div>
+      <div class="module-card">
+        <p class="module-card-title">Module 12.4 – Special Graphs, Degree Properties, and Isomorphism</p>
+        <p>Study named graph families ($$K_n$$, $$K_{m,n}$$, $$C_n$$, $$P_n$$, $$W_n$$), prove properties with the Handshaking Lemma, and determine whether two graphs are isomorphic. <em>Estimated time: 45–60 min.</em></p>
+      </div>
+    </div>
+  </details>
+
+  <details>
+    <summary>Graded Deliverable</summary>
+    <div class="details-body">
+      <div class="callout callout-accent">
+        <p class="callout-title">PS-08 – Graph Terminology, Properties, and Representations</p>
+        <p>
+          PS-08 is the <strong>only graded submission</strong> this week (15&nbsp;pts). It asks you to translate between graph diagrams and formal notation, construct and convert representations, apply the Handshaking Lemma, identify special graphs, and determine isomorphism. All four learning modules prepare you directly for PS-08 — check the module pages for a problem-by-problem mapping.
+        </p>
+        <p><em>Submit as a PDF to Canvas. See Canvas for the due date.</em></p>
+      </div>
+      <p style="font-size:.9rem;color:var(--text-muted);margin-top:.35rem;">
+        <strong>No PE this week.</strong> Week&nbsp;12 is an intentionally lighter "learning module week." Use the extra time to work deeply through the modules and their ungraded knowledge checks. The next Programming Exercise (PE-09) is assigned in Week&nbsp;14 and will require you to implement the graph structures you learn conceptually this week.
+      </p>
+    </div>
+  </details>
+</section>
+
+<!-- ════════════════ §4  KEY CONCEPTS ════════════════ -->
+<section id="concepts">
+  <h2>Key Concepts to Watch For</h2>
+  <p>As you work through the modules, pay special attention to these foundational ideas. They appear repeatedly in Weeks&nbsp;13–17 and on Quiz&nbsp;4.</p>
+
+  <div class="chip-group" role="list" aria-label="Key concept tags">
+    <span class="chip" role="listitem">$$G = (V, E)$$</span>
+    <span class="chip" role="listitem">Degree &amp; $$\deg(v)$$</span>
+    <span class="chip" role="listitem">Adjacency Matrix</span>
+    <span class="chip" role="listitem">Adjacency List</span>
+    <span class="chip chip-accent" role="listitem">Handshaking Lemma</span>
+    <span class="chip" role="listitem">Directed vs. Undirected</span>
+    <span class="chip" role="listitem">Weighted Graphs</span>
+    <span class="chip chip-accent" role="listitem">Graph Isomorphism</span>
+    <span class="chip" role="listitem">$$K_n$$, $$K_{m,n}$$, $$C_n$$, $$P_n$$, $$W_n$$</span>
+  </div>
+
+  <details>
+    <summary>Quick concept preview</summary>
+    <div class="details-body">
+      <ul class="list-styled">
+        <li><strong>Graph $$G = (V, E)$$:</strong> A set of vertices $$V$$ and a set of edges $$E$$. Edges connect pairs of vertices. This simple definition is the starting point for everything.</li>
+        <li><strong>Degree $$\deg(v)$$:</strong> The number of edges touching vertex $$v$$. For directed graphs, you will also track in-degree and out-degree separately.</li>
+        <li><strong>Adjacency matrix vs. adjacency list:</strong> Two ways to store a graph in a computer. The matrix gives $$O(1)$$ edge lookup but uses $$O(|V|^2)$$ space; the list uses $$O(|V| + |E|)$$ space and is better for sparse graphs. Choosing the right one affects every algorithm you will write.</li>
+        <li><strong>Handshaking Lemma:</strong> $$\displaystyle\sum_{v \in V} \deg(v) = 2|E|$$. Every edge contributes 2 to the total degree. This lets you verify or rule out proposed degree sequences instantly.</li>
+        <li><strong>Graph isomorphism:</strong> Two graphs are isomorphic if you can relabel the vertices of one to get the other. You will compare invariants (vertex count, edge count, degree sequence) to rule out isomorphism, and construct an explicit bijection to prove it.</li>
+      </ul>
+    </div>
+  </details>
+</section>
+
+<!-- ════════════════ §5  LOOKING AHEAD ════════════════ -->
+<section id="looking-ahead">
+  <h2>Looking Ahead</h2>
+
+  <div class="callout">
+    <p class="callout-title">Week 13 – Graph Traversal Algorithms (BFS &amp; DFS)</p>
+    <p>
+      Next week you will learn <strong>Breadth-First Search</strong> and <strong>Depth-First Search</strong> — the two fundamental algorithms for exploring a graph. BFS and DFS rely entirely on the representations you study this week: they iterate over neighbors using your adjacency list (or matrix) and track visited vertices. If you can build and read both representations fluently after this week, Week&nbsp;13 will feel like a natural next step.
+    </p>
+    <p>
+      Week&nbsp;13 also includes <strong>Quiz&nbsp;4</strong>, which covers Weeks&nbsp;11–13. Approximately one-third of Quiz&nbsp;4 questions will draw from Week&nbsp;12 graph fundamentals, so start reviewing this material alongside Week&nbsp;13 content.
+    </p>
+  </div>
+
+  <div class="callout callout-accent">
+    <p class="callout-title">Final Project Connection</p>
+    <p>
+      The <strong>Final Project</strong> is assigned at the start of Week&nbsp;14. Its first component — <em>Graph Builder and Representation</em> (50&nbsp;pts) — requires you to implement both adjacency matrix and adjacency list representations with add/remove operations. Module&nbsp;12.3 this week is your conceptual blueprint for that component. The stronger your understanding now, the faster you will be able to start coding when the project begins.
+    </p>
+  </div>
+
+  <h3>Your Week 12 Game Plan</h3>
+  <ol class="list-styled">
+    <li>Work through Modules 12.1 → 12.2 → 12.3 → 12.4 <strong>in order</strong>. Complete the ungraded knowledge checks in each module — they mirror PS-08 problems.</li>
+    <li>Complete and submit <strong>PS-08</strong> before the posted due date in Canvas.</li>
+    <li>Begin reviewing Week&nbsp;11 (recursion and recurrence) alongside this week's content in preparation for <strong>Quiz&nbsp;4</strong> at the end of Week&nbsp;13.</li>
+  </ol>
+
+  <p style="margin-top:1.25rem;font-size:.93rem;color:var(--text-muted);">
+    Questions? Reach out to your instructor through Canvas or during office hours. The graph vocabulary and representations you learn this week are the foundation for everything that follows — invest the time now and it will pay off through Week&nbsp;17.
+  </p>
+</section>
+
+</div><!-- /.container -->
+</body>
+</html>

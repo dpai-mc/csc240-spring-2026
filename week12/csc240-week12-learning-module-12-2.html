@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 12.2 – Types of Graphs and Real-World Modeling | CSC 240</title>
+<style>
+:root {
+  --primary: #1a5276;
+  --primary-light: #2980b9;
+  --primary-bg: #eaf2f8;
+  --accent: #148f77;
+  --accent-bg: #e8f6f3;
+  --warning: #b7950b;
+  --warning-bg: #fef9e7;
+  --danger: #922b21;
+  --danger-bg: #fdedec;
+  --text: #2c3e50;
+  --text-light: #5d6d7e;
+  --bg: #ffffff;
+  --border: #d5dbdb;
+  --border-light: #eaeded;
+  --code-bg: #f4f6f7;
+  --shadow: 0 2px 4px rgba(0,0,0,0.08);
+  --radius: 8px;
+  --nav-height: 52px;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+
+body{
+  font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  font-size:1rem;line-height:1.65;color:var(--text);background:var(--bg);
+  padding-top:var(--nav-height);
+}
+
+/* ── Skip Link ── */
+.skip-link{
+  position:absolute;top:-100%;left:1rem;background:var(--primary);color:#fff;
+  padding:.5rem 1rem;border-radius:0 0 var(--radius) var(--radius);z-index:1000;
+  font-weight:600;text-decoration:none;
+}
+.skip-link:focus{top:0;}
+
+/* ── Top Nav ── */
+nav.topnav{
+  position:fixed;top:0;left:0;right:0;height:var(--nav-height);
+  background:var(--primary);display:flex;align-items:center;
+  padding:0 1.25rem;gap:.15rem;z-index:900;overflow-x:auto;
+  box-shadow:0 2px 6px rgba(0,0,0,.15);
+}
+nav.topnav a{
+  color:#fff;text-decoration:none;font-size:.82rem;font-weight:500;
+  padding:.35rem .65rem;border-radius:4px;white-space:nowrap;
+  transition:background .2s;
+}
+nav.topnav a:hover,nav.topnav a:focus{background:rgba(255,255,255,.18);outline:none;}
+nav.topnav .nav-label{
+  color:rgba(255,255,255,.85);font-weight:700;font-size:.82rem;
+  margin-right:.35rem;white-space:nowrap;
+}
+
+/* ── Layout ── */
+.container{max-width:960px;margin:0 auto;padding:1.5rem 1.25rem 3rem;}
+
+/* ── Module Header ── */
+.mod-header{
+  background:linear-gradient(135deg,var(--primary),var(--primary-light));
+  color:#fff;padding:2rem 1.75rem;border-radius:var(--radius);margin-bottom:2rem;
+}
+.mod-header .label{
+  font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;
+  opacity:.85;margin-bottom:.25rem;
+}
+.mod-header h1{font-size:1.7rem;font-weight:700;margin-bottom:.5rem;}
+.mod-header .meta{font-size:.88rem;opacity:.9;line-height:1.5;}
+
+/* ── Headings ── */
+h2{font-size:1.35rem;color:var(--primary);margin:2.25rem 0 .75rem;
+   padding-bottom:.35rem;border-bottom:2px solid var(--primary-bg);}
+h3{font-size:1.12rem;color:var(--primary);margin:1.5rem 0 .5rem;}
+h4{font-size:1rem;color:var(--text);margin:1.25rem 0 .4rem;font-weight:600;}
+
+/* ── Callout Boxes ── */
+.callout{
+  border-left:4px solid var(--primary-light);background:var(--primary-bg);
+  padding:1rem 1.25rem;border-radius:0 var(--radius) var(--radius) 0;
+  margin:1.25rem 0;
+}
+.callout.definition{border-left-color:var(--accent);background:var(--accent-bg);}
+.callout.example{border-left-color:var(--warning);background:var(--warning-bg);}
+.callout.important{border-left-color:var(--danger);background:var(--danger-bg);}
+.callout.week-callback{border-left-color:#7d3c98;background:#f4ecf7;}
+.callout-title{font-weight:700;margin-bottom:.35rem;font-size:.95rem;}
+
+/* ── Diagram Containers ── */
+.diagram-row{
+  display:flex;flex-wrap:wrap;gap:1.25rem;justify-content:center;margin:1.25rem 0;
+}
+.diagram-card{
+  background:var(--code-bg);border:1px solid var(--border);border-radius:var(--radius);
+  padding:1rem;text-align:center;flex:1 1 280px;max-width:420px;box-shadow:var(--shadow);
+}
+.diagram-card .caption{font-size:.85rem;color:var(--text-light);margin-top:.5rem;}
+.diagram-card svg{max-width:100%;height:auto;}
+
+/* ── Gallery Cards ── */
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.25rem;margin:1.25rem 0;}
+.gallery-card{
+  background:#fff;border:1px solid var(--border);border-radius:var(--radius);
+  padding:1.15rem;box-shadow:var(--shadow);
+}
+.gallery-card h4{margin-top:0;color:var(--primary);font-size:1rem;}
+.gallery-card .tag{
+  display:inline-block;font-size:.75rem;font-weight:600;padding:.15rem .55rem;
+  border-radius:12px;margin-bottom:.5rem;
+}
+.tag-directed{background:#d4efdf;color:#1e8449;}
+.tag-undirected{background:#d6eaf8;color:#1a5276;}
+.tag-weighted{background:#fef9e7;color:#b7950b;}
+.tag-unweighted{background:#f2f3f4;color:#5d6d7e;}
+.tag-dag{background:#f4ecf7;color:#7d3c98;}
+.gallery-card svg{display:block;margin:.65rem auto;max-width:100%;height:auto;}
+
+/* ── Tables ── */
+table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:.92rem;}
+th,td{border:1px solid var(--border);padding:.55rem .75rem;text-align:left;}
+th{background:var(--primary-bg);font-weight:600;color:var(--primary);}
+tr:nth-child(even){background:#fafbfc;}
+
+/* ── Collapsible Sections ── */
+details{
+  border:1px solid var(--border);border-radius:var(--radius);margin:1rem 0;
+  background:#fff;box-shadow:var(--shadow);
+}
+details summary{
+  cursor:pointer;padding:.85rem 1.15rem;font-weight:600;color:var(--primary);
+  list-style:none;display:flex;align-items:center;gap:.5rem;
+  user-select:none;
+}
+details summary::-webkit-details-marker{display:none;}
+details summary::before{
+  content:'▶';font-size:.75rem;transition:transform .2s;display:inline-block;
+}
+details[open] summary::before{transform:rotate(90deg);}
+details .details-body{padding:.25rem 1.15rem 1.15rem;}
+
+/* ── Knowledge Checks ── */
+.kc-wrap{
+  border:2px solid var(--primary-light);border-radius:var(--radius);
+  padding:1.25rem;margin:1.5rem 0;background:#fff;
+}
+.kc-wrap h3{margin-top:0;color:var(--primary-light);}
+.kc-question{margin-bottom:.75rem;font-weight:500;}
+.kc-options{list-style:none;padding:0;margin:0 0 .75rem;}
+.kc-options li{margin-bottom:.35rem;}
+.kc-options label{cursor:pointer;display:flex;align-items:baseline;gap:.45rem;}
+.kc-options input[type="radio"]{margin:0;flex-shrink:0;}
+.kc-btn{
+  background:var(--primary-light);color:#fff;border:none;padding:.5rem 1.25rem;
+  border-radius:4px;font-size:.9rem;font-weight:600;cursor:pointer;
+  transition:background .2s;
+}
+.kc-btn:hover,.kc-btn:focus{background:var(--primary);outline:none;}
+.kc-btn:disabled{opacity:.6;cursor:default;}
+.kc-feedback{
+  margin-top:.75rem;padding:.75rem 1rem;border-radius:var(--radius);
+  font-size:.92rem;display:none;
+}
+.kc-feedback.correct{background:#d4efdf;border:1px solid #27ae60;color:#1e8449;}
+.kc-feedback.incorrect{background:#fdedec;border:1px solid #e74c3c;color:#922b21;}
+
+/* ── Matching Exercise ── */
+.match-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:.5rem .75rem;
+  margin:.75rem 0;align-items:center;
+}
+.match-grid .match-label{font-weight:500;font-size:.92rem;}
+.match-grid select{
+  padding:.4rem .5rem;border:1px solid var(--border);border-radius:4px;
+  font-size:.9rem;background:#fff;color:var(--text);width:100%;
+}
+
+/* ── Utility ── */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+  overflow:hidden;clip:rect(0,0,0,0);border:0;}
+.mt-1{margin-top:1rem;}
+.mb-1{margin-bottom:1rem;}
+.text-center{text-align:center;}
+.text-small{font-size:.88rem;color:var(--text-light);}
+
+/* ── Responsive ── */
+@media(max-width:600px){
+  .mod-header{padding:1.25rem 1rem;}
+  .mod-header h1{font-size:1.35rem;}
+  .container{padding:1rem .75rem 2rem;}
+  .diagram-row{flex-direction:column;align-items:center;}
+  .diagram-card{max-width:100%;}
+  .gallery{grid-template-columns:1fr;}
+  .match-grid{grid-template-columns:1fr;}
+  nav.topnav{padding:0 .5rem;}
+  nav.topnav a{font-size:.75rem;padding:.3rem .45rem;}
+}
+</style>
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<!-- ════════════════ TOP NAV ════════════════ -->
+<nav class="topnav" aria-label="Module 12.2 Section Navigation">
+  <span class="nav-label" aria-hidden="true">12.2</span>
+  <a href="#sec-orientation">Orientation</a>
+  <a href="#sec-dir-undir">Directed vs. Undirected</a>
+  <a href="#sec-weighted">Weighted vs. Unweighted</a>
+  <a href="#sec-simple-multi">Simple / Multi / Pseudo</a>
+  <a href="#sec-gallery">Modeling Gallery</a>
+  <a href="#sec-relations">Relations Callback</a>
+  <a href="#sec-checks">Knowledge Checks</a>
+</nav>
+
+<!-- ════════════════ MAIN CONTENT ════════════════ -->
+<main id="main-content" class="container">
+
+<!-- Module Header -->
+<header class="mod-header">
+  <div class="label">Module 12.2 · Week 12 of 17</div>
+  <h1>Types of Graphs and Real-World Modeling</h1>
+  <div class="meta">
+    CSC 240 – Discrete Structures · CSLO 3 · Estimated time: 30–40 minutes<br>
+    Prerequisite: Module 12.1 – Graph Fundamentals and Terminology
+  </div>
+</header>
+
+<!-- ────────────── § 1  ORIENTATION ────────────── -->
+<section id="sec-orientation" aria-labelledby="h-orientation">
+  <h2 id="h-orientation">1 &middot; From Graphs to Graph Types</h2>
+
+  <div class="callout">
+    <div class="callout-title">Where We Are</div>
+    In Module 12.1 you learned the formal definition of a graph $$G = (V, E)$$ and the core vocabulary—vertices, edges, degree, paths, cycles, and connectivity. <strong>You know what a graph is; now let's look at the different flavors.</strong>
+  </div>
+
+  <p>Not every graph is created equal. The edges in a social network work very differently from the edges in a GPS routing system. In this module you will learn three independent classification axes that, combined, determine the <em>type</em> of graph you need:</p>
+
+  <ol>
+    <li><strong>Direction</strong> — Are the edges one-way or two-way?</li>
+    <li><strong>Weight</strong> — Do edges carry a numerical value?</li>
+    <li><strong>Multiplicity</strong> — Can there be parallel edges or self-loops?</li>
+  </ol>
+
+  <p>After pinning down these distinctions, we will walk through four real-world systems and see how the choice of graph type follows naturally from the problem being modeled.</p>
+</section>
+
+<!-- ────────────── § 2  DIRECTED vs. UNDIRECTED ────────────── -->
+<section id="sec-dir-undir" aria-labelledby="h-dir-undir">
+  <h2 id="h-dir-undir">2 &middot; Directed vs. Undirected Graphs</h2>
+
+  <div class="callout definition">
+    <div class="callout-title">Definition — Undirected Graph</div>
+    An <strong>undirected graph</strong> has edges that are <em>unordered</em> pairs $$\{u, v\}$$. The relationship is symmetric: if $$u$$ is connected to $$v$$, then $$v$$ is connected to $$u$$.
+  </div>
+
+  <div class="callout definition">
+    <div class="callout-title">Definition — Directed Graph (Digraph)</div>
+    A <strong>directed graph</strong> (or <strong>digraph</strong>) has edges that are <em>ordered</em> pairs $$(u, v)$$. An edge from $$u$$ to $$v$$ does <em>not</em> imply an edge from $$v$$ to $$u$$. Each directed edge is called an <strong>arc</strong>.
+  </div>
+
+  <h3>In-Degree and Out-Degree</h3>
+  <p>In a directed graph every vertex $$v$$ has two degree measures:</p>
+  <ul>
+    <li><strong>In-degree</strong> $$\deg^{-}(v)$$ — number of arcs <em>coming in</em> to $$v$$.</li>
+    <li><strong>Out-degree</strong> $$\deg^{+}(v)$$ — number of arcs <em>going out</em> of $$v$$.</li>
+  </ul>
+  <p>A fundamental identity for directed graphs is:</p>
+  $$\sum_{v \in V} \deg^{+}(v) \;=\; \sum_{v \in V} \deg^{-}(v) \;=\; |E|$$
+  <p>Every arc contributes exactly 1 to the out-degree of its tail and 1 to the in-degree of its head.</p>
+
+  <h3>Side-by-Side Diagram — Same Structure, Two Interpretations</h3>
+  <p>The diagrams below show the same four vertices $$\{a, b, c, d\}$$ and the same connections, first as an undirected graph and then as a directed graph.</p>
+
+  <div class="diagram-row">
+    <!-- Undirected -->
+    <div class="diagram-card">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 200" width="240" height="200" role="img" aria-label="Undirected graph on vertices a, b, c, d with edges a-b, b-c, c-d, a-d, and a-c.">
+        <!-- edges -->
+        <line x1="60" y1="40" x2="180" y2="40" stroke="#2980b9" stroke-width="2"/>
+        <line x1="180" y1="40" x2="180" y2="160" stroke="#2980b9" stroke-width="2"/>
+        <line x1="180" y1="160" x2="60" y2="160" stroke="#2980b9" stroke-width="2"/>
+        <line x1="60" y1="160" x2="60" y2="40" stroke="#2980b9" stroke-width="2"/>
+        <line x1="60" y1="40" x2="180" y2="160" stroke="#2980b9" stroke-width="2"/>
+        <!-- vertices -->
+        <circle cx="60" cy="40" r="18" fill="#eaf2f8" stroke="#1a5276" stroke-width="2"/>
+        <text x="60" y="45" text-anchor="middle" font-size="15" font-weight="700" fill="#1a5276">a</text>
+        <circle cx="180" cy="40" r="18" fill="#eaf2f8" stroke="#1a5276" stroke-width="2"/>
+        <text x="180" y="45" text-anchor="middle" font-size="15" font-weight="700" fill="#1a5276">b</text>
+        <circle cx="180" cy="160" r="18" fill="#eaf2f8" stroke="#1a5276" stroke-width="2"/>
+        <text x="180" y="165" text-anchor="middle" font-size="15" font-weight="700" fill="#1a5276">c</text>
+        <circle cx="60" cy="160" r="18" fill="#eaf2f8" stroke="#1a5276" stroke-width="2"/>
+        <text x="60" y="165" text-anchor="middle" font-size="15" font-weight="700" fill="#1a5276">d</text>
+        <!-- degree labels -->
+        <text x="24" y="38" font-size="11" fill="#5d6d7e">deg=3</text>
+        <text x="200" y="38" font-size="11" fill="#5d6d7e">deg=2</text>
+        <text x="200" y="165" font-size="11" fill="#5d6d7e">deg=3</text>
+        <text x="6" y="165" font-size="11" fill="#5d6d7e">deg=2</text>
+      </svg>
+      <div class="caption"><strong>Undirected Graph</strong><br>
+        $$E = \bigl\{\{a,b\},\{b,c\},\{c,d\},\{a,d\},\{a,c\}\bigr\}$$<br>
+        $$\sum \deg(v) = 3+2+3+2 = 10 = 2|E|$$
+      </div>
+    </div>
+
+    <!-- Directed -->
+    <div class="diagram-card">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 200" width="240" height="200" role="img" aria-label="Directed graph on vertices a, b, c, d with arcs a to b, b to c, c to d, d to a, and a to c.">
+        <defs>
+          <marker id="ah" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+            <path d="M0,0 L8,3 L0,6 Z" fill="#e74c3c"/>
+          </marker>
+        </defs>
+        <!-- arcs -->
+        <line x1="78" y1="40" x2="160" y2="40" stroke="#e74c3c" stroke-width="2" marker-end="url(#ah)"/>
+        <line x1="180" y1="58" x2="180" y2="140" stroke="#e74c3c" stroke-width="2" marker-end="url(#ah)"/>
+        <line x1="162" y1="160" x2="78" y2="160" stroke="#e74c3c" stroke-width="2" marker-end="url(#ah)"/>
+        <line x1="60" y1="142" x2="60" y2="58" stroke="#e74c3c" stroke-width="2" marker-end="url(#ah)"/>
+        <line x1="74" y1="54" x2="166" y2="146" stroke="#e74c3c" stroke-width="2" marker-end="url(#ah)"/>
+        <!-- vertices -->
+        <circle cx="60" cy="40" r="18" fill="#fdedec" stroke="#922b21" stroke-width="2"/>
+        <text x="60" y="45" text-anchor="middle" font-size="15" font-weight="700" fill="#922b21">a</text>
+        <circle cx="180" cy="40" r="18" fill="#fdedec" stroke="#922b21" stroke-width="2"/>
+        <text x="180" y="45" text-anchor="middle" font-size="15" font-weight="700" fill="#922b21">b</text>
+        <circle cx="180" cy="160" r="18" fill="#fdedec" stroke="#922b21" stroke-width="2"/>
+        <text x="180" y="165" text-anchor="middle" font-size="15" font-weight="700" fill="#922b21">c</text>
+        <circle cx="60" cy="160" r="18" fill="#fdedec" stroke="#922b21" stroke-width="2"/>
+        <text x="60" y="165" text-anchor="middle" font-size="15" font-weight="700" fill="#922b21">d</text>
+        <!-- degree labels -->
+        <text x="2" y="28" font-size="10" fill="#5d6d7e">in=1 out=2</text>
+        <text x="200" y="28" font-size="10" fill="#5d6d7e">in=1 out=1</text>
+        <text x="200" y="178" font-size="10" fill="#5d6d7e">in=2 out=1</text>
+        <text x="2" y="178" font-size="10" fill="#5d6d7e">in=1 out=1</text>
+      </svg>
+      <div class="caption"><strong>Directed Graph (Digraph)</strong><br>
+        $$E = \{(a,b),(b,c),(c,d),(d,a),(a,c)\}$$<br>
+        $$\sum \deg^{+}(v) = \sum \deg^{-}(v) = 5 = |E|$$
+      </div>
+    </div>
+  </div>
+
+  <details>
+    <summary>Key Observation — When to Choose Directed</summary>
+    <div class="details-body">
+      <p>Choose a <strong>directed graph</strong> whenever the relationship between entities is <em>not necessarily symmetric</em>. Examples:</p>
+      <ul>
+        <li>Web hyperlinks — page A can link to page B without B linking back.</li>
+        <li>Prerequisite chains — CSC 221 is a prerequisite for CSC 240, but not vice-versa.</li>
+        <li>One-way streets in a city map.</li>
+      </ul>
+      <p>Choose an <strong>undirected graph</strong> when the relationship is inherently mutual: Facebook friendships, Ethernet links, chemical bonds.</p>
+    </div>
+  </details>
+</section>
+
+<!-- ────────────── § 3  WEIGHTED vs. UNWEIGHTED ────────────── -->
+<section id="sec-weighted" aria-labelledby="h-weighted">
+  <h2 id="h-weighted">3 &middot; Weighted vs. Unweighted Graphs</h2>
+
+  <div class="callout definition">
+    <div class="callout-title">Definition — Weight Function</div>
+    A <strong>weighted graph</strong> augments $$G = (V, E)$$ with a <strong>weight function</strong>
+    $$w : E \to \mathbb{R}$$
+    that assigns a real number to every edge. When no such function is present, the graph is <strong>unweighted</strong> (equivalently, every edge has implicit weight 1).
+  </div>
+
+  <p>Weights can represent many real-world quantities:</p>
+
+  <table>
+    <thead><tr><th>Domain</th><th>What the Weight Represents</th></tr></thead>
+    <tbody>
+      <tr><td>Road / GPS network</td><td>Distance (km) or travel time (min)</td></tr>
+      <tr><td>Airline routes</td><td>Ticket price ($) or flight duration</td></tr>
+      <tr><td>Computer network</td><td>Bandwidth (Mbps) or latency (ms)</td></tr>
+      <tr><td>Pipeline system</td><td>Capacity (liters/sec) or construction cost</td></tr>
+    </tbody>
+  </table>
+
+  <div class="diagram-row">
+    <div class="diagram-card">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 170" width="260" height="170" role="img" aria-label="Weighted undirected graph with 4 vertices and edge weights 5, 3, 7, 2, and 4.">
+        <!-- edges -->
+        <line x1="60" y1="40" x2="200" y2="40" stroke="#2980b9" stroke-width="2"/>
+        <line x1="200" y1="40" x2="200" y2="140" stroke="#2980b9" stroke-width="2"/>
+        <line x1="200" y1="140" x2="60" y2="140" stroke="#2980b9" stroke-width="2"/>
+        <line x1="60" y1="140" x2="60" y2="40" stroke="#2980b9" stroke-width="2"/>
+        <line x1="60" y1="40" x2="200" y2="140" stroke="#2980b9" stroke-width="2"/>
+        <!-- weight labels -->
+        <rect x="115" y="22" width="26" height="18" rx="3" fill="#fef9e7" stroke="#b7950b" stroke-width="1"/>
+        <text x="128" y="36" text-anchor="middle" font-size="12" font-weight="700" fill="#b7950b">5</text>
+        <rect x="204" y="80" width="22" height="18" rx="3" fill="#fef9e7" stroke="#b7950b" stroke-width="1"/>
+        <text x="215" y="94" text-anchor="middle" font-size="12" font-weight="700" fill="#b7950b">3</text>
+        <rect x="115" y="143" width="26" height="18" rx="3" fill="#fef9e7" stroke="#b7950b" stroke-width="1"/>
+        <text x="128" y="157" text-anchor="middle" font-size="12" font-weight="700" fill="#b7950b">7</text>
+        <rect x="34" y="80" width="22" height="18" rx="3" fill="#fef9e7" stroke="#b7950b" stroke-width="1"/>
+        <text x="45" y="94" text-anchor="middle" font-size="12" font-weight="700" fill="#b7950b">2</text>
+        <rect x="140" y="78" width="22" height="18" rx="3" fill="#fef9e7" stroke="#b7950b" stroke-width="1"/>
+        <text x="151" y="92" text-anchor="middle" font-size="12" font-weight="700" fill="#b7950b">4</text>
+        <!-- vertices -->
+        <circle cx="60" cy="40" r="16" fill="#eaf2f8" stroke="#1a5276" stroke-width="2"/>
+        <text x="60" y="45" text-anchor="middle" font-size="14" font-weight="700" fill="#1a5276">a</text>
+        <circle cx="200" cy="40" r="16" fill="#eaf2f8" stroke="#1a5276" stroke-width="2"/>
+        <text x="200" y="45" text-anchor="middle" font-size="14" font-weight="700" fill="#1a5276">b</text>
+        <circle cx="200" cy="140" r="16" fill="#eaf2f8" stroke="#1a5276" stroke-width="2"/>
+        <text x="200" y="145" text-anchor="middle" font-size="14" font-weight="700" fill="#1a5276">c</text>
+        <circle cx="60" cy="140" r="16" fill="#eaf2f8" stroke="#1a5276" stroke-width="2"/>
+        <text x="60" y="145" text-anchor="middle" font-size="14" font-weight="700" fill="#1a5276">d</text>
+      </svg>
+      <div class="caption"><strong>Weighted Undirected Graph</strong><br>
+        $$w(\{a,b\})=5,\; w(\{b,c\})=3,\; w(\{c,d\})=7,\; w(\{a,d\})=2,\; w(\{a,c\})=4$$
+      </div>
+    </div>
+  </div>
+
+  <details>
+    <summary>Why Does the Weight Function Matter?</summary>
+    <div class="details-body">
+      <p>Many of the algorithms you will study in Weeks 14–17 depend on edge weights:</p>
+      <ul>
+        <li><strong>Dijkstra's algorithm</strong> (Week 14) finds the shortest weighted path between two vertices.</li>
+        <li><strong>Kruskal's and Prim's algorithms</strong> (Week 14) find the minimum spanning tree—the cheapest way to connect every vertex.</li>
+      </ul>
+      <p>Without weights, "shortest" just means "fewest edges" (BFS handles that in Week 13). With weights, the problem becomes fundamentally different.</p>
+    </div>
+  </details>
+</section>
+
+<!-- ────────────── § 4  SIMPLE / MULTI / PSEUDO ────────────── -->
+<section id="sec-simple-multi" aria-labelledby="h-simple-multi">
+  <h2 id="h-simple-multi">4 &middot; Simple Graphs, Multigraphs, and Pseudographs</h2>
+
+  <div class="callout definition">
+    <div class="callout-title">Definition — Simple Graph</div>
+    A <strong>simple graph</strong> has <em>no self-loops</em> (an edge from a vertex to itself) and <em>no parallel edges</em> (two or more edges between the same pair of vertices). Unless stated otherwise, "graph" in this course means <em>simple graph</em>.
+  </div>
+
+  <div class="callout definition">
+    <div class="callout-title">Definition — Multigraph</div>
+    A <strong>multigraph</strong> allows <em>parallel edges</em> (also called <em>multiple edges</em>) between the same pair of vertices but does <strong>not</strong> allow self-loops.
+  </div>
+
+  <div class="callout definition">
+    <div class="callout-title">Definition — Pseudograph</div>
+    A <strong>pseudograph</strong> allows both <em>parallel edges</em> and <em>self-loops</em>. It is the most general undirected graph model.
+  </div>
+
+  <table>
+    <thead>
+      <tr><th>Feature</th><th>Simple Graph</th><th>Multigraph</th><th>Pseudograph</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Parallel edges allowed?</td><td>No</td><td>Yes</td><td>Yes</td></tr>
+      <tr><td>Self-loops allowed?</td><td>No</td><td>No</td><td>Yes</td></tr>
+      <tr><td>Typical use</td><td>Most CS/math modeling</td><td>Multi-lane roads, redundant network links</td><td>State machines with self-transitions</td></tr>
+    </tbody>
+  </table>
+
+  <div class="diagram-row">
+    <div class="diagram-card">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 130" width="180" height="130" role="img" aria-label="Simple graph: 3 vertices, each pair connected by exactly one edge, no self-loops.">
+        <line x1="90" y1="20" x2="30" y2="110" stroke="#2980b9" stroke-width="2"/>
+        <line x1="90" y1="20" x2="150" y2="110" stroke="#2980b9" stroke-width="2"/>
+        <line x1="30" y1="110" x2="150" y2="110" stroke="#2980b9" stroke-width="2"/>
+        <circle cx="90" cy="20" r="14" fill="#eaf2f8" stroke="#1a5276" stroke-width="2"/>
+        <circle cx="30" cy="110" r="14" fill="#eaf2f8" stroke="#1a5276" stroke-width="2"/>
+        <circle cx="150" cy="110" r="14" fill="#eaf2f8" stroke="#1a5276" stroke-width="2"/>
+      </svg>
+      <div class="caption"><strong>Simple Graph</strong></div>
+    </div>
+    <div class="diagram-card">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 130" width="180" height="130" role="img" aria-label="Multigraph: 3 vertices with two parallel edges between the top vertex and the bottom-left vertex.">
+        <line x1="85" y1="22" x2="26" y2="108" stroke="#2980b9" stroke-width="2"/>
+        <line x1="95" y1="22" x2="36" y2="108" stroke="#e67e22" stroke-width="2"/>
+        <line x1="90" y1="20" x2="150" y2="110" stroke="#2980b9" stroke-width="2"/>
+        <line x1="30" y1="110" x2="150" y2="110" stroke="#2980b9" stroke-width="2"/>
+        <circle cx="90" cy="20" r="14" fill="#eaf2f8" stroke="#1a5276" stroke-width="2"/>
+        <circle cx="30" cy="110" r="14" fill="#eaf2f8" stroke="#1a5276" stroke-width="2"/>
+        <circle cx="150" cy="110" r="14" fill="#eaf2f8" stroke="#1a5276" stroke-width="2"/>
+      </svg>
+      <div class="caption"><strong>Multigraph</strong><br>(parallel edges in orange)</div>
+    </div>
+    <div class="diagram-card">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 140" width="180" height="140" role="img" aria-label="Pseudograph: 3 vertices with a self-loop on the top vertex and a parallel edge between the top and bottom-left vertices.">
+        <!-- self-loop -->
+        <circle cx="90" cy="10" r="16" fill="none" stroke="#e74c3c" stroke-width="2"/>
+        <line x1="85" y1="32" x2="26" y2="118" stroke="#2980b9" stroke-width="2"/>
+        <line x1="95" y1="32" x2="36" y2="118" stroke="#e67e22" stroke-width="2"/>
+        <line x1="90" y1="30" x2="150" y2="120" stroke="#2980b9" stroke-width="2"/>
+        <line x1="30" y1="120" x2="150" y2="120" stroke="#2980b9" stroke-width="2"/>
+        <circle cx="90" cy="30" r="14" fill="#eaf2f8" stroke="#1a5276" stroke-width="2"/>
+        <circle cx="30" cy="120" r="14" fill="#eaf2f8" stroke="#1a5276" stroke-width="2"/>
+        <circle cx="150" cy="120" r="14" fill="#eaf2f8" stroke="#1a5276" stroke-width="2"/>
+      </svg>
+      <div class="caption"><strong>Pseudograph</strong><br>(self-loop in red, parallel edge in orange)</div>
+    </div>
+  </div>
+
+  <details>
+    <summary>When Do Multigraphs and Pseudographs Appear in Practice?</summary>
+    <div class="details-body">
+      <ul>
+        <li><strong>Multigraph — multi-lane highway map:</strong> Two cities may be connected by both a freeway and a surface road. Each road is a distinct edge with potentially different weights (travel time).</li>
+        <li><strong>Multigraph — redundant network links:</strong> Data centers often run multiple physical cables between the same pair of switches for fault tolerance.</li>
+        <li><strong>Pseudograph — finite-state automaton:</strong> A state in a state machine can have a transition back to itself (a self-loop), such as a state that stays put when reading a particular input character.</li>
+      </ul>
+      <p>In this course, unless a problem explicitly says "multigraph" or "pseudograph," assume a <strong>simple graph</strong>.</p>
+    </div>
+  </details>
+</section>
+
+<!-- ────────────── § 5  REAL-WORLD GALLERY ────────────── -->
+<section id="sec-gallery" aria-labelledby="h-gallery">
+  <h2 id="h-gallery">5 &middot; Real-World Modeling Gallery</h2>
+  <p>For each mini-case below, ask yourself: <em>What are the vertices? What are the edges? Is the graph directed or undirected? Weighted or unweighted?</em></p>
+
+  <div class="gallery">
+
+    <!-- Case 1: Social Network -->
+    <div class="gallery-card">
+      <h4>Case 1 — Social Network</h4>
+      <span class="tag tag-undirected">Undirected</span>
+      <span class="tag tag-unweighted">Unweighted</span>
+      <p><strong>Vertices</strong> = people. <strong>Edges</strong> = mutual friendships. A friendship on a platform like Facebook is symmetric—if Alice is friends with Bob, Bob is friends with Alice—so the graph is <em>undirected</em>. There is no natural numerical value on a friendship edge, so the graph is <em>unweighted</em>. This is a <strong>simple, undirected, unweighted graph</strong>.</p>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120" width="200" height="120" role="img" aria-label="Small social-network graph: 5 people with friendship edges.">
+        <line x1="40" y1="30" x2="100" y2="20" stroke="#2980b9" stroke-width="1.5"/>
+        <line x1="100" y1="20" x2="160" y2="30" stroke="#2980b9" stroke-width="1.5"/>
+        <line x1="40" y1="30" x2="70" y2="95" stroke="#2980b9" stroke-width="1.5"/>
+        <line x1="100" y1="20" x2="70" y2="95" stroke="#2980b9" stroke-width="1.5"/>
+        <line x1="100" y1="20" x2="130" y2="95" stroke="#2980b9" stroke-width="1.5"/>
+        <line x1="160" y1="30" x2="130" y2="95" stroke="#2980b9" stroke-width="1.5"/>
+        <circle cx="40" cy="30" r="10" fill="#d6eaf8" stroke="#1a5276" stroke-width="1.5"/>
+        <circle cx="100" cy="20" r="10" fill="#d6eaf8" stroke="#1a5276" stroke-width="1.5"/>
+        <circle cx="160" cy="30" r="10" fill="#d6eaf8" stroke="#1a5276" stroke-width="1.5"/>
+        <circle cx="70" cy="95" r="10" fill="#d6eaf8" stroke="#1a5276" stroke-width="1.5"/>
+        <circle cx="130" cy="95" r="10" fill="#d6eaf8" stroke="#1a5276" stroke-width="1.5"/>
+      </svg>
+    </div>
+
+    <!-- Case 2: Road / GPS -->
+    <div class="gallery-card">
+      <h4>Case 2 — Road / GPS Network</h4>
+      <span class="tag tag-directed">Directed *</span>
+      <span class="tag tag-weighted">Weighted</span>
+      <p><strong>Vertices</strong> = intersections. <strong>Edges</strong> = road segments. Weights represent distance or travel time. Most streets are two-way (undirected), but one-way streets make the graph <em>directed</em> in general. GPS routing uses <strong>directed, weighted graphs</strong> so it can respect one-way constraints and minimize travel cost.</p>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120" width="200" height="120" role="img" aria-label="Small road-network graph: 4 intersections with weighted directed edges.">
+        <defs><marker id="ah2" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5 Z" fill="#e74c3c"/></marker></defs>
+        <line x1="40" y1="30" x2="152" y2="30" stroke="#e74c3c" stroke-width="1.5" marker-end="url(#ah2)"/>
+        <line x1="160" y1="38" x2="160" y2="82" stroke="#e74c3c" stroke-width="1.5" marker-end="url(#ah2)"/>
+        <line x1="152" y1="95" x2="48" y2="95" stroke="#e74c3c" stroke-width="1.5" marker-end="url(#ah2)"/>
+        <line x1="40" y1="87" x2="40" y2="42" stroke="#e74c3c" stroke-width="1.5" marker-end="url(#ah2)"/>
+        <line x1="48" y1="36" x2="152" y2="88" stroke="#e74c3c" stroke-width="1.5" marker-end="url(#ah2)"/>
+        <text x="95" y="24" text-anchor="middle" font-size="10" fill="#b7950b" font-weight="700">3 mi</text>
+        <text x="172" y="65" text-anchor="start" font-size="10" fill="#b7950b" font-weight="700">2 mi</text>
+        <text x="95" y="112" text-anchor="middle" font-size="10" fill="#b7950b" font-weight="700">5 mi</text>
+        <text x="18" y="65" text-anchor="end" font-size="10" fill="#b7950b" font-weight="700">4 mi</text>
+        <circle cx="40" cy="30" r="9" fill="#fdedec" stroke="#922b21" stroke-width="1.5"/>
+        <circle cx="160" cy="30" r="9" fill="#fdedec" stroke="#922b21" stroke-width="1.5"/>
+        <circle cx="160" cy="95" r="9" fill="#fdedec" stroke="#922b21" stroke-width="1.5"/>
+        <circle cx="40" cy="95" r="9" fill="#fdedec" stroke="#922b21" stroke-width="1.5"/>
+      </svg>
+      <p class="text-small">* If all streets are two-way, the graph is undirected. In the general case (one-way streets present), use a digraph.</p>
+    </div>
+
+    <!-- Case 3: Web Pages -->
+    <div class="gallery-card">
+      <h4>Case 3 — Web Pages &amp; Hyperlinks</h4>
+      <span class="tag tag-directed">Directed</span>
+      <span class="tag tag-unweighted">Unweighted</span>
+      <p><strong>Vertices</strong> = web pages. <strong>Edges</strong> = hyperlinks. A link from page A to page B does <em>not</em> imply a link from B to A, so the graph is <em>directed</em>. Links typically carry no numerical value, making the graph <em>unweighted</em>. Search-engine algorithms like PageRank operate on this <strong>directed, unweighted graph</strong>.</p>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120" width="200" height="120" role="img" aria-label="Small web-page graph: 4 pages with directed hyperlink edges.">
+        <defs><marker id="ah3" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5 Z" fill="#7d3c98"/></marker></defs>
+        <line x1="52" y1="30" x2="138" y2="30" stroke="#7d3c98" stroke-width="1.5" marker-end="url(#ah3)"/>
+        <line x1="150" y1="40" x2="150" y2="78" stroke="#7d3c98" stroke-width="1.5" marker-end="url(#ah3)"/>
+        <line x1="140" y1="90" x2="60" y2="90" stroke="#7d3c98" stroke-width="1.5" marker-end="url(#ah3)"/>
+        <line x1="48" y1="40" x2="140" y2="82" stroke="#7d3c98" stroke-width="1.5" marker-end="url(#ah3)"/>
+        <circle cx="42" cy="30" r="9" fill="#f4ecf7" stroke="#7d3c98" stroke-width="1.5"/>
+        <text x="42" y="34" text-anchor="middle" font-size="9" font-weight="700" fill="#7d3c98">P1</text>
+        <circle cx="150" cy="30" r="9" fill="#f4ecf7" stroke="#7d3c98" stroke-width="1.5"/>
+        <text x="150" y="34" text-anchor="middle" font-size="9" font-weight="700" fill="#7d3c98">P2</text>
+        <circle cx="150" cy="90" r="9" fill="#f4ecf7" stroke="#7d3c98" stroke-width="1.5"/>
+        <text x="150" y="94" text-anchor="middle" font-size="9" font-weight="700" fill="#7d3c98">P3</text>
+        <circle cx="42" cy="90" r="9" fill="#f4ecf7" stroke="#7d3c98" stroke-width="1.5"/>
+        <text x="42" y="94" text-anchor="middle" font-size="9" font-weight="700" fill="#7d3c98">P4</text>
+      </svg>
+    </div>
+
+    <!-- Case 4: Task Dependency / DAG -->
+    <div class="gallery-card">
+      <h4>Case 4 — Task Dependency (DAG)</h4>
+      <span class="tag tag-dag">Directed Acyclic (DAG)</span>
+      <span class="tag tag-unweighted">Unweighted</span>
+      <p><strong>Vertices</strong> = tasks. <strong>Edges</strong> = "must complete before" relationships. An edge $$(A, B)$$ means task A must finish before task B can start. Because circular dependencies are forbidden, the graph must be <em>acyclic</em>—a <strong>Directed Acyclic Graph (DAG)</strong>. In Week 13 you will learn <strong>topological sorting</strong>, which finds a valid execution order for the tasks.</p>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 110" width="220" height="110" role="img" aria-label="DAG with 5 tasks: T1 and T2 feed into T3, T3 feeds T4 and T5.">
+        <defs><marker id="ah4" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5 Z" fill="#1e8449"/></marker></defs>
+        <line x1="42" y1="25" x2="98" y2="50" stroke="#1e8449" stroke-width="1.5" marker-end="url(#ah4)"/>
+        <line x1="42" y1="85" x2="98" y2="60" stroke="#1e8449" stroke-width="1.5" marker-end="url(#ah4)"/>
+        <line x1="120" y1="50" x2="168" y2="25" stroke="#1e8449" stroke-width="1.5" marker-end="url(#ah4)"/>
+        <line x1="120" y1="60" x2="168" y2="85" stroke="#1e8449" stroke-width="1.5" marker-end="url(#ah4)"/>
+        <circle cx="32" cy="22" r="10" fill="#d4efdf" stroke="#1e8449" stroke-width="1.5"/>
+        <text x="32" y="26" text-anchor="middle" font-size="9" font-weight="700" fill="#1e8449">T1</text>
+        <circle cx="32" cy="88" r="10" fill="#d4efdf" stroke="#1e8449" stroke-width="1.5"/>
+        <text x="32" y="92" text-anchor="middle" font-size="9" font-weight="700" fill="#1e8449">T2</text>
+        <circle cx="110" cy="55" r="10" fill="#d4efdf" stroke="#1e8449" stroke-width="1.5"/>
+        <text x="110" y="59" text-anchor="middle" font-size="9" font-weight="700" fill="#1e8449">T3</text>
+        <circle cx="180" cy="22" r="10" fill="#d4efdf" stroke="#1e8449" stroke-width="1.5"/>
+        <text x="180" y="26" text-anchor="middle" font-size="9" font-weight="700" fill="#1e8449">T4</text>
+        <circle cx="180" cy="88" r="10" fill="#d4efdf" stroke="#1e8449" stroke-width="1.5"/>
+        <text x="180" y="92" text-anchor="middle" font-size="9" font-weight="700" fill="#1e8449">T5</text>
+      </svg>
+    </div>
+  </div><!-- /gallery -->
+
+  <details>
+    <summary>Summary Table — Four Mini-Cases</summary>
+    <div class="details-body">
+      <table>
+        <thead><tr><th>System</th><th>Vertices</th><th>Edges</th><th>Directed?</th><th>Weighted?</th><th>Other Notes</th></tr></thead>
+        <tbody>
+          <tr><td>Social network</td><td>People</td><td>Friendships</td><td>No</td><td>No</td><td>Simple graph</td></tr>
+          <tr><td>Road / GPS</td><td>Intersections</td><td>Road segments</td><td>Yes (one-way)</td><td>Yes (distance/time)</td><td>Simple digraph</td></tr>
+          <tr><td>Web pages</td><td>Pages</td><td>Hyperlinks</td><td>Yes</td><td>No</td><td>Simple digraph</td></tr>
+          <tr><td>Task dependency</td><td>Tasks</td><td>"Must precede"</td><td>Yes</td><td>No</td><td>DAG; topological sort (Week 13)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </details>
+</section>
+
+<!-- ────────────── § 6  RELATIONS CALLBACK ────────────── -->
+<section id="sec-relations" aria-labelledby="h-relations">
+  <h2 id="h-relations">6 &middot; Connection to Relations (Week 2 Callback)</h2>
+
+  <div class="callout week-callback">
+    <div class="callout-title">Week 2 Callback — Graphs as Relations</div>
+    <p>In Week 2 you studied <strong>binary relations</strong> on a set. A graph is just a relation you can draw!</p>
+    <ul>
+      <li>A <strong>directed graph</strong> on vertex set $$V$$ is exactly a <strong>binary relation</strong> $$R \subseteq V \times V$$. The edge $$(u,v)$$ exists if and only if $$u\,R\,v$$.</li>
+      <li>An <strong>undirected simple graph</strong> corresponds to a <strong>symmetric, irreflexive</strong> relation: symmetric because $$\{u,v\} \in E$$ means both $$u\,R\,v$$ and $$v\,R\,u$$; irreflexive because a simple graph has no self-loops.</li>
+    </ul>
+  </div>
+
+  <table>
+    <thead><tr><th>Relation Property</th><th>Graph Interpretation</th></tr></thead>
+    <tbody>
+      <tr><td>Reflexive — every element is related to itself</td><td>Every vertex has a self-loop (pseudograph)</td></tr>
+      <tr><td>Irreflexive — no element is related to itself</td><td>No self-loops (simple graph)</td></tr>
+      <tr><td>Symmetric — $$u\,R\,v \Rightarrow v\,R\,u$$</td><td>Undirected edges (or every directed arc has a reverse arc)</td></tr>
+      <tr><td>Antisymmetric — $$u\,R\,v$$ and $$v\,R\,u \Rightarrow u = v$$</td><td>No pair of vertices has arcs in both directions (except self-loops)</td></tr>
+      <tr><td>Transitive — $$u\,R\,v$$ and $$v\,R\,w \Rightarrow u\,R\,w$$</td><td>If there is a directed path of length 2 from $$u$$ to $$w$$, there is also a direct arc</td></tr>
+    </tbody>
+  </table>
+
+  <p class="text-small">This connection will reappear in Week 13 when you study traversal algorithms—BFS and DFS effectively compute the <em>transitive closure</em> of the adjacency relation, revealing all reachable vertices.</p>
+</section>
+
+<!-- ────────────── § 7  KNOWLEDGE CHECKS ────────────── -->
+<section id="sec-checks" aria-labelledby="h-checks">
+  <h2 id="h-checks">7 &middot; Knowledge Checks</h2>
+  <p>These checks are <strong>ungraded</strong>. Use them to test your understanding before moving on to Module 12.3. Select your answer, then press <strong>Check Answer</strong> for immediate feedback.</p>
+
+  <!-- ── Check 12.2a ── -->
+  <div class="kc-wrap" id="kc-12-2a">
+    <h3>Check 12.2a — Airline Route Map</h3>
+    <p class="kc-question">An airline publishes a route map of cities and <em>one-way flights</em> between them. Each flight has a listed <em>ticket price</em>. What type of graph best models this system?</p>
+    <ul class="kc-options" role="radiogroup" aria-label="Check 12.2a answer choices">
+      <li><label><input type="radio" name="kc12a" value="a"> (a) Undirected, unweighted</label></li>
+      <li><label><input type="radio" name="kc12a" value="b"> (b) Undirected, weighted</label></li>
+      <li><label><input type="radio" name="kc12a" value="c"> (c) Directed, unweighted</label></li>
+      <li><label><input type="radio" name="kc12a" value="d"> (d) Directed, weighted</label></li>
+    </ul>
+    <button class="kc-btn" onclick="checkKC('kc12a','d','kc12a-fb')" aria-controls="kc12a-fb">Check Answer</button>
+    <div id="kc12a-fb" class="kc-feedback" role="status" aria-live="polite"></div>
+  </div>
+
+  <!-- ── Check 12.2b ── -->
+  <div class="kc-wrap" id="kc-12-2b">
+    <h3>Check 12.2b — In-Degree and Out-Degree</h3>
+    <p class="kc-question">Consider the directed graph from Section 2 with arcs $$\{(a,b),(b,c),(c,d),(d,a),(a,c)\}$$. What are $$\deg^{+}(a)$$ and $$\deg^{-}(c)$$?</p>
+    <ul class="kc-options" role="radiogroup" aria-label="Check 12.2b answer choices">
+      <li><label><input type="radio" name="kc12b" value="a"> (a) $$\deg^{+}(a) = 2,\;\deg^{-}(c) = 2$$</label></li>
+      <li><label><input type="radio" name="kc12b" value="b"> (b) $$\deg^{+}(a) = 1,\;\deg^{-}(c) = 2$$</label></li>
+      <li><label><input type="radio" name="kc12b" value="c"> (c) $$\deg^{+}(a) = 2,\;\deg^{-}(c) = 1$$</label></li>
+      <li><label><input type="radio" name="kc12b" value="d"> (d) $$\deg^{+}(a) = 3,\;\deg^{-}(c) = 2$$</label></li>
+    </ul>
+    <button class="kc-btn" onclick="checkKC('kc12b','a','kc12b-fb')" aria-controls="kc12b-fb">Check Answer</button>
+    <div id="kc12b-fb" class="kc-feedback" role="status" aria-live="polite"></div>
+  </div>
+
+  <!-- ── Check 12.2c — Matching ── -->
+  <div class="kc-wrap" id="kc-12-2c">
+    <h3>Check 12.2c — Match the Scenario to the Graph Type</h3>
+    <p class="kc-question">For each real-world scenario, select the most appropriate graph type from the dropdown.</p>
+
+    <div class="match-grid">
+      <div class="match-label">1. Ethernet cables connecting office computers (each cable works both ways, no data about speed).</div>
+      <div><select id="m1" aria-label="Graph type for scenario 1">
+        <option value="">— select —</option>
+        <option value="uu">Undirected, unweighted</option>
+        <option value="uw">Undirected, weighted</option>
+        <option value="du">Directed, unweighted</option>
+        <option value="dw">Directed, weighted</option>
+        <option value="dag">DAG (directed acyclic)</option>
+      </select></div>
+
+      <div class="match-label">2. Course prerequisites at a college (no circular dependencies).</div>
+      <div><select id="m2" aria-label="Graph type for scenario 2">
+        <option value="">— select —</option>
+        <option value="uu">Undirected, unweighted</option>
+        <option value="uw">Undirected, weighted</option>
+        <option value="du">Directed, unweighted</option>
+        <option value="dw">Directed, weighted</option>
+        <option value="dag">DAG (directed acyclic)</option>
+      </select></div>
+
+      <div class="match-label">3. Cities connected by toll roads (tolls vary by road).</div>
+      <div><select id="m3" aria-label="Graph type for scenario 3">
+        <option value="">— select —</option>
+        <option value="uu">Undirected, unweighted</option>
+        <option value="uw">Undirected, weighted</option>
+        <option value="du">Directed, unweighted</option>
+        <option value="dw">Directed, weighted</option>
+        <option value="dag">DAG (directed acyclic)</option>
+      </select></div>
+
+      <div class="match-label">4. Twitter follows (A can follow B without B following A; no numeric value).</div>
+      <div><select id="m4" aria-label="Graph type for scenario 4">
+        <option value="">— select —</option>
+        <option value="uu">Undirected, unweighted</option>
+        <option value="uw">Undirected, weighted</option>
+        <option value="du">Directed, unweighted</option>
+        <option value="dw">Directed, weighted</option>
+        <option value="dag">DAG (directed acyclic)</option>
+      </select></div>
+
+      <div class="match-label">5. A weighted pipeline network where flow goes in one direction.</div>
+      <div><select id="m5" aria-label="Graph type for scenario 5">
+        <option value="">— select —</option>
+        <option value="uu">Undirected, unweighted</option>
+        <option value="uw">Undirected, weighted</option>
+        <option value="du">Directed, unweighted</option>
+        <option value="dw">Directed, weighted</option>
+        <option value="dag">DAG (directed acyclic)</option>
+      </select></div>
+    </div>
+
+    <button class="kc-btn" onclick="checkMatch()" aria-controls="kc12c-fb">Check Answers</button>
+    <div id="kc12c-fb" class="kc-feedback" role="status" aria-live="polite"></div>
+  </div>
+
+</section>
+
+<!-- ────────────── WHAT'S NEXT ────────────── -->
+<section aria-labelledby="h-next">
+  <h2 id="h-next">What's Next?</h2>
+  <div class="callout">
+    <div class="callout-title">Up Next — Module 12.3: Graph Representations and Tradeoff Analysis</div>
+    <p>You now know the <em>types</em> of graphs. In Module 12.3 you will learn how to <em>store</em> them in a computer using <strong>adjacency matrices</strong> and <strong>adjacency lists</strong>, and you will analyze the space/time tradeoffs that determine which representation to choose. That module is the most implementation-critical content of Week 12 and directly prepares you for the Final Project's Graph Builder component.</p>
+  </div>
+</section>
+
+</main>
+
+<!-- ════════════════ SCRIPTS ════════════════ -->
+<script>
+/* ── Multiple-choice checker ── */
+function checkKC(name, correct, fbId) {
+  var sel = document.querySelector('input[name="'+name+'"]:checked');
+  var fb = document.getElementById(fbId);
+  if (!sel) { fb.textContent = 'Please select an answer.'; fb.className='kc-feedback incorrect'; fb.style.display='block'; return; }
+  var explanations = {
+    'kc12a': {
+      correct: 'Correct! Flights are one-way (directed) and ticket prices give each edge a numerical weight (weighted). This is a directed, weighted graph.',
+      incorrect: 'Not quite. One-way flights mean the edges have direction (directed), and ticket prices assign a numerical value to each edge (weighted). The correct answer is (d) Directed, weighted.'
+    },
+    'kc12b': {
+      correct: 'Correct! Vertex a has arcs going out to b and c, so deg⁺(a) = 2. Vertex c receives arcs from b and from a, so deg⁻(c) = 2.',
+      incorrect: 'Not quite. Look at the arc list: (a,b), (b,c), (c,d), (d,a), (a,c). Vertex a appears as the tail (first element) in (a,b) and (a,c), so deg⁺(a) = 2. Vertex c appears as the head (second element) in (b,c) and (a,c), so deg⁻(c) = 2. The correct answer is (a).'
+    }
+  };
+  if (sel.value === correct) {
+    fb.innerHTML = '<strong>&#10003; ' + explanations[name].correct + '</strong>';
+    fb.className = 'kc-feedback correct';
+  } else {
+    fb.innerHTML = '<strong>&#10007; ' + explanations[name].incorrect + '</strong>';
+    fb.className = 'kc-feedback incorrect';
+  }
+  fb.style.display = 'block';
+}
+
+/* ── Matching checker ── */
+function checkMatch() {
+  var answers = {m1:'uu', m2:'dag', m3:'uw', m4:'du', m5:'dw'};
+  var labels = {
+    m1: 'Ethernet cables are bidirectional with no numeric data → undirected, unweighted.',
+    m2: 'Prerequisites have direction (A before B) and no cycles → DAG.',
+    m3: 'Toll roads connect cities (assume two-way) with varying tolls → undirected, weighted.',
+    m4: 'Twitter follows are one-way with no numeric value → directed, unweighted.',
+    m5: 'One-directional flow with capacity values → directed, weighted.'
+  };
+  var score = 0;
+  var total = 5;
+  var details = [];
+  for (var key in answers) {
+    var el = document.getElementById(key);
+    var val = el.value;
+    if (val === answers[key]) {
+      score++;
+      details.push('<span style="color:#1e8449">&#10003; Scenario ' + key.charAt(1) + ': Correct. ' + labels[key] + '</span>');
+    } else {
+      details.push('<span style="color:#922b21">&#10007; Scenario ' + key.charAt(1) + ': ' + labels[key] + '</span>');
+    }
+  }
+  var fb = document.getElementById('kc12c-fb');
+  if (score === total) {
+    fb.className = 'kc-feedback correct';
+    fb.innerHTML = '<strong>&#10003; Perfect — ' + score + '/' + total + '!</strong><br>' + details.join('<br>');
+  } else {
+    fb.className = 'kc-feedback incorrect';
+    fb.innerHTML = '<strong>' + score + '/' + total + ' correct.</strong> Review the explanations below:<br>' + details.join('<br>');
+  }
+  fb.style.display = 'block';
+}
+</script>
+
+<!-- KaTeX for math rendering (self-contained, loaded from CDN as inline-safe fallback) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js" crossorigin="anonymous"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'\$$',right:'\$$',display:true},{left:'\$$',right:'\$$',display:false}]});"></script>
+
+</body>
+</html>
