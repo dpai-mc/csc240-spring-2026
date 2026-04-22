@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 13 Overview – Graph Traversal Algorithms</title>
+<style>
+:root {
+  --primary: #1a5276;
+  --primary-light: #d4e6f1;
+  --accent: #117a65;
+  --accent-light: #d1f2eb;
+  --text: #212529;
+  --text-secondary: #495057;
+  --bg: #ffffff;
+  --bg-section: #f8f9fa;
+  --border: #dee2e6;
+  --warning-bg: #fef9e7;
+  --warning-border: #f9e79f;
+  --focus-ring: #2980b9;
+  --radius: 8px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text);
+  background-color: var(--bg);
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0 1rem 2rem;
+}
+
+/* ── Top Navigation ── */
+nav.week-nav {
+  background-color: var(--primary);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  padding: 0.5rem 1rem;
+}
+
+nav.week-nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.75rem;
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+nav.week-nav a {
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 0.875rem;
+  padding: 0.35rem 0.5rem;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+nav.week-nav a:hover,
+nav.week-nav a:focus {
+  background-color: rgba(255, 255, 255, 0.2);
+  text-decoration: underline;
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* ── Header ── */
+header.week-header {
+  background: linear-gradient(135deg, var(--primary) 0%, #1a6e5e 100%);
+  color: #ffffff;
+  padding: 2rem 1.5rem;
+  border-radius: 0 0 var(--radius) var(--radius);
+  margin-bottom: 1.5rem;
+}
+
+header.week-header h1 {
+  margin: 0 0 0.25rem;
+  font-size: 1.75rem;
+  line-height: 1.3;
+}
+
+header.week-header .subtitle {
+  font-size: 1.1rem;
+  opacity: 0.92;
+  margin: 0;
+}
+
+/* ── Sections ── */
+section {
+  margin-bottom: 1.75rem;
+}
+
+section h2 {
+  font-size: 1.3rem;
+  color: var(--primary);
+  border-bottom: 3px solid var(--primary-light);
+  padding-bottom: 0.35rem;
+  margin: 0 0 0.75rem;
+}
+
+section h3 {
+  font-size: 1.05rem;
+  color: var(--accent);
+  margin: 1rem 0 0.4rem;
+}
+
+p {
+  margin: 0 0 0.75rem;
+}
+
+ul, ol {
+  margin: 0 0 0.75rem;
+  padding-left: 1.5rem;
+}
+
+li {
+  margin-bottom: 0.35rem;
+}
+
+/* ── Callout Boxes ── */
+.callout {
+  border-left: 4px solid var(--accent);
+  background-color: var(--accent-light);
+  padding: 0.85rem 1rem;
+  border-radius: 0 var(--radius) var(--radius) 0;
+  margin-bottom: 1rem;
+}
+
+.callout.graded {
+  border-left-color: #c0392b;
+  background-color: #fdedec;
+}
+
+.callout.graded strong {
+  color: #922b21;
+}
+
+.callout.tip {
+  border-left-color: #d4ac0d;
+  background-color: var(--warning-bg);
+}
+
+/* ── Activity Table ── */
+.activity-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+}
+
+.activity-table thead {
+  background-color: var(--primary);
+  color: #ffffff;
+}
+
+.activity-table th,
+.activity-table td {
+  padding: 0.6rem 0.75rem;
+  text-align: left;
+  border: 1px solid var(--border);
+}
+
+.activity-table tbody tr:nth-child(even) {
+  background-color: var(--bg-section);
+}
+
+.activity-table tbody tr:hover {
+  background-color: var(--primary-light);
+}
+
+.badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: 12px;
+  vertical-align: middle;
+}
+
+.badge.graded {
+  background-color: #c0392b;
+  color: #ffffff;
+}
+
+.badge.practice {
+  background-color: var(--accent);
+  color: #ffffff;
+}
+
+.badge.module {
+  background-color: var(--primary);
+  color: #ffffff;
+}
+
+/* ── Key Concepts List ── */
+.concept-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.concept-list li {
+  padding: 0.4rem 0 0.4rem 1.6rem;
+  position: relative;
+}
+
+.concept-list li::before {
+  content: "🔑";
+  position: absolute;
+  left: 0;
+  top: 0.4rem;
+  font-size: 0.95rem;
+}
+
+/* ── Collapsible ── */
+.collapsible-toggle {
+  background: var(--bg-section);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.7rem 1rem;
+  width: 100%;
+  text-align: left;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: background-color 0.2s ease;
+}
+
+.collapsible-toggle:hover,
+.collapsible-toggle:focus {
+  background-color: var(--primary-light);
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.collapsible-toggle .arrow {
+  transition: transform 0.25s ease;
+  font-size: 0.85rem;
+}
+
+.collapsible-toggle[aria-expanded="true"] .arrow {
+  transform: rotate(90deg);
+}
+
+.collapsible-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease;
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 var(--radius) var(--radius);
+  background-color: var(--bg);
+}
+
+.collapsible-content .inner {
+  padding: 0.85rem 1rem;
+}
+
+/* ── Tips Section ── */
+.tips-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.tips-list li {
+  padding: 0.4rem 0 0.4rem 1.6rem;
+  position: relative;
+}
+
+.tips-list li::before {
+  content: "✅";
+  position: absolute;
+  left: 0;
+  top: 0.4rem;
+  font-size: 0.9rem;
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  header.week-header h1 {
+    font-size: 1.35rem;
+  }
+
+  nav.week-nav ul {
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .activity-table, .activity-table thead, .activity-table tbody,
+  .activity-table th, .activity-table td, .activity-table tr {
+    display: block;
+  }
+
+  .activity-table thead {
+    position: absolute;
+    left: -9999px;
+    clip: rect(0 0 0 0);
+  }
+
+  .activity-table tr {
+    margin-bottom: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+
+  .activity-table td {
+    border: none;
+    border-bottom: 1px solid var(--border);
+    padding-left: 40%;
+    position: relative;
+    text-align: right;
+  }
+
+  .activity-table td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 0.75rem;
+    font-weight: 600;
+    text-align: left;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- ════════════════ NAVIGATION ════════════════ -->
+<nav class="week-nav" aria-label="Week 13 page navigation">
+  <ul>
+    <li><a href="#welcome">Welcome</a></li>
+    <li><a href="#goals">Learning Goals</a></li>
+    <li><a href="#activities">Activities</a></li>
+    <li><a href="#concepts">Key Concepts</a></li>
+    <li><a href="#fit">Course Fit</a></li>
+    <li><a href="#tips">Tips</a></li>
+  </ul>
+</nav>
+
+<div class="container">
+
+<!-- ════════════════ HEADER ════════════════ -->
+<header class="week-header">
+  <h1>Week 13: Graph Traversal Algorithms</h1>
+  <p class="subtitle">CSC 240 – Discrete Structures</p>
+</header>
+
+<!-- ════════════════ 1. WELCOME ════════════════ -->
+<section id="welcome">
+  <h2>Welcome &amp; Weekly Focus</h2>
+  <p>
+    Welcome to Week 13! Last week you built the vocabulary and static representations of graphs — adjacency matrices, adjacency lists, and degree sequences. This week those structures come alive as we explore <strong>Breadth-First Search (BFS)</strong> and <strong>Depth-First Search (DFS)</strong>, the two foundational algorithms that let us systematically visit every vertex and edge in a graph.
+  </p>
+  <div class="callout graded" role="note">
+    <strong>Graded Deliverable:</strong> Quiz 4 (60 pts) is the only graded item this week. It covers material from Weeks 11–13 (recursion, recurrence relations, graph fundamentals, and graph traversals).
+  </div>
+</section>
+
+<!-- ════════════════ 2. LEARNING GOALS ════════════════ -->
+<section id="goals">
+  <h2>Week 13 Learning Goals</h2>
+  <p>By the end of this week, you should be able to:</p>
+
+  <h3>BFS Fundamentals</h3>
+  <ol>
+    <li>Explain how BFS explores a graph level by level using a queue, and hand-trace BFS on a given graph to produce a valid BFS tree.</li>
+    <li>Describe why BFS guarantees shortest paths (fewest edges) in unweighted graphs and identify the BFS distance from a source to every reachable vertex.</li>
+  </ol>
+
+  <h3>DFS Fundamentals</h3>
+  <ol start="3">
+    <li>Explain how DFS explores a graph by going as deep as possible before backtracking, using either recursion or an explicit stack, and hand-trace DFS to produce discovery and finish timestamps.</li>
+    <li>Classify edges encountered during DFS as tree, back, forward, or cross edges, and explain what each classification reveals about graph structure.</li>
+  </ol>
+
+  <h3>Comparing BFS and DFS</h3>
+  <ol start="5">
+    <li>Compare BFS and DFS in terms of data structure used, traversal order, time and space complexity, and the kinds of problems each is best suited for.</li>
+  </ol>
+
+  <h3>Traversal Applications</h3>
+  <ol start="6">
+    <li>Use BFS or DFS to identify all connected components of an undirected graph and determine whether a graph is connected.</li>
+    <li>Apply DFS to perform topological sorting of a directed acyclic graph (DAG) and detect cycles in both directed and undirected graphs.</li>
+  </ol>
+
+  <h3>Connecting Theory and Practice</h3>
+  <ol start="8">
+    <li>Recognize how the recursive structure of DFS mirrors mathematical induction, and apply traversal algorithms to at least one real-world modeling scenario (e.g., social-network analysis, web crawling, or task scheduling).</li>
+  </ol>
+</section>
+
+<!-- ════════════════ 3. REQUIRED ACTIVITIES ════════════════ -->
+<section id="activities">
+  <h2>Required Activities This Week</h2>
+  <p>Complete the modules in the order listed; each one builds on the previous.</p>
+
+  <table class="activity-table" aria-label="Week 13 activities">
+    <thead>
+      <tr>
+        <th scope="col">Activity</th>
+        <th scope="col">Type</th>
+        <th scope="col">Details</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td data-label="Activity">Module 13.1 – Breadth-First Search (BFS)</td>
+        <td data-label="Type"><span class="badge module">Module</span></td>
+        <td data-label="Details">Queue mechanics, BFS tree, shortest-path property</td>
+      </tr>
+      <tr>
+        <td data-label="Activity">Module 13.2 – Depth-First Search (DFS)</td>
+        <td data-label="Type"><span class="badge module">Module</span></td>
+        <td data-label="Details">Recursive/stack approach, timestamps, edge classification</td>
+      </tr>
+      <tr>
+        <td data-label="Activity">Module 13.3 – BFS vs. DFS: Comparative Analysis</td>
+        <td data-label="Type"><span class="badge module">Module</span></td>
+        <td data-label="Details">Side-by-side comparison, complexity, when to choose which</td>
+      </tr>
+      <tr>
+        <td data-label="Activity">Module 13.4 – Traversal Applications</td>
+        <td data-label="Type"><span class="badge module">Module</span></td>
+        <td data-label="Details">Connected components, topological sort, cycle detection</td>
+      </tr>
+      <tr>
+        <td data-label="Activity">Module 13.5 – Real-World Applications + Quiz 4 Prep</td>
+        <td data-label="Type"><span class="badge module">Module</span></td>
+        <td data-label="Details">Applied scenarios, self-assessment checklist for Quiz 4</td>
+      </tr>
+      <tr>
+        <td data-label="Activity">Quiz 4</td>
+        <td data-label="Type"><span class="badge graded">Graded – 60 pts</span></td>
+        <td data-label="Details">Covers Weeks 11–13 (recursion, recurrences, graphs, traversals)</td>
+      </tr>
+      <tr>
+        <td data-label="Activity">Lab 13 – Graph Traversal Investigation</td>
+        <td data-label="Type"><span class="badge practice">Practice</span></td>
+        <td data-label="Details">Ungraded hands-on practice; optional but strongly recommended</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ════════════════ 4. KEY CONCEPTS ════════════════ -->
+<section id="concepts">
+  <h2>Key Concepts to Watch For</h2>
+  <ul class="concept-list" aria-label="Key concepts for Week 13">
+    <li><strong>BFS queue mechanics and shortest-path property</strong> — BFS processes vertices level by level; the first time it reaches a vertex is via the fewest possible edges.</li>
+    <li><strong>DFS recursive structure, timestamps, and edge classification</strong> — Discovery and finish times reveal the nesting structure of the search, and each edge falls into exactly one category (tree, back, forward, or cross).</li>
+    <li><strong>Connected components</strong> — Running BFS or DFS from every unvisited vertex partitions the graph into its connected pieces.</li>
+    <li><strong>Topological sort and cycle detection</strong> — DFS finish times give a reverse topological order for DAGs; a back edge signals a cycle.</li>
+    <li><strong>Choosing BFS vs. DFS</strong> — The right traversal depends on the problem: BFS for shortest paths, DFS for ordering and structural analysis.</li>
+    <li><strong>DFS recursion and mathematical induction</strong> — The recursive "assume sub-problems are solved" pattern in DFS mirrors the inductive hypothesis you studied in Weeks 8–9.</li>
+  </ul>
+</section>
+
+<!-- ════════════════ 5. HOW THIS WEEK FITS ════════════════ -->
+<section id="fit">
+  <h2>How This Week Fits the Course</h2>
+  <p>
+    <strong>Looking back:</strong> Week 12 introduced graph definitions, types, and representations (adjacency matrices and lists). This week you add the algorithms that <em>traverse</em> those structures, turning static data into dynamic exploration.
+  </p>
+  <p>
+    <strong>Looking ahead:</strong> Week 14 builds directly on BFS and DFS with weighted-graph algorithms — Minimum Spanning Trees (Kruskal's and Prim's) and Dijkstra's shortest-path algorithm. Components 2 and 3 of the Final Project depend on the traversal skills you develop this week.
+  </p>
+
+  <!-- Collapsible: broader course connection -->
+  <button class="collapsible-toggle" aria-expanded="false" aria-controls="context-panel" id="context-btn">
+    <span>How does this connect to earlier topics?</span>
+    <span class="arrow" aria-hidden="true">&#9654;</span>
+  </button>
+  <div class="collapsible-content" id="context-panel" role="region" aria-labelledby="context-btn">
+    <div class="inner">
+      <ul>
+        <li><strong>Recursion &amp; Recurrences (Weeks 11–12):</strong> DFS is inherently recursive; its correctness arguments use the same inductive reasoning you practiced with recurrence relations.</li>
+        <li><strong>Proof Techniques (Weeks 8–9):</strong> Proving BFS finds shortest paths and DFS correctly classifies edges relies on induction and contradiction.</li>
+        <li><strong>Sets &amp; Relations (Weeks 3–5):</strong> Graphs are built from sets of vertices and edges; adjacency is a relation. The language of sets and relations is the language of graph theory.</li>
+        <li><strong>Algorithms &amp; Complexity (Week 10):</strong> You will analyze BFS and DFS running times using the Big-O notation from Week 10.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ 6. TIPS FOR SUCCESS ════════════════ -->
+<section id="tips">
+  <h2>Tips for Success This Week</h2>
+  <ul class="tips-list">
+    <li><strong>Study the modules in order</strong> (13.1 → 13.2 → 13.3 → 13.4 → 13.5). Each module assumes you have completed the ones before it.</li>
+    <li><strong>Hand-trace BFS and DFS on new graphs.</strong> Don't just re-read examples — draw a fresh graph, pick a start vertex, and work through the algorithm step by step with pencil and paper.</li>
+    <li><strong>Use the Module 13.5 self-assessment checklist</strong> to gauge your readiness for Quiz 4 before you attempt it.</li>
+    <li><strong>Quiz 4 covers all of Weeks 11–13.</strong> Set aside time to review recursion, recurrence relations, and graph representations in addition to this week's traversal material.</li>
+    <li><strong>Try Lab 13</strong> even though it is ungraded. Hands-on traversal practice is the single best way to prepare for both the quiz and the final project.</li>
+  </ul>
+</section>
+
+</div><!-- /.container -->
+
+<!-- ════════════════ SCRIPT ════════════════ -->
+<script>
+(function() {
+  "use strict";
+
+  /* ── Collapsible panel toggle ── */
+  var btn = document.getElementById("context-btn");
+  var panel = document.getElementById("context-panel");
+
+  if (btn && panel) {
+    btn.addEventListener("click", function() {
+      var expanded = btn.getAttribute("aria-expanded") === "true";
+      btn.setAttribute("aria-expanded", String(!expanded));
+
+      if (!expanded) {
+        panel.style.maxHeight = panel.scrollHeight + "px";
+      } else {
+        panel.style.maxHeight = "0";
+      }
+    });
+  }
+})();
+</script>
+
+</body>
+</html>

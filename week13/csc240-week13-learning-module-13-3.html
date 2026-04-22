@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 13.3 – BFS vs. DFS: Comparative Analysis</title>
+<style>
+:root {
+  --primary: #2D3B45;
+  --accent: #0078D4;
+  --accent-dark: #005A9E;
+  --accent-light: #E8F4FD;
+  --success: #0B6E4F;
+  --success-light: #E6F4EE;
+  --warning: #C05702;
+  --warning-light: #FFF3E0;
+  --danger: #C0392B;
+  --danger-light: #FDEDEB;
+  --info: #6A1B9A;
+  --info-light: #F3E5F5;
+  --neutral-50: #FAFAFA;
+  --neutral-100: #F5F5F5;
+  --neutral-200: #EEEEEE;
+  --neutral-300: #E0E0E0;
+  --neutral-400: #BDBDBD;
+  --neutral-600: #757575;
+  --neutral-700: #616161;
+  --neutral-800: #424242;
+  --white: #FFFFFF;
+  --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  --font-mono: 'Courier New', Courier, monospace;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+  --shadow-md: 0 2px 8px rgba(0,0,0,0.12);
+  --radius: 8px;
+  --max-width: 960px;
+  --transition: 0.3s ease;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-main);
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--primary);
+  background: var(--neutral-100);
+}
+
+/* ── Sticky Navigation ── */
+.sticky-nav {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: var(--primary);
+  border-bottom: 3px solid var(--accent);
+  padding: 0;
+}
+.sticky-nav .nav-inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 0.4rem 1rem;
+  gap: 0.25rem;
+}
+.sticky-nav .nav-title {
+  color: var(--white);
+  font-weight: 700;
+  font-size: 1rem;
+  margin-right: 1rem;
+  white-space: nowrap;
+}
+.sticky-nav a {
+  color: #B0C4D8;
+  text-decoration: none;
+  font-size: 0.85rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: 4px;
+  transition: background var(--transition), color var(--transition);
+}
+.sticky-nav a:hover,
+.sticky-nav a:focus {
+  background: rgba(255,255,255,0.15);
+  color: var(--white);
+  outline: 2px solid rgba(255,255,255,0.5);
+}
+
+/* ── Main Content ── */
+.content-wrapper {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+}
+
+/* ── Module Header ── */
+.module-header {
+  background: linear-gradient(135deg, var(--primary) 0%, #3B4F5C 100%);
+  color: var(--white);
+  padding: 2rem 2rem 1.5rem;
+  border-radius: var(--radius);
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow-md);
+}
+.module-header .breadcrumb {
+  font-size: 0.85rem;
+  color: #A0B8CC;
+  margin-bottom: 0.5rem;
+}
+.module-header h1 {
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+  line-height: 1.25;
+}
+.module-header .subtitle {
+  font-size: 1rem;
+  color: #C8D8E4;
+  margin-bottom: 1rem;
+}
+.module-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  font-size: 0.85rem;
+  color: #A0B8CC;
+}
+.module-meta span { display: flex; align-items: center; gap: 0.35rem; }
+
+/* ── Section Headings ── */
+.section { margin-bottom: 2.25rem; }
+.section h2 {
+  font-size: 1.4rem;
+  color: var(--primary);
+  border-bottom: 3px solid var(--accent);
+  padding-bottom: 0.4rem;
+  margin-bottom: 1rem;
+}
+.section h3 {
+  font-size: 1.15rem;
+  color: var(--accent-dark);
+  margin: 1.25rem 0 0.5rem;
+}
+
+/* ── Callout Boxes ── */
+.callout {
+  border-left: 4px solid;
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  margin: 1.25rem 0;
+  box-shadow: var(--shadow-sm);
+}
+.callout .callout-title {
+  font-weight: 700;
+  margin-bottom: 0.35rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.callout-objective  { background: var(--accent-light); border-color: var(--accent); }
+.callout-objective .callout-title { color: var(--accent-dark); }
+.callout-tip        { background: var(--success-light); border-color: var(--success); }
+.callout-tip .callout-title { color: var(--success); }
+.callout-warning    { background: var(--warning-light); border-color: var(--warning); }
+.callout-warning .callout-title { color: var(--warning); }
+.callout-important  { background: var(--danger-light); border-color: var(--danger); }
+.callout-important .callout-title { color: var(--danger); }
+.callout-insight    { background: var(--info-light); border-color: var(--info); }
+.callout-insight .callout-title { color: var(--info); }
+
+/* ── Comparison Table ── */
+.table-wrapper {
+  overflow-x: auto;
+  margin: 1.25rem 0;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}
+.comp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+  min-width: 620px;
+}
+.comp-table caption {
+  font-weight: 700;
+  font-size: 1rem;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  background: var(--primary);
+  color: var(--white);
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+.comp-table thead th {
+  background: var(--accent);
+  color: var(--white);
+  padding: 0.65rem 0.85rem;
+  text-align: left;
+  font-weight: 600;
+}
+.comp-table tbody td {
+  padding: 0.6rem 0.85rem;
+  border-bottom: 1px solid var(--neutral-300);
+  vertical-align: top;
+}
+.comp-table tbody tr:nth-child(even) { background: var(--neutral-50); }
+.comp-table tbody tr:nth-child(odd)  { background: var(--white); }
+.comp-table .row-label {
+  font-weight: 600;
+  background: var(--neutral-200) !important;
+  white-space: nowrap;
+}
+.comp-table .bfs-col { color: var(--accent-dark); }
+.comp-table .dfs-col { color: var(--info); }
+.comp-table .match   { color: var(--success); font-weight: 600; }
+.comp-table .diff    { font-weight: 600; }
+
+/* ── Decision Cards ── */
+.decision-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  margin: 1.25rem 0;
+}
+@media (max-width: 640px) { .decision-grid { grid-template-columns: 1fr; } }
+.decision-card {
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  box-shadow: var(--shadow-sm);
+}
+.decision-card h4 {
+  font-size: 1.05rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.decision-card ul {
+  margin: 0.4rem 0 0 1.2rem;
+  font-size: 0.93rem;
+}
+.decision-card ul li { margin-bottom: 0.3rem; }
+.card-bfs {
+  background: var(--accent-light);
+  border: 2px solid var(--accent);
+}
+.card-bfs h4 { color: var(--accent-dark); }
+.card-dfs {
+  background: var(--info-light);
+  border: 2px solid var(--info);
+}
+.card-dfs h4 { color: var(--info); }
+
+/* ── SVG Diagrams ── */
+.diagram-container {
+  background: var(--white);
+  border: 1px solid var(--neutral-300);
+  border-radius: var(--radius);
+  padding: 1rem;
+  margin: 1.25rem 0;
+  box-shadow: var(--shadow-sm);
+  text-align: center;
+}
+.diagram-container .diagram-caption {
+  font-size: 0.88rem;
+  color: var(--neutral-700);
+  margin-top: 0.5rem;
+  font-style: italic;
+}
+.side-by-side-diagrams {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 1.25rem 0;
+}
+@media (max-width: 640px) { .side-by-side-diagrams { grid-template-columns: 1fr; } }
+.side-by-side-diagrams .diagram-container { margin: 0; }
+
+/* ── Space Behavior ── */
+.space-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  margin: 1.25rem 0;
+}
+@media (max-width: 640px) { .space-grid { grid-template-columns: 1fr; } }
+.space-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  box-shadow: var(--shadow-sm);
+  border-top: 4px solid;
+}
+.space-card h4 { margin-bottom: 0.5rem; font-size: 1.02rem; }
+.space-card .metric {
+  display: inline-block;
+  background: var(--neutral-200);
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  margin: 0.15rem 0;
+}
+
+/* ── Knowledge Checks ── */
+.kc-block {
+  background: var(--white);
+  border: 2px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  box-shadow: var(--shadow-sm);
+}
+.kc-block .kc-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--accent-dark);
+  margin-bottom: 0.75rem;
+}
+.kc-block .kc-question {
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+.kc-options { list-style: none; margin: 0 0 0.75rem; }
+.kc-options li { margin-bottom: 0.4rem; }
+.kc-options label {
+  cursor: pointer;
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.45rem 0.65rem;
+  border-radius: 4px;
+  border: 1px solid var(--neutral-300);
+  transition: background var(--transition), border-color var(--transition);
+  font-size: 0.95rem;
+}
+.kc-options label:hover { background: var(--neutral-100); border-color: var(--accent); }
+.kc-options input[type="radio"] { accent-color: var(--accent); flex-shrink: 0; margin-top: 2px; }
+.kc-btn {
+  background: var(--accent);
+  color: var(--white);
+  border: none;
+  padding: 0.55rem 1.4rem;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+.kc-btn:hover, .kc-btn:focus { background: var(--accent-dark); outline: 2px solid var(--accent); }
+.kc-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.kc-feedback {
+  margin-top: 0.75rem;
+  padding: 0.85rem 1rem;
+  border-radius: 4px;
+  font-size: 0.93rem;
+  display: none;
+}
+.kc-feedback.correct   { background: var(--success-light); border: 1px solid var(--success); color: var(--success); }
+.kc-feedback.incorrect { background: var(--danger-light); border: 1px solid var(--danger); color: var(--danger); }
+
+/* ── Ordered / Unordered Lists ── */
+.content-list { margin: 0.5rem 0 0.75rem 1.5rem; }
+.content-list li { margin-bottom: 0.3rem; }
+
+/* ── Inline Code / KaTeX-style ── */
+code {
+  font-family: var(--font-mono);
+  background: var(--neutral-200);
+  padding: 0.1rem 0.35rem;
+  border-radius: 3px;
+  font-size: 0.9em;
+}
+
+/* ── Footer ── */
+.module-footer {
+  text-align: center;
+  padding: 1.5rem;
+  margin-top: 2rem;
+  border-top: 2px solid var(--neutral-300);
+  color: var(--neutral-600);
+  font-size: 0.85rem;
+}
+
+/* ── Print ── */
+@media print {
+  .sticky-nav { position: static; }
+  .kc-block, .kc-btn { break-inside: avoid; }
+}
+
+/* ── Focus Visible ── */
+*:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ── Traversal Animation ── */
+.trav-step { font-family: var(--font-mono); font-size: 0.9rem; }
+.step-highlight {
+  display: inline-block;
+  background: var(--accent-light);
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  padding: 0.15rem 0.45rem;
+  margin: 0.1rem;
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+.step-highlight-dfs {
+  background: var(--info-light);
+  border-color: var(--info);
+}
+
+/* ── Summary Box ── */
+.summary-box {
+  background: linear-gradient(135deg, var(--accent-light) 0%, var(--info-light) 100%);
+  border: 2px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.5rem;
+  margin: 1.5rem 0;
+}
+.summary-box h3 { color: var(--primary); margin-bottom: 0.5rem; }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════ STICKY NAV ════════════════════ -->
+<nav class="sticky-nav" aria-label="Module navigation">
+  <div class="nav-inner">
+    <span class="nav-title">13.3 BFS vs. DFS</span>
+    <a href="#comparison-table">Comparison Table</a>
+    <a href="#decision-rules">When to Use</a>
+    <a href="#space-behavior">Space Behavior</a>
+    <a href="#side-by-side">Two Traversals</a>
+    <a href="#knowledge-checks">Knowledge Checks</a>
+  </div>
+</nav>
+
+<!-- ════════════════════ MAIN CONTENT ════════════════════ -->
+<main class="content-wrapper" role="main">
+
+  <!-- ── Module Header ── -->
+  <header class="module-header">
+    <div class="breadcrumb">Week 13 &rsaquo; Module 13.3</div>
+    <h1>BFS vs. DFS: Comparative Analysis</h1>
+    <p class="subtitle">A structured reference for choosing the right traversal strategy.</p>
+    <div class="module-meta">
+      <span>⏱️ ~20–30 minutes</span>
+      <span>📖 Reference &amp; Comparison</span>
+      <span>🎯 Ungraded Knowledge Checks</span>
+    </div>
+  </header>
+
+  <!-- ════════════ § 1  OPENING ════════════ -->
+  <section class="section" id="opening">
+    <h2>1 · Introduction</h2>
+    <p>In Modules 13.1 and 13.2 you learned <strong>Breadth-First Search (BFS)</strong> and <strong>Depth-First Search (DFS)</strong> as individual algorithms. Both systematically visit every reachable vertex in a graph, yet they do so in fundamentally different orders—and that difference determines which problems each algorithm solves well.</p>
+    <p>This short module puts the two algorithms side by side so you can quickly compare their properties and make informed choices in problem-solving contexts.</p>
+
+    <div class="callout callout-objective">
+      <div class="callout-title">🎯 Module Objectives</div>
+      <ul class="content-list">
+        <li>Compare BFS and DFS across key structural and complexity dimensions.</li>
+        <li>Apply decision rules to select the appropriate algorithm for a given problem.</li>
+        <li>Analyze space behavior on extreme graph topologies (star graph, path graph).</li>
+        <li>Trace both traversals on the same graph and explain the different visit orders.</li>
+      </ul>
+    </div>
+
+    <div class="callout callout-tip">
+      <div class="callout-title">💡 How to Use This Module</div>
+      <p>This module is designed as a <strong>scannable reference</strong>. Bookmark the comparison table and decision rules—they will be useful when you work on this week's problem set and in future courses.</p>
+    </div>
+  </section>
+
+  <!-- ════════════ § 2  COMPARISON TABLE ════════════ -->
+  <section class="section" id="comparison-table">
+    <h2>2 · Comparison Table</h2>
+    <p>The table below summarizes the key properties of BFS and DFS. Where both algorithms share a property, the cell is marked <span style="color:var(--success);font-weight:600;">Same</span>. Where they differ, the distinguishing behavior is highlighted.</p>
+
+    <div class="table-wrapper">
+      <table class="comp-table" aria-label="BFS versus DFS comparison table">
+        <caption>BFS vs. DFS — Property Comparison</caption>
+        <thead>
+          <tr>
+            <th scope="col">Property</th>
+            <th scope="col" class="bfs-col">BFS</th>
+            <th scope="col" class="dfs-col">DFS</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="row-label">Data structure</td>
+            <td class="bfs-col diff">Queue (FIFO)</td>
+            <td class="dfs-col diff">Stack (LIFO) / recursion</td>
+          </tr>
+          <tr>
+            <td class="row-label">Traversal pattern</td>
+            <td class="bfs-col diff">Level-by-level (breadth-first)</td>
+            <td class="dfs-col diff">Branch-by-branch (depth-first)</td>
+          </tr>
+          <tr>
+            <td class="row-label">Time — adjacency list</td>
+            <td class="match" colspan="2">O(V + E)</td>
+          </tr>
+          <tr>
+            <td class="row-label">Time — adjacency matrix</td>
+            <td class="match" colspan="2">O(V²)</td>
+          </tr>
+          <tr>
+            <td class="row-label">Space (worst case)</td>
+            <td class="bfs-col diff">O(V)  — queue may hold an entire level</td>
+            <td class="dfs-col diff">O(V)  — stack may reach depth V</td>
+          </tr>
+          <tr>
+            <td class="row-label">Shortest path (unweighted)</td>
+            <td class="bfs-col diff" style="font-weight:700;">✔ Yes — guarantees minimum hops</td>
+            <td class="dfs-col diff">✘ No — may find a longer path first</td>
+          </tr>
+          <tr>
+            <td class="row-label">Timestamps (discovery / finish)</td>
+            <td class="bfs-col diff">Not standard (discovery time only)</td>
+            <td class="dfs-col diff" style="font-weight:700;">✔ Yes — d[v] and f[v]</td>
+          </tr>
+          <tr>
+            <td class="row-label">Edge classification</td>
+            <td class="bfs-col diff">Limited (tree vs. non-tree)</td>
+            <td class="dfs-col diff" style="font-weight:700;">✔ Full — tree, back, forward, cross</td>
+          </tr>
+          <tr>
+            <td class="row-label">Cycle detection</td>
+            <td class="bfs-col">Possible (undirected)</td>
+            <td class="dfs-col diff" style="font-weight:700;">✔ Preferred — back edge ⟹ cycle (directed &amp; undirected)</td>
+          </tr>
+          <tr>
+            <td class="row-label">Topological sort</td>
+            <td class="bfs-col">Possible via Kahn's algorithm (in-degree)</td>
+            <td class="dfs-col diff" style="font-weight:700;">✔ Natural — reverse finish-time order</td>
+          </tr>
+          <tr>
+            <td class="row-label">Connected-component detection</td>
+            <td class="match" colspan="2">Both work — run from each unvisited vertex</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout callout-insight">
+      <div class="callout-title">🔍 Key Takeaway</div>
+      <p>BFS and DFS share the same asymptotic time complexity, but they differ in <em>what structural information they reveal</em>. BFS discovers <strong>shortest-path distances</strong>; DFS discovers <strong>timestamps and edge types</strong>. Choosing the right algorithm means matching these capabilities to the problem at hand.</p>
+    </div>
+  </section>
+
+  <!-- ════════════ § 3  DECISION RULES ════════════ -->
+  <section class="section" id="decision-rules">
+    <h2>3 · When to Use BFS vs. DFS</h2>
+    <p>Use the following decision cards as a quick reference. Each card lists the problem types best suited to the algorithm and a brief justification.</p>
+
+    <div class="decision-grid">
+      <!-- BFS Card -->
+      <div class="decision-card card-bfs">
+        <h4>🔵 Choose BFS when …</h4>
+        <ul>
+          <li><strong>Shortest path (unweighted):</strong> BFS guarantees the minimum number of edges from source to every reachable vertex.</li>
+          <li><strong>Level-order exploration:</strong> You need to process all vertices at distance <em>k</em> before distance <em>k + 1</em> (e.g., social-network "friends of friends").</li>
+          <li><strong>Minimum hops:</strong> Routing problems where each edge has equal cost—fewest hops = shortest path.</li>
+          <li><strong>Bipartiteness testing:</strong> Level-based coloring naturally checks two-colorability.</li>
+        </ul>
+      </div>
+      <!-- DFS Card -->
+      <div class="decision-card card-dfs">
+        <h4>🟣 Choose DFS when …</h4>
+        <ul>
+          <li><strong>Topological sort:</strong> Reverse finish-time ordering gives a valid topological order for DAGs.</li>
+          <li><strong>Cycle detection (directed):</strong> A back edge in the DFS tree signals a cycle—clean and efficient.</li>
+          <li><strong>Exhaustive search / backtracking:</strong> Maze solving, puzzle solving, and constraint satisfaction naturally follow DFS's "go deep, then backtrack" pattern.</li>
+          <li><strong>Strongly connected components:</strong> Algorithms like Kosaraju's and Tarjan's are built on DFS.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout callout-tip">
+      <div class="callout-title">💡 Quick Heuristic</div>
+      <p><strong>Need the <em>closest</em> answer?</strong> → BFS (think "level by level").<br>
+         <strong>Need to <em>classify structure</em> or explore every branch?</strong> → DFS (think "deep dive").</p>
+    </div>
+  </section>
+
+  <!-- ════════════ § 4  SPACE ON EXTREME GRAPHS ════════════ -->
+  <section class="section" id="space-behavior">
+    <h2>4 · Space Behavior on Extreme Graphs</h2>
+    <p>While both algorithms have <strong>O(V)</strong> worst-case space, the <em>shape</em> of the graph determines which algorithm actually hits that worst case. Two extreme topologies make this vivid.</p>
+
+    <div class="space-grid">
+      <!-- Star Graph Card -->
+      <div class="space-card" style="border-color: var(--accent);">
+        <h4 style="color:var(--accent-dark);">⭐ Star Graph K<sub>1,n</sub> — BFS worst case</h4>
+        <div class="diagram-container" style="margin:0.75rem 0; border:none; box-shadow:none; padding:0.5rem;">
+          <svg viewBox="0 0 260 180" width="260" height="180" role="img" aria-label="Star graph with center vertex A connected to 6 leaf vertices.">
+            <title>Star graph K_{1,6}: center A connected to leaves B through G</title>
+            <!-- Center -->
+            <circle cx="130" cy="90" r="18" fill="#E8F4FD" stroke="#0078D4" stroke-width="2.5"/>
+            <text x="130" y="95" text-anchor="middle" font-size="13" font-weight="700" fill="#0078D4">A</text>
+            <!-- Leaves -->
+            <circle cx="50" cy="35" r="14" fill="#fff" stroke="#0078D4" stroke-width="1.5"/>
+            <text x="50" y="40" text-anchor="middle" font-size="11" fill="#2D3B45">B</text>
+            <line x1="118" y1="77" x2="62" y2="44" stroke="#0078D4" stroke-width="1.2"/>
+
+            <circle cx="130" cy="20" r="14" fill="#fff" stroke="#0078D4" stroke-width="1.5"/>
+            <text x="130" y="25" text-anchor="middle" font-size="11" fill="#2D3B45">C</text>
+            <line x1="130" y1="72" x2="130" y2="34" stroke="#0078D4" stroke-width="1.2"/>
+
+            <circle cx="210" cy="35" r="14" fill="#fff" stroke="#0078D4" stroke-width="1.5"/>
+            <text x="210" y="40" text-anchor="middle" font-size="11" fill="#2D3B45">D</text>
+            <line x1="142" y1="77" x2="198" y2="44" stroke="#0078D4" stroke-width="1.2"/>
+
+            <circle cx="50" cy="145" r="14" fill="#fff" stroke="#0078D4" stroke-width="1.5"/>
+            <text x="50" y="150" text-anchor="middle" font-size="11" fill="#2D3B45">E</text>
+            <line x1="118" y1="103" x2="62" y2="136" stroke="#0078D4" stroke-width="1.2"/>
+
+            <circle cx="130" cy="160" r="14" fill="#fff" stroke="#0078D4" stroke-width="1.5"/>
+            <text x="130" y="165" text-anchor="middle" font-size="11" fill="#2D3B45">F</text>
+            <line x1="130" y1="108" x2="130" y2="146" stroke="#0078D4" stroke-width="1.2"/>
+
+            <circle cx="210" cy="145" r="14" fill="#fff" stroke="#0078D4" stroke-width="1.5"/>
+            <text x="210" y="150" text-anchor="middle" font-size="11" fill="#2D3B45">G</text>
+            <line x1="142" y1="103" x2="198" y2="136" stroke="#0078D4" stroke-width="1.2"/>
+          </svg>
+        </div>
+        <p><strong>BFS from A:</strong> After dequeuing A, all <em>n</em> leaves are enqueued simultaneously → queue size = <span class="metric">n</span>.</p>
+        <p><strong>DFS from A:</strong> Visits one leaf at a time, immediately backtracks → max stack depth = <span class="metric">2</span> (A + one leaf).</p>
+        <div class="callout callout-warning" style="margin-top:0.75rem;">
+          <div class="callout-title">⚠️ BFS pain point</div>
+          <p>Wide, shallow graphs inflate the BFS queue to hold an entire level.</p>
+        </div>
+      </div>
+
+      <!-- Path Graph Card -->
+      <div class="space-card" style="border-color: var(--info);">
+        <h4 style="color:var(--info);">📏 Path Graph P<sub>n</sub> — DFS worst case</h4>
+        <div class="diagram-container" style="margin:0.75rem 0; border:none; box-shadow:none; padding:0.5rem;">
+          <svg viewBox="0 0 260 60" width="260" height="60" role="img" aria-label="Path graph with 6 vertices in a line: A-B-C-D-E-F.">
+            <title>Path graph P_6: A — B — C — D — E — F</title>
+            <line x1="30" y1="30" x2="230" y2="30" stroke="#6A1B9A" stroke-width="1.5"/>
+            <circle cx="30"  cy="30" r="14" fill="#F3E5F5" stroke="#6A1B9A" stroke-width="2"/><text x="30"  y="35" text-anchor="middle" font-size="11" font-weight="700" fill="#6A1B9A">A</text>
+            <circle cx="70"  cy="30" r="14" fill="#fff" stroke="#6A1B9A" stroke-width="1.5"/><text x="70"  y="35" text-anchor="middle" font-size="11" fill="#2D3B45">B</text>
+            <circle cx="110" cy="30" r="14" fill="#fff" stroke="#6A1B9A" stroke-width="1.5"/><text x="110" y="35" text-anchor="middle" font-size="11" fill="#2D3B45">C</text>
+            <circle cx="150" cy="30" r="14" fill="#fff" stroke="#6A1B9A" stroke-width="1.5"/><text x="150" y="35" text-anchor="middle" font-size="11" fill="#2D3B45">D</text>
+            <circle cx="190" cy="30" r="14" fill="#fff" stroke="#6A1B9A" stroke-width="1.5"/><text x="190" y="35" text-anchor="middle" font-size="11" fill="#2D3B45">E</text>
+            <circle cx="230" cy="30" r="14" fill="#fff" stroke="#6A1B9A" stroke-width="1.5"/><text x="230" y="35" text-anchor="middle" font-size="11" fill="#2D3B45">F</text>
+          </svg>
+        </div>
+        <p><strong>DFS from A:</strong> Descends the entire chain before backtracking → max stack depth = <span class="metric">n</span>.</p>
+        <p><strong>BFS from A:</strong> Each level has exactly one vertex → max queue size = <span class="metric">1</span>.</p>
+        <div class="callout callout-warning" style="margin-top:0.75rem;">
+          <div class="callout-title">⚠️ DFS pain point</div>
+          <p>Deep, narrow graphs inflate the DFS stack (or recursion depth) to <em>n</em>.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout callout-insight">
+      <div class="callout-title">🔍 Pattern</div>
+      <p>BFS space ∝ <strong>maximum level width</strong>. DFS space ∝ <strong>maximum path depth</strong>. In practice, most real-world graphs fall between these extremes, and both algorithms use moderate space.</p>
+    </div>
+  </section>
+
+  <!-- ════════════ § 5  SAME GRAPH, TWO TRAVERSALS ════════════ -->
+  <section class="section" id="side-by-side">
+    <h2>5 · Same Graph, Two Traversals</h2>
+    <p>Below is the <strong>7-vertex running example</strong> used throughout Week 13 (the same graph from Modules 13.1 and 13.2). We traverse it from source vertex <strong>A</strong> using both BFS and DFS. Ties are broken alphabetically. Compare the visit orders.</p>
+
+    <div class="side-by-side-diagrams">
+      <!-- BFS Diagram -->
+      <div class="diagram-container">
+        <h4 style="color:var(--accent-dark); margin-bottom:0.5rem;">🔵 BFS from A</h4>
+        <svg viewBox="0 0 300 250" width="300" height="250" role="img" aria-label="Graph with 7 vertices showing BFS visit order from A. Visit order: A(1), B(2), D(3), C(4), E(5), F(6), G(7).">
+          <title>BFS traversal of the 7-vertex running example starting from A. Visit order: A, B, D, C, E, F, G.</title>
+          <defs>
+            <marker id="arrowBFS" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+              <path d="M0,0 L8,3 L0,6 Z" fill="#999"/>
+            </marker>
+          </defs>
+          <!-- Edges -->
+          <line x1="75" y1="45" x2="45" y2="110" stroke="#bbb" stroke-width="1.5" marker-end="url(#arrowBFS)"/>
+          <line x1="85" y1="45" x2="165" y2="110" stroke="#bbb" stroke-width="1.5" marker-end="url(#arrowBFS)"/>
+          <line x1="40" y1="130" x2="95" y2="195" stroke="#bbb" stroke-width="1.5" marker-end="url(#arrowBFS)"/>
+          <line x1="50" y1="130" x2="175" y2="120" stroke="#bbb" stroke-width="1.5"/>
+          <line x1="170" y1="130" x2="105" y2="195" stroke="#bbb" stroke-width="1.5" marker-end="url(#arrowBFS)"/>
+          <line x1="180" y1="130" x2="220" y2="195" stroke="#bbb" stroke-width="1.5" marker-end="url(#arrowBFS)"/>
+          <line x1="110" y1="210" x2="210" y2="210" stroke="#bbb" stroke-width="1.5" marker-end="url(#arrowBFS)"/>
+
+          <!-- Vertices with BFS order -->
+          <circle cx="80" cy="35" r="20" fill="#E8F4FD" stroke="#0078D4" stroke-width="2.5"/>
+          <text x="80" y="32" text-anchor="middle" font-size="13" font-weight="700" fill="#0078D4">A</text>
+          <text x="80" y="46" text-anchor="middle" font-size="9" fill="#555">①</text>
+
+          <circle cx="35" cy="120" r="20" fill="#E8F4FD" stroke="#0078D4" stroke-width="2"/>
+          <text x="35" y="117" text-anchor="middle" font-size="13" font-weight="700" fill="#0078D4">B</text>
+          <text x="35" y="131" text-anchor="middle" font-size="9" fill="#555">②</text>
+
+          <circle cx="180" cy="120" r="20" fill="#E8F4FD" stroke="#0078D4" stroke-width="2"/>
+          <text x="180" y="117" text-anchor="middle" font-size="13" font-weight="700" fill="#0078D4">D</text>
+          <text x="180" y="131" text-anchor="middle" font-size="9" fill="#555">③</text>
+
+          <circle cx="105" cy="120" r="18" fill="#E8F4FD" stroke="#0078D4" stroke-width="1.5"/>
+          <text x="105" y="117" text-anchor="middle" font-size="12" font-weight="600" fill="#0078D4">C</text>
+          <text x="105" y="131" text-anchor="middle" font-size="9" fill="#555">④</text>
+
+          <circle cx="100" cy="205" r="20" fill="#E8F4FD" stroke="#0078D4" stroke-width="2"/>
+          <text x="100" y="202" text-anchor="middle" font-size="13" font-weight="700" fill="#0078D4">E</text>
+          <text x="100" y="216" text-anchor="middle" font-size="9" fill="#555">⑤</text>
+
+          <circle cx="225" cy="205" r="20" fill="#E8F4FD" stroke="#0078D4" stroke-width="2"/>
+          <text x="225" y="202" text-anchor="middle" font-size="13" font-weight="700" fill="#0078D4">F</text>
+          <text x="225" y="216" text-anchor="middle" font-size="9" fill="#555">⑥</text>
+
+          <circle cx="260" cy="120" r="18" fill="#E8F4FD" stroke="#0078D4" stroke-width="1.5"/>
+          <text x="260" y="117" text-anchor="middle" font-size="12" font-weight="600" fill="#0078D4">G</text>
+          <text x="260" y="131" text-anchor="middle" font-size="9" fill="#555">⑦</text>
+
+          <line x1="195" y1="120" x2="242" y2="120" stroke="#bbb" stroke-width="1.5" marker-end="url(#arrowBFS)"/>
+        </svg>
+        <p class="diagram-caption">Visit order: <span class="step-highlight">A</span> <span class="step-highlight">B</span> <span class="step-highlight">D</span> <span class="step-highlight">C</span> <span class="step-highlight">E</span> <span class="step-highlight">F</span> <span class="step-highlight">G</span></p>
+        <p style="font-size:0.85rem; color:var(--neutral-700); margin-top:0.25rem;">Levels: {A} → {B, D} → {C, E, F} → {G}. All level-<em>k</em> vertices visited before level-<em>k+1</em>.</p>
+      </div>
+
+      <!-- DFS Diagram -->
+      <div class="diagram-container">
+        <h4 style="color:var(--info); margin-bottom:0.5rem;">🟣 DFS from A</h4>
+        <svg viewBox="0 0 300 250" width="300" height="250" role="img" aria-label="Graph with 7 vertices showing DFS visit order from A. Visit order: A(1), B(2), C(3), E(4), F(5), G(6), D(7).">
+          <title>DFS traversal of the 7-vertex running example starting from A. Visit order: A, B, C, E, F, G, D.</title>
+          <defs>
+            <marker id="arrowDFS" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+              <path d="M0,0 L8,3 L0,6 Z" fill="#999"/>
+            </marker>
+          </defs>
+          <!-- Edges (same layout) -->
+          <line x1="75" y1="45" x2="45" y2="110" stroke="#bbb" stroke-width="1.5" marker-end="url(#arrowDFS)"/>
+          <line x1="85" y1="45" x2="165" y2="110" stroke="#bbb" stroke-width="1.5" marker-end="url(#arrowDFS)"/>
+          <line x1="40" y1="130" x2="95" y2="195" stroke="#bbb" stroke-width="1.5" marker-end="url(#arrowDFS)"/>
+          <line x1="50" y1="130" x2="175" y2="120" stroke="#bbb" stroke-width="1.5"/>
+          <line x1="170" y1="130" x2="105" y2="195" stroke="#bbb" stroke-width="1.5" marker-end="url(#arrowDFS)"/>
+          <line x1="180" y1="130" x2="220" y2="195" stroke="#bbb" stroke-width="1.5" marker-end="url(#arrowDFS)"/>
+          <line x1="110" y1="210" x2="210" y2="210" stroke="#bbb" stroke-width="1.5" marker-end="url(#arrowDFS)"/>
+          <line x1="195" y1="120" x2="242" y2="120" stroke="#bbb" stroke-width="1.5" marker-end="url(#arrowDFS)"/>
+
+          <!-- Vertices with DFS order -->
+          <circle cx="80" cy="35" r="20" fill="#F3E5F5" stroke="#6A1B9A" stroke-width="2.5"/>
+          <text x="80" y="32" text-anchor="middle" font-size="13" font-weight="700" fill="#6A1B9A">A</text>
+          <text x="80" y="46" text-anchor="middle" font-size="9" fill="#555">①</text>
+
+          <circle cx="35" cy="120" r="20" fill="#F3E5F5" stroke="#6A1B9A" stroke-width="2"/>
+          <text x="35" y="117" text-anchor="middle" font-size="13" font-weight="700" fill="#6A1B9A">B</text>
+          <text x="35" y="131" text-anchor="middle" font-size="9" fill="#555">②</text>
+
+          <circle cx="105" cy="120" r="18" fill="#F3E5F5" stroke="#6A1B9A" stroke-width="2"/>
+          <text x="105" y="117" text-anchor="middle" font-size="12" font-weight="700" fill="#6A1B9A">C</text>
+          <text x="105" y="131" text-anchor="middle" font-size="9" fill="#555">③</text>
+
+          <circle cx="100" cy="205" r="20" fill="#F3E5F5" stroke="#6A1B9A" stroke-width="2"/>
+          <text x="100" y="202" text-anchor="middle" font-size="13" font-weight="700" fill="#6A1B9A">E</text>
+          <text x="100" y="216" text-anchor="middle" font-size="9" fill="#555">④</text>
+
+          <circle cx="225" cy="205" r="20" fill="#F3E5F5" stroke="#6A1B9A" stroke-width="2"/>
+          <text x="225" y="202" text-anchor="middle" font-size="13" font-weight="700" fill="#6A1B9A">F</text>
+          <text x="225" y="216" text-anchor="middle" font-size="9" fill="#555">⑤</text>
+
+          <circle cx="260" cy="120" r="18" fill="#F3E5F5" stroke="#6A1B9A" stroke-width="1.5"/>
+          <text x="260" y="117" text-anchor="middle" font-size="12" font-weight="600" fill="#6A1B9A">G</text>
+          <text x="260" y="131" text-anchor="middle" font-size="9" fill="#555">⑥</text>
+
+          <circle cx="180" cy="120" r="20" fill="#F3E5F5" stroke="#6A1B9A" stroke-width="2"/>
+          <text x="180" y="117" text-anchor="middle" font-size="13" font-weight="700" fill="#6A1B9A">D</text>
+          <text x="180" y="131" text-anchor="middle" font-size="9" fill="#555">⑦</text>
+        </svg>
+        <p class="diagram-caption">Visit order: <span class="step-highlight step-highlight-dfs">A</span> <span class="step-highlight step-highlight-dfs">B</span> <span class="step-highlight step-highlight-dfs">C</span> <span class="step-highlight step-highlight-dfs">E</span> <span class="step-highlight step-highlight-dfs">F</span> <span class="step-highlight step-highlight-dfs">G</span> <span class="step-highlight step-highlight-dfs">D</span></p>
+        <p style="font-size:0.85rem; color:var(--neutral-700); margin-top:0.25rem;">DFS dives A → B → C → E → F → G, then backtracks to visit D last.</p>
+      </div>
+    </div>
+
+    <div class="callout callout-important">
+      <div class="callout-title">🔑 Notice the Difference</div>
+      <p>Both algorithms visit all 7 vertices, but in <strong>completely different orders</strong>. BFS spreads outward level by level; DFS plunges down one branch before exploring alternatives. The same graph, the same source—different strategies, different orders.</p>
+    </div>
+  </section>
+
+  <!-- ════════════ § 6  KNOWLEDGE CHECKS ════════════ -->
+  <section class="section" id="knowledge-checks">
+    <h2>6 · Knowledge Checks</h2>
+    <p>Test your understanding with the following ungraded questions. Select an answer and click <strong>Check Answer</strong> for immediate feedback.</p>
+
+    <!-- KC 1 -->
+    <div class="kc-block" id="kc1">
+      <div class="kc-header">✅ Knowledge Check 1 of 5</div>
+      <p class="kc-question">A ride-sharing app needs to find the route with the <strong>fewest stops</strong> (edges) between two subway stations in an unweighted graph. Which algorithm should it use?</p>
+      <ul class="kc-options">
+        <li><label><input type="radio" name="kc1" value="a"> A. DFS — it explores every possible path</label></li>
+        <li><label><input type="radio" name="kc1" value="b"> B. BFS — it guarantees the shortest path in unweighted graphs</label></li>
+        <li><label><input type="radio" name="kc1" value="c"> C. Either algorithm — both find shortest paths</label></li>
+        <li><label><input type="radio" name="kc1" value="d"> D. Neither — a weighted shortest-path algorithm is required</label></li>
+      </ul>
+      <button class="kc-btn" onclick="checkAnswer('kc1','b')">Check Answer</button>
+      <div class="kc-feedback correct" id="kc1-correct">
+        ✔️ <strong>Correct!</strong> BFS explores vertices level by level, so the first time it reaches any vertex, it has found the minimum number of hops. DFS might find a longer path first and has no mechanism to guarantee shortest distance in an unweighted graph.
+      </div>
+      <div class="kc-feedback incorrect" id="kc1-incorrect">
+        ✘ <strong>Not quite.</strong> The correct answer is <strong>B</strong>. BFS guarantees the shortest path (minimum hops) in unweighted graphs because it visits all vertices at distance <em>k</em> before any vertex at distance <em>k + 1</em>. DFS does not provide this guarantee.
+      </div>
+    </div>
+
+    <!-- KC 2 -->
+    <div class="kc-block" id="kc2">
+      <div class="kc-header">✅ Knowledge Check 2 of 5</div>
+      <p class="kc-question">A build system must check whether its dependency graph contains a <strong>circular dependency</strong> (cycle in a directed graph). Which algorithm is preferred?</p>
+      <ul class="kc-options">
+        <li><label><input type="radio" name="kc2" value="a"> A. BFS — it can detect cycles using level information</label></li>
+        <li><label><input type="radio" name="kc2" value="b"> B. DFS — a back edge in the DFS tree indicates a cycle</label></li>
+        <li><label><input type="radio" name="kc2" value="c"> C. BFS — it uses a queue, which is more efficient</label></li>
+        <li><label><input type="radio" name="kc2" value="d"> D. Both are equally well-suited for directed cycle detection</label></li>
+      </ul>
+      <button class="kc-btn" onclick="checkAnswer('kc2','b')">Check Answer</button>
+      <div class="kc-feedback correct" id="kc2-correct">
+        ✔️ <strong>Correct!</strong> DFS is the standard choice for directed cycle detection. During DFS, encountering a <strong>back edge</strong> (an edge to a vertex still on the recursion stack) definitively proves a cycle exists. BFS can detect cycles in undirected graphs but is not the standard approach for directed graphs.
+      </div>
+      <div class="kc-feedback incorrect" id="kc2-incorrect">
+        ✘ <strong>Not quite.</strong> The correct answer is <strong>B</strong>. DFS naturally classifies edges into tree, back, forward, and cross edges. A <strong>back edge</strong> (pointing to an ancestor in the DFS tree) is the definitive signal of a cycle in a directed graph. This is the standard technique for directed cycle detection.
+      </div>
+    </div>
+
+    <!-- KC 3 -->
+    <div class="kc-block" id="kc3">
+      <div class="kc-header">✅ Knowledge Check 3 of 5</div>
+      <p class="kc-question">Consider a path graph P<sub>10,000</sub> (10,000 vertices in a single chain). Which statement about space usage is correct when starting from one end?</p>
+      <ul class="kc-options">
+        <li><label><input type="radio" name="kc3" value="a"> A. BFS queue grows to ~10,000; DFS stack stays at ~1</label></li>
+        <li><label><input type="radio" name="kc3" value="b"> B. DFS stack grows to ~10,000; BFS queue stays at ~1</label></li>
+        <li><label><input type="radio" name="kc3" value="c"> C. Both use ~10,000 space — same worst case</label></li>
+        <li><label><input type="radio" name="kc3" value="d"> D. Both use ~1 space — path graphs are trivial</label></li>
+      </ul>
+      <button class="kc-btn" onclick="checkAnswer('kc3','b')">Check Answer</button>
+      <div class="kc-feedback correct" id="kc3-correct">
+        ✔️ <strong>Correct!</strong> In a path graph, each "level" has exactly one vertex, so the BFS queue never holds more than 1 or 2 vertices. DFS, however, descends the entire chain before backtracking, pushing all 10,000 vertices onto the stack. This is DFS's worst-case space scenario.
+      </div>
+      <div class="kc-feedback incorrect" id="kc3-incorrect">
+        ✘ <strong>Not quite.</strong> The correct answer is <strong>B</strong>. A path graph has depth <em>n</em> but width 1. DFS dives to the end (stack depth ≈ 10,000), while BFS processes one vertex per level (queue size ≈ 1). This illustrates how graph shape determines which algorithm hits its worst-case space.
+      </div>
+    </div>
+
+    <!-- KC 4 -->
+    <div class="kc-block" id="kc4">
+      <div class="kc-header">✅ Knowledge Check 4 of 5</div>
+      <p class="kc-question">Which of the following is a capability of DFS that BFS does <strong>not</strong> naturally provide?</p>
+      <ul class="kc-options">
+        <li><label><input type="radio" name="kc4" value="a"> A. Finding connected components</label></li>
+        <li><label><input type="radio" name="kc4" value="b"> B. Visiting every reachable vertex</label></li>
+        <li><label><input type="radio" name="kc4" value="c"> C. Classifying edges as tree, back, forward, or cross</label></li>
+        <li><label><input type="radio" name="kc4" value="d"> D. Running in O(V + E) time on an adjacency list</label></li>
+      </ul>
+      <button class="kc-btn" onclick="checkAnswer('kc4','c')">Check Answer</button>
+      <div class="kc-feedback correct" id="kc4-correct">
+        ✔️ <strong>Correct!</strong> DFS's timestamp structure (discovery and finish times) enables <strong>full edge classification</strong> into tree, back, forward, and cross edges. BFS can only distinguish tree edges from non-tree edges—it does not support the finer classification that DFS provides.
+      </div>
+      <div class="kc-feedback incorrect" id="kc4-incorrect">
+        ✘ <strong>Not quite.</strong> The correct answer is <strong>C</strong>. Options A, B, and D are shared by both algorithms. Only DFS provides full edge classification (tree, back, forward, cross) thanks to its discovery and finish timestamps. BFS only distinguishes tree edges from non-tree edges.
+      </div>
+    </div>
+
+    <!-- KC 5 -->
+    <div class="kc-block" id="kc5">
+      <div class="kc-header">✅ Knowledge Check 5 of 5</div>
+      <p class="kc-question">A course prerequisite system needs to produce a valid <strong>ordering of courses</strong> such that every prerequisite is listed before the course that requires it. This is a:</p>
+      <ul class="kc-options">
+        <li><label><input type="radio" name="kc5" value="a"> A. Shortest-path problem → use BFS</label></li>
+        <li><label><input type="radio" name="kc5" value="b"> B. Connected-component problem → use either</label></li>
+        <li><label><input type="radio" name="kc5" value="c"> C. Topological sort problem → DFS (reverse finish order) is a natural fit</label></li>
+        <li><label><input type="radio" name="kc5" value="d"> D. Cycle detection problem → use DFS back edges</label></li>
+      </ul>
+      <button class="kc-btn" onclick="checkAnswer('kc5','c')">Check Answer</button>
+      <div class="kc-feedback correct" id="kc5-correct">
+        ✔️ <strong>Correct!</strong> Ordering items so that every dependency comes first is exactly the <strong>topological sort</strong> problem. DFS solves it naturally: list vertices in reverse finish-time order. (Note: Kahn's BFS-based algorithm also works, but the DFS approach is the classic method covered in this course.)
+      </div>
+      <div class="kc-feedback incorrect" id="kc5-incorrect">
+        ✘ <strong>Not quite.</strong> The correct answer is <strong>C</strong>. Producing a valid prerequisite ordering is a <strong>topological sort</strong> on a directed acyclic graph (DAG). DFS naturally provides this: after a full DFS, listing vertices in reverse order of their finish times yields a valid topological order.
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════ SUMMARY ════════════ -->
+  <section class="section" id="summary">
+    <h2>Module Summary</h2>
+    <div class="summary-box">
+      <h3>🗂️ Key Takeaways</h3>
+      <ul class="content-list">
+        <li><strong>Same time complexity, different information:</strong> Both BFS and DFS run in $$O(V + E)$$ time, but BFS reveals shortest-path distances while DFS reveals timestamps and edge classifications.</li>
+        <li><strong>Data structure drives the pattern:</strong> A queue (FIFO) produces level-order traversal; a stack (LIFO) produces depth-first exploration.</li>
+        <li><strong>Choose BFS</strong> for shortest paths, minimum hops, and level-order processing.</li>
+        <li><strong>Choose DFS</strong> for topological sort, cycle detection, edge classification, and exhaustive backtracking.</li>
+        <li><strong>Space depends on graph shape:</strong> BFS struggles on wide graphs (star); DFS struggles on deep graphs (path).</li>
+        <li><strong>Both detect connected components</strong> equally well.</li>
+      </ul>
+    </div>
+
+    <div class="callout callout-tip">
+      <div class="callout-title">📌 What's Next</div>
+      <p>You now have a complete toolkit for graph traversal. In the Week 13 problem set, you will apply both BFS and DFS to new graphs, select the appropriate algorithm for given scenarios, and trace traversals with full detail. Refer back to this comparison module as a quick reference.</p>
+    </div>
+  </section>
+
+  <!-- ── Footer ── -->
+  <footer class="module-footer">
+    <p>CSC 240 – Discrete Structures &bull; Module 13.3 – BFS vs. DFS: Comparative Analysis</p>
+    <p>&copy; 2026 Community College CS Department. For educational use only.</p>
+  </footer>
+
+</main>
+
+<!-- ════════════════════ JAVASCRIPT ════════════════════ -->
+<script>
+function checkAnswer(qId, correctVal) {
+  const radios = document.querySelectorAll('input[name="' + qId + '"]');
+  let selected = null;
+  radios.forEach(function(r) { if (r.checked) selected = r.value; });
+
+  if (!selected) {
+    // Briefly highlight the question to prompt a selection
+    const block = document.getElementById(qId);
+    block.style.borderColor = '#C05702';
+    setTimeout(function() { block.style.borderColor = '#0078D4'; }, 1200);
+    return;
+  }
+
+  const correctFb = document.getElementById(qId + '-correct');
+  const incorrectFb = document.getElementById(qId + '-incorrect');
+
+  // Hide both first
+  correctFb.style.display = 'none';
+  incorrectFb.style.display = 'none';
+
+  if (selected === correctVal) {
+    correctFb.style.display = 'block';
+  } else {
+    incorrectFb.style.display = 'block';
+  }
+
+  // Disable further changes after answering
+  radios.forEach(function(r) { r.disabled = true; });
+  const btn = document.querySelector('#' + qId + ' .kc-btn');
+  if (btn) btn.disabled = true;
+
+  // Highlight correct option
+  radios.forEach(function(r) {
+    var lbl = r.parentElement;
+    if (r.value === correctVal) {
+      lbl.style.background = '#E6F4EE';
+      lbl.style.borderColor = '#0B6E4F';
+      lbl.style.fontWeight = '600';
+    } else if (r.checked && r.value !== correctVal) {
+      lbl.style.background = '#FDEDEB';
+      lbl.style.borderColor = '#C0392B';
+    }
+  });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab 13 – Graph Traversal Investigation | CSC 240 – Discrete Structures</title>
+<style>
+/* ===== RESET & BASE ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #1a1a1a;
+  background: #f8f9fa;
+  padding: 0;
+}
+
+/* ===== SKIP LINK (Accessibility) ===== */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 0;
+  background: #0055a2;
+  color: #fff;
+  padding: 8px 16px;
+  z-index: 10000;
+  font-size: 0.95rem;
+  text-decoration: none;
+  border-radius: 0 0 4px 0;
+}
+.skip-link:focus { top: 0; }
+
+/* ===== TOP NAV ===== */
+.top-nav {
+  background: #0055a2;
+  padding: 12px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  align-items: center;
+}
+.top-nav a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.88rem;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+.top-nav a:hover, .top-nav a:focus { background: rgba(255,255,255,0.2); outline: 2px solid #fff; }
+.nav-title { font-weight: 700; font-size: 0.95rem; margin-right: 12px; }
+
+/* ===== MAIN CONTAINER ===== */
+.container { max-width: 960px; margin: 0 auto; padding: 24px 20px 60px; }
+
+/* ===== HEADER ===== */
+.lab-header {
+  background: linear-gradient(135deg, #0055a2, #003d7a);
+  color: #fff;
+  padding: 32px 28px;
+  border-radius: 10px;
+  margin-bottom: 28px;
+}
+.lab-header h1 { font-size: 1.7rem; margin-bottom: 4px; }
+.lab-header .subtitle { font-size: 1.05rem; opacity: 0.9; margin-bottom: 12px; }
+.lab-header .badge {
+  display: inline-block;
+  background: rgba(255,255,255,0.2);
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+/* ===== CALLOUT BOXES ===== */
+.callout {
+  border-left: 5px solid;
+  border-radius: 6px;
+  padding: 16px 20px;
+  margin: 20px 0;
+  font-size: 0.95rem;
+}
+.callout-info    { border-color: #0055a2; background: #e8f0fe; }
+.callout-warning { border-color: #e6a817; background: #fff8e1; }
+.callout-success { border-color: #2e7d32; background: #e8f5e9; }
+.callout-title {
+  font-weight: 700;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ===== SECTIONS ===== */
+.section {
+  background: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 28px 24px;
+  margin-bottom: 24px;
+}
+.section h2 {
+  font-size: 1.35rem;
+  color: #0055a2;
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 8px;
+  margin-bottom: 16px;
+}
+.section h3 {
+  font-size: 1.1rem;
+  color: #333;
+  margin: 20px 0 10px;
+}
+.section h4 {
+  font-size: 0.98rem;
+  color: #444;
+  margin: 14px 0 8px;
+}
+
+/* ===== OBJECTIVE LIST ===== */
+.obj-list { list-style: none; padding: 0; }
+.obj-list li {
+  padding: 8px 0 8px 28px;
+  position: relative;
+  font-size: 0.95rem;
+}
+.obj-list li::before {
+  content: "✓";
+  position: absolute;
+  left: 4px;
+  color: #2e7d32;
+  font-weight: 700;
+}
+
+/* ===== GRAPH DIAGRAM (SVG container) ===== */
+.graph-container {
+  overflow-x: auto;
+  margin: 16px 0;
+  text-align: center;
+}
+.graph-container svg { max-width: 100%; height: auto; }
+
+/* ===== ADJACENCY LIST / CODE ===== */
+.adj-block, .code-block {
+  background: #f4f4f4;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  padding: 14px 18px;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  overflow-x: auto;
+  margin: 12px 0;
+  white-space: pre;
+}
+
+/* ===== TABLES ===== */
+table.trace-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 14px 0;
+  font-size: 0.9rem;
+}
+table.trace-table th, table.trace-table td {
+  border: 1px solid #bbb;
+  padding: 8px 10px;
+  text-align: left;
+}
+table.trace-table th {
+  background: #0055a2;
+  color: #fff;
+  font-weight: 600;
+}
+table.trace-table tr:nth-child(even) { background: #f2f6fc; }
+
+/* ===== TEXTAREAS ===== */
+label.field-label {
+  display: block;
+  font-weight: 600;
+  margin: 14px 0 6px;
+  font-size: 0.93rem;
+}
+textarea.response {
+  width: 100%;
+  min-height: 100px;
+  border: 1px solid #aaa;
+  border-radius: 5px;
+  padding: 10px 12px;
+  font-family: inherit;
+  font-size: 0.92rem;
+  resize: vertical;
+  line-height: 1.5;
+}
+textarea.response:focus { outline: 2px solid #0055a2; border-color: #0055a2; }
+
+/* ===== COLLAPSIBLE HINTS ===== */
+details.hint {
+  background: #fafafa;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  margin: 12px 0;
+  padding: 0;
+}
+details.hint summary {
+  cursor: pointer;
+  padding: 10px 16px;
+  font-weight: 600;
+  font-size: 0.93rem;
+  color: #0055a2;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+details.hint summary::before { content: "💡"; }
+details.hint summary::-webkit-details-marker { display: none; }
+details.hint[open] summary { border-bottom: 1px solid #ddd; }
+details.hint .hint-body { padding: 12px 16px; font-size: 0.92rem; }
+
+/* ===== BUTTON ===== */
+.btn-primary {
+  display: inline-block;
+  background: #0055a2;
+  color: #fff;
+  padding: 12px 28px;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 16px;
+}
+.btn-primary:hover, .btn-primary:focus { background: #003d7a; outline: 2px solid #003d7a; }
+
+/* ===== PRINT STYLES ===== */
+@media print {
+  .top-nav, .skip-link, .btn-primary, details.hint summary { display: none; }
+  details.hint .hint-body { display: block !important; }
+  body { background: #fff; font-size: 11pt; }
+  .lab-header { background: #0055a2 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .section { break-inside: avoid; border: 1px solid #ccc; }
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 600px) {
+  .container { padding: 12px 10px 40px; }
+  .lab-header { padding: 20px 16px; }
+  .lab-header h1 { font-size: 1.3rem; }
+  .section { padding: 18px 14px; }
+  .top-nav { padding: 10px 12px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Skip Link -->
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<!-- Top Navigation -->
+<nav class="top-nav" aria-label="Lab section navigation">
+  <span class="nav-title">PE-09</span>
+  <a href="#overview">Overview</a>
+  <a href="#scenario">Scenario</a>
+  <a href="#phase1">Phase 1: BFS</a>
+  <a href="#phase2">Phase 2: DFS</a>
+  <a href="#phase3">Phase 3: Components</a>
+  <a href="#phase4">Phase 4: Topo Sort</a>
+  <a href="#phase5">Phase 5: Cycle Detection</a>
+  <a href="#reflection">Reflection</a>
+  <a href="#deliverables">Deliverables</a>
+</nav>
+
+<!-- Main Content -->
+<main id="main-content" class="container">
+
+  <!-- ===== HEADER ===== -->
+  <header class="lab-header">
+    <h1>PE-09 – Graph Traversal Investigation</h1>
+    <p class="subtitle">CSC 240 – Discrete Structures &bull; Week 13 &bull; Spring 2026</p>
+    <span class="badge" aria-label="Ungraded supplemental activity">UNGRADED &bull; Supplemental Preview</span>
+  </header>
+
+  <!-- ===== OVERVIEW ===== -->
+  <section class="section" id="overview">
+    <h2>Overview and Objectives</h2>
+
+    <div class="callout callout-info">
+      <div class="callout-title" role="heading" aria-level="3">&#9432; About This Lab</div>
+      <p>This is an <strong>ungraded, supplemental investigation</strong>. There are no points associated with this activity. It is designed to give you structured, hands-on practice with BFS, DFS, connected components, topological sorting, and cycle detection <em>before</em> you encounter PE-09 (due Week 14, 30 pts) and the Final Project traversal components.</p>
+    </div>
+
+    <h3>Scenario</h3>
+    <p>You are a junior systems engineer at <strong>NetTrace Solutions</strong>, a company that manages large-scale build pipelines for software deployments. Your team has flagged two issues in the current infrastructure:</p>
+    <ol style="margin:10px 0 10px 24px;">
+      <li>The <strong>internal server network</strong> may have isolated clusters — groups of machines that cannot communicate with each other. You need to identify every connected cluster.</li>
+      <li>The <strong>build pipeline</strong> (a directed task graph) may contain a <strong>circular dependency</strong> that prevents tasks from completing. You need to determine whether a valid build order exists and, if not, pinpoint the cycle.</li>
+    </ol>
+    <p>You will use BFS and DFS to investigate both graphs systematically.</p>
+
+    <h3>Practice Objectives</h3>
+    <p>By completing this lab you will practice the following Week 13 objectives (not graded):</p>
+    <ul class="obj-list">
+      <li><strong>Objective 3:</strong> Trace BFS and DFS by hand on small graphs (&le; 10 vertices), recording queue/stack state at each step and the resulting traversal order.</li>
+      <li><strong>Objective 5:</strong> Detect connected components in an undirected graph using BFS or DFS and explain why the algorithm correctly identifies all components.</li>
+      <li><strong>Objective 6:</strong> Perform topological sorting on a DAG using DFS-based finish-time ordering, and explain why the algorithm fails on graphs with cycles.</li>
+      <li><strong>Objective 7:</strong> Detect cycles in both directed and undirected graphs using DFS edge classification (back edges), and distinguish between the two cases.</li>
+      <li><strong>Objective 4:</strong> Compare BFS and DFS in terms of time complexity, space complexity, and suitability for different problem types.</li>
+    </ul>
+  </section>
+
+  <!-- ===== SCENARIO & GRAPHS ===== -->
+  <section class="section" id="scenario">
+    <h2>Scenario Graphs</h2>
+    <p>This investigation uses <strong>two graphs</strong>. Read each description carefully, study the diagram, and refer back to the adjacency lists as you complete each phase.</p>
+
+    <!-- ===== GRAPH U ===== -->
+    <h3>Graph U — Server Network (Undirected, 9 Vertices)</h3>
+    <p>The internal server network has <strong>9 machines</strong> labeled <strong>A</strong> through <strong>I</strong>. An edge means the two machines have a direct network link. This graph is <strong>undirected</strong> and <strong>unweighted</strong>.</p>
+
+    <div class="graph-container">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 380" role="img" aria-label="Undirected graph U with 9 vertices A through I arranged in three clusters. Cluster 1: A-B-C-D-E with edges A-B, A-C, B-C, B-D, C-E, D-E. Cluster 2: F-G with edge F-G. Cluster 3: H-I with edge H-I.">
+        <title>Graph U — Server Network (Undirected)</title>
+        <!-- Edges Cluster 1 -->
+        <line x1="80" y1="80" x2="200" y2="50" stroke="#555" stroke-width="2"/>
+        <line x1="80" y1="80" x2="160" y2="180" stroke="#555" stroke-width="2"/>
+        <line x1="200" y1="50" x2="160" y2="180" stroke="#555" stroke-width="2"/>
+        <line x1="200" y1="50" x2="310" y2="110" stroke="#555" stroke-width="2"/>
+        <line x1="160" y1="180" x2="290" y2="210" stroke="#555" stroke-width="2"/>
+        <line x1="310" y1="110" x2="290" y2="210" stroke="#555" stroke-width="2"/>
+        <!-- Edges Cluster 2 -->
+        <line x1="460" y1="60" x2="540" y2="150" stroke="#555" stroke-width="2"/>
+        <!-- Edges Cluster 3 -->
+        <line x1="440" y1="280" x2="550" y2="320" stroke="#555" stroke-width="2"/>
+        <!-- Vertices Cluster 1 -->
+        <circle cx="80" cy="80" r="22" fill="#0055a2" stroke="#003d7a" stroke-width="2"/>
+        <text x="80" y="86" text-anchor="middle" fill="#fff" font-weight="700" font-size="15">A</text>
+        <circle cx="200" cy="50" r="22" fill="#0055a2" stroke="#003d7a" stroke-width="2"/>
+        <text x="200" y="56" text-anchor="middle" fill="#fff" font-weight="700" font-size="15">B</text>
+        <circle cx="160" cy="180" r="22" fill="#0055a2" stroke="#003d7a" stroke-width="2"/>
+        <text x="160" y="186" text-anchor="middle" fill="#fff" font-weight="700" font-size="15">C</text>
+        <circle cx="310" cy="110" r="22" fill="#0055a2" stroke="#003d7a" stroke-width="2"/>
+        <text x="310" y="116" text-anchor="middle" fill="#fff" font-weight="700" font-size="15">D</text>
+        <circle cx="290" cy="210" r="22" fill="#0055a2" stroke="#003d7a" stroke-width="2"/>
+        <text x="290" y="216" text-anchor="middle" fill="#fff" font-weight="700" font-size="15">E</text>
+        <!-- Vertices Cluster 2 -->
+        <circle cx="460" cy="60" r="22" fill="#2e7d32" stroke="#1b5e20" stroke-width="2"/>
+        <text x="460" y="66" text-anchor="middle" fill="#fff" font-weight="700" font-size="15">F</text>
+        <circle cx="540" cy="150" r="22" fill="#2e7d32" stroke="#1b5e20" stroke-width="2"/>
+        <text x="540" y="156" text-anchor="middle" fill="#fff" font-weight="700" font-size="15">G</text>
+        <!-- Vertices Cluster 3 -->
+        <circle cx="440" cy="280" r="22" fill="#b45309" stroke="#92400e" stroke-width="2"/>
+        <text x="440" y="286" text-anchor="middle" fill="#fff" font-weight="700" font-size="15">H</text>
+        <circle cx="550" cy="320" r="22" fill="#b45309" stroke="#92400e" stroke-width="2"/>
+        <text x="550" y="326" text-anchor="middle" fill="#fff" font-weight="700" font-size="15">I</text>
+        <!-- Legend -->
+        <rect x="20" y="310" width="14" height="14" rx="3" fill="#0055a2"/>
+        <text x="40" y="322" font-size="12" fill="#333">Cluster 1</text>
+        <rect x="110" y="310" width="14" height="14" rx="3" fill="#2e7d32"/>
+        <text x="130" y="322" font-size="12" fill="#333">Cluster 2</text>
+        <rect x="200" y="310" width="14" height="14" rx="3" fill="#b45309"/>
+        <text x="220" y="322" font-size="12" fill="#333">Cluster 3</text>
+      </svg>
+    </div>
+
+    <h4>Adjacency List — Graph U</h4>
+    <div class="adj-block" role="figure" aria-label="Adjacency list for Graph U">A: [B, C]
+B: [A, C, D]
+C: [A, B, E]
+D: [B, E]
+E: [C, D]
+F: [G]
+G: [F]
+H: [I]
+I: [H]</div>
+
+    <p><strong>Key properties:</strong> 9 vertices, 8 edges, 3 connected components (by design), contains at least one cycle (A–B–C–A).</p>
+
+    <hr style="margin:28px 0; border:none; border-top:1px solid #ddd;">
+
+    <!-- ===== GRAPH D ===== -->
+    <h3>Graph D — Build Pipeline (Directed, 8 Vertices)</h3>
+    <p>The build pipeline has <strong>8 tasks</strong> labeled <strong>T1</strong> through <strong>T8</strong>. A directed edge $$ (T_i, T_j) $$ means task $$ T_i $$ must complete before task $$ T_j $$ can begin. You will work with <strong>two variants</strong> of this graph:</p>
+    <ul style="margin:8px 0 8px 24px;">
+      <li><strong>Graph D-DAG:</strong> the acyclic version (valid build order exists).</li>
+      <li><strong>Graph D-Cyc:</strong> the cyclic version (one extra edge creates a circular dependency).</li>
+    </ul>
+
+    <div class="graph-container">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 340" role="img" aria-label="Directed graph D with 8 vertices T1-T8. DAG edges: T1 to T2, T1 to T3, T2 to T4, T3 to T4, T3 to T5, T4 to T6, T5 to T6, T5 to T7, T6 to T8, T7 to T8. The cyclic variant adds edge T6 to T3 shown as dashed red.">
+        <title>Graph D — Build Pipeline (Directed)</title>
+        <defs>
+          <marker id="arrow" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#555"/></marker>
+          <marker id="arrow-red" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#c62828"/></marker>
+        </defs>
+        <!-- Positions: T1(60,160) T2(170,70) T3(170,250) T4(310,70) T5(310,250) T6(440,110) T7(440,250) T8(560,170) -->
+        <!-- DAG Edges -->
+        <line x1="82" y1="152" x2="148" y2="82" stroke="#555" stroke-width="2" marker-end="url(#arrow)"/>
+        <line x1="82" y1="168" x2="148" y2="238" stroke="#555" stroke-width="2" marker-end="url(#arrow)"/>
+        <line x1="192" y1="70" x2="288" y2="70" stroke="#555" stroke-width="2" marker-end="url(#arrow)"/>
+        <line x1="185" y1="238" x2="295" y2="82" stroke="#555" stroke-width="2" marker-end="url(#arrow)"/>
+        <line x1="192" y1="250" x2="288" y2="250" stroke="#555" stroke-width="2" marker-end="url(#arrow)"/>
+        <line x1="332" y1="78" x2="418" y2="102" stroke="#555" stroke-width="2" marker-end="url(#arrow)"/>
+        <line x1="325" y1="238" x2="425" y2="122" stroke="#555" stroke-width="2" marker-end="url(#arrow)"/>
+        <line x1="332" y1="250" x2="418" y2="250" stroke="#555" stroke-width="2" marker-end="url(#arrow)"/>
+        <line x1="455" y1="122" x2="540" y2="160" stroke="#555" stroke-width="2" marker-end="url(#arrow)"/>
+        <line x1="455" y1="242" x2="540" y2="180" stroke="#555" stroke-width="2" marker-end="url(#arrow)"/>
+        <!-- Cyclic Edge (dashed red) T6→T3 -->
+        <line x1="430" y1="125" x2="185" y2="240" stroke="#c62828" stroke-width="2.5" stroke-dasharray="8,5" marker-end="url(#arrow-red)"/>
+        <text x="290" y="200" font-size="12" fill="#c62828" font-weight="700" font-style="italic">T6→T3 (D-Cyc only)</text>
+        <!-- Vertices -->
+        <circle cx="60" cy="160" r="22" fill="#0055a2" stroke="#003d7a" stroke-width="2"/>
+        <text x="60" y="165" text-anchor="middle" fill="#fff" font-weight="700" font-size="13">T1</text>
+        <circle cx="170" cy="70" r="22" fill="#0055a2" stroke="#003d7a" stroke-width="2"/>
+        <text x="170" y="75" text-anchor="middle" fill="#fff" font-weight="700" font-size="13">T2</text>
+        <circle cx="170" cy="250" r="22" fill="#0055a2" stroke="#003d7a" stroke-width="2"/>
+        <text x="170" y="255" text-anchor="middle" fill="#fff" font-weight="700" font-size="13">T3</text>
+        <circle cx="310" cy="70" r="22" fill="#0055a2" stroke="#003d7a" stroke-width="2"/>
+        <text x="310" y="75" text-anchor="middle" fill="#fff" font-weight="700" font-size="13">T4</text>
+        <circle cx="310" cy="250" r="22" fill="#0055a2" stroke="#003d7a" stroke-width="2"/>
+        <text x="310" y="255" text-anchor="middle" fill="#fff" font-weight="700" font-size="13">T5</text>
+        <circle cx="440" cy="110" r="22" fill="#0055a2" stroke="#003d7a" stroke-width="2"/>
+        <text x="440" y="115" text-anchor="middle" fill="#fff" font-weight="700" font-size="13">T6</text>
+        <circle cx="440" cy="250" r="22" fill="#0055a2" stroke="#003d7a" stroke-width="2"/>
+        <text x="440" y="255" text-anchor="middle" fill="#fff" font-weight="700" font-size="13">T7</text>
+        <circle cx="560" cy="170" r="22" fill="#0055a2" stroke="#003d7a" stroke-width="2"/>
+        <text x="560" y="175" text-anchor="middle" fill="#fff" font-weight="700" font-size="13">T8</text>
+      </svg>
+    </div>
+
+    <h4>Adjacency List — Graph D-DAG (no cycle)</h4>
+    <div class="adj-block" role="figure" aria-label="Adjacency list for Graph D-DAG">T1: [T2, T3]
+T2: [T4]
+T3: [T4, T5]
+T4: [T6]
+T5: [T6, T7]
+T6: [T8]
+T7: [T8]
+T8: []</div>
+
+    <h4>Adjacency List — Graph D-Cyc (with cycle)</h4>
+    <div class="adj-block" role="figure" aria-label="Adjacency list for Graph D-Cyc. Same as D-DAG but T6 also points to T3.">T1: [T2, T3]
+T2: [T4]
+T3: [T4, T5]
+T4: [T6]
+T5: [T6, T7]
+T6: [T8, T3]   ← added edge T6→T3
+T7: [T8]
+T8: []</div>
+
+    <p><strong>Key properties:</strong> D-DAG has 8 vertices, 10 edges, 0 cycles — a valid topological order exists. D-Cyc adds one edge (T6 &rarr; T3) creating the cycle T3 &rarr; T5 &rarr; T6 &rarr; T3 (and also T3 &rarr; T4 &rarr; T6 &rarr; T3).</p>
+  </section>
+
+  <!-- ===== PHASE 1: BFS ===== -->
+  <section class="section" id="phase1">
+    <h2>Phase 1: BFS Trace on Graph U</h2>
+    <p><strong>Task:</strong> Perform Breadth-First Search on <strong>Graph U</strong> starting from vertex <strong>A</strong>. Process neighbors in <strong>alphabetical order</strong>. At each step, record the vertex dequeued, the current state of the queue after enqueuing new neighbors, and the running traversal order.</p>
+
+    <h3>Reference: BFS Algorithm Outline</h3>
+    <div class="code-block" role="figure" aria-label="BFS pseudocode">BFS(G, source):
+  create queue Q
+  mark source as visited
+  enqueue source into Q
+  while Q is not empty:
+      v ← dequeue from Q
+      record v in traversal order
+      for each neighbor w of v (in alphabetical order):
+          if w is not visited:
+              mark w as visited
+              enqueue w into Q</div>
+
+    <h3>Step-by-Step Trace Table</h3>
+    <p>Complete the table below. The first row is filled in as an example.</p>
+
+    <table class="trace-table" aria-label="BFS trace table for Graph U starting from vertex A">
+      <thead>
+        <tr>
+          <th scope="col">Step</th>
+          <th scope="col">Dequeue</th>
+          <th scope="col">Neighbors (unvisited)</th>
+          <th scope="col">Queue After Enqueue</th>
+          <th scope="col">Visited Set</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>0 (init)</td>
+          <td>—</td>
+          <td>—</td>
+          <td>[A]</td>
+          <td>{A}</td>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td>A</td>
+          <td>B, C</td>
+          <td>[B, C]</td>
+          <td>{A, B, C}</td>
+        </tr>
+        <tr><td>2</td><td colspan="4"><em>Your turn — continue the trace</em></td></tr>
+        <tr><td>3</td><td colspan="4"></td></tr>
+        <tr><td>4</td><td colspan="4"></td></tr>
+        <tr><td>5</td><td colspan="4"></td></tr>
+      </tbody>
+    </table>
+
+    <label class="field-label" for="bfs-trace">Your BFS Trace (complete the table above in text form — list each step's dequeue, queue state, and visited set):</label>
+    <textarea class="response" id="bfs-trace" placeholder="Step 2: Dequeue B. Unvisited neighbors: D. Queue: [C, D]. Visited: {A, B, C, D}&#10;Step 3: Dequeue C. Unvisited neighbors: E. Queue: [D, E]. Visited: {A, B, C, D, E}&#10;..."></textarea>
+
+    <label class="field-label" for="bfs-order">Final BFS Traversal Order (from source A):</label>
+    <textarea class="response" id="bfs-order" style="min-height:50px;" placeholder="A, B, C, ..."></textarea>
+
+    <label class="field-label" for="bfs-note">Note: BFS from A will only reach vertices in A's connected component. Which vertices does BFS from A NOT visit?</label>
+    <textarea class="response" id="bfs-note" style="min-height:50px;" placeholder="Vertices not reached: ..."></textarea>
+
+    <details class="hint">
+      <summary>Hint — Phase 1</summary>
+      <div class="hint-body">
+        <p>From the adjacency list, A's neighbors are [B, C]. After dequeuing A and enqueuing B and C, the queue is [B, C]. Next dequeue B — B's neighbors are [A, C, D]; A and C are already visited, so only D is enqueued. Continue this pattern. You should visit exactly 5 vertices (A, B, C, D, E) — the other 4 are in separate components.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ===== PHASE 2: DFS ===== -->
+  <section class="section" id="phase2">
+    <h2>Phase 2: DFS Trace on Graph U</h2>
+    <p><strong>Task:</strong> Perform Depth-First Search on <strong>Graph U</strong> starting from vertex <strong>A</strong>. Process neighbors in <strong>alphabetical order</strong>. Use the recursive version. Track <strong>discovery time</strong> and <strong>finish time</strong> using a global counter starting at 1. Also classify each edge as a <strong>tree edge</strong> or <strong>back edge</strong>.</p>
+
+    <h3>Reference: DFS Algorithm Outline</h3>
+    <div class="code-block" role="figure" aria-label="DFS pseudocode">time ← 0
+
+DFS-Visit(G, u):
+  time ← time + 1
+  u.discovery ← time
+  mark u as gray (in progress)
+  for each neighbor v of u (in alphabetical order):
+      if v is white (unvisited):
+          record (u, v) as TREE EDGE
+          DFS-Visit(G, v)
+      else if v is gray:
+          record (u, v) as BACK EDGE
+  mark u as black (finished)
+  time ← time + 1
+  u.finish ← time</div>
+
+    <h3>Step-by-Step Trace</h3>
+    <label class="field-label" for="dfs-trace">Record your DFS trace. For each vertex, note when it is discovered (turned gray) and finished (turned black). List each edge classification as you encounter it.</label>
+    <textarea class="response" id="dfs-trace" placeholder="DFS-Visit(A): discovery=1, neighbors [B, C]&#10;  → B is white → TREE EDGE (A,B) → DFS-Visit(B)&#10;  DFS-Visit(B): discovery=2, neighbors [A, C, D]&#10;    → A is gray → BACK EDGE (B,A)&#10;    → C is white → TREE EDGE (B,C) → DFS-Visit(C)&#10;    ..."></textarea>
+
+    <h3>Discovery / Finish Time Table</h3>
+    <table class="trace-table" aria-label="DFS discovery and finish times for Graph U vertices in component 1">
+      <thead>
+        <tr>
+          <th scope="col">Vertex</th>
+          <th scope="col">Discovery Time</th>
+          <th scope="col">Finish Time</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>A</td><td><em>1</em></td><td></td></tr>
+        <tr><td>B</td><td></td><td></td></tr>
+        <tr><td>C</td><td></td><td></td></tr>
+        <tr><td>D</td><td></td><td></td></tr>
+        <tr><td>E</td><td></td><td></td></tr>
+      </tbody>
+    </table>
+
+    <label class="field-label" for="dfs-times">Fill in the discovery and finish times for each vertex (type them here):</label>
+    <textarea class="response" id="dfs-times" style="min-height:80px;" placeholder="A: d=1, f=?&#10;B: d=2, f=?&#10;C: d=?, f=?&#10;D: d=?, f=?&#10;E: d=?, f=?"></textarea>
+
+    <label class="field-label" for="dfs-edges">Edge Classifications (list each edge and its type — tree edge or back edge):</label>
+    <textarea class="response" id="dfs-edges" style="min-height:80px;" placeholder="(A,B) — Tree Edge&#10;(B,A) — Back Edge&#10;..."></textarea>
+
+    <details class="hint">
+      <summary>Hint — Phase 2</summary>
+      <div class="hint-body">
+        <p>Starting at A (discovery=1), go to B (discovery=2). From B, A is gray → back edge. Next unvisited neighbor of B is C (discovery=3). From C, A is gray → back edge; B is gray → back edge; next is E (discovery=4). From E, C is gray → back edge; D is white → tree edge (discovery=5). D finishes first. Work your way back up the recursion, assigning finish times.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ===== PHASE 3: CONNECTED COMPONENTS ===== -->
+  <section class="section" id="phase3">
+    <h2>Phase 3: Connected Components of Graph U</h2>
+    <p><strong>Task:</strong> Using BFS or DFS (your choice), identify <strong>all connected components</strong> of Graph U. Label each vertex with its component number.</p>
+
+    <h3>Algorithm Reminder</h3>
+    <div class="code-block" role="figure" aria-label="Connected components pseudocode">component ← 0
+for each vertex v in V:
+    if v is not visited:
+        component ← component + 1
+        BFS(G, v)  // or DFS(G, v)
+        // all vertices reached belong to this component</div>
+
+    <label class="field-label" for="cc-work">Show your work: which traversal did you start, from which vertex, and which vertices were reached in each pass?</label>
+    <textarea class="response" id="cc-work" placeholder="Pass 1: Start BFS/DFS from A → reached {A, B, C, D, E} → Component 1&#10;Pass 2: Start from next unvisited vertex ... → Component 2&#10;Pass 3: ..."></textarea>
+
+    <label class="field-label" for="cc-result">Component Labeling (list each component and its vertices):</label>
+    <textarea class="response" id="cc-result" style="min-height:80px;" placeholder="Component 1: {A, B, C, D, E}&#10;Component 2: {F, G}&#10;Component 3: {H, I}"></textarea>
+
+    <label class="field-label" for="cc-count">How many connected components does Graph U have?</label>
+    <textarea class="response" id="cc-count" style="min-height:40px;" placeholder="3"></textarea>
+
+    <details class="hint">
+      <summary>Hint — Phase 3</summary>
+      <div class="hint-body">
+        <p>You already found in Phase 1 that BFS from A reaches {A, B, C, D, E}. The remaining unvisited vertices are {F, G, H, I}. Start a new traversal from F — you will reach G. Then start from H — you will reach I. That gives you 3 components total, matching the color coding in the SVG diagram.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ===== PHASE 4: TOPOLOGICAL SORT ===== -->
+  <section class="section" id="phase4">
+    <h2>Phase 4: Topological Sort on Graph D-DAG</h2>
+    <p><strong>Task:</strong> Perform DFS-based topological sorting on <strong>Graph D-DAG</strong>. Start DFS from <strong>T1</strong> (if vertices remain unvisited after T1's DFS tree, continue from the lowest-numbered unvisited vertex). Process neighbors in the order they appear in the adjacency list (left to right). Record discovery and finish times, then produce the topological order by sorting vertices in <strong>decreasing finish time</strong>.</p>
+
+    <h3>DFS Trace on D-DAG</h3>
+    <label class="field-label" for="topo-trace">Record your DFS trace with discovery/finish times for all 8 vertices:</label>
+    <textarea class="response" id="topo-trace" placeholder="DFS-Visit(T1): d=1&#10;  → T2: d=2&#10;    → T4: d=3&#10;      → T6: d=4&#10;        → T8: d=5, f=6&#10;      T6: f=7&#10;    T4: f=8&#10;  T2: f=9&#10;  → T3: d=10&#10;    → T5 (T4 already visited): d=11&#10;      → T7 (T6 already visited): d=12&#10;        → T8 already visited&#10;      T7: f=13&#10;    T5: f=14&#10;  T3: f=15&#10;T1: f=16"></textarea>
+
+    <h3>Finish Time Table</h3>
+    <table class="trace-table" aria-label="Finish times for Graph D-DAG vertices">
+      <thead>
+        <tr>
+          <th scope="col">Vertex</th>
+          <th scope="col">Discovery</th>
+          <th scope="col">Finish</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>T1</td><td></td><td></td></tr>
+        <tr><td>T2</td><td></td><td></td></tr>
+        <tr><td>T3</td><td></td><td></td></tr>
+        <tr><td>T4</td><td></td><td></td></tr>
+        <tr><td>T5</td><td></td><td></td></tr>
+        <tr><td>T6</td><td></td><td></td></tr>
+        <tr><td>T7</td><td></td><td></td></tr>
+        <tr><td>T8</td><td></td><td></td></tr>
+      </tbody>
+    </table>
+
+    <label class="field-label" for="topo-times">Fill in discovery and finish times (type them here):</label>
+    <textarea class="response" id="topo-times" style="min-height:100px;" placeholder="T1: d=1, f=16&#10;T2: d=2, f=9&#10;T3: d=10, f=15&#10;..."></textarea>
+
+    <label class="field-label" for="topo-order">Topological Order (list vertices in decreasing finish time):</label>
+    <textarea class="response" id="topo-order" style="min-height:50px;" placeholder="T1, T3, T5, T7, T2, T4, T6, T8"></textarea>
+
+    <label class="field-label" for="topo-verify">Verification: Pick any directed edge $$ (T_i, T_j) $$ from D-DAG and confirm that $$ T_i $$ appears before $$ T_j $$ in your topological order. Show at least two examples.</label>
+    <textarea class="response" id="topo-verify" style="min-height:70px;" placeholder="Edge (T1, T2): T1 is at position 1, T2 is at position 5 → T1 before T2 ✓&#10;Edge (T5, T7): T5 is at position 3, T7 is at position 4 → T5 before T7 ✓"></textarea>
+
+    <details class="hint">
+      <summary>Hint — Phase 4</summary>
+      <div class="hint-body">
+        <p>Starting DFS at T1, you will go deep: T1 → T2 → T4 → T6 → T8. T8 has no outgoing edges, so it finishes first. Then T6 finishes, T4 finishes, T2 finishes. Back at T1, the next neighbor is T3 → T5 (T4 already visited) → T6 already visited, so next is T7 → T8 already visited, so T7 finishes, T5 finishes, T3 finishes, T1 finishes. The vertex with the highest finish time (T1) goes first in the topological order.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ===== PHASE 5: CYCLE DETECTION ===== -->
+  <section class="section" id="phase5">
+    <h2>Phase 5: Cycle Detection on Graph D-Cyc</h2>
+    <p><strong>Task:</strong> Now switch to <strong>Graph D-Cyc</strong> (which adds the edge T6 &rarr; T3). Perform DFS starting from T1 using the same neighbor processing order. Determine whether the graph contains a cycle by looking for <strong>back edges</strong> — edges that point to a vertex currently on the recursion stack (gray vertex).</p>
+
+    <h3>Directed Cycle Detection Rule</h3>
+    <div class="callout callout-warning">
+      <div class="callout-title" role="heading" aria-level="3">⚠ Back Edge Rule (Directed Graphs)</div>
+      <p>In a directed graph, a <strong>back edge</strong> is an edge $$ (u, v) $$ where $$ v $$ is an <strong>ancestor</strong> of $$ u $$ in the DFS tree — equivalently, $$ v $$ is currently <strong>gray</strong> (discovered but not yet finished). A back edge exists <strong>if and only if</strong> the directed graph contains a cycle.</p>
+    </div>
+
+    <label class="field-label" for="cycle-trace">DFS Trace on D-Cyc: Record your trace. When you encounter the edge T6 → T3, note the color/state of T3 at that moment.</label>
+    <textarea class="response" id="cycle-trace" placeholder="DFS-Visit(T1): d=1, gray&#10;  → T2: d=2, gray&#10;    → T4: d=3, gray&#10;      → T6: d=4, gray&#10;        → T8: d=5, gray → ... → T8 finishes (black)&#10;        → T3: T3 is currently GRAY (discovered at d=? but not finished)&#10;           *** BACK EDGE (T6, T3) detected! ***&#10;..."></textarea>
+
+    <label class="field-label" for="cycle-edge">Identify the back edge that proves a cycle exists:</label>
+    <textarea class="response" id="cycle-edge" style="min-height:50px;" placeholder="Back edge: (T6, T3)"></textarea>
+
+    <label class="field-label" for="cycle-path">Trace the cycle: Starting from the target of the back edge, follow the DFS tree path back to the source of the back edge to spell out the cycle.</label>
+    <textarea class="response" id="cycle-path" style="min-height:60px;" placeholder="Cycle: T3 → T4 → T6 → T3  (or T3 → T5 → T6 → T3)"></textarea>
+
+    <label class="field-label" for="cycle-topo">Explain: Why does the existence of this cycle make topological sorting impossible on D-Cyc?</label>
+    <textarea class="response" id="cycle-topo" style="min-height:80px;" placeholder="Topological sort requires that for every edge (u,v), u appears before v. In the cycle T3 → T4 → T6 → T3, we would need T3 before T4, T4 before T6, and T6 before T3 — but T3 cannot appear both before and after itself. This is a contradiction, so no valid topological ordering exists."></textarea>
+
+    <h3>Bonus: Undirected Cycle Detection Comparison</h3>
+    <div class="callout callout-info">
+      <div class="callout-title" role="heading" aria-level="3">&#9432; Undirected vs. Directed — The Parent Check</div>
+      <p>In an <strong>undirected</strong> graph, every edge $$ \{u, v\} $$ appears in both adjacency lists. When DFS visits $$ u $$ and sees neighbor $$ v $$, if $$ v $$ is gray and $$ v $$ is <strong>not</strong> the parent of $$ u $$ in the DFS tree, then $$ (u, v) $$ is a back edge indicating a cycle. You must exclude the parent to avoid falsely detecting the edge you just traversed as a cycle.</p>
+      <p>In a <strong>directed</strong> graph, edges are one-way, so the parent check is not needed — any edge to a gray vertex is a genuine back edge.</p>
+    </div>
+
+    <label class="field-label" for="cycle-undir">In Phase 2, you traced DFS on Graph U (undirected) and found back edges. Pick one back edge you identified and explain why the parent check was necessary to correctly classify it.</label>
+    <textarea class="response" id="cycle-undir" style="min-height:80px;" placeholder="Example: When DFS was at B (parent = A), neighbor A was gray. Since A IS the parent of B in the DFS tree, (B, A) is NOT a back edge indicating a new cycle — it is just the reverse of the tree edge (A, B). However, when DFS was at C and saw gray vertex A (and A was NOT C's parent — C's parent was B), that IS a genuine back edge confirming the cycle A-B-C-A."></textarea>
+
+    <details class="hint">
+      <summary>Hint — Phase 5</summary>
+      <div class="hint-body">
+        <p>The key moment occurs when DFS reaches T6 in D-Cyc. In the DAG version, T6 only has neighbor T8. In D-Cyc, T6 has neighbors [T8, T3]. After processing T8, DFS checks T3. At this point, T3 was discovered earlier (when T1 explored it) and has NOT yet finished — T3 is still gray because we are inside the call chain T1 → T3 → ... → T6. Therefore (T6, T3) is a back edge. The cycle is T3 → T4 → T6 → T3 (following the DFS tree edges from T3 down to T6, then the back edge T6 → T3 closes the loop).</p>
+        <p>Note: The trace depends on neighbor processing order. If T1 visits T2 first, then T3 second, the back edge may be detected at a different point in the trace — but the back edge (T6, T3) will still be found.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ===== REFLECTION ===== -->
+  <section class="section" id="reflection">
+    <h2>Reflection Questions</h2>
+    <p>Answer the following short-answer questions based on your work in Phases 1–5.</p>
+
+    <label class="field-label" for="reflect1"><strong>Question 1:</strong> Compare the BFS traversal order (Phase 1) and the DFS traversal order (Phase 2) on Graph U starting from vertex A. How do they differ, and what structural property of each algorithm explains the difference?</label>
+    <textarea class="response" id="reflect1" placeholder="BFS explores level by level (A first, then A's neighbors, then their neighbors...) while DFS goes as deep as possible before backtracking. BFS uses a queue (FIFO) so earlier-discovered vertices are processed first, producing a breadth-first ordering. DFS uses a stack (LIFO, via recursion) so the most recently discovered vertex is processed first, producing a depth-first ordering. On Graph U, BFS from A gives A, B, C, D, E while DFS gives A, B, C, E, D (or similar depending on processing order)."></textarea>
+
+    <label class="field-label" for="reflect2"><strong>Question 2:</strong> In Phase 4, you produced a topological order for D-DAG. Could there be a <em>different</em> valid topological order for the same graph? Explain why or why not, and give an example of an alternative order if one exists.</label>
+    <textarea class="response" id="reflect2" placeholder="Yes, topological orderings are generally not unique. Different DFS starting points or different neighbor processing orders can produce different valid orderings. For example, ..."></textarea>
+
+    <label class="field-label" for="reflect3"><strong>Question 3:</strong> Explain in your own words why the parent check is necessary for undirected cycle detection but not for directed cycle detection. What would go wrong if you omitted the parent check in an undirected graph?</label>
+    <textarea class="response" id="reflect3" placeholder="In an undirected graph, every edge {u,v} appears in both adjacency lists. When DFS traverses from u to v via a tree edge, v's adjacency list contains u. Without the parent check, DFS would see u (which is gray) and incorrectly report a back edge / cycle for every single tree edge. The parent check filters out this trivial 'back-traversal.' In a directed graph, edges are one-way: if (u,v) is a tree edge, v's adjacency list does NOT contain u (unless there is a separate edge v→u), so the parent check is unnecessary."></textarea>
+
+    <label class="field-label" for="reflect4"><strong>Question 4:</strong> The time complexity of both BFS and DFS on an adjacency list is $$ O(|V| + |E|) $$. Explain why this is the case by describing what work each algorithm does for each vertex and each edge.</label>
+    <textarea class="response" id="reflect4" placeholder="Each vertex is enqueued/pushed exactly once and dequeued/popped exactly once → O(|V|) work for vertices. Each edge is examined exactly twice in an undirected graph (once from each endpoint) or once in a directed graph. Summing over all vertices, the total neighbor-scanning work is proportional to the sum of all adjacency list lengths, which equals 2|E| (undirected) or |E| (directed). Combined: O(|V| + |E|)."></textarea>
+  </section>
+
+  <!-- ===== DELIVERABLES ===== -->
+  <section class="section" id="deliverables">
+    <h2>Deliverables and Submission Note</h2>
+
+    <div class="callout callout-success">
+      <div class="callout-title" role="heading" aria-level="3">&#10003; Practice Activity — No Submission Required</div>
+      <p>This is an <strong>ungraded practice investigation</strong>. There are no points and no Canvas submission. Use the <strong>Save as PDF</strong> button below to download your completed work for your own records and study purposes.</p>
+      <p><strong>PE-09 (Week 14, 30 pts)</strong> will require you to implement BFS, DFS, and related algorithms (connected components, topological sort, cycle detection) in Java. The hand-tracing practice you completed here directly prepares you for that implementation work.</p>
+      <p style="font-size:0.9rem; margin-top:10px; opacity:0.85;">Refer to the Week 13 learning modules (Modules 13.1–13.4) for detailed explanations, pseudocode, and additional practice. Review the Week 13 self-assessment checklist in Module 13.5 to confirm your readiness for Quiz 4 and PE-09.</p>
+    </div>
+
+    <button class="btn-primary" type="button" id="savePdfBtn" aria-label="Save your completed lab work as a PDF file">&#128196; Save as PDF</button>
+  </section>
+
+</main>
+
+<!-- ===== JAVASCRIPT ===== -->
+<script>
+(function() {
+  "use strict";
+
+  /* ---- Save as PDF ---- */
+  var btn = document.getElementById("savePdfBtn");
+  if (btn) {
+    btn.addEventListener("click", function() {
+      /* Capture all textarea values into visible elements for print */
+      var textareas = document.querySelectorAll("textarea.response");
+      var originals = [];
+      textareas.forEach(function(ta) {
+        originals.push({ el: ta, display: ta.style.display });
+        /* Create a print-friendly div that mirrors the textarea content */
+        var mirror = document.createElement("div");
+        mirror.className = "print-mirror";
+        mirror.setAttribute("aria-hidden", "true");
+        mirror.style.cssText = "white-space:pre-wrap;border:1px solid #aaa;border-radius:5px;padding:10px 12px;font-size:0.92rem;line-height:1.5;min-height:40px;background:#fafafa;margin-bottom:4px;page-break-inside:avoid;";
+        mirror.textContent = ta.value || "(no response entered)";
+        ta.parentNode.insertBefore(mirror, ta.nextSibling);
+        ta.style.display = "none";
+      });
+
+      /* Small delay to allow DOM update, then trigger print */
+      setTimeout(function() {
+        window.print();
+
+        /* Restore textareas and remove mirrors */
+        var mirrors = document.querySelectorAll(".print-mirror");
+        mirrors.forEach(function(m) { m.parentNode.removeChild(m); });
+        originals.forEach(function(o) { o.el.style.display = o.display; });
+      }, 300);
+    });
+  }
+
+  /* ---- Smooth scroll for nav links ---- */
+  var navLinks = document.querySelectorAll(".top-nav a[href^='#']");
+  navLinks.forEach(function(link) {
+    link.addEventListener("click", function(e) {
+      var targetId = this.getAttribute("href").substring(1);
+      var target = document.getElementById(targetId);
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+        target.setAttribute("tabindex", "-1");
+        target.focus({ preventScroll: true });
+      }
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

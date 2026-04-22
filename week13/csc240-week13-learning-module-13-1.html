@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 13.1 – Breadth-First Search (BFS)</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 1rem;
+  line-height: 1.65;
+  color: #1a1a2e;
+  background: #f9f9fc;
+  padding-bottom: 4rem;
+}
+
+.nav-bar {
+  position: sticky; top: 0; z-index: 1000;
+  background: #1a1a2e; color: #fff;
+  display: flex; flex-wrap: wrap; align-items: center;
+  padding: 0.45rem 1rem; gap: 0.25rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,.25);
+}
+.nav-bar a {
+  color: #c5cae9; text-decoration: none; font-size: 0.82rem;
+  padding: 0.3rem 0.55rem; border-radius: 4px; white-space: nowrap;
+}
+.nav-bar a:hover { background: #3949ab; color: #fff; }
+.nav-bar a:focus-visible { background: #3949ab; color: #fff; outline: 2px solid #ffcc00; outline-offset: 2px; }
+.nav-title {
+  font-weight: 700; font-size: 0.95rem; color: #fff;
+  margin-right: auto; padding-right: 0.75rem;
+}
+
+[id] { scroll-margin-top: 56px; }
+
+.container { max-width: 960px; margin: 0 auto; padding: 1.5rem 1.25rem; }
+
+.mod-header {
+  background: linear-gradient(135deg, #1a237e 0%, #3949ab 100%);
+  color: #fff; padding: 2rem 1.5rem; border-radius: 10px;
+  margin-bottom: 1.75rem;
+}
+.mod-header .label {
+  font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px;
+  opacity: 0.85; margin-bottom: 0.25rem;
+}
+.mod-header h1 { font-size: 1.85rem; font-weight: 700; margin-bottom: 0.5rem; }
+.mod-header .meta { font-size: 0.85rem; opacity: 0.8; }
+
+h2 {
+  font-size: 1.4rem; color: #1a237e; margin: 2rem 0 0.75rem;
+  padding-bottom: 0.35rem; border-bottom: 3px solid #c5cae9;
+}
+h3 { font-size: 1.1rem; color: #283593; margin: 1.4rem 0 0.5rem; }
+h4 { font-size: 0.95rem; color: #3949ab; margin: 1rem 0 0.4rem; }
+
+p { margin-bottom: 0.85rem; }
+ul, ol { margin: 0.5rem 0 1rem 1.5rem; }
+li { margin-bottom: 0.35rem; }
+
+.math-block {
+  font-family: 'Consolas', 'Courier New', monospace;
+  background: #f0f0f8; border-left: 3px solid #7986cb;
+  padding: 0.6rem 1rem; margin: 0.75rem 0 1rem;
+  font-size: 0.95rem; border-radius: 0 4px 4px 0;
+}
+
+/* Callout boxes — three semantic types */
+.callout {
+  border-left: 5px solid; border-radius: 6px;
+  padding: 1rem 1.15rem; margin: 1.25rem 0;
+  font-size: 0.95rem;
+}
+.callout-def  { border-color: #1a237e; background: #e8eaf6; }
+.callout-key  { border-color: #f57c00; background: #fff3e0; }
+.callout-tip  { border-color: #2e7d32; background: #e8f5e9; }
+.callout-warn { border-color: #c62828; background: #ffebee; }
+.callout-title { font-weight: 700; margin-bottom: 0.35rem; font-size: 0.95rem; }
+.callout-def  .callout-title { color: #1a237e; }
+.callout-key  .callout-title { color: #bf360c; }   /* darkened for WCAG AA contrast on #fff3e0 */
+.callout-tip  .callout-title { color: #2e7d32; }
+.callout-warn .callout-title { color: #b71c1c; }
+
+table {
+  width: 100%; border-collapse: collapse; margin: 1rem 0 1.25rem;
+  font-size: 0.92rem;
+}
+th, td { border: 1px solid #c5cae9; padding: 0.55rem 0.7rem; text-align: left; }
+th { background: #e8eaf6; color: #1a237e; font-weight: 600; }
+tr:nth-child(even) { background: #f5f5ff; }
+
+pre {
+  background: #1e1e2f; color: #d4d4d4; padding: 1.1rem 1.25rem;
+  border-radius: 6px; overflow-x: auto; font-size: 0.88rem;
+  line-height: 1.55; margin: 0.75rem 0 1.25rem;
+  tab-size: 4; white-space: pre;
+}
+code { font-family: 'Consolas', 'Courier New', monospace; }
+.code-comment { color: #6a9955; }
+.code-keyword { color: #569cd6; }
+.code-type    { color: #4ec9b0; }
+.code-string  { color: #ce9178; }
+.code-num     { color: #b5cea8; }
+.code-annot   { color: #9cdcfe; font-style: italic; }
+
+.graph-wrap {
+  display: flex; justify-content: center; margin: 1.25rem 0;
+}
+.graph-wrap svg { max-width: 100%; height: auto; }
+
+details {
+  border: 1px solid #c5cae9; border-radius: 6px;
+  margin: 1rem 0; background: #fff;
+}
+details > summary {
+  cursor: pointer; padding: 0.75rem 1rem;
+  font-weight: 600; color: #1a237e; font-size: 0.95rem;
+  list-style: none; position: relative; padding-left: 1.75rem;
+  user-select: none;
+}
+details > summary::-webkit-details-marker { display: none; }
+details > summary::before { content: '▸'; position: absolute; left: 0.75rem; transition: transform 0.2s; }
+details[open] > summary::before { transform: rotate(90deg); }
+details > summary:focus-visible { outline: 2px solid #ffcc00; outline-offset: -2px; border-radius: 4px; }
+details > .details-body { padding: 0.25rem 1rem 1rem; }
+
+.trace-tbl th { background: #283593; color: #fff; text-align: center; }
+.trace-tbl td { text-align: center; font-family: 'Consolas', monospace; font-size: 0.88rem; }
+.trace-tbl .step-highlight { background: #fff9c4; }
+
+.kc-block {
+  border: 2px solid #7986cb; border-radius: 8px;
+  padding: 1.15rem 1.25rem; margin: 1.5rem 0; background: #fff;
+}
+.kc-block h4 { color: #283593; margin-top: 0; }
+.kc-options { list-style: none; margin: 0.5rem 0 0.75rem; padding: 0; }
+.kc-options li { margin-bottom: 0.3rem; }
+.kc-options label { cursor: pointer; display: inline-block; padding: 0.15rem 0; }
+.kc-options input[type="radio"] { margin-right: 0.4rem; }
+.kc-btn {
+  cursor: pointer;
+  background: #3949ab; color: #fff; border: none;
+  padding: 0.45rem 1.1rem; border-radius: 5px;
+  font-size: 0.88rem; font-weight: 600;
+}
+.kc-btn:hover { background: #1a237e; }
+.kc-btn:focus-visible { background: #1a237e; outline: 2px solid #ffcc00; outline-offset: 2px; }
+.kc-feedback {
+  margin-top: 0.6rem; padding: 0.75rem; border-radius: 5px;
+  font-size: 0.9rem; display: none;
+}
+.kc-correct   { background: #e8f5e9; border-left: 4px solid #2e7d32; color: #1b5e20; }
+.kc-incorrect { background: #ffebee; border-left: 4px solid #c62828; color: #b71c1c; }
+
+.mod-footer {
+  margin-top: 2.5rem; padding-top: 1rem;
+  border-top: 2px solid #c5cae9; font-size: 0.82rem;
+  color: #5c5c7a; text-align: center;
+}
+
+@media (max-width: 600px) {
+  .nav-bar { padding: 0.35rem 0.5rem; }
+  .nav-bar a { font-size: 0.75rem; padding: 0.25rem 0.4rem; }
+  .mod-header h1 { font-size: 1.4rem; }
+  h2 { font-size: 1.2rem; }
+  pre { font-size: 0.8rem; padding: 0.8rem; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav-bar" aria-label="Module sections">
+  <span class="nav-title">13.1 BFS</span>
+  <a href="#context">Context</a>
+  <a href="#intuition">Intuition</a>
+  <a href="#algorithm">Algorithm</a>
+  <a href="#complexity">Complexity</a>
+  <a href="#bfs-tree">BFS Tree</a>
+  <a href="#worked">Worked Example</a>
+  <a href="#java-code">Java Code</a>
+  <a href="#checks">Knowledge Checks</a>
+</nav>
+
+<main>
+<div class="container">
+
+<header class="mod-header">
+  <div class="label">Week 13 · Module 13.1</div>
+  <h1>Breadth-First Search (BFS)</h1>
+  <div class="meta">
+    CSC 240 – Discrete Structures · Mendocino College · Spring 2026<br>
+    Est. time: 60–75 min &nbsp;|&nbsp; CSLO 3 &nbsp;|&nbsp; Objectives 1, 3, 4 (intro)
+  </div>
+</header>
+
+<section id="context">
+  <h2>1 &nbsp; Context and Motivation</h2>
+
+  <p>Last week you learned how to define, classify, and represent graphs. You built adjacency lists and adjacency matrices, identified special graph families, and proved the Handshaking Lemma. Those structures were <em>static</em> — snapshots of relationships frozen in place.</p>
+
+  <p>This week we bring those static structures to life with <strong>traversal algorithms</strong> that systematically visit every vertex in a graph. A traversal is the graph equivalent of iterating through every element of an array — except that graphs have no inherent "first" or "next" element, so we need a principled strategy for choosing where to go.</p>
+
+  <div class="callout callout-key">
+    <div class="callout-title">Motivating Question</div>
+    Given a social-network graph where vertices are people and edges are friendships, <strong>how would you find the shortest chain of friendships between two people?</strong> For example, how many "friend-of-a-friend" hops separate you from a particular celebrity? By the end of this module you will know the answer: <strong>Breadth-First Search (BFS)</strong>.
+  </div>
+
+  <p>Module 13.1 covers BFS — the first of two fundamental graph traversal algorithms. Module 13.2 will introduce Depth-First Search (DFS), and the remaining modules this week will compare the two and apply them to connected components, topological sorting, and cycle detection.</p>
+
+  <div class="callout callout-tip">
+    <div class="callout-title">Week 13 Road Map</div>
+    <strong>13.1</strong> BFS → <strong>13.2</strong> DFS → <strong>13.3</strong> BFS vs. DFS → <strong>13.4</strong> Applications → <strong>13.5</strong> Real-World Connections &amp; Quiz 4 Prep<br>
+    Each module builds on the previous one — work through them in order.
+  </div>
+</section>
+
+<section id="intuition">
+  <h2>2 &nbsp; BFS Intuition — Level-by-Level Exploration</h2>
+
+  <h3>2.1 &nbsp; The Pond-Ripple Analogy</h3>
+  <p>Imagine dropping a stone into a still pond. Ripples spread outward in concentric circles — first the ring closest to the impact point, then the next ring, then the next. BFS explores a graph in exactly this way:</p>
+  <ol>
+    <li>Start at a <strong>source vertex</strong> <em>s</em>.</li>
+    <li>Visit every neighbor of <em>s</em> (distance 1).</li>
+    <li>Then visit every unvisited neighbor of <em>those</em> vertices (distance 2).</li>
+    <li>Continue until every reachable vertex has been visited.</li>
+  </ol>
+
+  <p>The key property: <strong>BFS visits all vertices at distance <em>d</em> before visiting any vertex at distance <em>d</em> + 1.</strong> This is why BFS naturally discovers shortest paths in unweighted graphs.</p>
+
+  <h3>2.2 &nbsp; The Running Example Graph</h3>
+  <p>We will use the following 7-vertex undirected graph throughout Modules 13.1 and 13.2. Memorize its shape — you will trace algorithms on it multiple times.</p>
+
+  <div class="graph-wrap">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 340" width="520" height="340" role="img" aria-label="Undirected graph with 7 vertices A through G and 9 edges: A-B, A-C, B-D, B-E, C-E, C-F, D-G, E-G, F-G.">
+      <line x1="130" y1="50" x2="60" y2="150" stroke="#7986cb" stroke-width="2.5"/>
+      <line x1="130" y1="50" x2="220" y2="150" stroke="#7986cb" stroke-width="2.5"/>
+      <line x1="60" y1="150" x2="60" y2="270" stroke="#7986cb" stroke-width="2.5"/>
+      <line x1="60" y1="150" x2="220" y2="270" stroke="#7986cb" stroke-width="2.5"/>
+      <line x1="220" y1="150" x2="220" y2="270" stroke="#7986cb" stroke-width="2.5"/>
+      <line x1="220" y1="150" x2="400" y2="150" stroke="#7986cb" stroke-width="2.5"/>
+      <line x1="60" y1="270" x2="340" y2="310" stroke="#7986cb" stroke-width="2.5"/>
+      <line x1="220" y1="270" x2="340" y2="310" stroke="#7986cb" stroke-width="2.5"/>
+      <line x1="400" y1="150" x2="340" y2="310" stroke="#7986cb" stroke-width="2.5"/>
+      <circle cx="130" cy="50" r="22" fill="#1a237e" stroke="#fff" stroke-width="2"/>
+      <text x="130" y="56" text-anchor="middle" fill="#fff" font-weight="700" font-size="16">A</text>
+      <circle cx="60" cy="150" r="22" fill="#1a237e" stroke="#fff" stroke-width="2"/>
+      <text x="60" y="156" text-anchor="middle" fill="#fff" font-weight="700" font-size="16">B</text>
+      <circle cx="220" cy="150" r="22" fill="#1a237e" stroke="#fff" stroke-width="2"/>
+      <text x="220" y="156" text-anchor="middle" fill="#fff" font-weight="700" font-size="16">C</text>
+      <circle cx="60" cy="270" r="22" fill="#1a237e" stroke="#fff" stroke-width="2"/>
+      <text x="60" y="276" text-anchor="middle" fill="#fff" font-weight="700" font-size="16">D</text>
+      <circle cx="220" cy="270" r="22" fill="#1a237e" stroke="#fff" stroke-width="2"/>
+      <text x="220" y="276" text-anchor="middle" fill="#fff" font-weight="700" font-size="16">E</text>
+      <circle cx="400" cy="150" r="22" fill="#1a237e" stroke="#fff" stroke-width="2"/>
+      <text x="400" y="156" text-anchor="middle" fill="#fff" font-weight="700" font-size="16">F</text>
+      <circle cx="340" cy="310" r="22" fill="#1a237e" stroke="#fff" stroke-width="2"/>
+      <text x="340" y="316" text-anchor="middle" fill="#fff" font-weight="700" font-size="16">G</text>
+      <text x="470" y="30" font-size="13" fill="#5c5c7a" font-style="italic" aria-hidden="true">9 edges, 7 vertices</text>
+    </svg>
+  </div>
+
+  <div class="callout callout-def">
+    <div class="callout-title">Edge List for the Running Graph</div>
+    Vertices: {A, B, C, D, E, F, G}<br>
+    Edges: {AB, AC, BD, BE, CE, CF, DG, EG, FG}<br>
+    Adjacency list (alphabetical neighbor order):<br>
+    <code>A → [B, C]</code> &nbsp; <code>B → [A, D, E]</code> &nbsp; <code>C → [A, E, F]</code> &nbsp; <code>D → [B, G]</code><br>
+    <code>E → [B, C, G]</code> &nbsp; <code>F → [C, G]</code> &nbsp; <code>G → [D, E, F]</code>
+  </div>
+</section>
+
+<section id="algorithm">
+  <h2>3 &nbsp; The BFS Algorithm</h2>
+
+  <h3>3.1 &nbsp; Core Mechanism: The Queue</h3>
+  <p>BFS uses a <strong>queue</strong> (first-in, first-out) to manage the frontier of vertices waiting to be explored. This is the structural reason BFS explores level by level — vertices discovered earlier are processed earlier.</p>
+
+  <div class="callout callout-tip">
+    <div class="callout-title">Connection to CSC 221</div>
+    The queue data structure you implemented in your prerequisite course is the engine that drives BFS. FIFO ordering is what guarantees the level-by-level property.
+  </div>
+
+  <h3>3.2 &nbsp; Vertex Coloring Convention</h3>
+  <p>To keep track of each vertex's status, the classic BFS algorithm uses a three-color scheme:</p>
+
+  <table>
+    <thead><tr><th>Color</th><th>Meaning</th></tr></thead>
+    <tbody>
+      <tr><td><strong>White</strong></td><td>Undiscovered — has not yet been seen by BFS.</td></tr>
+      <tr><td><strong>Gray</strong></td><td>Discovered and <em>in the queue</em> — seen but not yet fully explored.</td></tr>
+      <tr><td><strong>Black</strong></td><td>Finished — dequeued and all neighbors examined.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-tip">
+    <div class="callout-title">Practical Simplification</div>
+    In many implementations you will see a simple <code>boolean[] visited</code> array instead of three colors. Setting <code>visited[v] = true</code> when you <em>enqueue</em> <em>v</em> is equivalent to coloring it gray. The three-color scheme is useful for proofs and for understanding DFS edge classification (Module 13.2).
+  </div>
+
+  <h3>3.3 &nbsp; BFS Pseudocode</h3>
+
+<pre><code><span class="code-comment">// BFS from source vertex s in graph G</span>
+<span class="code-keyword">procedure</span> <span class="code-type">BFS</span>(G, s):
+    <span class="code-keyword">for each</span> vertex u <span class="code-keyword">in</span> G.V:          <span class="code-comment">// initialize all vertices</span>
+        color[u]  ← WHITE
+        dist[u]   ← ∞
+        parent[u] ← NIL
+
+    color[s]  ← GRAY                     <span class="code-comment">// discover the source</span>
+    dist[s]   ← 0
+    parent[s] ← NIL
+
+    Q ← <span class="code-keyword">new</span> empty Queue
+    Q.enqueue(s)
+
+    <span class="code-keyword">while</span> Q is not empty:
+        u ← Q.dequeue()                  <span class="code-comment">// process front of queue</span>
+        <span class="code-keyword">for each</span> v <span class="code-keyword">in</span> G.adj[u]:          <span class="code-comment">// examine each neighbor</span>
+            <span class="code-keyword">if</span> color[v] == WHITE:          <span class="code-comment">// undiscovered?</span>
+                color[v]  ← GRAY
+                dist[v]   ← dist[u] + 1  <span class="code-comment">// one hop farther</span>
+                parent[v] ← u            <span class="code-comment">// record BFS tree edge</span>
+                Q.enqueue(v)
+        color[u] ← BLACK                 <span class="code-comment">// u is fully explored</span>
+</code></pre>
+
+  <h3>3.4 &nbsp; Key Arrays Maintained</h3>
+  <ul>
+    <li><strong><code>color[]</code></strong> — tracks white/gray/black status (or a simple <code>visited[]</code> boolean).</li>
+    <li><strong><code>dist[]</code></strong> — stores the shortest distance (number of edges) from the source to each vertex.</li>
+    <li><strong><code>parent[]</code></strong> — stores the predecessor of each vertex on the shortest path from the source, enabling path reconstruction.</li>
+  </ul>
+</section>
+
+<section id="complexity">
+  <h2>4 &nbsp; Complexity Analysis</h2>
+
+  <h3>4.1 &nbsp; BFS on an Adjacency List — O(|V| + |E|)</h3>
+  <p>Let's count the work BFS performs:</p>
+  <ol>
+    <li><strong>Initialization:</strong> The <code>for each vertex</code> loop runs |V| times → O(|V|).</li>
+    <li><strong>Queue operations:</strong> Every vertex is enqueued at most once and dequeued at most once → O(|V|) total queue operations.</li>
+    <li><strong>Neighbor scanning:</strong> When vertex <em>u</em> is dequeued, we scan its adjacency list, which has deg(<em>u</em>) entries. Summing over all vertices gives the total scanning work:</li>
+  </ol>
+
+  <p class="math-block">∑<sub>u ∈ V</sub> deg(u) = 2|E| &nbsp;&nbsp; (Handshaking Lemma from Module 12.4)</p>
+
+  <p>So the total neighbor-scanning work is O(|E|). Combining: O(|V|) + O(|E|) = <strong>O(|V| + |E|)</strong>.</p>
+
+  <div class="callout callout-key">
+    <div class="callout-title">Key Result</div>
+    BFS on an adjacency-list representation runs in <strong>O(|V| + |E|)</strong> time. This is optimal — you cannot do better than looking at every vertex and every edge at least once.
+  </div>
+
+  <h3>4.2 &nbsp; BFS on an Adjacency Matrix — O(|V|²)</h3>
+  <p>If the graph is stored as an adjacency matrix, finding the neighbors of vertex <em>u</em> requires scanning the entire row of length |V|. We do this for each of the |V| vertices dequeued:</p>
+
+  <p class="math-block">|V| × |V| = |V|² &nbsp;⟹&nbsp; O(|V|²)</p>
+
+  <p>For <strong>sparse</strong> graphs (|E| ≪ |V|²), the adjacency list is dramatically faster. For <strong>dense</strong> graphs (|E| ≈ |V|²), both representations give similar performance.</p>
+
+  <table>
+    <thead><tr><th>Representation</th><th>BFS Time</th><th>Best For</th></tr></thead>
+    <tbody>
+      <tr><td>Adjacency List</td><td>O(|V| + |E|)</td><td>Sparse graphs</td></tr>
+      <tr><td>Adjacency Matrix</td><td>O(|V|²)</td><td>Dense graphs (or when edge-lookup speed matters)</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="bfs-tree">
+  <h2>5 &nbsp; BFS Tree and Shortest Paths</h2>
+
+  <h3>5.1 &nbsp; What Is the BFS Tree?</h3>
+  <p>As BFS runs, each vertex <em>v</em> (other than the source) is discovered from exactly one vertex <em>u</em>, and we set <code>parent[v] = u</code>. The collection of these parent–child edges forms a <strong>BFS tree</strong> rooted at the source.</p>
+
+  <div class="callout callout-def">
+    <div class="callout-title">Definition — BFS Tree</div>
+    The <strong>BFS tree</strong> of a graph G from source <em>s</em> is the spanning tree (of the connected component containing <em>s</em>) formed by the edges {(parent[v], v) | v ≠ s}. Each vertex appears at a <strong>level</strong> equal to its distance from <em>s</em>.
+  </div>
+
+  <h3>5.2 &nbsp; Shortest-Path Property</h3>
+
+  <div class="callout callout-key">
+    <div class="callout-title">Theorem — BFS Shortest-Path Property</div>
+    For every vertex <em>v</em> reachable from source <em>s</em> in an <strong>unweighted</strong> graph, the value <code>dist[v]</code> computed by BFS equals the length of a shortest path from <em>s</em> to <em>v</em> (measured in number of edges).
+  </div>
+
+  <p><strong>Intuition for why this holds:</strong> BFS explores vertices in non-decreasing order of distance. When <em>v</em> is first discovered via some vertex <em>u</em> at level <em>d</em>, we set <code>dist[v] = d + 1</code>. No shorter path to <em>v</em> can exist, because all vertices at distance ≤ <em>d</em> have already been processed.</p>
+
+  <h3>5.3 &nbsp; Reconstructing a Shortest Path</h3>
+  <p>To find the actual shortest path from <em>s</em> to a target vertex <em>t</em>, follow the <code>parent[]</code> pointers backward:</p>
+
+<pre><code><span class="code-keyword">procedure</span> <span class="code-type">PrintPath</span>(s, t):
+    <span class="code-keyword">if</span> t == s:
+        print s
+    <span class="code-keyword">else if</span> parent[t] == NIL:
+        print <span class="code-string">"No path exists"</span>
+    <span class="code-keyword">else</span>:
+        PrintPath(s, parent[t])
+        print t
+</code></pre>
+
+  <div class="callout callout-warn">
+    <div class="callout-title">Unweighted Graphs Only</div>
+    The shortest-path guarantee applies to <strong>unweighted</strong> graphs (or equivalently, graphs where every edge has weight 1). For weighted graphs, you need Dijkstra's algorithm or Bellman-Ford — topics coming in Week 14.
+  </div>
+</section>
+
+<section id="worked">
+  <h2>6 &nbsp; Worked Example — Hand-Tracing BFS</h2>
+
+  <p>Let's trace BFS on our 7-vertex running graph starting from source <strong>A</strong>. Neighbors are processed in alphabetical order (matching the adjacency list above).</p>
+
+  <h3>6.1 &nbsp; Initial State</h3>
+  <p>All vertices are <strong>white</strong>. We color A gray, set <code>dist[A] = 0</code>, and enqueue it.</p>
+
+  <h3>6.2 &nbsp; Step-by-Step Trace</h3>
+
+  <table class="trace-tbl">
+    <thead>
+      <tr>
+        <th>Step</th><th>Dequeue</th><th>Examine Neighbors</th><th>Newly Enqueued</th><th>Queue After Step</th><th>dist[] Updates</th><th>parent[] Updates</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>0</td><td>—</td><td>—</td><td>A</td><td>[A]</td><td>dist[A]=0</td><td>—</td>
+      </tr>
+      <tr class="step-highlight">
+        <td>1</td><td>A</td><td>B(W), C(W)</td><td>B, C</td><td>[B, C]</td><td>dist[B]=1, dist[C]=1</td><td>π[B]=A, π[C]=A</td>
+      </tr>
+      <tr>
+        <td>2</td><td>B</td><td>A(BK), D(W), E(W)</td><td>D, E</td><td>[C, D, E]</td><td>dist[D]=2, dist[E]=2</td><td>π[D]=B, π[E]=B</td>
+      </tr>
+      <tr class="step-highlight">
+        <td>3</td><td>C</td><td>A(BK), E(G), F(W)</td><td>F</td><td>[D, E, F]</td><td>dist[F]=2</td><td>π[F]=C</td>
+      </tr>
+      <tr>
+        <td>4</td><td>D</td><td>B(BK), G(W)</td><td>G</td><td>[E, F, G]</td><td>dist[G]=3</td><td>π[G]=D</td>
+      </tr>
+      <tr class="step-highlight">
+        <td>5</td><td>E</td><td>B(BK), C(BK), G(G)</td><td>—</td><td>[F, G]</td><td>—</td><td>—</td>
+      </tr>
+      <tr>
+        <td>6</td><td>F</td><td>C(BK), G(G)</td><td>—</td><td>[G]</td><td>—</td><td>—</td>
+      </tr>
+      <tr class="step-highlight">
+        <td>7</td><td>G</td><td>D(BK), E(BK), F(BK)</td><td>—</td><td>[ ]</td><td>—</td><td>—</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Legend:</strong> W = White, G = Gray, BK = Black, π = parent</p>
+
+  <h3>6.3 &nbsp; Results Summary</h3>
+
+  <table>
+    <thead><tr><th>Vertex</th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th><th>G</th></tr></thead>
+    <tbody>
+      <tr><td><strong>dist[]</strong></td><td>0</td><td>1</td><td>1</td><td>2</td><td>2</td><td>2</td><td>3</td></tr>
+      <tr><td><strong>parent[]</strong></td><td>NIL</td><td>A</td><td>A</td><td>B</td><td>B</td><td>C</td><td>D</td></tr>
+    </tbody>
+  </table>
+
+  <p><strong>BFS traversal order:</strong> A → B → C → D → E → F → G</p>
+  <p><strong>BFS tree levels:</strong></p>
+  <ul>
+    <li>Level 0: A</li>
+    <li>Level 1: B, C</li>
+    <li>Level 2: D, E, F</li>
+    <li>Level 3: G</li>
+  </ul>
+
+  <details>
+    <summary>Show: Reconstruct shortest path A → G</summary>
+    <div class="details-body">
+      <p>Follow parent pointers backward from G:</p>
+      <p><code>G ← D ← B ← A</code></p>
+      <p>Reverse to get the path: <strong>A → B → D → G</strong> (length 3 edges).</p>
+      <p>This is indeed the shortest path — BFS guarantees it for unweighted graphs.</p>
+    </div>
+  </details>
+</section>
+
+<section id="java-code">
+  <h2>7 &nbsp; Java Code Walkthrough</h2>
+
+  <details>
+    <summary>Expand: BFS Implementation in Java</summary>
+    <div class="details-body">
+      <p>The following Java method implements BFS on a graph stored as an adjacency list (<code>List&lt;List&lt;Integer&gt;&gt;</code>). Vertices are numbered 0 through |V| − 1.</p>
+
+<pre><code><span class="code-keyword">import</span> java.util.*;
+
+<span class="code-keyword">public class</span> <span class="code-type">GraphBFS</span> {
+
+    <span class="code-comment">// adj.get(u) returns list of u's neighbors</span>
+    <span class="code-keyword">private</span> List&lt;List&lt;Integer&gt;&gt; adj;
+    <span class="code-keyword">private int</span> V;
+
+    <span class="code-keyword">public</span> <span class="code-type">GraphBFS</span>(<span class="code-keyword">int</span> V) {
+        <span class="code-keyword">this</span>.V = V;
+        adj = <span class="code-keyword">new</span> ArrayList&lt;&gt;();
+        <span class="code-keyword">for</span> (<span class="code-keyword">int</span> i = <span class="code-num">0</span>; i &lt; V; i++)
+            adj.add(<span class="code-keyword">new</span> ArrayList&lt;&gt;());
+    }
+
+    <span class="code-keyword">public void</span> addEdge(<span class="code-keyword">int</span> u, <span class="code-keyword">int</span> v) {
+        adj.get(u).add(v);
+        adj.get(v).add(u);
+    }
+
+    <span class="code-comment">// Returns dist[] where dist[v] = shortest edge-distance from s,
+    // or -1 if unreachable.</span>
+    <span class="code-keyword">public int</span>[] bfs(<span class="code-keyword">int</span> s) {
+
+        <span class="code-keyword">int</span>[] dist   = <span class="code-keyword">new int</span>[V];   <span class="code-annot">// ① distance array</span>
+        <span class="code-keyword">int</span>[] parent = <span class="code-keyword">new int</span>[V];   <span class="code-annot">// ② parent array</span>
+        Arrays.fill(dist, -<span class="code-num">1</span>);       <span class="code-annot">// -1 = unvisited (white)</span>
+        Arrays.fill(parent, -<span class="code-num">1</span>);
+
+        Queue&lt;Integer&gt; queue = <span class="code-keyword">new</span> LinkedList&lt;&gt;();
+
+        dist[s] = <span class="code-num">0</span>;                  <span class="code-annot">// ③ source: distance 0</span>
+        queue.add(s);                   <span class="code-annot">// ④ enqueue source</span>
+
+        <span class="code-keyword">while</span> (!queue.isEmpty()) {
+            <span class="code-keyword">int</span> u = queue.poll();       <span class="code-annot">// ⑤ dequeue front vertex</span>
+
+            <span class="code-keyword">for</span> (<span class="code-keyword">int</span> v : adj.get(u)) { <span class="code-annot">// ⑥ scan neighbor list</span>
+                <span class="code-keyword">if</span> (dist[v] == -<span class="code-num">1</span>) {      <span class="code-annot">// ⑦ unvisited?</span>
+                    dist[v]   = dist[u] + <span class="code-num">1</span>; <span class="code-annot">// ⑧ set distance</span>
+                    parent[v] = u;           <span class="code-annot">// ⑨ record parent</span>
+                    queue.add(v);            <span class="code-annot">// ⑩ enqueue neighbor</span>
+                }
+            }
+        }
+        <span class="code-keyword">return</span> dist;
+    }
+}
+</code></pre>
+
+      <h4>Line-by-Line Annotations</h4>
+      <table>
+        <thead><tr><th>Marker</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td>① ②</td><td>Allocate distance and parent arrays. Using <code>-1</code> as "unvisited" replaces the white/gray/black coloring — a vertex is "white" if <code>dist[v] == -1</code>.</td></tr>
+          <tr><td>③ ④</td><td>Initialize the source: distance 0, then enqueue it.</td></tr>
+          <tr><td>⑤</td><td><code>queue.poll()</code> removes and returns the front (FIFO). This is the vertex currently being explored.</td></tr>
+          <tr><td>⑥</td><td>Iterate over the adjacency list of <em>u</em>. Across all iterations this is where the O(|E|) work happens.</td></tr>
+          <tr><td>⑦</td><td>Check if <em>v</em> has been discovered. If <code>dist[v] != -1</code>, it was already enqueued — skip it.</td></tr>
+          <tr><td>⑧ ⑨ ⑩</td><td>Discover <em>v</em>: record its distance (one more than <em>u</em>), set its parent to <em>u</em>, and enqueue it.</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">Why check before enqueuing?</div>
+        We check <code>dist[v] == -1</code> <em>before</em> enqueuing, not when dequeuing. This prevents a vertex from being enqueued multiple times and keeps the queue size bounded by O(|V|).
+      </div>
+    </div>
+  </details>
+
+  <div class="callout callout-tip">
+    <div class="callout-title">Interactive Visualizer</div>
+    For self-guided practice, search for <strong>VisuAlgo BFS DFS</strong> in your browser. Step through BFS on different graphs and watch the queue, vertex colors, and distances update in real time. This is an ungraded, optional resource.
+  </div>
+</section>
+
+<section id="checks">
+  <h2>8 &nbsp; Knowledge Checks</h2>
+  <p>These are <strong>ungraded</strong> self-checks with immediate explanatory feedback. Use them to confirm your understanding before moving to Module 13.2.</p>
+
+  <div class="kc-block" id="kc1">
+    <h4>Check 1 — BFS Trace on a New Graph</h4>
+    <p>Consider the undirected graph with vertices {1, 2, 3, 4, 5} and edges {1-2, 1-3, 2-4, 3-4, 3-5}. If you run BFS from vertex <strong>1</strong> (processing neighbors in numerical order), what is the BFS traversal order?</p>
+    <ul class="kc-options" role="radiogroup" aria-label="Check 1 answer choices">
+      <li><label><input type="radio" name="kc1" value="a"> A) 1, 2, 3, 4, 5</label></li>
+      <li><label><input type="radio" name="kc1" value="b"> B) 1, 3, 5, 2, 4</label></li>
+      <li><label><input type="radio" name="kc1" value="c"> C) 1, 2, 4, 3, 5</label></li>
+      <li><label><input type="radio" name="kc1" value="d"> D) 1, 3, 2, 5, 4</label></li>
+    </ul>
+    <button class="kc-btn" aria-controls="kc1-correct kc1-incorrect" onclick="checkKC('kc1','a')">Check Answer</button>
+    <div class="kc-feedback kc-correct" id="kc1-correct" role="status" aria-live="polite">
+      <strong>Correct!</strong> Starting from 1, we enqueue neighbors 2 and 3 (level 1). Dequeue 2 → enqueue 4 (level 2; 1 already visited). Dequeue 3 → 4 is already gray, enqueue 5 (level 2). Dequeue 4 and 5 → no new neighbors. Order: <strong>1, 2, 3, 4, 5</strong>.
+    </div>
+    <div class="kc-feedback kc-incorrect" id="kc1-incorrect" role="alert" aria-live="polite">
+      <strong>Not quite.</strong> Remember BFS uses a <em>queue</em> (FIFO). From vertex 1, neighbors 2 and 3 are enqueued in numerical order. Vertex 2 is dequeued first, then 3. Work through each dequeue step and track what gets enqueued. The correct order is <strong>1, 2, 3, 4, 5</strong>.
+    </div>
+  </div>
+
+  <div class="kc-block" id="kc2">
+    <h4>Check 2 — Complexity: List vs. Matrix</h4>
+    <p>A graph has 1,000 vertices and 3,000 edges. Approximately how many operations does BFS perform on an adjacency <em>list</em> vs. an adjacency <em>matrix</em>?</p>
+    <ul class="kc-options" role="radiogroup" aria-label="Check 2 answer choices">
+      <li><label><input type="radio" name="kc2" value="a"> A) List: ~4,000 &nbsp; Matrix: ~1,000,000</label></li>
+      <li><label><input type="radio" name="kc2" value="b"> B) List: ~1,000,000 &nbsp; Matrix: ~4,000</label></li>
+      <li><label><input type="radio" name="kc2" value="c"> C) List: ~4,000 &nbsp; Matrix: ~4,000</label></li>
+      <li><label><input type="radio" name="kc2" value="d"> D) List: ~3,000,000 &nbsp; Matrix: ~1,000,000</label></li>
+    </ul>
+    <button class="kc-btn" aria-controls="kc2-correct kc2-incorrect" onclick="checkKC('kc2','a')">Check Answer</button>
+    <div class="kc-feedback kc-correct" id="kc2-correct" role="status" aria-live="polite">
+      <strong>Correct!</strong> On an adjacency list, BFS runs in O(|V| + |E|) = O(1,000 + 3,000) = O(4,000). On an adjacency matrix, BFS runs in O(|V|²) = O(1,000²) = O(1,000,000). The list representation is roughly 250× faster for this sparse graph.
+    </div>
+    <div class="kc-feedback kc-incorrect" id="kc2-incorrect" role="alert" aria-live="polite">
+      <strong>Not quite.</strong> Recall: adjacency list → O(|V| + |E|); adjacency matrix → O(|V|²). Plug in |V| = 1,000 and |E| = 3,000. The list gives ~4,000 operations and the matrix gives ~1,000,000. The correct answer is <strong>A</strong>.
+    </div>
+  </div>
+
+  <div class="kc-block" id="kc3">
+    <h4>Check 3 — True or False: Shortest-Path Property</h4>
+    <p><em>"BFS guarantees the shortest path between two vertices in any graph, including graphs with weighted edges."</em></p>
+    <ul class="kc-options" role="radiogroup" aria-label="Check 3 answer choices">
+      <li><label><input type="radio" name="kc3" value="a"> A) True</label></li>
+      <li><label><input type="radio" name="kc3" value="b"> B) False</label></li>
+    </ul>
+    <button class="kc-btn" aria-controls="kc3-correct kc3-incorrect" onclick="checkKC('kc3','b')">Check Answer</button>
+    <div class="kc-feedback kc-correct" id="kc3-correct" role="status" aria-live="polite">
+      <strong>Correct — the statement is False.</strong> BFS guarantees shortest paths only in <strong>unweighted</strong> graphs (every edge has the same weight). In weighted graphs, BFS may find a path with fewer edges but greater total weight. For weighted shortest paths, use Dijkstra's algorithm (Week 14).
+    </div>
+    <div class="kc-feedback kc-incorrect" id="kc3-incorrect" role="alert" aria-live="polite">
+      <strong>Not quite.</strong> The statement is <strong>False</strong>. BFS counts <em>edges</em>, not <em>weights</em>. Consider a graph where the direct edge A→B has weight 10, but the path A→C→B has total weight 3. BFS would report A→B as "shortest" (1 edge), but the cheaper path uses 2 edges. The shortest-path guarantee applies only to <strong>unweighted</strong> graphs.
+    </div>
+  </div>
+
+  <div class="kc-block" id="kc4">
+    <h4>Check 4 — BFS Tree Level = Distance</h4>
+    <p>Refer to the worked example (Section 6). In the BFS tree rooted at A, vertex G appears at level 3. Which of the following is the best interpretation?</p>
+    <ul class="kc-options" role="radiogroup" aria-label="Check 4 answer choices">
+      <li><label><input type="radio" name="kc4" value="a"> A) G is the 3rd vertex discovered by BFS.</label></li>
+      <li><label><input type="radio" name="kc4" value="b"> B) The shortest path from A to G in the original graph uses exactly 3 edges.</label></li>
+      <li><label><input type="radio" name="kc4" value="c"> C) G has exactly 3 neighbors in the original graph.</label></li>
+      <li><label><input type="radio" name="kc4" value="d"> D) There are exactly 3 paths from A to G.</label></li>
+    </ul>
+    <button class="kc-btn" aria-controls="kc4-correct kc4-incorrect" onclick="checkKC('kc4','b')">Check Answer</button>
+    <div class="kc-feedback kc-correct" id="kc4-correct" role="status" aria-live="polite">
+      <strong>Correct!</strong> The level of a vertex in the BFS tree equals its shortest distance (in edges) from the source. G at level 3 means the shortest path from A to G uses exactly 3 edges (A → B → D → G). Option A confuses discovery <em>order</em> with <em>level</em>. Option C is coincidentally true for G (it has 3 neighbors) but is unrelated to its BFS level.
+    </div>
+    <div class="kc-feedback kc-incorrect" id="kc4-incorrect" role="alert" aria-live="polite">
+      <strong>Not quite.</strong> The BFS tree level of a vertex equals the <strong>shortest distance (number of edges)</strong> from the source. G at level 3 means the shortest A-to-G path has 3 edges. The correct answer is <strong>B</strong>. Review Section 5.2 for the shortest-path property.
+    </div>
+  </div>
+</section>
+
+<footer class="mod-footer">
+  <p><strong>Up Next:</strong> Module 13.2 — Depth-First Search (DFS). You will learn the second fundamental traversal, compare its recursive and iterative forms, and trace it on the same 7-vertex graph.</p>
+  <p>CSC 240 – Discrete Structures · Mendocino College · Spring 2026<br>
+  Module 13.1 v1.1 · Last updated April 22, 2026</p>
+</footer>
+
+</div>
+</main>
+
+<script>
+function checkKC(id, correctVal) {
+  var radios = document.querySelectorAll('input[name="' + id + '"]');
+  var chosen = null;
+  for (var i = 0; i < radios.length; i++) {
+    if (radios[i].checked) { chosen = radios[i].value; break; }
+  }
+  if (chosen === null) return;
+  var correctEl   = document.getElementById(id + '-correct');
+  var incorrectEl = document.getElementById(id + '-incorrect');
+  if (chosen === correctVal) {
+    correctEl.style.display   = 'block';
+    incorrectEl.style.display = 'none';
+  } else {
+    correctEl.style.display   = 'none';
+    incorrectEl.style.display = 'block';
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 13.2 – Depth-First Search (DFS) | CSC 240</title>
+<style>
+:root{
+--primary:#1a5632;
+--primary-dark:#0d3b1f;
+--primary-light:#e8f5ec;
+--accent:#f0ad4e;
+--accent-light:#fef8ec;
+--text:#212529;
+--text-light:#5a6370;
+--bg:#ffffff;
+--bg-alt:#f8f9fa;
+--border:#dee2e6;
+--code-bg:#f4f4f4;
+--success:#28a745;
+--danger:#dc3545;
+--info:#17a2b8;
+--shadow:0 2px 8px rgba(0,0,0,.1);
+--radius:8px;
+--nav-height:56px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;scroll-padding-top:calc(var(--nav-height) + 18px);}
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;font-size:1rem;line-height:1.65;color:var(--text);background:var(--bg);}
+
+/* ===== STICKY NAV ===== */
+.nav-bar{position:sticky;top:0;z-index:1000;background:var(--primary-dark);display:flex;align-items:center;gap:4px;padding:0 16px;height:var(--nav-height);overflow-x:auto;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.25);}
+.nav-bar a{color:#fff;text-decoration:none;font-size:.82rem;padding:6px 10px;border-radius:4px;transition:background .2s;}
+.nav-bar a:hover,.nav-bar a:focus{background:rgba(255,255,255,.18);outline:none;}
+.nav-bar .nav-title{font-weight:700;font-size:.92rem;margin-right:10px;color:var(--accent);flex-shrink:0;}
+
+/* ===== LAYOUT ===== */
+.wrapper{max-width:960px;margin:0 auto;padding:24px 20px 80px;}
+h1{font-size:1.85rem;color:var(--primary-dark);margin:24px 0 6px;line-height:1.25;}
+h2{font-size:1.45rem;color:var(--primary);margin:40px 0 10px;padding-bottom:6px;border-bottom:3px solid var(--accent);}
+h3{font-size:1.15rem;color:var(--primary-dark);margin:28px 0 8px;}
+h4{font-size:1.02rem;color:var(--primary);margin:18px 0 6px;}
+p{margin:0 0 14px;}
+ul,ol{margin:0 0 14px 22px;}
+li{margin-bottom:5px;}
+a{color:var(--primary);}
+
+/* ===== MODULE BADGE ===== */
+.mod-badge{display:inline-block;background:var(--primary);color:#fff;font-size:.78rem;font-weight:700;padding:3px 10px;border-radius:20px;margin-bottom:4px;letter-spacing:.3px;}
+
+/* ===== CALLOUT BOXES ===== */
+.callout{border-left:5px solid;border-radius:var(--radius);padding:16px 18px;margin:18px 0;font-size:.97rem;}
+.callout-title{font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:6px;}
+.callout.definition{border-color:var(--primary);background:var(--primary-light);}
+.callout.analogy{border-color:var(--accent);background:var(--accent-light);}
+.callout.important{border-color:var(--danger);background:#fdf0f0;}
+.callout.tip{border-color:var(--info);background:#eef9fb;}
+.callout.connection{border-color:#6f42c1;background:#f5f0ff;}
+.callout.compare{border-color:#20c997;background:#eafaf4;}
+
+/* ===== PSEUDOCODE / CODE ===== */
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px;overflow-x:auto;font-size:.88rem;line-height:1.55;margin:12px 0 18px;font-family:'Consolas','Courier New',monospace;}
+code{font-family:'Consolas','Courier New',monospace;font-size:.88rem;}
+p code,li code{background:var(--code-bg);padding:1px 5px;border-radius:3px;}
+
+/* ===== TABLES ===== */
+table{width:100%;border-collapse:collapse;margin:14px 0 20px;font-size:.93rem;}
+th,td{border:1px solid var(--border);padding:9px 12px;text-align:left;}
+th{background:var(--primary);color:#fff;font-weight:600;}
+tr:nth-child(even){background:var(--bg-alt);}
+caption{caption-side:top;font-weight:700;margin-bottom:6px;text-align:left;color:var(--primary-dark);}
+
+/* ===== COLLAPSIBLE ===== */
+details{border:1px solid var(--border);border-radius:var(--radius);margin:14px 0;background:var(--bg-alt);}
+details summary{cursor:pointer;padding:12px 16px;font-weight:700;color:var(--primary-dark);list-style:none;display:flex;align-items:center;gap:8px;user-select:none;}
+details summary::before{content:'▶';font-size:.75rem;transition:transform .2s;flex-shrink:0;}
+details[open] summary::before{transform:rotate(90deg);}
+details .detail-body{padding:4px 18px 18px;}
+
+/* ===== TIMELINE DIAGRAM ===== */
+.timeline-container{overflow-x:auto;margin:14px 0 20px;}
+.timeline-svg text{font-family:'Consolas','Courier New',monospace;font-size:12px;}
+
+/* ===== GRAPH DIAGRAM ===== */
+.graph-container{text-align:center;margin:18px 0;overflow-x:auto;}
+.graph-container svg{max-width:100%;}
+.graph-container svg text{font-family:'Segoe UI',Tahoma,sans-serif;font-size:13px;fill:#212529;}
+
+/* ===== KNOWLEDGE CHECK ===== */
+.kc-section{border:2px solid var(--primary);border-radius:var(--radius);margin:24px 0;overflow:hidden;}
+.kc-header{background:var(--primary);color:#fff;padding:10px 16px;font-weight:700;font-size:1rem;}
+.kc-body{padding:18px;}
+.kc-question{font-weight:600;margin-bottom:10px;}
+.kc-options{list-style:none;margin:0 0 12px;padding:0;}
+.kc-options li{margin-bottom:6px;}
+.kc-options label{cursor:pointer;display:flex;align-items:flex-start;gap:8px;padding:8px 12px;border:2px solid var(--border);border-radius:6px;transition:border-color .2s,background .2s;}
+.kc-options label:hover{border-color:var(--primary);background:var(--primary-light);}
+.kc-options input[type="radio"]{margin-top:3px;flex-shrink:0;}
+.kc-btn{background:var(--primary);color:#fff;border:none;padding:9px 22px;border-radius:6px;font-size:.92rem;cursor:pointer;font-weight:600;transition:background .2s;}
+.kc-btn:hover{background:var(--primary-dark);}
+.kc-btn:disabled{opacity:.5;cursor:not-allowed;}
+.kc-feedback{margin-top:12px;padding:12px 14px;border-radius:6px;font-size:.93rem;display:none;}
+.kc-feedback.correct{background:#d4edda;border:1px solid #b7dfb9;color:#155724;display:block;}
+.kc-feedback.incorrect{background:#f8d7da;border:1px solid #f1aeb5;color:#58151c;display:block;}
+.kc-feedback.info-fb{background:#d1ecf1;border:1px solid #b6dfe6;color:#0c5460;display:block;}
+
+/* ===== OPEN-RESPONSE CHECK ===== */
+.kc-textarea{width:100%;min-height:80px;border:2px solid var(--border);border-radius:6px;padding:10px;font-size:.93rem;font-family:inherit;resize:vertical;margin-bottom:10px;}
+.kc-textarea:focus{border-color:var(--primary);outline:none;}
+
+/* ===== STEP TABLE ===== */
+.step-table th{font-size:.84rem;}
+.step-table td{font-size:.84rem;vertical-align:top;}
+.step-table .highlight-row{background:#fff3cd;}
+
+/* ===== FOOTER ===== */
+.mod-footer{margin-top:50px;padding-top:18px;border-top:2px solid var(--border);font-size:.88rem;color:var(--text-light);text-align:center;}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:600px){
+  .wrapper{padding:16px 12px 60px;}
+  h1{font-size:1.45rem;}
+  h2{font-size:1.22rem;}
+  pre{font-size:.82rem;padding:12px;}
+  .nav-bar{padding:0 8px;}
+  .nav-bar a{font-size:.74rem;padding:5px 7px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== NAVIGATION BAR ===== -->
+<nav class="nav-bar" aria-label="Module 13.2 section navigation">
+  <span class="nav-title">13.2 DFS</span>
+  <a href="#opening">Opening</a>
+  <a href="#recursive-dfs">Recursive</a>
+  <a href="#iterative-dfs">Iterative</a>
+  <a href="#timestamps">Timestamps</a>
+  <a href="#edge-class">Edges</a>
+  <a href="#complexity">Complexity</a>
+  <a href="#worked-example">Trace</a>
+  <a href="#java-code">Java</a>
+  <a href="#induction">Induction</a>
+  <a href="#kc">Checks</a>
+</nav>
+
+<main class="wrapper" role="main">
+
+<!-- ===== HEADER ===== -->
+<span class="mod-badge">MODULE 13.2</span>
+<h1>Depth-First Search (DFS)</h1>
+<p style="color:var(--text-light);font-size:.93rem;margin-bottom:20px;">
+  Week 13 &bull; CSC 240 – Discrete Structures &bull; Mendocino College &bull; Spring 2026
+</p>
+
+<div class="callout tip">
+  <div class="callout-title">📋 Prerequisites</div>
+  Complete <strong>Module 13.1 (BFS)</strong> before starting this module. You will also need the graph vocabulary from <strong>Week 12</strong> and the recursion concepts from <strong>Week 11</strong>.
+</div>
+
+<div class="callout connection">
+  <div class="callout-title">🎯 What You Will Learn</div>
+  <ul style="margin-bottom:0;">
+    <li>How DFS explores a graph by going as deep as possible before backtracking.</li>
+    <li>Recursive and iterative DFS implementations (Objective&nbsp;2, CSLO&nbsp;3).</li>
+    <li>Discovery and finish timestamps, and how they produce the parenthesis theorem.</li>
+    <li>Edge classification: tree, back, forward, and cross edges.</li>
+    <li>Hand-tracing DFS on a graph, recording stack state and timestamps (Objective&nbsp;3).</li>
+    <li>How DFS correctness connects to mathematical induction (Objective&nbsp;8, CSLO&nbsp;4).</li>
+  </ul>
+</div>
+
+<!-- ============================================================ -->
+<!--  SECTION 1 — OPENING                                        -->
+<!-- ============================================================ -->
+<h2 id="opening">1 &nbsp;From BFS to DFS — Explore Deep, Then Backtrack</h2>
+
+<p>In Module&nbsp;13.1 you learned BFS, which fans out level by level like ripples on a pond. <strong>Depth-First Search (DFS)</strong> takes the opposite strategy: it picks one neighbor and immediately dives deeper, continuing along a single path until it reaches a dead end. Only then does it backtrack and try a different branch.</p>
+
+<div class="callout analogy">
+  <div class="callout-title">🏰 The Maze Analogy</div>
+  <p>Imagine you are exploring a large hedge maze. You carry a ball of string so you can retrace your steps. At every fork, you always take the <strong>leftmost unexplored</strong> passage and walk as far as you can. When you hit a dead end, you follow the string back to the most recent fork that still has an unexplored passage, then continue from there.</p>
+  <p>That is exactly how DFS works:</p>
+  <ul style="margin-bottom:0;">
+    <li><strong>Go forward</strong> (explore an unvisited neighbor).</li>
+    <li><strong>Dead end?</strong> Backtrack to the most recent vertex that still has unvisited neighbors.</li>
+    <li><strong>Repeat</strong> until every reachable vertex has been visited.</li>
+  </ul>
+</div>
+
+<p>While BFS uses a <strong>queue</strong> (first-in, first-out), DFS relies on a <strong>stack</strong> (last-in, first-out). The recursive version uses the <em>call stack</em> implicitly; the iterative version manages an explicit stack data structure. Both produce the same deep-before-wide exploration pattern.</p>
+
+<div class="callout compare">
+  <div class="callout-title">🔄 Quick Contrast: BFS vs. DFS at a Glance</div>
+  <table>
+    <tr><th>Feature</th><th>BFS (Module 13.1)</th><th>DFS (This Module)</th></tr>
+    <tr><td>Data structure</td><td>Queue (FIFO)</td><td>Stack (LIFO)</td></tr>
+    <tr><td>Exploration pattern</td><td>Level by level (wide)</td><td>Path by path (deep)</td></tr>
+    <tr><td>Finds shortest path?</td><td>Yes (unweighted)</td><td>No</td></tr>
+    <tr><td>Naturally recursive?</td><td>Not typically</td><td>Yes</td></tr>
+  </table>
+  <p style="margin-bottom:0;font-size:.9rem;">A full comparison is in Module&nbsp;13.3. For now, keep these differences in mind as you learn DFS.</p>
+</div>
+
+<!-- ============================================================ -->
+<!--  SECTION 2 — RECURSIVE DFS                                  -->
+<!-- ============================================================ -->
+<h2 id="recursive-dfs">2 &nbsp;Recursive DFS Algorithm</h2>
+
+<p>DFS has a natural recursive structure: visiting a vertex means visiting each of its unvisited neighbors, and visiting a neighbor is the same problem on a smaller portion of the graph. This mirrors the recursive thinking you practiced in <strong>Week&nbsp;11</strong>.</p>
+
+<h3>2.1 &nbsp;Pseudocode</h3>
+
+<p>The standard recursive DFS has two parts:</p>
+
+<pre><code>Algorithm DFS(G):
+    Input: Graph G = (V, E) represented as an adjacency list
+    Output: All vertices marked visited; d[] and f[] timestamps set
+
+    time ← 0                          // global clock
+    for each vertex v ∈ V:
+        color[v] ← WHITE              // unvisited
+        parent[v] ← NIL
+
+    for each vertex v ∈ V:            // outer loop handles disconnected graphs
+        if color[v] = WHITE:
+            DFS-Visit(G, v)</code></pre>
+
+<pre><code>Algorithm DFS-Visit(G, u):
+    time ← time + 1
+    d[u] ← time                       // discovery time
+    color[u] ← GRAY                   // u is being explored
+
+    for each neighbor w of u:          // iterate adjacency list of u
+        if color[w] = WHITE:
+            parent[w] ← u
+            DFS-Visit(G, w)            // recursive call — go deeper!
+
+    color[u] ← BLACK                   // u is fully explored
+    time ← time + 1
+    f[u] ← time                        // finish time</code></pre>
+
+<div class="callout definition">
+  <div class="callout-title">📖 Vertex Colors</div>
+  <ul style="margin-bottom:0;">
+    <li><strong>WHITE</strong> — not yet discovered.</li>
+    <li><strong>GRAY</strong> — discovered but still has descendants being explored (on the call stack).</li>
+    <li><strong>BLACK</strong> — fully explored; all descendants finished.</li>
+  </ul>
+</div>
+
+<h3>2.2 &nbsp;The Call Stack as an Implicit Stack</h3>
+
+<p>Every time <code>DFS-Visit</code> calls itself, the current vertex is pushed onto the <em>call stack</em>. When the recursive call returns (because a dead end was reached), the program pops back to the previous vertex — exactly the backtracking behavior of the maze analogy.</p>
+
+<div class="callout tip">
+  <div class="callout-title">🔗 Connection to Week 11</div>
+  <p style="margin-bottom:0;">In Week&nbsp;11 you traced recursion trees for functions like <code>fibonacci(n)</code>. The DFS call tree works the same way: each call to <code>DFS-Visit(G, u)</code> spawns child calls for <code>u</code>'s unvisited neighbors. The recursion tree of DFS <em>is</em> the DFS tree of the graph.</p>
+</div>
+
+<!-- ============================================================ -->
+<!--  SECTION 3 — ITERATIVE DFS                                  -->
+<!-- ============================================================ -->
+<h2 id="iterative-dfs">3 &nbsp;Iterative DFS Algorithm</h2>
+
+<p>Just as BFS uses an explicit queue, we can implement DFS with an <strong>explicit stack</strong>. This avoids deep recursion that could overflow the call stack on very large graphs.</p>
+
+<h3>3.1 &nbsp;Pseudocode</h3>
+
+<pre><code>Algorithm DFS-Iterative(G, s):
+    Input: Graph G = (V, E), source vertex s
+    Output: All vertices reachable from s marked visited
+
+    let S be an empty stack
+    for each vertex v ∈ V:
+        visited[v] ← false
+
+    S.push(s)
+
+    while S is not empty:
+        u ← S.pop()
+        if visited[u] = false:
+            visited[u] ← true
+            process(u)                  // e.g., print u
+            for each neighbor w of u:   // push all unvisited neighbors
+                if visited[w] = false:
+                    S.push(w)</code></pre>
+
+<div class="callout important">
+  <div class="callout-title">⚠️ Subtle Difference: Iterative vs. Recursive DFS</div>
+  <p>The iterative version may visit vertices in a <strong>different order</strong> than the recursive version, even on the same graph with the same adjacency-list ordering. Here is why:</p>
+  <ul>
+    <li>The <strong>recursive</strong> version processes the first unvisited neighbor immediately (depth-first) before looking at the second neighbor.</li>
+    <li>The <strong>iterative</strong> version pushes <em>all</em> unvisited neighbors onto the stack at once. Because a stack is LIFO, the <em>last</em> neighbor pushed is the <em>first</em> popped. This effectively reverses the adjacency-list order unless you push neighbors in reverse order.</li>
+  </ul>
+  <p style="margin-bottom:0;">To make the iterative version produce the <strong>same</strong> order as the recursive version, push neighbors in <strong>reverse adjacency-list order</strong>.</p>
+</div>
+
+<h3>3.2 &nbsp;BFS ↔ Iterative DFS: One Data Structure Apart</h3>
+
+<table>
+  <tr><th>Aspect</th><th>BFS</th><th>Iterative DFS</th></tr>
+  <tr><td>Data structure</td><td>Queue (FIFO)</td><td>Stack (LIFO)</td></tr>
+  <tr><td>Core loop</td><td><code>u ← Q.dequeue()</code></td><td><code>u ← S.pop()</code></td></tr>
+  <tr><td>Neighbor handling</td><td>Enqueue unvisited neighbors</td><td>Push unvisited neighbors</td></tr>
+  <tr><td>Traversal shape</td><td>Level by level</td><td>Deep path by path</td></tr>
+</table>
+
+<p>Swapping the queue for a stack is all it takes to change BFS into DFS. This elegant symmetry is one of the most important observations in graph algorithms.</p>
+
+<!-- ============================================================ -->
+<!--  SECTION 4 — TIMESTAMPS                                     -->
+<!-- ============================================================ -->
+<h2 id="timestamps">4 &nbsp;Discovery and Finish Timestamps</h2>
+
+<p>The recursive DFS algorithm maintains a global clock. Each vertex $$v$$ gets two timestamps:</p>
+
+<ul>
+  <li><strong>$$d[v]$$</strong> — <em>discovery time</em>: when $$v$$ is first encountered (colored GRAY).</li>
+  <li><strong>$$f[v]$$</strong> — <em>finish time</em>: when $$v$$'s subtree is fully explored (colored BLACK).</li>
+</ul>
+
+<p>For a graph with $$|V|$$ vertices, the timestamps use the integers $$1$$ through $$2|V|$$ (each vertex accounts for exactly two ticks of the clock).</p>
+
+<h3>4.1 &nbsp;The Parenthesis Theorem</h3>
+
+<div class="callout definition">
+  <div class="callout-title">📖 Parenthesis Theorem</div>
+  <p>For any two vertices $$u$$ and $$v$$ in a DFS, exactly one of the following is true:</p>
+  <ol style="margin-bottom:0;">
+    <li>The intervals $$[d[u], f[u]]$$ and $$[d[v], f[v]]$$ are <strong>entirely disjoint</strong> — neither is an ancestor of the other in the DFS tree.</li>
+    <li>One interval <strong>entirely contains</strong> the other — the vertex with the containing interval is an ancestor of the other in the DFS tree.</li>
+  </ol>
+  <p style="margin-top:8px;margin-bottom:0;">No two intervals <em>partially overlap</em>. If you replace each discovery with "<code>(</code>" and each finish with "<code>)</code>", you get a string of properly nested parentheses — hence the name.</p>
+</div>
+
+<h3>4.2 &nbsp;Timeline Diagram</h3>
+
+<p>The diagram below shows a sample DFS on four vertices. Each vertex's active interval is shown as a horizontal bar on a shared timeline. Notice how intervals nest but never partially overlap.</p>
+
+<div class="timeline-container" role="img" aria-label="Parenthesis theorem timeline diagram for vertices A, B, C, D. A's interval 1 to 8 contains B's interval 2 to 7. B's interval contains C's interval 3 to 6. C's interval contains D's interval 4 to 5. All intervals nest properly.">
+<svg viewBox="0 0 580 170" style="max-width:580px;width:100%;" xmlns="http://www.w3.org/2000/svg">
+  <!-- axis -->
+  <line x1="50" y1="145" x2="550" y2="145" stroke="#999" stroke-width="1"/>
+  <!-- tick marks 1-8 -->
+  <line x1="110" y1="140" x2="110" y2="150" stroke="#999"/>
+  <text x="110" y="163" text-anchor="middle" font-size="11" fill="#555">1</text>
+  <line x1="170" y1="140" x2="170" y2="150" stroke="#999"/>
+  <text x="170" y="163" text-anchor="middle" font-size="11" fill="#555">2</text>
+  <line x1="230" y1="140" x2="230" y2="150" stroke="#999"/>
+  <text x="230" y="163" text-anchor="middle" font-size="11" fill="#555">3</text>
+  <line x1="290" y1="140" x2="290" y2="150" stroke="#999"/>
+  <text x="290" y="163" text-anchor="middle" font-size="11" fill="#555">4</text>
+  <line x1="350" y1="140" x2="350" y2="150" stroke="#999"/>
+  <text x="350" y="163" text-anchor="middle" font-size="11" fill="#555">5</text>
+  <line x1="410" y1="140" x2="410" y2="150" stroke="#999"/>
+  <text x="410" y="163" text-anchor="middle" font-size="11" fill="#555">6</text>
+  <line x1="470" y1="140" x2="470" y2="150" stroke="#999"/>
+  <text x="470" y="163" text-anchor="middle" font-size="11" fill="#555">7</text>
+  <line x1="530" y1="140" x2="530" y2="150" stroke="#999"/>
+  <text x="530" y="163" text-anchor="middle" font-size="11" fill="#555">8</text>
+
+  <!-- A: d=1, f=8 -->
+  <rect x="110" y="20" width="420" height="18" rx="4" fill="#1a5632" opacity=".2" stroke="#1a5632" stroke-width="1.5"/>
+  <text x="20" y="34" font-size="13" font-weight="bold" fill="#1a5632">A</text>
+  <text x="112" y="15" font-size="10" fill="#1a5632">(1</text>
+  <text x="522" y="15" font-size="10" fill="#1a5632">8)</text>
+
+  <!-- B: d=2, f=7 -->
+  <rect x="170" y="48" width="300" height="18" rx="4" fill="#0d6efd" opacity=".2" stroke="#0d6efd" stroke-width="1.5"/>
+  <text x="20" y="62" font-size="13" font-weight="bold" fill="#0d6efd">B</text>
+  <text x="172" y="43" font-size="10" fill="#0d6efd">(2</text>
+  <text x="462" y="43" font-size="10" fill="#0d6efd">7)</text>
+
+  <!-- C: d=3, f=6 -->
+  <rect x="230" y="76" width="180" height="18" rx="4" fill="#6f42c1" opacity=".2" stroke="#6f42c1" stroke-width="1.5"/>
+  <text x="20" y="90" font-size="13" font-weight="bold" fill="#6f42c1">C</text>
+  <text x="232" y="71" font-size="10" fill="#6f42c1">(3</text>
+  <text x="402" y="71" font-size="10" fill="#6f42c1">6)</text>
+
+  <!-- D: d=4, f=5 -->
+  <rect x="290" y="104" width="60" height="18" rx="4" fill="#dc3545" opacity=".2" stroke="#dc3545" stroke-width="1.5"/>
+  <text x="20" y="118" font-size="13" font-weight="bold" fill="#dc3545">D</text>
+  <text x="292" y="99" font-size="10" fill="#dc3545">(4</text>
+  <text x="342" y="99" font-size="10" fill="#dc3545">5)</text>
+</svg>
+</div>
+
+<p>Reading the parentheses left to right: <code>( A ( B ( C ( D D ) C ) B ) A )</code> — properly nested, just like arithmetic parentheses.</p>
+
+<!-- ============================================================ -->
+<!--  SECTION 5 — EDGE CLASSIFICATION                            -->
+<!-- ============================================================ -->
+<h2 id="edge-class">5 &nbsp;DFS Tree and Edge Classification</h2>
+
+<p>As DFS explores a graph, every edge is classified into one of four types based on the timestamps and colors of the endpoints. This classification is one of the most powerful tools in graph algorithm design.</p>
+
+<h3>5.1 &nbsp;Four Edge Types (Directed Graphs)</h3>
+
+<table>
+  <caption>DFS Edge Classification</caption>
+  <tr><th>Edge Type</th><th>Description</th><th>Timestamp Condition</th></tr>
+  <tr>
+    <td><strong>Tree edge</strong></td>
+    <td>Edge $$(u, v)$$ where $$v$$ is WHITE when explored from $$u$$. These edges form the DFS tree.</td>
+    <td>$$d[u] < d[v] < f[v] < f[u]$$</td>
+  </tr>
+  <tr>
+    <td><strong>Back edge</strong></td>
+    <td>Edge $$(u, v)$$ where $$v$$ is GRAY — $$v$$ is an ancestor of $$u$$ in the DFS tree. <em>Back edges indicate cycles.</em></td>
+    <td>$$d[v] < d[u] < f[u] < f[v]$$</td>
+  </tr>
+  <tr>
+    <td><strong>Forward edge</strong></td>
+    <td>Edge $$(u, v)$$ where $$v$$ is BLACK and $$v$$ is a descendant of $$u$$ (not via a tree edge).</td>
+    <td>$$d[u] < d[v] < f[v] < f[u]$$</td>
+  </tr>
+  <tr>
+    <td><strong>Cross edge</strong></td>
+    <td>Edge $$(u, v)$$ where $$v$$ is BLACK and $$v$$ is neither an ancestor nor a descendant of $$u$$.</td>
+    <td>$$d[v] < f[v] < d[u] < f[u]$$</td>
+  </tr>
+</table>
+
+<h3>5.2 &nbsp;Undirected Graphs: Simpler Classification</h3>
+
+<div class="callout important">
+  <div class="callout-title">⚠️ Undirected Graph Simplification</div>
+  <p style="margin-bottom:0;">In an <strong>undirected</strong> graph, DFS produces only <strong>tree edges</strong> and <strong>back edges</strong>. There are no forward or cross edges. This is because every edge is traversed in both directions, so any non-tree edge must connect a vertex to one of its ancestors (making it a back edge).</p>
+</div>
+
+<h3>5.3 &nbsp;Why Edge Classification Matters</h3>
+<ul>
+  <li><strong>Cycle detection:</strong> A graph has a cycle if and only if DFS finds a <strong>back edge</strong>. (Module&nbsp;13.4 explores this in depth.)</li>
+  <li><strong>Topological sorting:</strong> A DAG has <em>no</em> back edges. Sorting by reverse finish time gives a valid topological order. (Module&nbsp;13.4.)</li>
+  <li><strong>Strongly connected components:</strong> Edge classification drives Tarjan's and Kosaraju's algorithms (beyond this course, but good to know).</li>
+</ul>
+
+<!-- ============================================================ -->
+<!--  SECTION 6 — COMPLEXITY                                     -->
+<!-- ============================================================ -->
+<h2 id="complexity">6 &nbsp;Time Complexity: $$O(|V| + |E|)$$</h2>
+
+<p>The complexity analysis for DFS mirrors BFS almost exactly.</p>
+
+<h3>6.1 &nbsp;On an Adjacency List</h3>
+<ol>
+  <li><strong>Initialization:</strong> The outer loop in <code>DFS(G)</code> visits every vertex once to check its color → $$O(|V|)$$.</li>
+  <li><strong>DFS-Visit calls:</strong> Each vertex is the argument of <code>DFS-Visit</code> at most once (it must be WHITE to enter). Inside <code>DFS-Visit(G, u)</code>, we scan the adjacency list of $$u$$, which has $$\deg(u)$$ entries.</li>
+  <li><strong>Total adjacency-list work:</strong> Summing over all vertices: $$\sum_{u \in V} \deg(u) = 2|E|$$ for undirected graphs (by the Handshaking Lemma from Week&nbsp;12) or $$|E|$$ for directed graphs.</li>
+</ol>
+
+<p>Therefore:</p>
+
+$$T_{\text{DFS}} = O(|V| + |E|)$$
+
+<p>This is the same asymptotic complexity as BFS. Both algorithms are <strong>linear</strong> in the size of the graph.</p>
+
+<h3>6.2 &nbsp;On an Adjacency Matrix</h3>
+
+<p>If the graph is stored as an adjacency matrix, checking all neighbors of a vertex takes $$O(|V|)$$ instead of $$O(\deg(u))$$. Summing over all vertices:</p>
+
+$$T_{\text{DFS-matrix}} = O(|V|^2)$$
+
+<p>This is why adjacency lists are preferred for traversal algorithms on sparse graphs — the same conclusion you reached for BFS in Module&nbsp;13.1.</p>
+
+<!-- ============================================================ -->
+<!--  SECTION 7 — WORKED EXAMPLE                                 -->
+<!-- ============================================================ -->
+<h2 id="worked-example">7 &nbsp;Worked Example: Hand-Tracing DFS</h2>
+
+<p>We use the <strong>same 7-vertex graph</strong> from Module&nbsp;13.1 so you can directly compare BFS and DFS traversal orders.</p>
+
+<h3>7.1 &nbsp;The Graph</h3>
+
+<div class="graph-container" role="img" aria-label="Undirected graph with 7 vertices: A connects to B and C. B connects to A, D, and E. C connects to A, E, and F. D connects to B. E connects to B, C, and G. F connects to C. G connects to E.">
+<svg viewBox="0 0 460 300" style="max-width:460px;width:100%;" xmlns="http://www.w3.org/2000/svg">
+  <!-- Edges -->
+  <line x1="230" y1="30" x2="120" y2="110" stroke="#999" stroke-width="2"/>
+  <line x1="230" y1="30" x2="340" y2="110" stroke="#999" stroke-width="2"/>
+  <line x1="120" y1="110" x2="70" y2="210" stroke="#999" stroke-width="2"/>
+  <line x1="120" y1="110" x2="230" y2="170" stroke="#999" stroke-width="2"/>
+  <line x1="340" y1="110" x2="230" y2="170" stroke="#999" stroke-width="2"/>
+  <line x1="340" y1="110" x2="390" y2="210" stroke="#999" stroke-width="2"/>
+  <line x1="230" y1="170" x2="230" y2="270" stroke="#999" stroke-width="2"/>
+  <!-- Vertices -->
+  <circle cx="230" cy="30" r="22" fill="#1a5632" stroke="#0d3b1f" stroke-width="2"/>
+  <text x="230" y="36" text-anchor="middle" fill="#fff" font-weight="bold" font-size="14">A</text>
+
+  <circle cx="120" cy="110" r="22" fill="#1a5632" stroke="#0d3b1f" stroke-width="2"/>
+  <text x="120" y="116" text-anchor="middle" fill="#fff" font-weight="bold" font-size="14">B</text>
+
+  <circle cx="340" cy="110" r="22" fill="#1a5632" stroke="#0d3b1f" stroke-width="2"/>
+  <text x="340" y="116" text-anchor="middle" fill="#fff" font-weight="bold" font-size="14">C</text>
+
+  <circle cx="70" cy="210" r="22" fill="#1a5632" stroke="#0d3b1f" stroke-width="2"/>
+  <text x="70" y="216" text-anchor="middle" fill="#fff" font-weight="bold" font-size="14">D</text>
+
+  <circle cx="230" cy="170" r="22" fill="#1a5632" stroke="#0d3b1f" stroke-width="2"/>
+  <text x="230" y="176" text-anchor="middle" fill="#fff" font-weight="bold" font-size="14">E</text>
+
+  <circle cx="390" cy="210" r="22" fill="#1a5632" stroke="#0d3b1f" stroke-width="2"/>
+  <text x="390" y="216" text-anchor="middle" fill="#fff" font-weight="bold" font-size="14">F</text>
+
+  <circle cx="230" cy="270" r="22" fill="#1a5632" stroke="#0d3b1f" stroke-width="2"/>
+  <text x="230" y="276" text-anchor="middle" fill="#fff" font-weight="bold" font-size="14">G</text>
+</svg>
+</div>
+
+<h4>Adjacency List (alphabetical order within each list)</h4>
+<pre><code>A: [B, C]
+B: [A, D, E]
+C: [A, E, F]
+D: [B]
+E: [B, C, G]
+F: [C]
+G: [E]</code></pre>
+
+<h3>7.2 &nbsp;Recursive DFS Trace (source = A)</h3>
+
+<p>We apply <code>DFS-Visit</code> starting at A, always choosing the <strong>first unvisited</strong> neighbor in alphabetical order.</p>
+
+<table class="step-table">
+  <caption>Recursive DFS Step-by-Step Trace</caption>
+  <tr>
+    <th>Step</th><th>Action</th><th>Call Stack</th><th>Vertex</th><th>d[ ]</th><th>f[ ]</th><th>Notes</th>
+  </tr>
+  <tr>
+    <td>1</td><td>Visit A</td><td>[A]</td><td>A</td><td>d[A]=1</td><td>—</td><td>A turns GRAY; first neighbor B is WHITE → recurse</td>
+  </tr>
+  <tr>
+    <td>2</td><td>Visit B</td><td>[A, B]</td><td>B</td><td>d[B]=2</td><td>—</td><td>B turns GRAY; neighbors: A(GRAY, skip), D(WHITE) → recurse on D</td>
+  </tr>
+  <tr>
+    <td>3</td><td>Visit D</td><td>[A, B, D]</td><td>D</td><td>d[D]=3</td><td>—</td><td>D turns GRAY; neighbor B is GRAY → back edge (D,B); no WHITE neighbors</td>
+  </tr>
+  <tr class="highlight-row">
+    <td>4</td><td>Finish D</td><td>[A, B]</td><td>D</td><td>—</td><td>f[D]=4</td><td>D turns BLACK; backtrack to B</td>
+  </tr>
+  <tr>
+    <td>5</td><td>Continue B</td><td>[A, B]</td><td>B</td><td>—</td><td>—</td><td>Next neighbor of B: E is WHITE → recurse on E</td>
+  </tr>
+  <tr>
+    <td>6</td><td>Visit E</td><td>[A, B, E]</td><td>E</td><td>d[E]=5</td><td>—</td><td>E turns GRAY; neighbors: B(GRAY, skip), C(WHITE) → recurse on C</td>
+  </tr>
+  <tr>
+    <td>7</td><td>Visit C</td><td>[A, B, E, C]</td><td>C</td><td>d[C]=6</td><td>—</td><td>C turns GRAY; neighbors: A(GRAY, skip), E(GRAY, skip), F(WHITE) → recurse on F</td>
+  </tr>
+  <tr>
+    <td>8</td><td>Visit F</td><td>[A, B, E, C, F]</td><td>F</td><td>d[F]=7</td><td>—</td><td>F turns GRAY; neighbor C is GRAY → back edge (F,C); no WHITE neighbors</td>
+  </tr>
+  <tr class="highlight-row">
+    <td>9</td><td>Finish F</td><td>[A, B, E, C]</td><td>F</td><td>—</td><td>f[F]=8</td><td>F turns BLACK; backtrack to C</td>
+  </tr>
+  <tr class="highlight-row">
+    <td>10</td><td>Finish C</td><td>[A, B, E]</td><td>C</td><td>—</td><td>f[C]=9</td><td>C has no more WHITE neighbors; turns BLACK; backtrack to E</td>
+  </tr>
+  <tr>
+    <td>11</td><td>Continue E</td><td>[A, B, E]</td><td>E</td><td>—</td><td>—</td><td>Next neighbor of E: G is WHITE → recurse on G</td>
+  </tr>
+  <tr>
+    <td>12</td><td>Visit G</td><td>[A, B, E, G]</td><td>G</td><td>d[G]=10</td><td>—</td><td>G turns GRAY; neighbor E is GRAY → back edge (G,E); no WHITE neighbors</td>
+  </tr>
+  <tr class="highlight-row">
+    <td>13</td><td>Finish G</td><td>[A, B, E]</td><td>G</td><td>—</td><td>f[G]=11</td><td>G turns BLACK; backtrack to E</td>
+  </tr>
+  <tr class="highlight-row">
+    <td>14</td><td>Finish E</td><td>[A, B]</td><td>E</td><td>—</td><td>f[E]=12</td><td>E turns BLACK; backtrack to B</td>
+  </tr>
+  <tr class="highlight-row">
+    <td>15</td><td>Finish B</td><td>[A]</td><td>B</td><td>—</td><td>f[B]=13</td><td>B turns BLACK; backtrack to A</td>
+  </tr>
+  <tr class="highlight-row">
+    <td>16</td><td>Finish A</td><td>[ ]</td><td>A</td><td>—</td><td>f[A]=14</td><td>A turns BLACK; call stack empty</td>
+  </tr>
+</table>
+
+<h4>Summary of Timestamps</h4>
+<table>
+  <tr><th>Vertex</th><th>d[v]</th><th>f[v]</th><th>Interval</th></tr>
+  <tr><td>A</td><td>1</td><td>14</td><td>[1, 14]</td></tr>
+  <tr><td>B</td><td>2</td><td>13</td><td>[2, 13]</td></tr>
+  <tr><td>C</td><td>6</td><td>9</td><td>[6, 9]</td></tr>
+  <tr><td>D</td><td>3</td><td>4</td><td>[3, 4]</td></tr>
+  <tr><td>E</td><td>5</td><td>12</td><td>[5, 12]</td></tr>
+  <tr><td>F</td><td>7</td><td>8</td><td>[7, 8]</td></tr>
+  <tr><td>G</td><td>10</td><td>11</td><td>[10, 11]</td></tr>
+</table>
+
+<p><strong>DFS traversal order (by discovery):</strong> A → B → D → E → C → F → G</p>
+
+<h4>Edge Classification (Undirected Graph)</h4>
+<table>
+  <tr><th>Edge</th><th>Type</th><th>Reason</th></tr>
+  <tr><td>(A, B)</td><td>Tree</td><td>B was WHITE when visited from A</td></tr>
+  <tr><td>(B, D)</td><td>Tree</td><td>D was WHITE when visited from B</td></tr>
+  <tr><td>(B, E)</td><td>Tree</td><td>E was WHITE when visited from B</td></tr>
+  <tr><td>(E, C)</td><td>Tree</td><td>C was WHITE when visited from E</td></tr>
+  <tr><td>(C, F)</td><td>Tree</td><td>F was WHITE when visited from C</td></tr>
+  <tr><td>(E, G)</td><td>Tree</td><td>G was WHITE when visited from E</td></tr>
+  <tr><td>(A, C)</td><td>Back</td><td>When C checks A, A is GRAY (ancestor)</td></tr>
+</table>
+
+<div class="callout compare">
+  <div class="callout-title">🔄 DFS vs. BFS Order Comparison (Same Graph, Source = A)</div>
+  <table>
+    <tr><th></th><th>Traversal Order</th><th>Pattern</th></tr>
+    <tr><td><strong>BFS</strong> (Module 13.1)</td><td>A → B → C → D → E → F → G</td><td>Level 0, then Level 1, then Level 2, then Level 3</td></tr>
+    <tr><td><strong>DFS</strong> (This Module)</td><td>A → B → D → E → C → F → G</td><td>Dives A→B→D, backtracks, dives B→E→C→F, backtracks, dives E→G</td></tr>
+  </table>
+  <p style="margin-bottom:0;">BFS discovered C (level 1) before D (level 2). DFS discovered D (depth 3 on the A→B→D path) before C because it dives deep first.</p>
+</div>
+
+<!-- ============================================================ -->
+<!--  SECTION 8 — JAVA CODE                                      -->
+<!-- ============================================================ -->
+<h2 id="java-code">8 &nbsp;Java Code Walkthrough</h2>
+
+<p>Below are Java implementations of both recursive and iterative DFS. Review these after you are comfortable with the pseudocode above.</p>
+
+<details>
+  <summary>☕ Java: Recursive DFS with Timestamps</summary>
+  <div class="detail-body">
+<pre><code>import java.util.*;
+
+public class DFSRecursive {
+    static int time = 0;  // global clock
+
+    static final int WHITE = 0, GRAY = 1, BLACK = 2;
+
+    public static void dfs(List&lt;List&lt;Integer&gt;&gt; adj, int n) {
+        int[] color  = new int[n];   // all WHITE (0) by default
+        int[] d      = new int[n];   // discovery times
+        int[] f      = new int[n];   // finish times
+        int[] parent = new int[n];
+        Arrays.fill(parent, -1);
+        time = 0;
+
+        for (int v = 0; v &lt; n; v++) {
+            if (color[v] == WHITE) {
+                dfsVisit(adj, v, color, d, f, parent);
+            }
+        }
+
+        // Print results
+        System.out.println("Vertex | d[v] | f[v]");
+        for (int v = 0; v &lt; n; v++) {
+            System.out.printf("  %d    |  %2d  |  %2d%n", v, d[v], f[v]);
+        }
+    }
+
+    static void dfsVisit(List&lt;List&lt;Integer&gt;&gt; adj, int u,
+                         int[] color, int[] d, int[] f, int[] parent) {
+        time++;
+        d[u] = time;
+        color[u] = GRAY;
+        System.out.println("Discover vertex " + u + " at time " + d[u]);
+
+        for (int w : adj.get(u)) {
+            if (color[w] == WHITE) {
+                parent[w] = u;
+                dfsVisit(adj, w, color, d, f, parent);  // recurse
+            }
+            // color[w] == GRAY  → back edge
+            // color[w] == BLACK → forward or cross edge
+        }
+
+        color[u] = BLACK;
+        time++;
+        f[u] = time;
+        System.out.println("Finish vertex " + u + " at time " + f[u]);
+    }
+
+    public static void main(String[] args) {
+        // Build the 7-vertex example: A=0, B=1, C=2, D=3, E=4, F=5, G=6
+        int n = 7;
+        List&lt;List&lt;Integer&gt;&gt; adj = new ArrayList&lt;&gt;();
+        for (int i = 0; i &lt; n; i++) adj.add(new ArrayList&lt;&gt;());
+
+        // Undirected edges (add both directions)
+        int[][] edges = {{0,1},{0,2},{1,3},{1,4},{2,4},{2,5},{4,6}};
+        for (int[] e : edges) {
+            adj.get(e[0]).add(e[1]);
+            adj.get(e[1]).add(e[0]);
+        }
+        // Sort each list for consistent alphabetical order
+        for (List&lt;Integer&gt; list : adj) Collections.sort(list);
+
+        dfs(adj, n);
+    }
+}</code></pre>
+    <div class="callout tip" style="margin-top:10px;">
+      <div class="callout-title">💡 Key Observation</div>
+      <p style="margin-bottom:0;">The <code>dfsVisit</code> method directly mirrors the pseudocode from Section&nbsp;2. The <code>color</code> array tracks WHITE/GRAY/BLACK, and the global <code>time</code> variable stamps discovery and finish events.</p>
+    </div>
+  </div>
+</details>
+
+<details>
+  <summary>☕ Java: Iterative DFS with Explicit Stack</summary>
+  <div class="detail-body">
+<pre><code>import java.util.*;
+
+public class DFSIterative {
+
+    public static void dfsIterative(List&lt;List&lt;Integer&gt;&gt; adj, int n, int source) {
+        boolean[] visited = new boolean[n];
+        Deque&lt;Integer&gt; stack = new ArrayDeque&lt;&gt;();
+        List&lt;Integer&gt; order = new ArrayList&lt;&gt;();
+
+        stack.push(source);
+
+        while (!stack.isEmpty()) {
+            int u = stack.pop();
+            if (visited[u]) continue;   // may have been pushed multiple times
+            visited[u] = true;
+            order.add(u);
+
+            // Push neighbors in REVERSE order so the first neighbor
+            // in the adjacency list is popped first (matches recursive order)
+            List&lt;Integer&gt; neighbors = adj.get(u);
+            for (int i = neighbors.size() - 1; i &gt;= 0; i--) {
+                int w = neighbors.get(i);
+                if (!visited[w]) {
+                    stack.push(w);
+                }
+            }
+        }
+
+        System.out.println("Iterative DFS order: " + order);
+    }
+
+    public static void main(String[] args) {
+        int n = 7;
+        List&lt;List&lt;Integer&gt;&gt; adj = new ArrayList&lt;&gt;();
+        for (int i = 0; i &lt; n; i++) adj.add(new ArrayList&lt;&gt;());
+
+        int[][] edges = {{0,1},{0,2},{1,3},{1,4},{2,4},{2,5},{4,6}};
+        for (int[] e : edges) {
+            adj.get(e[0]).add(e[1]);
+            adj.get(e[1]).add(e[0]);
+        }
+        for (List&lt;Integer&gt; list : adj) Collections.sort(list);
+
+        dfsIterative(adj, n, 0);  // source = A (vertex 0)
+    }
+}</code></pre>
+    <div class="callout important" style="margin-top:10px;">
+      <div class="callout-title">⚠️ Why Reverse Order?</div>
+      <p style="margin-bottom:0;">We push neighbors from last to first so that the <em>first</em> neighbor in the sorted adjacency list ends up on <em>top</em> of the stack and is popped next. Without this reversal, the iterative version would explore neighbors in the opposite order from the recursive version.</p>
+    </div>
+  </div>
+</details>
+
+<!-- ============================================================ -->
+<!--  SECTION 9 — DFS AND INDUCTION                              -->
+<!-- ============================================================ -->
+<h2 id="induction">9 &nbsp;DFS Correctness and Mathematical Induction</h2>
+
+<p>One of the course learning outcomes (CSLO&nbsp;4) asks you to connect recursion to mathematical induction. DFS is a perfect example: its recursive structure lets us prove correctness using the same induction framework you learned in <strong>Weeks&nbsp;6 and 11</strong>.</p>
+
+<div class="callout connection">
+  <div class="callout-title">🔗 The Connection</div>
+  <p style="margin-bottom:0;">Recursion and induction are two sides of the same coin. Recursion <em>solves</em> a problem by reducing it to smaller instances. Induction <em>proves</em> that the solution is correct by showing the base case works and that correctness carries from smaller instances to larger ones.</p>
+</div>
+
+<h3>9.1 &nbsp;What We Want to Prove</h3>
+
+<p><strong>Claim:</strong> Starting from any source vertex $$s$$, <code>DFS-Visit(G, s)</code> correctly visits every vertex reachable from $$s$$.</p>
+
+<h3>9.2 &nbsp;Proof by Strong Induction on $$k$$, the Number of Reachable Vertices</h3>
+
+<h4>Base Case ($$k = 1$$)</h4>
+<p>If only one vertex is reachable from $$s$$ (namely $$s$$ itself, with no unvisited neighbors), then <code>DFS-Visit(G, s)</code> discovers $$s$$, finds no WHITE neighbors, and finishes. The single reachable vertex is correctly visited. ✓</p>
+
+<h4>Inductive Hypothesis</h4>
+<p>Assume that for every graph and every source vertex, if the number of reachable unvisited vertices is at most $$k$$ (for some $$k \geq 1$$), then <code>DFS-Visit</code> correctly visits all of them.</p>
+
+<h4>Inductive Step (show it works for $$k + 1$$)</h4>
+<p>Suppose $$s$$ can reach $$k + 1$$ unvisited vertices (including itself). When <code>DFS-Visit(G, s)</code> runs:</p>
+<ol>
+  <li>It discovers $$s$$ and marks it GRAY.</li>
+  <li>For each WHITE neighbor $$w$$ of $$s$$, it calls <code>DFS-Visit(G, w)</code>. At the time of this call, the number of unvisited vertices reachable from $$w$$ is <strong>at most $$k$$</strong> (because $$s$$ itself is already GRAY and won't be counted again, and some vertices may have been visited by earlier recursive calls).</li>
+  <li>By the <strong>inductive hypothesis</strong>, each such call correctly visits all vertices reachable from $$w$$.</li>
+  <li>After all neighbors are processed, every vertex reachable from $$s$$ has been visited.</li>
+</ol>
+
+<p>By the principle of mathematical induction, <code>DFS-Visit</code> correctly visits all reachable vertices for any graph of any size. ∎</p>
+
+<div class="callout tip">
+  <div class="callout-title">💡 Why This Matters</div>
+  <p style="margin-bottom:0;">This proof pattern — base case, inductive hypothesis, inductive step — is the <em>same</em> structure you used in Week&nbsp;6 for proofs about sums and divisibility, and in Week&nbsp;11 for proving properties of recursive functions. The only difference is that here the "smaller instance" is a subgraph with fewer unvisited vertices instead of a smaller integer. Recognizing this pattern across different domains is a core skill in discrete mathematics.</p>
+</div>
+
+<!-- ============================================================ -->
+<!--  SECTION 10 — KNOWLEDGE CHECKS                              -->
+<!-- ============================================================ -->
+<h2 id="kc">10 &nbsp;Knowledge Checks</h2>
+
+<p>These are <strong>ungraded</strong> self-checks. Use them to test your understanding before moving on to Module&nbsp;13.3. Select an answer and click <strong>Check Answer</strong> to see immediate feedback.</p>
+
+<!-- KC 1 -->
+<div class="kc-section" id="kc1">
+  <div class="kc-header">Knowledge Check 1 — DFS Traversal Order</div>
+  <div class="kc-body">
+    <p class="kc-question">Using the 7-vertex graph from Section 7 with source A and alphabetical tie-breaking, what is the <strong>recursive DFS discovery order</strong>?</p>
+    <ul class="kc-options" role="radiogroup" aria-label="Knowledge Check 1 options">
+      <li><label><input type="radio" name="kc1" value="a"> A, B, C, D, E, F, G</label></li>
+      <li><label><input type="radio" name="kc1" value="b"> A, B, D, E, C, F, G</label></li>
+      <li><label><input type="radio" name="kc1" value="c"> A, C, F, E, G, B, D</label></li>
+      <li><label><input type="radio" name="kc1" value="d"> A, B, E, G, C, F, D</label></li>
+    </ul>
+    <button class="kc-btn" onclick="checkKC('kc1','b')">Check Answer</button>
+    <div id="kc1-feedback"></div>
+  </div>
+</div>
+
+<!-- KC 2 -->
+<div class="kc-section" id="kc2">
+  <div class="kc-header">Knowledge Check 2 — Timestamps and the Parenthesis Theorem</div>
+  <div class="kc-body">
+    <p class="kc-question">In the worked trace (Section 7), vertex E has timestamps $$d[E]=5$$ and $$f[E]=12$$, while vertex C has $$d[C]=6$$ and $$f[C]=9$$. What does the parenthesis theorem tell us about the relationship between E and C in the DFS tree?</p>
+    <ul class="kc-options" role="radiogroup" aria-label="Knowledge Check 2 options">
+      <li><label><input type="radio" name="kc2" value="a"> E and C are in disjoint subtrees (intervals are disjoint).</label></li>
+      <li><label><input type="radio" name="kc2" value="b"> C is an ancestor of E in the DFS tree.</label></li>
+      <li><label><input type="radio" name="kc2" value="c"> E is an ancestor of C in the DFS tree (E's interval contains C's interval).</label></li>
+      <li><label><input type="radio" name="kc2" value="d"> The intervals partially overlap, violating the parenthesis theorem.</label></li>
+    </ul>
+    <button class="kc-btn" onclick="checkKC('kc2','c')">Check Answer</button>
+    <div id="kc2-feedback"></div>
+  </div>
+</div>
+
+<!-- KC 3 -->
+<div class="kc-section" id="kc3">
+  <div class="kc-header">Knowledge Check 3 — Edge Classification</div>
+  <div class="kc-body">
+    <p class="kc-question">In a DFS of an <strong>undirected</strong> graph, which edge types are possible? (Select the best answer.)</p>
+    <ul class="kc-options" role="radiogroup" aria-label="Knowledge Check 3 options">
+      <li><label><input type="radio" name="kc3" value="a"> Tree, back, forward, and cross edges</label></li>
+      <li><label><input type="radio" name="kc3" value="b"> Tree and back edges only</label></li>
+      <li><label><input type="radio" name="kc3" value="c"> Tree and cross edges only</label></li>
+      <li><label><input type="radio" name="kc3" value="d"> Tree edges only</label></li>
+    </ul>
+    <button class="kc-btn" onclick="checkKC('kc3','b')">Check Answer</button>
+    <div id="kc3-feedback"></div>
+  </div>
+</div>
+
+<!-- KC 4 -->
+<div class="kc-section" id="kc4">
+  <div class="kc-header">Knowledge Check 4 — Recursive vs. Iterative DFS</div>
+  <div class="kc-body">
+    <p class="kc-question">A student implements iterative DFS but pushes neighbors onto the stack in <strong>adjacency-list order</strong> (without reversing). Compared to the recursive version, what happens?</p>
+    <ul class="kc-options" role="radiogroup" aria-label="Knowledge Check 4 options">
+      <li><label><input type="radio" name="kc4" value="a"> The algorithm crashes with a stack overflow.</label></li>
+      <li><label><input type="radio" name="kc4" value="b"> All vertices are still visited, but the traversal order may differ because the last neighbor pushed is popped first.</label></li>
+      <li><label><input type="radio" name="kc4" value="c"> The algorithm becomes BFS instead of DFS.</label></li>
+      <li><label><input type="radio" name="kc4" value="d"> The algorithm produces the same order as recursive DFS.</label></li>
+    </ul>
+    <button class="kc-btn" onclick="checkKC('kc4','b')">Check Answer</button>
+    <div id="kc4-feedback"></div>
+  </div>
+</div>
+
+<!-- KC 5 — Open Response -->
+<div class="kc-section" id="kc5">
+  <div class="kc-header">Knowledge Check 5 — DFS and Induction (Explain in Your Own Words)</div>
+  <div class="kc-body">
+    <p class="kc-question">In your own words, explain the <strong>base case</strong> and <strong>inductive step</strong> of the induction argument for DFS correctness (Section 9). What is the "smaller instance" that the inductive hypothesis applies to?</p>
+    <textarea class="kc-textarea" id="kc5-text" aria-label="Your response for Knowledge Check 5" placeholder="Type your explanation here…"></textarea>
+    <button class="kc-btn" onclick="showSample('kc5')">Show Sample Response</button>
+    <div id="kc5-feedback"></div>
+  </div>
+</div>
+
+<!-- ===== MODULE FOOTER ===== -->
+<div class="mod-footer">
+  <p><strong>Up Next:</strong> Module 13.3 – BFS vs. DFS: Comparative Analysis</p>
+  <p>CSC 240 – Discrete Structures &bull; Mendocino College &bull; Spring 2026</p>
+</div>
+
+</main>
+
+<!-- ===== JAVASCRIPT ===== -->
+<script>
+const feedbackData = {
+  kc1: {
+    correct: "b",
+    right: "Correct! DFS from A goes A→B→D (dead end, backtrack)→E→C→F (dead end, backtrack)→G. This deep-first pattern is very different from BFS's level-by-level A→B→C→D→E→F→G.",
+    wrong: {
+      a: "Not quite. A→B→C→D→E→F→G is the BFS order from Module 13.1. DFS dives deep along A→B→D before visiting C. Review the trace in Section 7.",
+      c: "Incorrect. This order would result from starting with neighbor C first, but our tie-breaking rule is alphabetical, so A visits B before C. Re-trace from Section 7.",
+      d: "Not quite. This order skips D too late. After visiting B, DFS visits B's first unvisited neighbor D (alphabetically before E). Check the trace in Section 7."
+    }
+  },
+  kc2: {
+    correct: "c",
+    right: "Correct! Since [5, 12] entirely contains [6, 9], vertex E is an ancestor of C in the DFS tree. C was discovered during the exploration of E's subtree.",
+    wrong: {
+      a: "Incorrect. The intervals [5,12] and [6,9] are not disjoint — [6,9] is entirely inside [5,12]. This means one is an ancestor of the other.",
+      b: "Incorrect. For C to be an ancestor of E, C's interval would need to contain E's interval. But [6,9] does not contain [5,12] — it's the other way around.",
+      d: "Incorrect. The parenthesis theorem guarantees that intervals never partially overlap. Here [6,9] is entirely contained within [5,12], which is valid nesting."
+    }
+  },
+  kc3: {
+    correct: "b",
+    right: "Correct! In an undirected graph, DFS only produces tree edges and back edges. Forward and cross edges cannot occur because every edge is traversable in both directions, so any non-tree edge must connect to an ancestor (making it a back edge).",
+    wrong: {
+      a: "Incorrect. All four edge types are possible in directed graphs, but undirected graphs are more restricted. Since every edge can be traversed both ways, non-tree edges always connect to ancestors. Review Section 5.2.",
+      c: "Incorrect. Cross edges do not appear in undirected DFS. Non-tree edges in undirected graphs are always back edges (connecting to an ancestor).",
+      d: "Incorrect. While tree edges form the DFS tree, undirected graphs with cycles also produce back edges. Any edge to a GRAY ancestor is a back edge."
+    }
+  },
+  kc4: {
+    correct: "b",
+    right: "Correct! The algorithm still correctly visits all vertices (it's still DFS), but because a stack is LIFO, the last neighbor pushed is the first popped. Without reversing, the traversal processes neighbors in the opposite order from the recursive version.",
+    wrong: {
+      a: "Incorrect. Stack overflow is a risk with deep recursive DFS, not with the iterative version — the iterative version uses a heap-allocated stack.",
+      c: "Incorrect. Swapping a stack for a queue would make it BFS, but the student is still using a stack. The data structure determines the traversal type.",
+      d: "Incorrect. Because a stack is LIFO, pushing A, B, C means C is popped first. The recursive version would visit A first (the first neighbor). The orders differ unless you reverse the push order."
+    }
+  }
+};
+
+function checkKC(id, correctAnswer) {
+  const selected = document.querySelector('input[name="' + id + '"]:checked');
+  const fbDiv = document.getElementById(id + '-feedback');
+  if (!selected) {
+    fbDiv.className = 'kc-feedback info-fb';
+    fbDiv.textContent = 'Please select an answer before checking.';
+    fbDiv.style.display = 'block';
+    return;
+  }
+  const val = selected.value;
+  const data = feedbackData[id];
+  if (val === data.correct) {
+    fbDiv.className = 'kc-feedback correct';
+    fbDiv.innerHTML = '✅ ' + data.right;
+  } else {
+    fbDiv.className = 'kc-feedback incorrect';
+    fbDiv.innerHTML = '❌ ' + (data.wrong[val] || 'Incorrect. Review the relevant section and try again.');
+  }
+  fbDiv.style.display = 'block';
+  fbDiv.setAttribute('role', 'alert');
+}
+
+function showSample(id) {
+  const fbDiv = document.getElementById(id + '-feedback');
+  fbDiv.className = 'kc-feedback info-fb';
+  fbDiv.innerHTML = '<strong>Sample Response:</strong><br><br>' +
+    '<strong>Base case (k = 1):</strong> If the source vertex s has no unvisited neighbors, DFS-Visit discovers s and immediately finishes. The one reachable vertex is correctly visited.<br><br>' +
+    '<strong>Inductive step:</strong> Assume DFS-Visit works correctly whenever there are at most k reachable unvisited vertices. If s can reach k + 1 unvisited vertices, DFS-Visit discovers s (making it GRAY) and then recursively calls DFS-Visit on each WHITE neighbor w. Each of those calls faces at most k unvisited vertices (since s is already GRAY and earlier calls may have visited others), so by the inductive hypothesis each call is correct. After all recursive calls return, every reachable vertex has been visited.<br><br>' +
+    '<strong>The "smaller instance"</strong> is the subgraph of unvisited vertices reachable from each neighbor w. It is smaller because s itself is no longer counted, and prior recursive calls may have reduced the count further.<br><br>' +
+    '<em>Compare your answer to this sample. The key ideas are: (1) the base case handles a single vertex, (2) the inductive hypothesis assumes correctness for ≤ k vertices, and (3) the inductive step shows each recursive call faces a smaller problem.</em>';
+  fbDiv.style.display = 'block';
+  fbDiv.setAttribute('role', 'status');
+}
+</script>
+</body>
+</html>
