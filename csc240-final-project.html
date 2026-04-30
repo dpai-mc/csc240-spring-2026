@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSC 240 – Final Project: Network Analysis Application</title>
+<style>
+:root{
+--primary:#1a5276;--primary-light:#2980b9;--accent:#e67e22;--bg:#fdfdfd;
+--surface:#fff;--text:#212529;--text-light:#555;--border:#ddd;
+--success:#27ae60;--info:#2980b9;--warning:#e67e22;--danger:#c0392b;
+--radius:6px;--shadow:0 2px 6px rgba(0,0,0,.1);--focus-ring:0 0 0 3px rgba(41,128,185,.45);
+--nav-height:54px;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:var(--text);background:var(--bg);line-height:1.65;margin:0;padding:0}
+h1,h2,h3,h4{margin:0 0 .5em;line-height:1.3}
+h1{font-size:1.7rem;color:var(--primary)}
+h2{font-size:1.35rem;color:var(--primary);border-bottom:3px solid var(--accent);padding-bottom:.25em;margin-top:1.6em}
+h3{font-size:1.1rem;color:var(--primary-light);margin-top:1.2em}
+p,li{margin:0 0 .55em}
+ul,ol{padding-left:1.4em}
+a{color:var(--primary-light);text-decoration:underline}
+a:focus-visible,button:focus-visible,textarea:focus-visible,details summary:focus-visible{outline:none;box-shadow:var(--focus-ring);border-radius:var(--radius)}
+
+/* NAV */
+nav.topnav{position:sticky;top:0;z-index:100;background:var(--primary);display:flex;flex-wrap:wrap;gap:4px 10px;padding:8px 16px;align-items:center}
+nav.topnav a{color:#fff;text-decoration:none;font-size:.82rem;padding:4px 8px;border-radius:var(--radius);white-space:nowrap}
+nav.topnav a:hover,nav.topnav a:focus-visible{background:rgba(255,255,255,.2);box-shadow:var(--focus-ring)}
+
+/* SECTIONS */
+section{scroll-margin-top:calc(var(--nav-height) + 12px)}
+.container{max-width:960px;margin:0 auto;padding:16px 20px 60px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;margin:14px 0;box-shadow:var(--shadow)}
+.phase-card{border-left:4px solid var(--primary-light)}
+.badge{display:inline-block;font-size:.75rem;font-weight:700;padding:2px 9px;border-radius:12px;color:#fff;vertical-align:middle}
+.badge-pts{background:var(--accent)}
+.badge-cslo{background:var(--info);margin-right:4px}
+table.rubric{width:100%;border-collapse:collapse;margin:10px 0}
+table.rubric th,table.rubric td{border:1px solid var(--border);padding:8px 10px;text-align:left;font-size:.92rem}
+table.rubric th{background:var(--primary);color:#fff}
+table.rubric tr:nth-child(even){background:#f4f8fb}
+table.rubric td:last-child{text-align:center;font-weight:600}
+
+/* DETAILS / COLLAPSIBLE */
+details{margin:8px 0}
+details summary{cursor:pointer;font-weight:600;color:var(--primary-light);padding:6px 2px;list-style:none;display:flex;align-items:center;gap:6px}
+details summary::before{content:'▶';font-size:.7rem;transition:transform .2s}
+details[open] summary::before{transform:rotate(90deg)}
+details .inner{padding:8px 14px;background:#f9fbfd;border-left:3px solid var(--primary-light);border-radius:0 var(--radius) var(--radius) 0;margin-top:4px}
+
+/* TEXTAREA */
+.note-group{margin:12px 0}
+.note-group label{display:block;font-weight:600;margin-bottom:4px;font-size:.93rem}
+textarea.notes{width:100%;min-height:90px;padding:10px;border:1px solid var(--border);border-radius:var(--radius);font-family:inherit;font-size:.92rem;resize:vertical}
+textarea.notes:focus{border-color:var(--primary-light);box-shadow:var(--focus-ring);outline:none}
+
+/* BUTTON */
+.btn{display:inline-block;padding:10px 20px;border:none;border-radius:var(--radius);font-size:.92rem;font-weight:600;cursor:pointer;transition:background .2s,box-shadow .2s}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-primary:hover{background:var(--primary-light)}
+.btn:focus-visible{box-shadow:var(--focus-ring)}
+
+/* CODE */
+code{background:#eef3f8;padding:1px 5px;border-radius:3px;font-size:.88em}
+pre{background:#1e1e1e;color:#d4d4d4;padding:14px;border-radius:var(--radius);overflow-x:auto;font-size:.85rem;line-height:1.5}
+
+/* ALERT */
+.alert{padding:12px 16px;border-radius:var(--radius);margin:12px 0;font-size:.92rem}
+.alert-info{background:#eaf2f8;border-left:4px solid var(--info);color:#1a5276}
+.alert-warning{background:#fef5e7;border-left:4px solid var(--warning);color:#7d5a29}
+.alert-success{background:#eafaf1;border-left:4px solid var(--success);color:#1e6e3e}
+
+/* PRINT */
+@media print{nav.topnav,.btn{display:none}body{font-size:11pt}.container{max-width:100%;padding:0}.card{box-shadow:none;break-inside:avoid}}
+@media(max-width:600px){.container{padding:12px 10px}nav.topnav{padding:6px 8px}nav.topnav a{font-size:.75rem;padding:3px 5px}h1{font-size:1.35rem}h2{font-size:1.15rem}}
+</style>
+</head>
+<body>
+
+<!-- ===== NAVIGATION ===== -->
+<nav class="topnav" aria-label="Page navigation">
+<a href="#overview">Overview</a>
+<a href="#scenario">Scenario</a>
+<a href="#tasks">Tasks</a>
+<a href="#phase1">Phase 1</a>
+<a href="#phase2">Phase 2</a>
+<a href="#phase3">Phase 3</a>
+<a href="#phase4">Phase 4</a>
+<a href="#phase5">Phase 5</a>
+<a href="#observations">Notes</a>
+<a href="#grading">Grading</a>
+<a href="#deliverables">Deliverables</a>
+<a href="#pitfalls">Pitfalls</a>
+</nav>
+
+<div class="container">
+
+<!-- ===== HEADER ===== -->
+<header style="margin-bottom:8px">
+<h1>🌐 Final Project: Network Analysis Application</h1>
+<p style="font-size:1.05rem;color:var(--text-light);margin:0"><strong>CSC 240 – Discrete Structures</strong> &nbsp;|&nbsp; <span class="badge badge-pts">250 Points</span></p>
+</header>
+
+<!-- ===== OVERVIEW ===== -->
+<section id="overview">
+<h2>Overview &amp; Objectives</h2>
+<div class="card">
+<p>The <strong>Final Project</strong> is a capstone application that <strong>replaces the traditional final exam</strong>. You will design and implement a complete <em>Network Analysis Application</em> that integrates the graph theory, tree structures, and algorithm analysis topics studied throughout the second half of the course (Weeks&nbsp;12–16) into a single, coherent system.</p>
+
+<h3>What This Project Assesses</h3>
+<ul>
+<li>Your ability to <strong>build data structures by hand</strong> (no built-in library classes for the required tree-based component).</li>
+<li>Correct implementation of core <strong>graph and tree algorithms</strong>.</li>
+<li>Thoughtful <strong>algorithm selection, complexity analysis, and written justification</strong>.</li>
+<li>Software engineering practices: clean code, testing, documentation.</li>
+</ul>
+
+<h3>CSLO Alignment</h3>
+<div class="alert alert-info" role="note">
+<p style="margin:0"><span class="badge badge-cslo">CSLO 3</span> <strong>Solve problems using trees and graphs including traversals, spanning trees, shortest path, and related algorithms.</strong></p>
+</div>
+<div class="alert alert-info" role="note">
+<p style="margin:0"><span class="badge badge-cslo">CSLO 4</span> <strong>Analyze the complexity of algorithms using asymptotic notation and apply algorithm design strategies.</strong></p>
+</div>
+<p>The project also reinforces CSLO&nbsp;1 (formal logic &amp; proof reasoning used in your analysis document) and CSLO&nbsp;2 (combinatorics/counting when analyzing graph properties).</p>
+</div>
+</section>
+
+<!-- ===== SCENARIO ===== -->
+<section id="scenario">
+<h2>Scenario &amp; Context</h2>
+<div class="card">
+<p>Imagine you have been hired as a junior software engineer at a logistics company. The company needs an internal tool to model its distribution network—warehouses (vertices) connected by shipping routes (edges) with associated distances or costs (weights).</p>
+<p>Your tool must let analysts:</p>
+<ol>
+<li><strong>Build</strong> a network graph interactively (add/remove warehouses and routes).</li>
+<li><strong>Explore</strong> the network using traversal algorithms to discover connectivity and dependencies.</li>
+<li><strong>Optimize</strong> the network by finding minimum spanning trees (cheapest way to connect all warehouses) and shortest paths (fastest route between two locations).</li>
+<li><strong>Store</strong> internal data efficiently using a hand-built tree-based structure (priority queue or BST).</li>
+<li><strong>Document</strong> design choices and complexity trade-offs for the engineering team.</li>
+</ol>
+<p>This mirrors real-world network analysis tasks in logistics, telecommunications, social-network analysis, and infrastructure planning.</p>
+</div>
+</section>
+
+<!-- ===== TASKS ===== -->
+<section id="tasks">
+<h2>Tasks / Procedure</h2>
+<p>The project is organized into <strong>five scored phases</strong>. Complete them in order; each phase builds on the previous one.</p>
+
+<!-- PHASE 1 -->
+<section id="phase1">
+<div class="card phase-card">
+<h3>Phase 1 — Graph Builder and Representation &nbsp;<span class="badge badge-pts">50 pts</span></h3>
+<p>Build the foundation: a graph data structure that supports both <strong>adjacency list</strong> and <strong>adjacency matrix</strong> representations.</p>
+
+<h4>Requirements</h4>
+<ul>
+<li>Support <strong>weighted, directed, and undirected</strong> graphs (configurable at creation or via toggle).</li>
+<li>Operations: <strong>add vertex, remove vertex, add edge, remove edge</strong>.</li>
+<li>Display graph properties: vertex count, edge count, degree of each vertex, whether the graph is connected.</li>
+<li>Provide a way to <strong>switch between or display both</strong> adjacency list and adjacency matrix representations.</li>
+</ul>
+
+<h4>Input / Output Specification</h4>
+<table class="rubric">
+<thead><tr><th>Input</th><th>Expected Output</th></tr></thead>
+<tbody>
+<tr><td>User adds vertices A, B, C and edges A→B (weight 4), B→C (weight 2)</td><td>Adjacency list and matrix both display correctly; vertex count = 3, edge count = 2</td></tr>
+<tr><td>User removes vertex B</td><td>All edges involving B are removed; counts update accordingly</td></tr>
+<tr><td>User toggles directed → undirected</td><td>Each edge is mirrored; matrix becomes symmetric</td></tr>
+</tbody>
+</table>
+
+<h4>Testing Guidance</h4>
+<ul>
+<li>Test with an empty graph (0 vertices), a single vertex, and a graph with 8+ vertices.</li>
+<li>Verify adjacency list and matrix stay in sync after every add/remove.</li>
+<li>Test edge cases: duplicate edges, self-loops, removing a non-existent vertex.</li>
+</ul>
+
+<details>
+<summary>Hints &amp; Tips</summary>
+<div class="inner">
+<ul>
+<li>Use a <code>Map&lt;String, List&lt;Edge&gt;&gt;</code> (or dictionary equivalent) for the adjacency list—this makes vertex lookup $$O(1)$$ on average.</li>
+<li>For the adjacency matrix, consider a 2-D array indexed by vertex ID. You'll need a mapping from vertex names to integer indices.</li>
+<li>Keep a single source of truth (e.g., the adjacency list) and generate the matrix from it, or maintain both and update together.</li>
+<li>Encapsulate graph operations in a class so Phases 2–4 can call them cleanly.</li>
+</ul>
+</div>
+</details>
+</div>
+</section>
+
+<!-- PHASE 2 -->
+<section id="phase2">
+<div class="card phase-card">
+<h3>Phase 2 — Traversal Algorithms &nbsp;<span class="badge badge-pts">50 pts</span></h3>
+<p>Implement fundamental graph traversal and ordering algorithms.</p>
+
+<h4>Requirements</h4>
+<ul>
+<li><strong>Breadth-First Search (BFS)</strong> from a user-specified start vertex.</li>
+<li><strong>Depth-First Search (DFS)</strong> — provide <em>both</em> a recursive and an iterative implementation.</li>
+<li><strong>Connected components detection</strong> — list each component's vertices.</li>
+<li><strong>Topological sort</strong> on directed acyclic graphs (DAGs); gracefully report if the graph contains a cycle.</li>
+</ul>
+
+<h4>Input / Output Specification</h4>
+<table class="rubric">
+<thead><tr><th>Input</th><th>Expected Output</th></tr></thead>
+<tbody>
+<tr><td>BFS from vertex A on a sample 6-vertex graph</td><td>Visit order printed level by level (e.g., A → B, C → D, E, F)</td></tr>
+<tr><td>DFS (recursive) from vertex A</td><td>Visit order showing back-tracking behavior</td></tr>
+<tr><td>DFS (iterative) from vertex A</td><td>Same reachable set as recursive (order may differ due to stack vs. call-stack)</td></tr>
+<tr><td>Connected components on a disconnected graph</td><td>List of components, e.g., {A,B,C}, {D,E}</td></tr>
+<tr><td>Topological sort on a DAG</td><td>Valid linear ordering; on a cyclic graph → "Cycle detected"</td></tr>
+</tbody>
+</table>
+
+<h4>Testing Guidance</h4>
+<ul>
+<li>Compare recursive and iterative DFS on the same graph—both must visit the same set of vertices.</li>
+<li>Test BFS/DFS on a disconnected graph to confirm they only visit the reachable component.</li>
+<li>For topological sort, test with a known DAG (e.g., course prerequisites) and verify ordering validity; also test with a graph containing a cycle.</li>
+</ul>
+
+<details>
+<summary>Hints &amp; Tips</summary>
+<div class="inner">
+<ul>
+<li>Use a <code>visited</code> set (or boolean array) and <strong>reset it</strong> before each new traversal call.</li>
+<li>For iterative DFS, use an explicit stack. Push neighbors in reverse order if you want the same visit sequence as the recursive version.</li>
+<li>Connected components: run BFS or DFS from every unvisited vertex; each run discovers one component.</li>
+<li>Topological sort can be done via DFS post-order (reverse finish times) or Kahn's algorithm (in-degree approach). Either is acceptable.</li>
+</ul>
+</div>
+</details>
+</div>
+</section>
+
+<!-- PHASE 3 -->
+<section id="phase3">
+<div class="card phase-card">
+<h3>Phase 3 — Advanced Graph Algorithms &nbsp;<span class="badge badge-pts">75 pts</span></h3>
+<p>Implement optimization algorithms and perform an empirical runtime comparison.</p>
+
+<h4>Requirements</h4>
+<ul>
+<li><strong>Minimum Spanning Tree (MST)</strong> — implement <em>either</em> Kruskal's <em>or</em> Prim's algorithm (your choice). You must <strong>justify your choice in writing</strong> (Phase 5 analysis document).</li>
+<li><strong>Dijkstra's shortest path</strong> algorithm from a user-specified source vertex.</li>
+<li>Output: MST edges with total weight; shortest path and distance to each reachable vertex.</li>
+<li><strong>Side-by-side runtime comparison</strong> of your MST and shortest-path algorithms on <em>at least two different graph sizes</em> (e.g., 10 vertices vs. 100+ vertices). Display timing results clearly.</li>
+</ul>
+
+<h4>Input / Output Specification</h4>
+<table class="rubric">
+<thead><tr><th>Input</th><th>Expected Output</th></tr></thead>
+<tbody>
+<tr><td>Run MST on a connected, weighted, undirected graph</td><td>List of MST edges and total MST weight</td></tr>
+<tr><td>Run Dijkstra from source S</td><td>Shortest distance to every vertex; reconstructed shortest path (e.g., S→A→D→F, cost 11)</td></tr>
+<tr><td>Runtime comparison on graph with ~10 vertices and ~100 vertices</td><td>Table or console output showing elapsed time for each algorithm at each size</td></tr>
+</tbody>
+</table>
+
+<h4>Testing Guidance</h4>
+<ul>
+<li>Verify MST output against a hand-calculated example (use a small 5–6 vertex graph you can check on paper).</li>
+<li>Test Dijkstra with <strong>no negative weights</strong> (Dijkstra does not handle negative edges). Include a test that confirms correct behavior when multiple shortest paths exist.</li>
+<li>For timing, use your language's high-resolution timer. Run each algorithm multiple times and average the results to reduce noise.</li>
+</ul>
+
+<details>
+<summary>Hints &amp; Tips</summary>
+<div class="inner">
+<ul>
+<li><strong>Kruskal's</strong> needs a Union-Find (Disjoint Set) structure—this is a great data structure to implement from scratch. Time complexity: $$O(E \log E)$$.</li>
+<li><strong>Prim's</strong> pairs naturally with a min-heap priority queue (which you may also build in Phase 4). Time complexity with a binary heap: $$O((V + E) \log V)$$.</li>
+<li>For <strong>Dijkstra's</strong>, use a priority queue keyed on tentative distance. If you build a min-heap in Phase 4, you can reuse it here—this demonstrates integration.</li>
+<li>Generate larger test graphs programmatically (random edges with random weights) for the runtime comparison.</li>
+<li>When comparing runtimes, discuss <em>why</em> the results match (or don't match) theoretical Big-O in your analysis document.</li>
+</ul>
+</div>
+</details>
+</div>
+</section>
+
+<!-- PHASE 4 -->
+<section id="phase4">
+<div class="card phase-card">
+<h3>Phase 4 — Tree-Based Internal Structure &nbsp;<span class="badge badge-pts">50 pts</span></h3>
+<p>Demonstrate mastery of tree data structures by building one from scratch.</p>
+
+<h4>Requirements</h4>
+<ul>
+<li>Implement <strong>one</strong> of the following <em>from scratch</em> (you <strong>cannot</strong> use a built-in library class):
+<ul>
+<li><strong>Option A:</strong> A <strong>min-heap / priority queue</strong> used internally by Dijkstra's or Prim's algorithm.</li>
+<li><strong>Option B:</strong> A <strong>Binary Search Tree (BST)</strong> for storing and retrieving graph node data (e.g., lookup by name, ordered traversal of vertices).</li>
+</ul>
+</li>
+<li>Demonstrate <strong>at least one tree traversal</strong> (e.g., in-order for BST; level-order for heap) with visible output.</li>
+<li>Your tree structure must be <strong>integrated</strong> into the larger application—not a standalone demo.</li>
+</ul>
+
+<h4>Input / Output Specification</h4>
+<table class="rubric">
+<thead><tr><th>Input</th><th>Expected Output</th></tr></thead>
+<tbody>
+<tr><td><strong>Option A:</strong> Insert several (vertex, distance) pairs into min-heap</td><td>Extract-min returns the pair with smallest distance each time; heap property maintained</td></tr>
+<tr><td><strong>Option B:</strong> Insert graph vertices into BST by name</td><td>In-order traversal prints vertices in alphabetical order</td></tr>
+<tr><td>Demonstrate integration (e.g., run Dijkstra using your custom heap)</td><td>Correct shortest-path results produced using your hand-built structure</td></tr>
+</tbody>
+</table>
+
+<h4>Testing Guidance</h4>
+<ul>
+<li>Test insert and extract/delete with edge cases: single element, duplicate keys, already-sorted input.</li>
+<li>For min-heap: verify the heap property after every insertion and extraction (parent ≤ children).</li>
+<li>For BST: test with data that would create a degenerate (linked-list) tree to observe worst-case behavior.</li>
+<li>Print the tree structure (or array representation for heap) at each step to visually confirm correctness.</li>
+</ul>
+
+<details>
+<summary>Hints &amp; Tips</summary>
+<div class="inner">
+<ul>
+<li>A min-heap can be stored in a simple array where the children of index $$i$$ are at $$2i+1$$ and $$2i+2$$, and the parent is at $$\lfloor(i-1)/2\rfloor$$.</li>
+<li>Key operations for a min-heap: <code>insert</code> (sift up), <code>extractMin</code> (sift down), and <code>decreaseKey</code> (needed for Dijkstra's relaxation step).</li>
+<li>For a BST, implement <code>insert</code>, <code>search</code>, <code>delete</code>, and at least one traversal (in-order is the most natural).</li>
+<li>If you choose Option A and use it in Dijkstra's, you get strong integration credit—the heap is doing real work, not just a demo.</li>
+</ul>
+</div>
+</details>
+</div>
+</section>
+
+<!-- PHASE 5 -->
+<section id="phase5">
+<div class="card phase-card">
+<h3>Phase 5 — Analysis Document &nbsp;<span class="badge badge-pts">25 pts</span></h3>
+<p>Write a 1–2 page PDF document that demonstrates your understanding of the algorithms you implemented.</p>
+
+<h4>Requirements</h4>
+<ul>
+<li><strong>Justify your MST algorithm choice</strong> — Why did you choose Kruskal's or Prim's? Under what graph conditions is your choice more efficient?</li>
+<li><strong>Compare BFS vs. DFS</strong> — When would you prefer one over the other? Reference your implementation experience.</li>
+<li><strong>Time and space complexity analysis</strong> for <em>each</em> algorithm implemented (BFS, DFS, topological sort, MST, Dijkstra's, and your tree operations). Use asymptotic notation: $$O$$, $$\Theta$$, or $$\Omega$$ as appropriate.</li>
+<li><strong>One real-world scenario</strong> — Describe a real-world problem (different from the logistics scenario given here) and explain which of your implemented algorithms would apply and why. Analyze the expected complexity for that scenario.</li>
+</ul>
+
+<h4>Format &amp; Submission</h4>
+<ul>
+<li>1–2 pages, 11–12 pt font, standard margins.</li>
+<li>Submit as a <strong>PDF</strong> alongside your source code.</li>
+<li>Use section headings that match the four bullet points above.</li>
+</ul>
+
+<details>
+<summary>Hints &amp; Tips</summary>
+<div class="inner">
+<ul>
+<li>Reference your runtime comparison data from Phase 3 to support your complexity claims.</li>
+<li>Don't just state Big-O—<em>explain</em> why. For example: "BFS is $$O(V + E)$$ because each vertex is enqueued at most once and each edge is examined at most once (twice for undirected graphs)."</li>
+<li>For the real-world scenario, think about social networks (friend recommendations via BFS), GPS navigation (Dijkstra), network cabling (MST), or build systems (topological sort).</li>
+<li>Proofread carefully—clarity and correctness of analysis matter as much as code.</li>
+</ul>
+</div>
+</details>
+</div>
+</section>
+
+</section><!-- /tasks -->
+
+<!-- ===== OBSERVATIONS ===== -->
+<section id="observations">
+<h2>Observations &amp; Design Notes</h2>
+<div class="card">
+<p>Use the areas below to plan your approach, record design decisions, and draft analysis notes. Click <strong>"Save as PDF"</strong> to download your notes.</p>
+
+<div class="note-group">
+<label for="note-algo-choice">Algorithm Choice Justification (Kruskal's vs. Prim's)</label>
+<textarea id="note-algo-choice" class="notes" placeholder="Why did you choose this MST algorithm? What are its strengths for your graph type?"></textarea>
+</div>
+
+<div class="note-group">
+<label for="note-complexity">Complexity Analysis Notes</label>
+<textarea id="note-complexity" class="notes" placeholder="Record time and space complexity for each algorithm. Note any differences between theoretical and observed performance."></textarea>
+</div>
+
+<div class="note-group">
+<label for="note-performance">Performance Comparison Notes</label>
+<textarea id="note-performance" class="notes" placeholder="Record timing results from your side-by-side comparison. What graph sizes did you test? Were results consistent with Big-O predictions?"></textarea>
+</div>
+
+<div class="note-group">
+<label for="note-design">Design Decisions &amp; Architecture</label>
+<textarea id="note-design" class="notes" placeholder="How did you organize your classes/modules? How does the tree structure integrate with the graph algorithms? Any refactoring decisions?"></textarea>
+</div>
+
+<div class="note-group">
+<label for="note-realworld">Real-World Scenario Brainstorm</label>
+<textarea id="note-realworld" class="notes" placeholder="Draft your real-world scenario here before writing it up in the analysis document."></textarea>
+</div>
+
+<div style="margin-top:16px">
+<button class="btn btn-primary" id="btnSavePDF" type="button" aria-label="Save notes as PDF">💾 Save as PDF</button>
+</div>
+</div>
+</section>
+
+<!-- ===== GRADING ===== -->
+<section id="grading">
+<h2>Grading Breakdown</h2>
+<div class="card">
+<p>The Final Project is graded on <strong>functionality (50%), code quality (20%), tree-based structure integration (15%), and analysis document (15%)</strong>. It requires a README, test cases, a design/analysis document, and a self-evaluation form.</p>
+
+<table class="rubric">
+<thead><tr><th>Component</th><th>Description</th><th>Points</th></tr></thead>
+<tbody>
+<tr><td><strong>Phase 1:</strong> Graph Builder &amp; Representation</td><td>Adjacency list + matrix; add/remove vertices &amp; edges; graph properties; weighted, directed, undirected support</td><td>50</td></tr>
+<tr><td><strong>Phase 2:</strong> Traversal Algorithms</td><td>BFS, DFS (recursive + iterative), connected components, topological sort on DAGs</td><td>50</td></tr>
+<tr><td><strong>Phase 3:</strong> Advanced Graph Algorithms</td><td>MST (Kruskal's or Prim's, justified) + Dijkstra's shortest path; output MST edges/weight and path/distance; runtime comparison on ≥ 2 graph sizes</td><td>75</td></tr>
+<tr><td><strong>Phase 4:</strong> Tree-Based Internal Structure</td><td>Hand-built min-heap/priority queue OR BST; at least one tree traversal; integrated into the application; no built-in library class</td><td>50</td></tr>
+<tr><td><strong>Phase 5:</strong> Analysis Document</td><td>1–2 page PDF: MST justification, BFS vs. DFS comparison, time/space complexity for each algorithm, one real-world scenario</td><td>25</td></tr>
+</tbody>
+<tfoot><tr><td colspan="2" style="text-align:right;font-weight:700">Total</td><td>250</td></tr></tfoot>
+</table>
+
+<h3>Grading Criteria Weights</h3>
+<table class="rubric">
+<thead><tr><th>Criterion</th><th>Weight</th><th>Points</th></tr></thead>
+<tbody>
+<tr><td>Functionality — correct implementation of all phases</td><td>50%</td><td>125</td></tr>
+<tr><td>Code Quality — clean code, naming, modularity, comments, README</td><td>20%</td><td>50</td></tr>
+<tr><td>Tree-Based Structure Integration — hand-built, properly integrated, traversal demonstrated</td><td>15%</td><td>37.5</td></tr>
+<tr><td>Analysis Document — thoroughness, correctness of complexity analysis, real-world application</td><td>15%</td><td>37.5</td></tr>
+</tbody>
+<tfoot><tr><td colspan="2" style="text-align:right;font-weight:700">Total</td><td>250</td></tr></tfoot>
+</table>
+</div>
+</section>
+
+<!-- ===== DELIVERABLES ===== -->
+<section id="deliverables">
+<h2>Deliverables &amp; Submission Notes</h2>
+<div class="card">
+<h3>What to Submit</h3>
+<ol>
+<li><strong>Source Code</strong> — All project files, well-organized in a clear folder structure.</li>
+<li><strong>README</strong> — How to compile/run, description of each file/class, any assumptions or known limitations.</li>
+<li><strong>Test Cases</strong> — A set of test inputs and expected outputs for each phase. Include at least:
+<ul>
+<li>2 test cases for graph construction (Phase 1)</li>
+<li>2 test cases for each traversal (Phase 2)</li>
+<li>2 test cases for MST and 2 for Dijkstra's (Phase 3)</li>
+<li>2 test cases for your tree structure (Phase 4)</li>
+</ul>
+</li>
+<li><strong>Analysis Document</strong> — 1–2 page PDF (Phase 5).</li>
+<li><strong>Self-Evaluation Form</strong> — Reflect on what went well, what was challenging, and what you would do differently. (Template will be provided separately.)</li>
+</ol>
+
+<div class="alert alert-warning" role="note">
+<strong>Submission:</strong> Submit all deliverables through the <strong>Final Project: Network Analysis Application</strong> assignment in Canvas. Compress all files into a single <code>.zip</code> archive before uploading.
+</div>
+
+<div class="alert alert-info" role="note">
+<strong>Academic Integrity:</strong> This is an individual project. You may reference course materials, textbooks, and documentation, but all code and writing must be your own. Cite any external resources you consulted.
+</div>
+</div>
+</section>
+
+<!-- ===== PITFALLS ===== -->
+<section id="pitfalls">
+<h2>Common Pitfalls</h2>
+<div class="card">
+<details>
+<summary>Expand: Common Implementation Mistakes</summary>
+<div class="inner">
+<h4>Graph Basics (Phase 1)</h4>
+<ul>
+<li><strong>Forgetting to update both representations</strong> — If you maintain both an adjacency list and matrix, an add/remove must update both. A mismatch is a common source of bugs.</li>
+<li><strong>Off-by-one index errors</strong> in the adjacency matrix when vertices are added or removed dynamically.</li>
+</ul>
+
+<h4>Traversals (Phase 2)</h4>
+<ul>
+<li><strong>Not resetting the <code>visited</code> set</strong> between separate traversal calls — this causes later traversals to skip vertices.</li>
+<li><strong>Confusing stack vs. queue</strong> — BFS uses a queue (FIFO); iterative DFS uses a stack (LIFO). Mixing them up gives wrong traversal order.</li>
+<li><strong>Topological sort on a cyclic graph</strong> — Make sure you detect cycles and report them instead of producing invalid output.</li>
+</ul>
+
+<h4>Advanced Algorithms (Phase 3)</h4>
+<ul>
+<li><strong>Incorrect priority queue key updates in Dijkstra's</strong> — When you relax an edge and find a shorter path, you must update (decrease) the key in the priority queue. If your heap doesn't support <code>decreaseKey</code>, you can use lazy deletion (insert a new entry and skip stale ones on extraction).</li>
+<li><strong>Running MST on a directed graph</strong> — Standard Kruskal's and Prim's assume undirected graphs. Make sure your test graph is undirected, or handle the conversion.</li>
+<li><strong>Negative edge weights with Dijkstra's</strong> — Dijkstra's algorithm does not produce correct results with negative weights. Use only non-negative weights in your test data.</li>
+</ul>
+
+<h4>Tree Structure (Phase 4)</h4>
+<ul>
+<li><strong>Using a built-in library class</strong> (e.g., Java's <code>PriorityQueue</code>, Python's <code>heapq</code>) — This violates the requirement. You must write the data structure yourself.</li>
+<li><strong>Heap array indexing errors</strong> — Double-check parent/child index formulas: children of $$i$$ are at $$2i+1$$ and $$2i+2$$; parent of $$i$$ is at $$\lfloor(i-1)/2\rfloor$$.</li>
+<li><strong>BST deletion</strong> — The case where a node has two children is tricky; replace with the in-order successor (or predecessor) and delete that node recursively.</li>
+</ul>
+
+<h4>General</h4>
+<ul>
+<li><strong>No README or missing test cases</strong> — These are required deliverables and contribute to the code quality score.</li>
+<li><strong>Monolithic code</strong> — Break your program into well-named classes/modules. A single 500-line file is hard to debug and loses code quality points.</li>
+<li><strong>Waiting until Week 17 to start</strong> — This is a multi-phase project. Start Phase 1 immediately and build incrementally.</li>
+</ul>
+</div>
+</details>
+</div>
+</section>
+
+<div class="alert alert-success" role="note" style="margin-top:24px">
+<strong>You've got this!</strong> Start with Phase 1, get a solid graph foundation, and build upward. Test each phase thoroughly before moving on. Good luck! 🚀
+</div>
+
+</div><!-- /container -->
+
+<!-- ===== SAVE AS PDF SCRIPT ===== -->
+<script>
+document.getElementById('btnSavePDF').addEventListener('click',function(){
+var areas=document.querySelectorAll('textarea.notes');
+var hasContent=false;
+areas.forEach(function(a){if(a.value.trim())hasContent=true;});
+if(!hasContent){
+if(!confirm('All note fields are empty. Save a blank PDF anyway?'))return;
+}
+/* Collect notes into a printable window */
+var w=window.open('','_blank','width=800,height=600');
+if(!w){alert('Please allow pop-ups to save your PDF.');return;}
+var html='<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Final Project Notes – CSC 240</title><style>';
+html+='body{font-family:Segoe UI,Roboto,Arial,sans-serif;padding:24px 32px;color:#212529;line-height:1.6}';
+html+='h1{font-size:1.4rem;border-bottom:2px solid #e67e22;padding-bottom:4px}';
+html+='h2{font-size:1.1rem;color:#1a5276;margin-top:1.2em}';
+html+='.field{background:#f4f8fb;border-left:3px solid #2980b9;padding:10px 14px;margin:6px 0;white-space:pre-wrap;font-size:.93rem}';
+html+='.empty{color:#999;font-style:italic}';
+html+='@media print{body{padding:0}}';
+html+='</style></head><body>';
+html+='<h1>CSC 240 – Final Project: Design Notes</h1>';
+var labels=document.querySelectorAll('.note-group label');
+labels.forEach(function(lbl,i){
+var ta=document.getElementById(lbl.getAttribute('for'));
+html+='<h2>'+lbl.textContent+'</h2>';
+if(ta&&ta.value.trim()){
+html+='<div class="field">'+ta.value.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div>';
+}else{
+html+='<div class="field empty">(No notes entered)</div>';
+}
+});
+html+='</body></html>';
+w.document.write(html);
+w.document.close();
+setTimeout(function(){w.print();},400);
+});
+</script>
+</body>
+</html>
