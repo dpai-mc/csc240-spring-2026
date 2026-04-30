@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 14.4 – Dijkstra's Shortest Path Algorithm</title>
+<style>
+:root {
+  --primary: #2D3B45;
+  --accent: #0F6CBF;
+  --accent-dark: #0A4F8A;
+  --bg-light: #F5F7FA;
+  --bg-white: #FFFFFF;
+  --border: #D5DEE3;
+  --success: #0D7E3F;
+  --success-bg: #E6F4ED;
+  --danger: #C02B2B;
+  --danger-bg: #FBEAEA;
+  --warning: #8A6D00;
+  --warning-bg: #FFF8E1;
+  --info: #0F6CBF;
+  --info-bg: #E8F0FE;
+  --callout-border: #0F6CBF;
+  --code-bg: #F0F3F6;
+  --text: #2D3B45;
+  --text-light: #5A6872;
+  --focus-ring: #0F6CBF;
+  --nav-height: 52px;
+}
+*,*::before,*::after{box-sizing:border-box;}
+body{
+  margin:0;padding:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  font-size:16px;line-height:1.6;color:var(--text);background:var(--bg-white);
+}
+/* ── Skip Link ── */
+.skip-link{
+  position:absolute;top:-100%;left:8px;
+  background:var(--accent);color:#fff;padding:8px 16px;
+  border-radius:0 0 4px 4px;z-index:1000;font-weight:600;
+  text-decoration:none;
+}
+.skip-link:focus{top:0;}
+
+/* ── Top Nav ── */
+.module-nav{
+  position:sticky;top:0;z-index:900;
+  background:var(--primary);color:#fff;
+  border-bottom:3px solid var(--accent);
+  padding:0 16px;overflow-x:auto;white-space:nowrap;
+  display:flex;align-items:center;gap:4px;
+  height:var(--nav-height);
+}
+.module-nav a{
+  color:#fff;text-decoration:none;font-size:.82rem;font-weight:500;
+  padding:6px 10px;border-radius:4px;transition:background .2s;
+  display:inline-block;
+}
+.module-nav a:hover,.module-nav a:focus-visible{background:rgba(255,255,255,.15);outline:none;}
+.module-nav a:focus-visible{box-shadow:0 0 0 2px var(--accent) inset;}
+
+/* ── Scroll offset for anchors ── */
+[id]{scroll-margin-top:calc(var(--nav-height) + 16px);}
+
+/* ── Container ── */
+.container{max-width:960px;margin:0 auto;padding:24px 20px 64px;}
+
+/* ── Module Header ── */
+.module-header{
+  background:linear-gradient(135deg,var(--primary),var(--accent-dark));
+  color:#fff;padding:32px 28px;border-radius:8px;margin-bottom:32px;
+}
+.module-header .label{
+  font-size:.8rem;text-transform:uppercase;letter-spacing:1.5px;
+  opacity:.85;margin-bottom:4px;
+}
+.module-header h1{margin:0 0 8px;font-size:1.75rem;line-height:1.25;}
+.module-header p{margin:0;font-size:.97rem;opacity:.92;line-height:1.5;}
+
+/* ── Section headings ── */
+h2{
+  font-size:1.35rem;color:var(--primary);
+  border-bottom:2px solid var(--accent);padding-bottom:6px;
+  margin:40px 0 16px;
+}
+h3{font-size:1.12rem;color:var(--primary);margin:24px 0 10px;}
+h4{font-size:1rem;color:var(--accent-dark);margin:18px 0 8px;}
+
+/* ── Callout Boxes ── */
+.callout{
+  border-left:4px solid var(--callout-border);
+  border-radius:4px;padding:14px 18px;margin:20px 0;
+  font-size:.95rem;
+}
+.callout-info{background:var(--info-bg);border-color:var(--info);}
+.callout-warn{background:var(--warning-bg);border-color:var(--warning);}
+.callout-success{background:var(--success-bg);border-color:var(--success);}
+.callout-danger{background:var(--danger-bg);border-color:var(--danger);}
+.callout-title{font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:6px;}
+.callout-title .icon{font-size:1.1rem;}
+
+/* ── Definition List ── */
+dl.def-list{margin:16px 0;}
+dl.def-list dt{font-weight:700;color:var(--accent-dark);margin-top:12px;}
+dl.def-list dd{margin:2px 0 0 20px;}
+
+/* ── Code / Pseudocode ── */
+pre,code{font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;}
+code{background:var(--code-bg);padding:1px 5px;border-radius:3px;font-size:.92em;}
+pre.code-block{
+  background:var(--code-bg);border:1px solid var(--border);
+  border-radius:6px;padding:16px 20px;overflow-x:auto;
+  font-size:.88rem;line-height:1.55;margin:16px 0;
+}
+pre.code-block code{background:none;padding:0;}
+.line-highlight{background:#FFF3CD;display:inline-block;width:100%;margin:0 -20px;padding:0 20px;}
+
+/* ── Tables ── */
+table{
+  width:100%;border-collapse:collapse;margin:16px 0;font-size:.93rem;
+}
+th,td{border:1px solid var(--border);padding:8px 12px;text-align:left;}
+th{background:var(--primary);color:#fff;font-weight:600;}
+tr:nth-child(even){background:var(--bg-light);}
+.table-scroll{overflow-x:auto;margin:16px 0;}
+
+/* ── Trace Table (special) ── */
+.trace-table th{font-size:.82rem;white-space:nowrap;}
+.trace-table td{font-size:.85rem;text-align:center;}
+.trace-table td:first-child{text-align:left;font-weight:600;}
+.trace-current{background:#D4EDDA !important;font-weight:700;}
+
+/* ── Accordion ── */
+details{
+  border:1px solid var(--border);border-radius:6px;margin:12px 0;
+  background:var(--bg-white);
+}
+details[open]{border-color:var(--accent);}
+summary{
+  cursor:pointer;padding:12px 16px;font-weight:600;font-size:.97rem;
+  color:var(--primary);list-style:none;display:flex;align-items:center;gap:8px;
+  user-select:none;
+}
+summary::-webkit-details-marker{display:none;}
+summary::before{content:"▶";font-size:.75rem;transition:transform .2s;display:inline-block;}
+details[open]>summary::before{transform:rotate(90deg);}
+summary:focus-visible{outline:2px solid var(--focus-ring);outline-offset:-2px;border-radius:4px;}
+.details-body{padding:4px 18px 16px;}
+
+/* ── Side-by-side comparison ── */
+.comparison{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0;}
+@media(max-width:680px){.comparison{grid-template-columns:1fr;}}
+.comparison-card{
+  border:1px solid var(--border);border-radius:6px;padding:14px 16px;
+  background:var(--bg-light);
+}
+.comparison-card h4{margin-top:0;color:var(--accent-dark);}
+
+/* ── Diagram / Figure ── */
+.figure{
+  margin:20px 0;padding:16px;border:1px solid var(--border);
+  border-radius:6px;background:var(--bg-light);text-align:center;
+}
+.figure-caption{font-size:.88rem;color:var(--text-light);margin-top:8px;font-style:italic;}
+.graph-ascii{
+  font-family:"SFMono-Regular",Consolas,monospace;
+  font-size:.82rem;line-height:1.45;text-align:left;
+  display:inline-block;white-space:pre;
+}
+
+/* ── Knowledge Check ── */
+.kc{
+  border:2px solid var(--accent);border-radius:8px;
+  margin:24px 0;overflow:hidden;
+}
+.kc-header{
+  background:var(--accent);color:#fff;padding:10px 16px;
+  font-weight:700;font-size:.95rem;
+}
+.kc-body{padding:16px 18px;}
+.kc-body p{margin:0 0 12px;}
+.kc-options{list-style:none;padding:0;margin:0 0 12px;}
+.kc-options li{margin:6px 0;}
+.kc-options label{
+  display:flex;align-items:baseline;gap:8px;cursor:pointer;
+  padding:8px 12px;border:1px solid var(--border);border-radius:4px;
+  transition:background .15s;font-size:.93rem;
+}
+.kc-options label:hover{background:var(--bg-light);}
+.kc-options input[type="radio"]{margin:0;flex-shrink:0;cursor:pointer;}
+.kc-btn{
+  background:var(--accent);color:#fff;border:none;
+  padding:8px 22px;border-radius:4px;cursor:pointer;
+  font-size:.93rem;font-weight:600;transition:background .2s;
+}
+.kc-btn:hover{background:var(--accent-dark);}
+.kc-btn:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px;}
+.kc-btn:disabled{opacity:.5;cursor:not-allowed;}
+.kc-feedback{
+  margin-top:12px;padding:12px 14px;border-radius:4px;
+  font-size:.93rem;display:none;
+}
+.kc-feedback.correct{background:var(--success-bg);color:var(--success);display:block;}
+.kc-feedback.incorrect{background:var(--danger-bg);color:var(--danger);display:block;}
+.kc-feedback.correct::before{content:"✓ Correct. ";font-weight:700;}
+.kc-feedback.incorrect::before{content:"✗ Not quite. ";font-weight:700;}
+.kc-reset{
+  background:none;border:none;color:var(--accent);cursor:pointer;
+  font-size:.85rem;text-decoration:underline;margin-top:6px;display:none;
+}
+.kc-reset.show{display:inline-block;}
+
+/* ── Utility ── */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0;}
+.mt0{margin-top:0;}.mb0{margin-bottom:0;}
+.text-center{text-align:center;}
+.text-sm{font-size:.88rem;}
+.text-muted{color:var(--text-light);}
+strong.term{color:var(--accent-dark);}
+.inline-math{font-style:italic;}
+
+/* ── Print ── */
+@media print{
+  .module-nav,.skip-link,.kc-btn,.kc-reset{display:none;}
+  body{font-size:12pt;}
+  .module-header{break-after:avoid;}
+  details{border:none;}
+  details>summary{display:none;}
+  .details-body{padding:0;}
+}
+</style>
+</head>
+<body>
+
+<!-- Skip Link -->
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<!-- ── Navigation ── -->
+<nav class="module-nav" aria-label="Module 14.4 Section Navigation">
+  <a href="#context">Context</a>
+  <a href="#sssp">SSSP</a>
+  <a href="#neg-weights">Neg. Weights</a>
+  <a href="#algorithm">Algorithm</a>
+  <a href="#worked-example">Example</a>
+  <a href="#complexity">Complexity</a>
+  <a href="#java">Java Code</a>
+  <a href="#visualizer">Visualizer</a>
+  <a href="#checks">Checks</a>
+</nav>
+
+<!-- ── Main Content ── -->
+<main id="main-content" class="container">
+
+<!-- Module Header -->
+<header class="module-header">
+  <div class="label">Module 14.4 &bull; Week 14 &mdash; CSC 240 Discrete Structures</div>
+  <h1>Dijkstra's Shortest Path Algorithm</h1>
+  <p>From total network cost (MST) to optimal individual routes &mdash; the single-source shortest path problem, the relaxation operation, and path reconstruction.</p>
+</header>
+
+<!-- ═══════════════════════════════════════════════════
+     SECTION 1 – Opening Context
+     ═══════════════════════════════════════════════════ -->
+<section id="context" aria-labelledby="context-heading">
+<h2 id="context-heading">1 &middot; Opening Context: MST vs.&nbsp;Shortest Path</h2>
+
+<p>In Modules 14.2 and 14.3 you learned two algorithms &mdash; Kruskal's and Prim's &mdash; that solve the <strong>Minimum Spanning Tree</strong> problem. An MST connects <em>every</em> vertex in a network at the lowest <em>total</em> cost. Think of it as an infrastructure planner's question: <em>"What is the cheapest set of cables that keeps every office connected?"</em></p>
+
+<p>Now change the question. You open a GPS app and ask: <em>"What is the shortest route from my house to the airport?"</em> You don't care about connecting every intersection in the city &mdash; you care about <strong>one source</strong> and the <strong>cheapest individual path</strong> to a destination. That is the <strong>single-source shortest path (SSSP)</strong> problem, and the classic solution for graphs with non-negative weights is <strong>Dijkstra's algorithm</strong>.</p>
+
+<div class="callout callout-info">
+  <div class="callout-title"><span class="icon">🔗</span> Structural Connection to Prim's</div>
+  Dijkstra's algorithm looks remarkably similar to Prim's: both use a priority queue, both process one vertex per iteration, and both update keys of neighboring vertices. The <em>only</em> difference is <strong>what the key represents</strong> &mdash; Prim's keys on <em>edge weight to the MST</em>, while Dijkstra's keys on <em>tentative distance from the source</em>. Keep this parallel in mind throughout the module.
+</div>
+
+<div class="comparison">
+  <div class="comparison-card">
+    <h4>MST (Prim's / Kruskal's)</h4>
+    <ul>
+      <li><strong>Goal:</strong> Connect all vertices</li>
+      <li><strong>Minimizes:</strong> Total edge weight of spanning tree</li>
+      <li><strong>Output:</strong> A tree with $$|V|-1$$ edges</li>
+      <li><strong>Analogy:</strong> Cheapest cable network</li>
+    </ul>
+  </div>
+  <div class="comparison-card">
+    <h4>SSSP (Dijkstra's)</h4>
+    <ul>
+      <li><strong>Goal:</strong> Find cheapest path from one source to all others</li>
+      <li><strong>Minimizes:</strong> Individual path cost from source</li>
+      <li><strong>Output:</strong> Distance array + predecessor array (shortest-path tree)</li>
+      <li><strong>Analogy:</strong> GPS turn-by-turn route</li>
+    </ul>
+  </div>
+</div>
+
+<div class="callout callout-warn">
+  <div class="callout-title"><span class="icon">⚠️</span> Key Distinction</div>
+  The MST of a graph is <em>not</em> the same as the shortest-path tree. An edge that appears in the MST may <em>not</em> appear on any shortest path, and vice versa. These are different optimization problems that happen to share a greedy, priority-queue-based structure.
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     SECTION 2 – The SSSP Problem
+     ═══════════════════════════════════════════════════ -->
+<section id="sssp" aria-labelledby="sssp-heading">
+<h2 id="sssp-heading">2 &middot; The Single-Source Shortest Path Problem</h2>
+
+<h3>Formal Definition</h3>
+<p>Given a weighted graph $$G = (V, E)$$ with weight function $$w: E \to \mathbb{R}_{\geq 0}$$ and a designated <strong>source vertex</strong> $$s \in V$$, find, for every vertex $$v \in V$$:</p>
+<ol>
+  <li>The <strong>shortest-path distance</strong> $$d[v]$$ &mdash; the minimum total weight of any path from $$s$$ to $$v$$.</li>
+  <li>A <strong>shortest path</strong> itself (the actual sequence of vertices from $$s$$ to $$v$$).</li>
+</ol>
+<p>If no path from $$s$$ to $$v$$ exists, we define $$d[v] = \infty$$.</p>
+
+<h3>Two Key Arrays</h3>
+<dl class="def-list">
+  <dt>Distance array <code>d[v]</code></dt>
+  <dd>Stores the current best-known (tentative) distance from the source $$s$$ to vertex $$v$$. Initialized to $$\infty$$ for every vertex except the source, where $$d[s] = 0$$. When the algorithm finishes, $$d[v]$$ holds the true shortest-path distance.</dd>
+
+  <dt>Predecessor array <code>prev[v]</code> (also called <code>π[v]</code>)</dt>
+  <dd>Stores the vertex immediately before $$v$$ on the current best-known shortest path from $$s$$. Initialized to <code>null</code> (or $$-1$$) for every vertex. Used to <strong>reconstruct</strong> the actual shortest path after the algorithm finishes.</dd>
+</dl>
+
+<div class="callout callout-info">
+  <div class="callout-title"><span class="icon">🔁</span> Callback: Prim's Arrays</div>
+  In Prim's algorithm (Module 14.3), you maintained a <code>key[v]</code> array (minimum edge weight connecting $$v$$ to the MST) and a <code>parent[v]</code> array (which MST vertex connects to $$v$$). Dijkstra's <code>d[v]</code> and <code>prev[v]</code> serve analogous roles but measure <em>distance from the source</em> rather than <em>edge weight to the growing tree</em>.
+</div>
+
+<h3>MST vs. Shortest-Path Tree &mdash; A Visual Distinction</h3>
+<div class="figure" role="img" aria-label="Diagram description: A 4-vertex graph where the MST and shortest-path tree differ.">
+  <div class="graph-ascii">
+        (A)---2---(B)
+         |  \      |
+         4    3    1
+         |      \  |
+        (C)---5---(D)
+
+  MST (total weight = 7):          Shortest-Path Tree from A (total of shortest distances):
+  A-B (2), B-D (1), A-C (4)        A-B (2), B-D (1), A-D via B = 3, A-C (4)
+  Total edge weight: 2+1+4 = 7     Note: A-D uses path A→B→D (cost 3), not edge A-D (cost 3)
+                                    But A-C uses direct edge (cost 4), not A→B→D→C (cost 8)
+  </div>
+  <div class="figure-caption">Figure 14.4.1 &mdash; The MST minimizes total edge weight across all chosen edges. The shortest-path tree from A minimizes the individual distance from A to each vertex. The two trees can share edges but are solving different problems.</div>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     SECTION 3 – Non-Negative Weight Requirement
+     ═══════════════════════════════════════════════════ -->
+<section id="neg-weights" aria-labelledby="neg-heading">
+<h2 id="neg-heading">3 &middot; The Non-Negative Weight Requirement</h2>
+
+<p>Dijkstra's algorithm <strong>requires all edge weights to be non-negative</strong> ($$w(u,v) \geq 0$$ for every edge). This is not just a suggestion &mdash; negative weights can cause the algorithm to produce <em>incorrect</em> results. Let's see exactly why.</p>
+
+<h3>The Greedy Assumption</h3>
+<p>Dijkstra's is a greedy algorithm: once a vertex $$u$$ is extracted from the priority queue (i.e., "finalized"), the algorithm assumes $$d[u]$$ is the true shortest distance and <strong>never revisits</strong> $$u$$. This assumption is valid only when no future edge can reduce a path cost &mdash; which is guaranteed when all weights are non-negative.</p>
+
+<h3>Worked Counterexample (3 Vertices)</h3>
+<p>Consider this directed graph with a negative edge:</p>
+
+<div class="figure" role="img" aria-label="A 3-vertex directed graph with a negative edge weight.">
+  <div class="graph-ascii">
+        (S)──5──▶(A)
+         │         │
+         └──2──▶(B)──(-4)──▶(A)
+  
+  Edges: S→A (weight 5), S→B (weight 2), B→A (weight -4)
+  </div>
+  <div class="figure-caption">Figure 14.4.2 &mdash; A 3-vertex graph where Dijkstra's fails due to a negative edge weight.</div>
+</div>
+
+<details>
+  <summary>Step-by-step: Why Dijkstra's gives the wrong answer</summary>
+  <div class="details-body">
+    <ol>
+      <li><strong>Initialize:</strong> $$d[S]=0$$, $$d[A]=\infty$$, $$d[B]=\infty$$. Priority queue: $$\{S:0\}$$.</li>
+      <li><strong>Extract S</strong> (distance 0). Relax neighbors:
+        <ul>
+          <li>$$d[A] = 0 + 5 = 5$$</li>
+          <li>$$d[B] = 0 + 2 = 2$$</li>
+        </ul>
+        Priority queue: $$\{B:2, A:5\}$$.
+      </li>
+      <li><strong>Extract B</strong> (distance 2). B is now <strong>finalized</strong>. Relax neighbors:
+        <ul>
+          <li>$$d[A]$$: check $$d[B] + w(B,A) = 2 + (-4) = -2$$. Since $$-2 < 5$$, update $$d[A] = -2$$.</li>
+        </ul>
+        Priority queue: $$\{A:-2\}$$.
+      </li>
+      <li><strong>Extract A</strong> (distance $$-2$$). Dijkstra's reports $$d[A] = -2$$.</li>
+    </ol>
+    <p>In this tiny example Dijkstra's actually <em>happens</em> to get the right answer ($$-2$$), but the problem appears in larger graphs: if a vertex has already been finalized and a later negative edge would reduce its distance, Dijkstra's <strong>will not go back and fix it</strong>. The algorithm's correctness proof relies on the invariant that finalized distances are optimal &mdash; negative edges violate this invariant.</p>
+    <p>Here is a slightly expanded scenario where the failure is clear: suppose after finalizing A at distance 5, a later path through B discovers $$d[A] = -2$$. If A had already been used to relax <em>its</em> neighbors, those relaxations used the wrong distance (5 instead of $$-2$$), and the errors propagate.</p>
+  </div>
+</details>
+
+<div class="callout callout-danger">
+  <div class="callout-title"><span class="icon">🚫</span> Rule</div>
+  <strong>Dijkstra's algorithm is only correct when all edge weights are non-negative.</strong> For graphs with negative edges (but no negative cycles), the <strong>Bellman-Ford algorithm</strong> can be used instead. Bellman-Ford is not assessed in this course, but you should know it exists and when it's needed.
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     SECTION 4 – Dijkstra's Algorithm
+     ═══════════════════════════════════════════════════ -->
+<section id="algorithm" aria-labelledby="algo-heading">
+<h2 id="algo-heading">4 &middot; Dijkstra's Algorithm</h2>
+
+<h3>4.1 &middot; High-Level Idea</h3>
+<ol>
+  <li>Start at the source $$s$$. Set $$d[s] = 0$$ and $$d[v] = \infty$$ for all other vertices.</li>
+  <li>Put all vertices in a min-priority queue, keyed by their tentative distance $$d[v]$$.</li>
+  <li>Repeat until the priority queue is empty:
+    <ol type="a">
+      <li><strong>Extract</strong> the vertex $$u$$ with the smallest $$d[u]$$. This vertex is now <strong>finalized</strong>.</li>
+      <li>For each neighbor $$v$$ of $$u$$, perform the <strong>RELAX</strong> operation.</li>
+    </ol>
+  </li>
+  <li>When finished, $$d[v]$$ contains the shortest distance from $$s$$ to every reachable vertex, and <code>prev[v]</code> encodes the shortest paths.</li>
+</ol>
+
+<h3 id="relax-op">4.2 &middot; The RELAX Operation</h3>
+<p>Relaxation is the core operation that updates distance estimates. It asks: <em>"Can we improve the best-known distance to $$v$$ by going through $$u$$?"</em></p>
+
+<pre class="code-block" role="figure" aria-label="Pseudocode for the RELAX operation"><code>RELAX(u, v, w):
+    if d[u] + w(u, v) &lt; d[v]:
+        d[v] ← d[u] + w(u, v)
+        prev[v] ← u
+        decreaseKey(PQ, v, d[v])</code></pre>
+
+<dl class="def-list">
+  <dt>Why "relaxation"?</dt>
+  <dd>The term comes from the idea of <em>relaxing</em> an overestimate. Initially, $$d[v] = \infty$$ is a loose upper bound. Each successful relaxation <em>tightens</em> that bound, bringing it closer to the true shortest distance. The name is standard in algorithm textbooks (Cormen et al., <em>CLRS</em>).</dd>
+</dl>
+
+<div class="callout callout-info">
+  <div class="callout-title"><span class="icon">🔗</span> Connection to Prim's</div>
+  In Prim's algorithm, the analogous update is: <code>if w(u,v) &lt; key[v]: key[v] ← w(u,v); parent[v] ← u</code>. Notice Prim's compares the <em>edge weight alone</em>, while Dijkstra's compares the <em>accumulated distance plus the edge weight</em>. This single difference is what makes one algorithm solve MST and the other solve SSSP.
+</div>
+
+<h3>4.3 &middot; Full Algorithm Pseudocode</h3>
+<pre class="code-block" role="figure" aria-label="Full pseudocode for Dijkstra's algorithm"><code>DIJKSTRA(G, w, s):
+    // Initialization
+    for each vertex v in G.V:
+        d[v] ← ∞
+        prev[v] ← null
+    d[s] ← 0
+
+    PQ ← MinPriorityQueue()
+    for each vertex v in G.V:
+        PQ.insert(v, d[v])
+
+    // Main loop
+    while PQ is not empty:
+        u ← PQ.extractMin()          // Finalize vertex with smallest d[u]
+        for each neighbor v of u:     // Iterate over adjacency list of u
+            RELAX(u, v, w)            // Update d[v] and prev[v] if improved
+
+    return d[], prev[]</code></pre>
+
+<h3>4.4 &middot; Side-by-Side: Dijkstra's vs. Prim's</h3>
+<div class="table-scroll">
+<table>
+  <thead>
+    <tr><th>Aspect</th><th>Prim's (MST)</th><th>Dijkstra's (SSSP)</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Priority queue key</td><td><code>key[v]</code> = min edge weight to MST</td><td><code>d[v]</code> = tentative distance from source</td></tr>
+    <tr><td>Update condition</td><td><code>w(u,v) &lt; key[v]</code></td><td><code>d[u] + w(u,v) &lt; d[v]</code></td></tr>
+    <tr><td>New key value</td><td><code>w(u,v)</code></td><td><code>d[u] + w(u,v)</code></td></tr>
+    <tr><td>Predecessor meaning</td><td>Parent in MST</td><td>Previous vertex on shortest path</td></tr>
+    <tr><td>Output</td><td>MST edges (total weight minimized)</td><td>Shortest distances + paths from source</td></tr>
+    <tr><td>Graph requirement</td><td>Connected, weighted, undirected</td><td>Weighted, non-negative edges (directed or undirected)</td></tr>
+    <tr><td>Time complexity</td><td>$$O((|V|+|E|)\log|V|)$$</td><td>$$O((|V|+|E|)\log|V|)$$</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="callout callout-success">
+  <div class="callout-title"><span class="icon">💡</span> Key Insight</div>
+  If you understand Prim's algorithm, you already understand 90% of Dijkstra's. The only change is in the RELAX/update step: replace the edge weight comparison with an accumulated distance comparison. Everything else &mdash; the priority queue, the extract-min loop, the adjacency list iteration &mdash; is identical.
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     SECTION 5 – Full Worked Example
+     ═══════════════════════════════════════════════════ -->
+<section id="worked-example" aria-labelledby="example-heading">
+<h2 id="example-heading">5 &middot; Full Worked Example</h2>
+
+<p>Let's trace Dijkstra's algorithm on a 6-vertex directed weighted graph. Follow every step carefully &mdash; this is exactly the kind of hand-trace required on PS-09 and Quiz 5.</p>
+
+<h3>The Graph</h3>
+<div class="figure" role="img" aria-label="A 6-vertex directed weighted graph with vertices A through F.">
+  <div class="graph-ascii">
+             2           1
+     (A)─────────▶(B)─────────▶(D)
+      │            │ ╲            │
+      │            │   ╲          │
+    4 │          3 │    7╲       3│
+      │            │      ╲      │
+      ▼            ▼       ▼     ▼
+     (C)─────────▶(E)─────────▶(F)
+           5           2
+  
+  Edge list:
+  A→B : 2    A→C : 4    B→D : 1
+  B→E : 3    B→F : 7    C→E : 5
+  D→F : 3    E→F : 2
+  
+  Source vertex: A
+  </div>
+  <div class="figure-caption">Figure 14.4.3 &mdash; Directed weighted graph for the Dijkstra's hand-trace. Source = A.</div>
+</div>
+
+<h3>Initialization</h3>
+<div class="table-scroll">
+<table class="trace-table">
+  <thead>
+    <tr><th>Vertex</th><th>d[ ]</th><th>prev[ ]</th><th>In PQ?</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>A</td><td class="trace-current">0</td><td>null</td><td>Yes</td></tr>
+    <tr><td>B</td><td>∞</td><td>null</td><td>Yes</td></tr>
+    <tr><td>C</td><td>∞</td><td>null</td><td>Yes</td></tr>
+    <tr><td>D</td><td>∞</td><td>null</td><td>Yes</td></tr>
+    <tr><td>E</td><td>∞</td><td>null</td><td>Yes</td></tr>
+    <tr><td>F</td><td>∞</td><td>null</td><td>Yes</td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- Accordion for each iteration -->
+<details>
+  <summary>Iteration 1: Extract A (d[A] = 0)</summary>
+  <div class="details-body">
+    <p><strong>Extract:</strong> A with $$d[A] = 0$$. A is now <strong>finalized</strong>.</p>
+    <p><strong>Relax neighbors of A:</strong></p>
+    <ul>
+      <li><strong>Edge A→B (weight 2):</strong> $$d[A] + 2 = 0 + 2 = 2 < \infty = d[B]$$. Update: $$d[B] = 2$$, $$\text{prev}[B] = A$$.</li>
+      <li><strong>Edge A→C (weight 4):</strong> $$d[A] + 4 = 0 + 4 = 4 < \infty = d[C]$$. Update: $$d[C] = 4$$, $$\text{prev}[C] = A$$.</li>
+    </ul>
+    <div class="table-scroll">
+    <table class="trace-table">
+      <thead><tr><th>Vertex</th><th>d[ ]</th><th>prev[ ]</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>A</td><td>0</td><td>null</td><td>Finalized</td></tr>
+        <tr><td>B</td><td class="trace-current">2</td><td>A</td><td>In PQ</td></tr>
+        <tr><td>C</td><td class="trace-current">4</td><td>A</td><td>In PQ</td></tr>
+        <tr><td>D</td><td>∞</td><td>null</td><td>In PQ</td></tr>
+        <tr><td>E</td><td>∞</td><td>null</td><td>In PQ</td></tr>
+        <tr><td>F</td><td>∞</td><td>null</td><td>In PQ</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="text-sm text-muted">Priority queue (min-first): {B:2, C:4, D:∞, E:∞, F:∞}</p>
+  </div>
+</details>
+
+<details>
+  <summary>Iteration 2: Extract B (d[B] = 2)</summary>
+  <div class="details-body">
+    <p><strong>Extract:</strong> B with $$d[B] = 2$$. B is now <strong>finalized</strong>.</p>
+    <p><strong>Relax neighbors of B:</strong></p>
+    <ul>
+      <li><strong>Edge B→D (weight 1):</strong> $$d[B] + 1 = 2 + 1 = 3 < \infty = d[D]$$. Update: $$d[D] = 3$$, $$\text{prev}[D] = B$$.</li>
+      <li><strong>Edge B→E (weight 3):</strong> $$d[B] + 3 = 2 + 3 = 5 < \infty = d[E]$$. Update: $$d[E] = 5$$, $$\text{prev}[E] = B$$.</li>
+      <li><strong>Edge B→F (weight 7):</strong> $$d[B] + 7 = 2 + 7 = 9 < \infty = d[F]$$. Update: $$d[F] = 9$$, $$\text{prev}[F] = B$$.</li>
+    </ul>
+    <div class="table-scroll">
+    <table class="trace-table">
+      <thead><tr><th>Vertex</th><th>d[ ]</th><th>prev[ ]</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>A</td><td>0</td><td>null</td><td>Finalized</td></tr>
+        <tr><td>B</td><td>2</td><td>A</td><td>Finalized</td></tr>
+        <tr><td>C</td><td>4</td><td>A</td><td>In PQ</td></tr>
+        <tr><td>D</td><td class="trace-current">3</td><td>B</td><td>In PQ</td></tr>
+        <tr><td>E</td><td class="trace-current">5</td><td>B</td><td>In PQ</td></tr>
+        <tr><td>F</td><td class="trace-current">9</td><td>B</td><td>In PQ</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="text-sm text-muted">Priority queue: {D:3, C:4, E:5, F:9}</p>
+  </div>
+</details>
+
+<details>
+  <summary>Iteration 3: Extract D (d[D] = 3)</summary>
+  <div class="details-body">
+    <p><strong>Extract:</strong> D with $$d[D] = 3$$. D is now <strong>finalized</strong>.</p>
+    <p><strong>Relax neighbors of D:</strong></p>
+    <ul>
+      <li><strong>Edge D→F (weight 3):</strong> $$d[D] + 3 = 3 + 3 = 6 < 9 = d[F]$$. Update: $$d[F] = 6$$, $$\text{prev}[F] = D$$.</li>
+    </ul>
+    <div class="table-scroll">
+    <table class="trace-table">
+      <thead><tr><th>Vertex</th><th>d[ ]</th><th>prev[ ]</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>A</td><td>0</td><td>null</td><td>Finalized</td></tr>
+        <tr><td>B</td><td>2</td><td>A</td><td>Finalized</td></tr>
+        <tr><td>C</td><td>4</td><td>A</td><td>In PQ</td></tr>
+        <tr><td>D</td><td>3</td><td>B</td><td>Finalized</td></tr>
+        <tr><td>E</td><td>5</td><td>B</td><td>In PQ</td></tr>
+        <tr><td>F</td><td class="trace-current">6</td><td>D</td><td>In PQ</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="text-sm text-muted">Priority queue: {C:4, E:5, F:6}</p>
+  </div>
+</details>
+
+<details>
+  <summary>Iteration 4: Extract C (d[C] = 4)</summary>
+  <div class="details-body">
+    <p><strong>Extract:</strong> C with $$d[C] = 4$$. C is now <strong>finalized</strong>.</p>
+    <p><strong>Relax neighbors of C:</strong></p>
+    <ul>
+      <li><strong>Edge C→E (weight 5):</strong> $$d[C] + 5 = 4 + 5 = 9 \not< 5 = d[E]$$. <strong>No update</strong> &mdash; the existing path to E (through B, cost 5) is cheaper.</li>
+    </ul>
+    <div class="table-scroll">
+    <table class="trace-table">
+      <thead><tr><th>Vertex</th><th>d[ ]</th><th>prev[ ]</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>A</td><td>0</td><td>null</td><td>Finalized</td></tr>
+        <tr><td>B</td><td>2</td><td>A</td><td>Finalized</td></tr>
+        <tr><td>C</td><td>4</td><td>A</td><td>Finalized</td></tr>
+        <tr><td>D</td><td>3</td><td>B</td><td>Finalized</td></tr>
+        <tr><td>E</td><td>5</td><td>B</td><td>In PQ</td></tr>
+        <tr><td>F</td><td>6</td><td>D</td><td>In PQ</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="text-sm text-muted">Priority queue: {E:5, F:6}</p>
+  </div>
+</details>
+
+<details>
+  <summary>Iteration 5: Extract E (d[E] = 5)</summary>
+  <div class="details-body">
+    <p><strong>Extract:</strong> E with $$d[E] = 5$$. E is now <strong>finalized</strong>.</p>
+    <p><strong>Relax neighbors of E:</strong></p>
+    <ul>
+      <li><strong>Edge E→F (weight 2):</strong> $$d[E] + 2 = 5 + 2 = 7 \not< 6 = d[F]$$. <strong>No update</strong> &mdash; the path through D (cost 6) is still cheaper.</li>
+    </ul>
+    <div class="table-scroll">
+    <table class="trace-table">
+      <thead><tr><th>Vertex</th><th>d[ ]</th><th>prev[ ]</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>A</td><td>0</td><td>null</td><td>Finalized</td></tr>
+        <tr><td>B</td><td>2</td><td>A</td><td>Finalized</td></tr>
+        <tr><td>C</td><td>4</td><td>A</td><td>Finalized</td></tr>
+        <tr><td>D</td><td>3</td><td>B</td><td>Finalized</td></tr>
+        <tr><td>E</td><td>5</td><td>B</td><td>Finalized</td></tr>
+        <tr><td>F</td><td>6</td><td>D</td><td>In PQ</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="text-sm text-muted">Priority queue: {F:6}</p>
+  </div>
+</details>
+
+<details>
+  <summary>Iteration 6: Extract F (d[F] = 6)</summary>
+  <div class="details-body">
+    <p><strong>Extract:</strong> F with $$d[F] = 6$$. F is now <strong>finalized</strong>.</p>
+    <p>F has no outgoing edges. No relaxations.</p>
+    <p><strong>Priority queue is now empty. Algorithm terminates.</strong></p>
+  </div>
+</details>
+
+<h3>Final Results</h3>
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Vertex</th><th>d[ ] (shortest distance from A)</th><th>prev[ ]</th></tr></thead>
+  <tbody>
+    <tr><td>A</td><td>0</td><td>null (source)</td></tr>
+    <tr><td>B</td><td>2</td><td>A</td></tr>
+    <tr><td>C</td><td>4</td><td>A</td></tr>
+    <tr><td>D</td><td>3</td><td>B</td></tr>
+    <tr><td>E</td><td>5</td><td>B</td></tr>
+    <tr><td>F</td><td>6</td><td>D</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3 id="path-recon">Path Reconstruction Using the Predecessor Array</h3>
+<p>To find the actual shortest path from A to any vertex, <strong>trace backward</strong> through <code>prev[]</code> from the destination to the source, then reverse.</p>
+
+<details>
+  <summary>Example: Shortest path from A to F</summary>
+  <div class="details-body">
+    <ol>
+      <li>Start at F. $$\text{prev}[F] = D$$.</li>
+      <li>Go to D. $$\text{prev}[D] = B$$.</li>
+      <li>Go to B. $$\text{prev}[B] = A$$.</li>
+      <li>A is the source. Stop.</li>
+    </ol>
+    <p><strong>Reverse the chain:</strong> A → B → D → F</p>
+    <p><strong>Verify the cost:</strong> $$w(A,B) + w(B,D) + w(D,F) = 2 + 1 + 3 = 6 = d[F]$$ ✓</p>
+  </div>
+</details>
+
+<details>
+  <summary>Example: Shortest path from A to E</summary>
+  <div class="details-body">
+    <ol>
+      <li>Start at E. $$\text{prev}[E] = B$$.</li>
+      <li>Go to B. $$\text{prev}[B] = A$$.</li>
+      <li>A is the source. Stop.</li>
+    </ol>
+    <p><strong>Reverse:</strong> A → B → E</p>
+    <p><strong>Verify:</strong> $$2 + 3 = 5 = d[E]$$ ✓</p>
+  </div>
+</details>
+
+<h4>Path Reconstruction Pseudocode</h4>
+<pre class="code-block" role="figure" aria-label="Pseudocode for path reconstruction"><code>RECONSTRUCT_PATH(prev[], s, target):
+    path ← empty list
+    current ← target
+    while current ≠ null:
+        path.addFirst(current)    // prepend
+        current ← prev[current]
+    if path[0] = s:
+        return path               // valid path found
+    else:
+        return "no path exists"   // target unreachable from s</code></pre>
+
+<div class="callout callout-info">
+  <div class="callout-title"><span class="icon">📝</span> PS-09 Tip</div>
+  When hand-tracing Dijkstra's on PS-09, always show <strong>three things</strong> at each step: (1) which vertex is extracted, (2) the updated distance array, and (3) the updated predecessor array. After the final iteration, reconstruct at least one path to verify your work.
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     SECTION 6 – Time Complexity Analysis
+     ═══════════════════════════════════════════════════ -->
+<section id="complexity" aria-labelledby="complexity-heading">
+<h2 id="complexity-heading">6 &middot; Time Complexity Analysis</h2>
+
+<h3>Operation Counts</h3>
+<p>Dijkstra's algorithm performs two types of priority queue operations:</p>
+<ol>
+  <li><strong><code>extractMin</code></strong> &mdash; called once per vertex → $$|V|$$ times.</li>
+  <li><strong><code>decreaseKey</code></strong> &mdash; called at most once per edge (each edge triggers at most one relaxation that succeeds) → at most $$|E|$$ times.</li>
+</ol>
+
+<h3>With a Binary Min-Heap</h3>
+<p>Both <code>extractMin</code> and <code>decreaseKey</code> take $$O(\log|V|)$$ on a binary heap:</p>
+$$
+T(V,E) = |V| \cdot O(\log|V|) + |E| \cdot O(\log|V|) = O\bigl((|V| + |E|)\log|V|\bigr)
+$$
+
+<div class="callout callout-info">
+  <div class="callout-title"><span class="icon">🔗</span> Same as Prim's!</div>
+  This is the same complexity as Prim's algorithm with a binary heap. Both algorithms have the same loop structure; they differ only in what the key represents.
+</div>
+
+<h3>Connection to BFS</h3>
+<p>Recall from Module 13.1 that BFS finds shortest paths in <strong>unweighted</strong> graphs in $$O(|V| + |E|)$$ time using a simple FIFO queue. Dijkstra's generalizes BFS to <strong>weighted</strong> graphs by replacing the FIFO queue with a priority queue. The priority queue adds a $$\log|V|$$ factor per operation:</p>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Algorithm</th><th>Graph Type</th><th>Queue Type</th><th>Time Complexity</th></tr></thead>
+  <tbody>
+    <tr><td>BFS</td><td>Unweighted</td><td>FIFO queue</td><td>$$O(|V| + |E|)$$</td></tr>
+    <tr><td>Dijkstra's</td><td>Weighted (non-negative)</td><td>Min-priority queue</td><td>$$O((|V|+|E|)\log|V|)$$</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>If all edge weights are 1, Dijkstra's algorithm produces the same result as BFS &mdash; but with an unnecessary $$\log|V|$$ overhead. Use BFS for unweighted graphs; use Dijkstra's when weights vary.</p>
+
+<details>
+  <summary>Advanced note: Fibonacci heap optimization</summary>
+  <div class="details-body">
+    <p>With a <strong>Fibonacci heap</strong>, <code>decreaseKey</code> runs in $$O(1)$$ amortized time, reducing the total complexity to $$O(|V|\log|V| + |E|)$$. This is better for dense graphs where $$|E|$$ is large. Fibonacci heaps are not covered in this course, but you may encounter them in CSC 340 or algorithms electives.</p>
+  </div>
+</details>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     SECTION 7 – Java Code Walkthrough
+     ═══════════════════════════════════════════════════ -->
+<section id="java" aria-labelledby="java-heading">
+<h2 id="java-heading">7 &middot; Java Code Walkthrough</h2>
+
+<p>This section provides annotated Java skeleton code for Dijkstra's algorithm. There are <strong>two implementation contexts</strong> you need to be aware of:</p>
+
+<div class="comparison">
+  <div class="comparison-card">
+    <h4>PE-09 (30 pts)</h4>
+    <p>Use Java's built-in <code>java.util.PriorityQueue</code>. Focus on correctness and output format. Due end of Week 14.</p>
+  </div>
+  <div class="comparison-card">
+    <h4>Final Project Component 4 (50 pts)</h4>
+    <p>Implement your <strong>own</strong> min-heap (student-built). The priority queue in your Dijkstra's implementation must use this custom heap. Due end of Week 17.</p>
+  </div>
+</div>
+
+<h3>7.1 &middot; PE-09 Version (Library PriorityQueue)</h3>
+<pre class="code-block" role="figure" aria-label="Java implementation of Dijkstra's algorithm using library PriorityQueue"><code>import java.util.*;
+
+public class Dijkstra {
+
+    // Edge in adjacency list: (neighbor, weight)
+    static class Edge {
+        int to, weight;
+        Edge(int to, int weight) {
+            this.to = to;
+            this.weight = weight;
+        }
+    }
+
+    // PQ entry: (vertex, tentative distance)
+    static class Node implements Comparable&lt;Node&gt; {
+        int vertex, dist;
+        Node(int vertex, int dist) {
+            this.vertex = vertex;
+            this.dist = dist;
+        }
+        public int compareTo(Node other) {
+            return Integer.compare(this.dist, other.dist);
+        }
+    }
+
+    /**
+     * Runs Dijkstra's algorithm from source vertex s.
+     * @param adj  adjacency list: adj[u] = list of Edge(v, w)
+     * @param s    source vertex
+     * @return     int[] d where d[v] = shortest distance from s to v
+     *             (also populates prev[] for path reconstruction)
+     */
+    static int[] dijkstra(List&lt;List&lt;Edge&gt;&gt; adj, int s) {
+        int n = adj.size();
+        int[] d    = new int[n];
+        int[] prev = new int[n];
+        Arrays.fill(d, Integer.MAX_VALUE);
+        Arrays.fill(prev, -1);
+        d[s] = 0;
+
+        // Min-priority queue
+        PriorityQueue&lt;Node&gt; pq = new PriorityQueue&lt;&gt;();
+        pq.offer(new Node(s, 0));
+
+        boolean[] finalized = new boolean[n];
+
+        while (!pq.isEmpty()) {
+            Node cur = pq.poll();          // extractMin
+            int u = cur.vertex;
+
+            if (finalized[u]) continue;    // skip stale entries
+            finalized[u] = true;
+
+            for (Edge e : adj.get(u)) {    // relax neighbors
+                int v = e.to;
+                int newDist = d[u] + e.weight;
+                if (newDist &lt; d[v]) {      // RELAX
+                    d[v] = newDist;
+                    prev[v] = u;
+                    pq.offer(new Node(v, newDist));
+                }
+            }
+        }
+        return d;  // also return prev[] for path reconstruction
+    }
+}</code></pre>
+
+<div class="callout callout-warn">
+  <div class="callout-title"><span class="icon">⚠️</span> Lazy Deletion Pattern</div>
+  <p>Java's <code>PriorityQueue</code> does not support a true <code>decreaseKey</code> operation. Instead, we insert a <strong>new entry</strong> with the updated distance and use a <code>finalized[]</code> boolean array to skip stale (outdated) entries when they are extracted. This is called <strong>lazy deletion</strong> and is the standard approach in competitive programming and most textbook Java implementations.</p>
+  <p>The theoretical complexity becomes $$O((|V|+|E|)\log|E|)$$ instead of $$O((|V|+|E|)\log|V|)$$, but since $$\log|E| \leq \log|V|^2 = 2\log|V|$$, this is the same asymptotic class.</p>
+</div>
+
+<h3>7.2 &middot; Path Reconstruction in Java</h3>
+<pre class="code-block" role="figure" aria-label="Java method for reconstructing the shortest path"><code>static List&lt;Integer&gt; reconstructPath(int[] prev, int s, int target) {
+    LinkedList&lt;Integer&gt; path = new LinkedList&lt;&gt;();
+    for (int v = target; v != -1; v = prev[v]) {
+        path.addFirst(v);
+    }
+    if (path.getFirst() == s) {
+        return path;           // valid path
+    }
+    return Collections.emptyList();  // unreachable
+}</code></pre>
+
+<h3>7.3 &middot; Final Project Preview: Student-Built Min-Heap</h3>
+<div class="callout callout-info">
+  <div class="callout-title"><span class="icon">🚀</span> Looking Ahead</div>
+  <p>For <strong>Final Project Component 4</strong> (50 pts), you must replace <code>java.util.PriorityQueue</code> with your own min-heap implementation that supports <code>insert</code>, <code>extractMin</code>, and <code>decreaseKey</code>. This custom heap will be used inside your Dijkstra's (and optionally Prim's) implementation.</p>
+  <p>The min-heap is a complete binary tree stored in an array &mdash; you'll study tree structures in depth in Week 15. For now, understand <em>what</em> the priority queue does; in Week 15 you'll learn <em>how</em> to build one from scratch.</p>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     SECTION 8 – Guided Visualizer Activity
+     ═══════════════════════════════════════════════════ -->
+<section id="visualizer" aria-labelledby="viz-heading">
+<h2 id="viz-heading">8 &middot; Guided Visualizer Activity</h2>
+
+<p>Use the Dijkstra's algorithm visualizer at <strong>cs.usfca.edu/~galles/visualization/Dijkstra.html</strong> &mdash; open it in a separate browser tab. Follow these steps to reinforce the hand-trace from Section 5.</p>
+
+<div class="callout callout-info">
+  <div class="callout-title"><span class="icon">🖥️</span> Visualizer Instructions</div>
+  <ol>
+    <li><strong>Build the graph.</strong> Create 6 vertices (labeled 0–5 to match A–F). Add directed edges with the same weights as Figure 14.4.3:
+      <ul>
+        <li>0→1 (weight 2), 0→2 (weight 4), 1→3 (weight 1), 1→4 (weight 3), 1→5 (weight 7), 2→4 (weight 5), 3→5 (weight 3), 4→5 (weight 2).</li>
+      </ul>
+    </li>
+    <li><strong>Set the source.</strong> Select vertex 0 as the starting vertex.</li>
+    <li><strong>Step through the algorithm.</strong> Click "Step" (not "Run") to advance one operation at a time. At each step, observe:
+      <ul>
+        <li>Which vertex is extracted from the priority queue (highlighted in a distinct color).</li>
+        <li>Which edges are being relaxed (animated).</li>
+        <li>How the distance labels update.</li>
+      </ul>
+    </li>
+    <li><strong>Compare with your hand-trace.</strong> Verify that the extraction order and final distances match your Section 5 work: d[0]=0, d[1]=2, d[2]=4, d[3]=3, d[4]=5, d[5]=6.</li>
+    <li><strong>Experiment.</strong> Try changing an edge weight (e.g., increase 1→3 from 1 to 10) and re-run. How does the shortest-path tree change? Which paths are affected?</li>
+  </ol>
+</div>
+
+<div class="callout callout-warn">
+  <div class="callout-title"><span class="icon">⚠️</span> Visualizer Differences</div>
+  Some visualizers use 0-indexed vertices; some use 1-indexed. The algorithm behavior is identical &mdash; just be careful when mapping vertex labels between the visualizer and your hand-trace.
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     SECTION 9 – Knowledge Checks
+     ═══════════════════════════════════════════════════ -->
+<section id="checks" aria-labelledby="checks-heading">
+<h2 id="checks-heading">9 &middot; Knowledge Checks</h2>
+<p>These four checks are <strong>ungraded</strong> and provide immediate feedback. Use them to test your understanding before starting PS-09 and PE-09.</p>
+
+<!-- KC 14.4a -->
+<div class="kc" id="kc-14-4a">
+  <div class="kc-header">Knowledge Check 14.4a &mdash; SSSP Definition</div>
+  <div class="kc-body">
+    <p>Which of the following best describes the output of Dijkstra's algorithm?</p>
+    <ul class="kc-options" role="radiogroup" aria-label="Answer choices for check 14.4a">
+      <li><label><input type="radio" name="kc14_4a" value="a"> A minimum spanning tree connecting all vertices</label></li>
+      <li><label><input type="radio" name="kc14_4a" value="b"> The shortest path between every pair of vertices (all-pairs)</label></li>
+      <li><label><input type="radio" name="kc14_4a" value="c"> The shortest distance from a single source to every other vertex, plus predecessor pointers for path reconstruction</label></li>
+      <li><label><input type="radio" name="kc14_4a" value="d"> A topological ordering of the vertices</label></li>
+    </ul>
+    <button class="kc-btn" onclick="checkAnswer('kc14_4a','c', 'kc14_4a_fb')">Check Answer</button>
+    <button class="kc-reset" id="kc14_4a_reset" onclick="resetKC('kc14_4a','kc14_4a_fb','kc14_4a_reset')">Try Again</button>
+    <div id="kc14_4a_fb" class="kc-feedback" role="status" aria-live="polite"></div>
+  </div>
+</div>
+
+<!-- KC 14.4b -->
+<div class="kc" id="kc-14-4b">
+  <div class="kc-header">Knowledge Check 14.4b &mdash; Negative Weights</div>
+  <div class="kc-body">
+    <p>Why does Dijkstra's algorithm require all edge weights to be non-negative?</p>
+    <ul class="kc-options" role="radiogroup" aria-label="Answer choices for check 14.4b">
+      <li><label><input type="radio" name="kc14_4b" value="a"> Because the algorithm sorts edges by weight, and negative weights break the sort</label></li>
+      <li><label><input type="radio" name="kc14_4b" value="b"> Because once a vertex is finalized (extracted from the PQ), the algorithm never revisits it &mdash; a negative edge could later provide a shorter path, violating the greedy assumption</label></li>
+      <li><label><input type="radio" name="kc14_4b" value="c"> Because the priority queue cannot store negative numbers</label></li>
+      <li><label><input type="radio" name="kc14_4b" value="d"> Because negative weights make the graph disconnected</label></li>
+    </ul>
+    <button class="kc-btn" onclick="checkAnswer('kc14_4b','b', 'kc14_4b_fb')">Check Answer</button>
+    <button class="kc-reset" id="kc14_4b_reset" onclick="resetKC('kc14_4b','kc14_4b_fb','kc14_4b_reset')">Try Again</button>
+    <div id="kc14_4b_fb" class="kc-feedback" role="status" aria-live="polite"></div>
+  </div>
+</div>
+
+<!-- KC 14.4c -->
+<div class="kc" id="kc-14-4c">
+  <div class="kc-header">Knowledge Check 14.4c &mdash; Relaxation Trace</div>
+  <div class="kc-body">
+    <p>During a run of Dijkstra's algorithm, vertex $$u$$ has just been extracted with $$d[u] = 7$$. Vertex $$v$$ is a neighbor of $$u$$ with edge weight $$w(u,v) = 3$$, and currently $$d[v] = 12$$. After the RELAX operation, what are the new values of $$d[v]$$ and $$\text{prev}[v]$$?</p>
+    <ul class="kc-options" role="radiogroup" aria-label="Answer choices for check 14.4c">
+      <li><label><input type="radio" name="kc14_4c" value="a"> $$d[v] = 12$$, $$\text{prev}[v]$$ unchanged (no update)</label></li>
+      <li><label><input type="radio" name="kc14_4c" value="b"> $$d[v] = 3$$, $$\text{prev}[v] = u$$</label></li>
+      <li><label><input type="radio" name="kc14_4c" value="c"> $$d[v] = 10$$, $$\text{prev}[v] = u$$</label></li>
+      <li><label><input type="radio" name="kc14_4c" value="d"> $$d[v] = 7$$, $$\text{prev}[v] = u$$</label></li>
+    </ul>
+    <button class="kc-btn" onclick="checkAnswer('kc14_4c','c', 'kc14_4c_fb')">Check Answer</button>
+    <button class="kc-reset" id="kc14_4c_reset" onclick="resetKC('kc14_4c','kc14_4c_fb','kc14_4c_reset')">Try Again</button>
+    <div id="kc14_4c_fb" class="kc-feedback" role="status" aria-live="polite"></div>
+  </div>
+</div>
+
+<!-- KC 14.4d -->
+<div class="kc" id="kc-14-4d">
+  <div class="kc-header">Knowledge Check 14.4d &mdash; Path Reconstruction</div>
+  <div class="kc-body">
+    <p>After running Dijkstra's from source A on the graph in Section 5, the predecessor array is: <code>prev[A]=null, prev[B]=A, prev[C]=A, prev[D]=B, prev[E]=B, prev[F]=D</code>. What is the shortest path from A to F, and what is its total cost?</p>
+    <ul class="kc-options" role="radiogroup" aria-label="Answer choices for check 14.4d">
+      <li><label><input type="radio" name="kc14_4d" value="a"> A → C → E → F, cost = 11</label></li>
+      <li><label><input type="radio" name="kc14_4d" value="b"> A → B → F, cost = 9</label></li>
+      <li><label><input type="radio" name="kc14_4d" value="c"> A → B → D → F, cost = 6</label></li>
+      <li><label><input type="radio" name="kc14_4d" value="d"> A → B → E → F, cost = 7</label></li>
+    </ul>
+    <button class="kc-btn" onclick="checkAnswer('kc14_4d','c', 'kc14_4d_fb')">Check Answer</button>
+    <button class="kc-reset" id="kc14_4d_reset" onclick="resetKC('kc14_4d','kc14_4d_fb','kc14_4d_reset')">Try Again</button>
+    <div id="kc14_4d_fb" class="kc-feedback" role="status" aria-live="polite"></div>
+  </div>
+</div>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     Connection to Graded Work
+     ═══════════════════════════════════════════════════ -->
+<section id="graded-work" aria-labelledby="graded-heading">
+<h2 id="graded-heading">Connection to Graded Work</h2>
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Assessment</th><th>How This Module Prepares You</th></tr></thead>
+  <tbody>
+    <tr><td><strong>PS-09</strong> (20 pts, due end of Week 14)</td><td>Includes a full Dijkstra's hand-trace problem (distance array, predecessor array, path reconstruction) &mdash; exactly like Section 5.</td></tr>
+    <tr><td><strong>PE-09</strong> (30 pts, due end of Week 14)</td><td>Requires a working Dijkstra's implementation with shortest distance and path output &mdash; Section 7 provides the code skeleton.</td></tr>
+    <tr><td><strong>Final Project Component 3</strong> (75 pts)</td><td>Dijkstra's implementation with correct shortest-path output on your Graph Builder.</td></tr>
+    <tr><td><strong>Final Project Component 4</strong> (50 pts)</td><td>Student-built min-heap used as the priority queue inside Dijkstra's (or Prim's).</td></tr>
+    <tr><td><strong>Quiz 5</strong> (Week 16, 60 pts)</td><td>Will include Dijkstra's hand-trace and conceptual questions (negative weights, relaxation, complexity).</td></tr>
+  </tbody>
+</table>
+</div>
+</section>
+
+</main>
+
+<!-- ═══════════════════════════════════════════════════
+     JavaScript – Knowledge Checks
+     ═══════════════════════════════════════════════════ -->
+<script>
+// Feedback text for each question
+const feedback = {
+  kc14_4a: {
+    correct: "Dijkstra's solves the single-source shortest path problem. It produces a distance array d[v] (shortest distance from the source to every vertex) and a predecessor array prev[v] (for reconstructing the actual paths). It does NOT produce an MST (that's Kruskal's/Prim's), does NOT solve all-pairs shortest paths (that's Floyd-Warshall), and does NOT produce a topological order (that's DFS-based topological sort).",
+    incorrect: "Review Section 2. Dijkstra's solves the single-source shortest path problem — it finds the shortest distance from one source vertex to every other vertex, along with predecessor pointers for path reconstruction. Think about what makes it different from MST algorithms and topological sort."
+  },
+  kc14_4b: {
+    correct: "Once Dijkstra's finalizes a vertex (extracts it from the priority queue), it assumes that distance is optimal and never revisits it. With negative edge weights, a later discovery could reveal a cheaper path to an already-finalized vertex, but the algorithm won't go back to fix it. This violates the greedy assumption that makes the algorithm correct. The Bellman-Ford algorithm handles negative weights by allowing multiple relaxation passes.",
+    incorrect: "Review Section 3. The issue is about the greedy assumption: once a vertex is extracted from the priority queue and finalized, Dijkstra's assumes its distance is optimal and never revisits it. Think about what happens if a negative edge later provides a cheaper path to that already-finalized vertex."
+  },
+  kc14_4c: {
+    correct: "The RELAX operation checks: is d[u] + w(u,v) < d[v]? Here: 7 + 3 = 10 < 12. Yes! So d[v] is updated to 10 and prev[v] is set to u. Note that d[v] becomes the accumulated distance from the source (not just the edge weight), which is the key difference from Prim's update rule.",
+    incorrect: "Apply the RELAX formula from Section 4.2: if d[u] + w(u,v) < d[v], then update d[v] ← d[u] + w(u,v) and prev[v] ← u. Compute: d[u] + w(u,v) = 7 + 3 = ? Compare that to the current d[v] = 12."
+  },
+  kc14_4d: {
+    correct: "Trace backward through prev[]: start at F → prev[F]=D → prev[D]=B → prev[B]=A (source). Reverse to get A → B → D → F. Verify: w(A,B) + w(B,D) + w(D,F) = 2 + 1 + 3 = 6, which matches d[F] = 6 from the worked example. This path-reconstruction technique using the predecessor array is essential for PS-09 and the Final Project.",
+    incorrect: "Review Section 5 (Path Reconstruction). Start at the destination F and follow prev[] backward: prev[F] = D, prev[D] = B, prev[B] = A. Then reverse the chain to get the forward path. Add up the edge weights along that path to verify the total cost."
+  }
+};
+
+function checkAnswer(name, correctVal, fbId) {
+  const selected = document.querySelector('input[name="'+name+'"]:checked');
+  const fbEl = document.getElementById(fbId);
+  const resetBtn = document.getElementById(name+'_reset');
+  if (!selected) {
+    fbEl.className = 'kc-feedback incorrect';
+    fbEl.textContent = 'Please select an answer.';
+    fbEl.style.display = 'block';
+    return;
+  }
+  const isCorrect = selected.value === correctVal;
+  fbEl.className = 'kc-feedback ' + (isCorrect ? 'correct' : 'incorrect');
+  fbEl.textContent = isCorrect ? feedback[name].correct : feedback[name].incorrect;
+  fbEl.style.display = 'block';
+  // Disable inputs after answering
+  document.querySelectorAll('input[name="'+name+'"]').forEach(function(r){r.disabled=true;});
+  // Disable check button
+  selected.closest('.kc-body').querySelector('.kc-btn').disabled = true;
+  // Show reset
+  resetBtn.classList.add('show');
+}
+
+function resetKC(name, fbId, resetId) {
+  document.querySelectorAll('input[name="'+name+'"]').forEach(function(r){r.disabled=false;r.checked=false;});
+  var fbEl = document.getElementById(fbId);
+  fbEl.className = 'kc-feedback';
+  fbEl.textContent = '';
+  fbEl.style.display = 'none';
+  var body = document.getElementById(resetId).closest('.kc-body');
+  body.querySelector('.kc-btn').disabled = false;
+  document.getElementById(resetId).classList.remove('show');
+}
+</script>
+
+</body>
+</html>

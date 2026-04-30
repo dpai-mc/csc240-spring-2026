@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vandermonde Systems, Cramer's Rule, and First-Order Recurrences</title>
+<style>
+:root{
+--primary:#1a5276;
+--primary-light:#2980b9;
+--accent:#e67e22;
+--accent-light:#f5cba7;
+--bg:#fdfdfd;
+--card-bg:#ffffff;
+--text:#212529;
+--text-muted:#555;
+--border:#ddd;
+--success:#27ae60;
+--success-bg:#eafaf1;
+--danger:#c0392b;
+--danger-bg:#fdedec;
+--info-bg:#eaf2f8;
+--code-bg:#f4f6f7;
+--radius:8px;
+--shadow:0 2px 6px rgba(0,0,0,.08);
+--focus-ring:0 0 0 3px rgba(41,128,185,.45);
+}
+*,*::before,*::after{box-sizing:border-box;}
+body{
+font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+font-size:1rem;line-height:1.65;color:var(--text);
+background:var(--bg);margin:0;padding:0;
+}
+/* ── NAV BAR ── */
+.nav-bar{
+position:sticky;top:0;z-index:100;
+background:var(--primary);padding:.5rem 1rem;
+display:flex;flex-wrap:wrap;gap:.35rem .75rem;
+align-items:center;
+}
+.nav-bar a{
+color:#fff;text-decoration:none;font-size:.85rem;
+padding:.3rem .55rem;border-radius:4px;
+transition:background .2s;
+}
+.nav-bar a:hover,.nav-bar a:focus-visible{
+background:rgba(255,255,255,.2);outline:none;
+}
+.nav-bar a:focus-visible{box-shadow:var(--focus-ring);}
+.nav-title{font-weight:700;font-size:.95rem;margin-right:auto;color:#fff;}
+/* ── LAYOUT ── */
+.container{max-width:960px;margin:0 auto;padding:1.25rem 1.5rem 3rem;}
+h1,h2,h3,h4{color:var(--primary);margin-top:0;}
+h1{font-size:1.65rem;border-bottom:3px solid var(--accent);padding-bottom:.4rem;margin-bottom:.25rem;}
+.subtitle{color:var(--text-muted);font-size:.95rem;margin-bottom:1.5rem;}
+h2{font-size:1.35rem;margin-top:2.25rem;margin-bottom:.6rem;scroll-margin-top:60px;}
+h3{font-size:1.1rem;margin-top:1.4rem;margin-bottom:.45rem;}
+h4{font-size:1rem;margin-top:1rem;margin-bottom:.35rem;}
+p{margin:.55rem 0;}
+ul,ol{margin:.4rem 0 .8rem 1.25rem;}
+li{margin-bottom:.3rem;}
+code{background:var(--code-bg);padding:.15rem .35rem;border-radius:3px;font-size:.92em;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;}
+/* ── CARDS & CALLOUTS ── */
+.card{
+background:var(--card-bg);border:1px solid var(--border);
+border-radius:var(--radius);padding:1rem 1.25rem;
+margin:1rem 0;box-shadow:var(--shadow);
+}
+.callout{
+border-left:4px solid var(--primary-light);
+background:var(--info-bg);
+border-radius:var(--radius);
+padding:.85rem 1rem;margin:1rem 0;
+}
+.callout.accent{border-left-color:var(--accent);background:#fef5e7;}
+.callout.success{border-left-color:var(--success);background:var(--success-bg);}
+.callout-label{font-weight:700;margin-bottom:.25rem;display:flex;align-items:center;gap:.4rem;}
+/* ── DEFINITION BOX ── */
+.def-box{
+background:#f0f4f8;border:1px solid #b0c4d8;
+border-radius:var(--radius);padding:.85rem 1rem;margin:.8rem 0;
+}
+.def-box .def-term{font-weight:700;color:var(--primary);}
+/* ── TABLE ── */
+.table-wrap{overflow-x:auto;margin:1rem 0;}
+table{width:100%;border-collapse:collapse;font-size:.93rem;}
+th,td{border:1px solid var(--border);padding:.55rem .7rem;text-align:left;}
+th{background:var(--primary);color:#fff;font-weight:600;}
+tr:nth-child(even){background:#f7f9fb;}
+caption{caption-side:top;font-weight:700;margin-bottom:.35rem;text-align:left;color:var(--primary);}
+/* ── COLLAPSIBLE ── */
+details{
+margin:.7rem 0;border:1px solid var(--border);
+border-radius:var(--radius);overflow:hidden;
+}
+summary{
+cursor:pointer;padding:.65rem .9rem;font-weight:600;
+background:#f0f4f8;list-style:none;
+display:flex;align-items:center;gap:.45rem;
+}
+summary::-webkit-details-marker{display:none;}
+summary::before{content:'▸';transition:transform .2s;display:inline-block;}
+details[open]>summary::before{transform:rotate(90deg);}
+summary:focus-visible{outline:2px solid var(--primary-light);outline-offset:-2px;}
+details .detail-body{padding:.75rem 1rem;}
+/* ── FORMULA / CODE BLOCK ── */
+.formula-box{
+background:var(--code-bg);border-left:4px solid var(--primary-light);
+border-radius:var(--radius);
+padding:.75rem 1rem;margin:.75rem 0;
+font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+font-size:.95rem;white-space:pre-wrap;line-height:1.6;
+}
+/* ── MATRIX DISPLAY ── */
+.matrix-eq{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;margin:1rem 0;}
+.matrix-eq .eq-sign{font-size:1.2rem;color:var(--primary);font-weight:700;}
+.mx{
+display:inline-block;position:relative;
+padding:.4rem 1.6rem;
+font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+font-size:.97rem;vertical-align:middle;
+}
+.mx::before,.mx::after{
+content:'';position:absolute;top:0;bottom:0;width:5px;
+border:2px solid var(--primary);
+}
+.mx::before{left:0;border-right:none;}
+.mx::after{right:0;border-left:none;}
+.mx-row{display:flex;gap:1.75rem;padding:.1rem 0;}
+.mx-cell{min-width:2.5rem;text-align:center;}
+.mat-block{display:flex;justify-content:center;margin:.9rem 0;padding:.25rem 0;}
+.det-eq{
+display:flex;align-items:center;flex-wrap:wrap;gap:.65rem;
+margin:.7rem 0;padding:.65rem .9rem;
+background:var(--code-bg);border-left:4px solid var(--primary-light);
+border-radius:var(--radius);
+font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.95rem;
+}
+.det-eq .det-label{white-space:nowrap;}
+.mx-col-replaced{color:var(--accent);font-weight:700;}
+.cramer-ident{display:flex;flex-wrap:wrap;align-items:flex-end;gap:1.25rem;margin:.7rem 0;}
+/* ── INTERACTIVE CALCULATOR ── */
+.calc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem;margin:.75rem 0;}
+.calc-field label{display:block;font-size:.88rem;font-weight:600;margin-bottom:.25rem;}
+.calc-field input{
+width:100%;padding:.5rem .7rem;border:1px solid var(--border);
+border-radius:4px;background:var(--card-bg);font-size:.95rem;
+}
+.calc-field input:focus-visible{outline:none;box-shadow:var(--focus-ring);}
+.calc-output{
+background:var(--code-bg);border:1px solid var(--border);
+border-radius:var(--radius);padding:.85rem;
+font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+font-size:.88rem;white-space:pre-wrap;line-height:1.55;
+margin:.5rem 0;min-height:4rem;
+}
+.calc-btn{
+background:var(--primary);color:#fff;border:none;
+padding:.5rem 1.35rem;border-radius:4px;font-size:.92rem;
+cursor:pointer;font-weight:600;transition:background .2s;
+}
+.calc-btn:hover{background:var(--primary-light);}
+.calc-btn:focus-visible{box-shadow:var(--focus-ring);outline:none;}
+.calc-status{font-size:.88rem;font-weight:600;margin-top:.4rem;}
+.calc-status.ok{color:var(--success);}
+.calc-status.warn{color:#9a5a00;}
+/* ── KNOWLEDGE CHECK ── */
+.kc{
+border:2px solid var(--primary-light);border-radius:var(--radius);
+padding:1rem 1.15rem;margin:1.25rem 0;background:#fff;
+}
+.kc-title{font-weight:700;font-size:1.05rem;color:var(--primary);margin-bottom:.6rem;display:flex;align-items:center;gap:.4rem;}
+.kc fieldset{border:none;padding:0;margin:0 0 .6rem;}
+.kc legend{font-weight:600;margin-bottom:.45rem;}
+.kc label{
+display:flex;align-items:flex-start;gap:.45rem;
+padding:.35rem .5rem;border-radius:4px;cursor:pointer;margin-bottom:.2rem;
+transition:background .15s;
+}
+.kc label:hover{background:#f0f4f8;}
+.kc input[type="radio"]{margin-top:.25rem;flex-shrink:0;}
+.kc input[type="radio"]:focus-visible{box-shadow:var(--focus-ring);}
+.kc-btn{
+background:var(--primary);color:#fff;border:none;
+padding:.5rem 1.35rem;border-radius:4px;font-size:.92rem;
+cursor:pointer;font-weight:600;transition:background .2s;
+}
+.kc-btn:hover{background:var(--primary-light);}
+.kc-btn:focus-visible{box-shadow:var(--focus-ring);outline:none;}
+.kc-feedback{
+margin-top:.6rem;padding:.65rem .85rem;border-radius:var(--radius);
+font-size:.93rem;display:none;
+}
+.kc-feedback.correct{background:var(--success-bg);border:1px solid var(--success);color:#1e7e34;}
+.kc-feedback.incorrect{background:var(--danger-bg);border:1px solid var(--danger);color:#922b21;}
+/* ── MISC ── */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0;}
+@media(max-width:600px){
+.container{padding:1rem .75rem 2rem;}
+h1{font-size:1.3rem;}
+h2{font-size:1.15rem;}
+.nav-bar{padding:.4rem .6rem;}
+.nav-bar a{font-size:.78rem;padding:.25rem .4rem;}
+.calc-grid{grid-template-columns:1fr;}
+.matrix-eq{gap:.5rem;}
+}
+</style>
+</head>
+<body>
+
+<!-- ════════════════ NAVIGATION BAR ════════════════ -->
+<nav class="nav-bar" aria-label="Page section navigation">
+  <span class="nav-title">Vandermonde, Cramer's Rule &amp; Recurrences</span>
+  <a href="#background">Background</a>
+  <a href="#vandermonde">Vandermonde Matrix</a>
+  <a href="#cramers-rule">Cramer's Rule</a>
+  <a href="#first-order">First-Order Case</a>
+  <a href="#calculator">Calculator</a>
+  <a href="#knowledge-checks">Knowledge Checks</a>
+</nav>
+
+<main class="container">
+
+<h1>Vandermonde Systems, Cramer's Rule, and First-Order Recurrences</h1>
+<p class="subtitle">Supplementary reading · CSC 240 Discrete Structures · Week 14</p>
+
+<div class="callout">
+  <div class="callout-label">📌 Purpose of this reading</div>
+  <p style="margin-bottom:0;">This page fills in the linear-algebra machinery behind solving second-order recurrence relations. When a recurrence has two distinct characteristic roots, finding the closed-form solution requires solving a 2×2 linear system. That system has a Vandermonde coefficient matrix, and Cramer's Rule gives a clean determinant-based formula for its solution. The first-order case (one root) is also covered because it is dramatically simpler.</p>
+</div>
+
+<!-- ════════════════ §1  BACKGROUND ════════════════ -->
+<h2 id="background" tabindex="-1">1 · Background: Second-Order Recurrences</h2>
+
+<h3>1.1 What Is a Second-Order Recurrence?</h3>
+
+<div class="def-box">
+  <p><span class="def-term">Second-Order Linear Homogeneous Recurrence.</span> A rule of the form</p>
+  <div class="formula-box">T(n) = c₁ · T(n−1) + c₂ · T(n−2),  for n ≥ 2</div>
+  <p>where c₁ and c₂ are constants (c₂ ≠ 0). <em>Second-order</em> means the current term depends on the two immediately preceding terms. <em>Homogeneous</em> means no additional function of n is added on the right side.</p>
+</div>
+
+<p>Two initial values — T(0) and T(1) — are needed to determine a unique sequence. Given those values, every subsequent term is uniquely defined by the recurrence.</p>
+
+<details>
+  <summary>Quick example — building a sequence from a recurrence</summary>
+  <div class="detail-body">
+    <p>Consider T(n) = 5T(n−1) − 6T(n−2) with T(0) = 2 and T(1) = 5.</p>
+    <ul>
+      <li>T(2) = 5·5 − 6·2 = 25 − 12 = 13</li>
+      <li>T(3) = 5·13 − 6·5 = 65 − 30 = 35</li>
+      <li>T(4) = 5·35 − 6·13 = 175 − 78 = 97</li>
+    </ul>
+    <p>The recurrence computes each term, but it does not tell us a <em>closed-form</em> formula like T(n) = f(n). Finding that formula is what the rest of this reading is about.</p>
+  </div>
+</details>
+
+<h3>1.2 The Characteristic Equation</h3>
+
+<p>The standard technique for finding a closed-form solution is to look for solutions of the form T(n) = rⁿ. Substituting into T(n) = c₁T(n−1) + c₂T(n−2):</p>
+<div class="formula-box">rⁿ = c₁ · rⁿ⁻¹ + c₂ · rⁿ⁻²</div>
+<p>Divide both sides by rⁿ⁻² (valid when r ≠ 0):</p>
+<div class="formula-box">r² = c₁r + c₂,  which rearranges to  r² − c₁r − c₂ = 0</div>
+
+<div class="def-box">
+  <p><span class="def-term">Characteristic Equation.</span> The quadratic <code>r² − c₁r − c₂ = 0</code> associated with T(n) = c₁T(n−1) + c₂T(n−2). Its roots r₁ and r₂ are called the <strong>characteristic roots</strong> of the recurrence.</p>
+</div>
+
+<p>The characteristic roots tell you which exponential functions are solutions of the recurrence. In the example T(n) = 5T(n−1) − 6T(n−2), the characteristic equation is r² − 5r + 6 = 0, which factors as (r − 2)(r − 3) = 0, giving roots r₁ = 2 and r₂ = 3.</p>
+
+<h3>1.3 The General Solution (Two Distinct Roots)</h3>
+
+<p>When the two characteristic roots are distinct (r₁ ≠ r₂), both rⁿ₁ and rⁿ₂ satisfy the recurrence, and so does any linear combination of them. It can be shown that the <em>most general</em> solution is:</p>
+<div class="formula-box">T(n) = A₁ · r₁ⁿ + A₂ · r₂ⁿ</div>
+
+<p>The constants A₁ and A₂ are not yet determined — they depend on the specific initial values T(0) and T(1). Substituting n = 0 and n = 1 into this formula produces two equations in two unknowns, which is the 2×2 linear system that the rest of this reading shows how to solve.</p>
+
+<div class="callout accent">
+  <div class="callout-label">⚠️ Distinct roots only</div>
+  <p style="margin-bottom:0;">The formula T(n) = A₁r₁ⁿ + A₂r₂ⁿ applies only when the two characteristic roots are <em>different</em>. When r₁ = r₂ (a repeated root), the solution form changes to T(n) = (A₁ + A₂n)rⁿ. That case is not covered in this reading.</p>
+</div>
+
+<!-- ════════════════ §2  VANDERMONDE ════════════════ -->
+<h2 id="vandermonde" tabindex="-1">2 · The Vandermonde Matrix</h2>
+
+<h3>2.1 From the Solution Form to a Linear System</h3>
+
+<p>Start with T(n) = A₁r₁ⁿ + A₂r₂ⁿ and substitute n = 0 and n = 1. Since r⁰ = 1 for any r, the two equations are:</p>
+
+<div class="table-wrap">
+<table>
+  <caption>Table 1. Substituting the initial conditions into the solution form</caption>
+  <thead>
+    <tr><th scope="col">n</th><th scope="col">Equation from T(n) = A₁r₁ⁿ + A₂r₂ⁿ</th><th scope="col">Simplified</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>0</td><td>T(0) = A₁ · r₁⁰ + A₂ · r₂⁰</td><td>T(0) = A₁ + A₂</td></tr>
+    <tr><td>1</td><td>T(1) = A₁ · r₁¹ + A₂ · r₂¹</td><td>T(1) = A₁r₁ + A₂r₂</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>These two equations in the two unknowns A₁ and A₂ can be written as a single matrix equation:</p>
+
+<div class="matrix-eq" aria-label="Matrix equation: Vandermonde times coefficient vector equals initial values vector">
+  <div class="mx" aria-label="coefficient matrix [1,1; r1,r2]">
+    <div class="mx-row"><span class="mx-cell">1</span><span class="mx-cell">1</span></div>
+    <div class="mx-row"><span class="mx-cell">r₁</span><span class="mx-cell">r₂</span></div>
+  </div>
+  <span class="eq-sign" aria-hidden="true">·</span>
+  <div class="mx" aria-label="unknowns vector [A1; A2]">
+    <div class="mx-row"><span class="mx-cell">A₁</span></div>
+    <div class="mx-row"><span class="mx-cell">A₂</span></div>
+  </div>
+  <span class="eq-sign" aria-hidden="true">=</span>
+  <div class="mx" aria-label="constants vector [T(0); T(1)]">
+    <div class="mx-row"><span class="mx-cell">T(0)</span></div>
+    <div class="mx-row"><span class="mx-cell">T(1)</span></div>
+  </div>
+</div>
+
+<p>The coefficient matrix on the left is a <strong>Vandermonde matrix</strong>.</p>
+
+<h3>2.2 The Vandermonde Pattern</h3>
+
+<div class="def-box">
+  <p><span class="def-term">2×2 Vandermonde Matrix.</span> A matrix of the form</p>
+  <div class="mat-block">
+    <div class="mx" aria-label="Vandermonde matrix: row 1 contains 1 and 1, row 2 contains r₁ and r₂">
+      <div class="mx-row"><span class="mx-cell">1</span><span class="mx-cell">1</span></div>
+      <div class="mx-row"><span class="mx-cell">r₁</span><span class="mx-cell">r₂</span></div>
+    </div>
+  </div>
+  <p>Each column corresponds to one characteristic root (column 1 → r₁, column 2 → r₂). Each row corresponds to a power of those roots: row 1 uses the 0th power (so both entries are 1), and row 2 uses the 1st power (entries are r₁ and r₂). In the general n×n Vandermonde matrix this pattern continues to higher powers, but in the 2×2 case only powers 0 and 1 appear.</p>
+</div>
+
+<h3>2.3 The Determinant and Unique Solvability</h3>
+
+<div class="def-box">
+  <p><span class="def-term">Determinant of a 2×2 matrix.</span> For a matrix with entries a, b (row 1) and c, d (row 2):</p>
+  <div class="mat-block">
+    <div class="mx" aria-label="2×2 matrix: row 1 is a, b; row 2 is c, d">
+      <div class="mx-row"><span class="mx-cell">a</span><span class="mx-cell">b</span></div>
+      <div class="mx-row"><span class="mx-cell">c</span><span class="mx-cell">d</span></div>
+    </div>
+  </div>
+  <p style="margin-bottom:0;">the determinant is <code>ad − bc</code> (top-left × bottom-right, minus top-right × bottom-left). The determinant is nonzero if and only if the system has a unique solution for every right-hand side.</p>
+</div>
+
+<p>Applying <code>ad − bc</code> to the Vandermonde matrix gives:</p>
+<div class="det-eq" aria-label="det of Vandermonde matrix: 1 times r₂ minus 1 times r₁ equals r₂ minus r₁">
+  <span class="det-label">det</span>
+  <div class="mx" aria-label="Vandermonde matrix: row 1 is 1,1; row 2 is r₁,r₂">
+    <div class="mx-row"><span class="mx-cell">1</span><span class="mx-cell">1</span></div>
+    <div class="mx-row"><span class="mx-cell">r₁</span><span class="mx-cell">r₂</span></div>
+  </div>
+  <span class="det-label">= (1)(r₂) − (1)(r₁) = r₂ − r₁</span>
+</div>
+
+<div class="callout">
+  <div class="callout-label">💡 Key Fact</div>
+  <p>The Vandermonde determinant equals <strong>r₂ − r₁</strong>. This is nonzero precisely when r₁ ≠ r₂. So whenever the characteristic roots are distinct, the linear system has exactly one solution — one pair of constants A₁ and A₂ that satisfies both initial conditions.</p>
+  <p style="margin-bottom:0;">If r₁ = r₂ (repeated root), the determinant is 0, the Vandermonde approach fails, and the different solution form T(n) = (A₁ + A₂n)rⁿ must be used instead.</p>
+</div>
+
+<!-- ════════════════ §3  CRAMER'S RULE ════════════════ -->
+<h2 id="cramers-rule" tabindex="-1">3 · Cramer's Rule</h2>
+
+<h3>3.1 What Cramer's Rule Says</h3>
+
+<div class="def-box">
+  <p><span class="def-term">Cramer's Rule (2×2 case).</span> Given a 2×2 system Ax = b where D = det(A) ≠ 0:</p>
+  <div class="formula-box">x₁ = D₁ / D    x₂ = D₂ / D</div>
+  <p>D₁ is the determinant of A with <em>column 1</em> replaced by b; D₂ is the determinant of A with <em>column 2</em> replaced by b. The diagram below shows what "replace a column" means — highlighted entries (orange) are the replacements:</p>
+  <div class="cramer-ident">
+    <div style="text-align:center;font-size:.88rem;">
+      <div style="font-weight:700;color:var(--primary-light);margin-bottom:.3rem;">A (original)</div>
+      <div class="mx" aria-label="matrix A: row 1 is a₁₁, a₁₂; row 2 is a₂₁, a₂₂">
+        <div class="mx-row"><span class="mx-cell">a₁₁</span><span class="mx-cell">a₁₂</span></div>
+        <div class="mx-row"><span class="mx-cell">a₂₁</span><span class="mx-cell">a₂₂</span></div>
+      </div>
+    </div>
+    <div style="text-align:center;font-size:.88rem;">
+      <div style="font-weight:700;color:var(--primary-light);margin-bottom:.3rem;">b (constants)</div>
+      <div class="mx" aria-label="vector b: b₁ over b₂">
+        <div class="mx-row"><span class="mx-cell">b₁</span></div>
+        <div class="mx-row"><span class="mx-cell">b₂</span></div>
+      </div>
+    </div>
+    <div style="font-size:1.4rem;color:var(--text-muted);align-self:center;">→</div>
+    <div style="text-align:center;font-size:.88rem;">
+      <div style="font-weight:700;color:var(--accent);margin-bottom:.3rem;">D₁ matrix (col 1 → b)</div>
+      <div class="mx" aria-label="D₁ matrix: column 1 replaced by b; row 1 is b₁, a₁₂; row 2 is b₂, a₂₂">
+        <div class="mx-row"><span class="mx-cell mx-col-replaced">b₁</span><span class="mx-cell">a₁₂</span></div>
+        <div class="mx-row"><span class="mx-cell mx-col-replaced">b₂</span><span class="mx-cell">a₂₂</span></div>
+      </div>
+    </div>
+    <div style="text-align:center;font-size:.88rem;">
+      <div style="font-weight:700;color:var(--accent);margin-bottom:.3rem;">D₂ matrix (col 2 → b)</div>
+      <div class="mx" aria-label="D₂ matrix: column 2 replaced by b; row 1 is a₁₁, b₁; row 2 is a₂₁, b₂">
+        <div class="mx-row"><span class="mx-cell">a₁₁</span><span class="mx-cell mx-col-replaced">b₁</span></div>
+        <div class="mx-row"><span class="mx-cell">a₂₁</span><span class="mx-cell mx-col-replaced">b₂</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h3>3.2 Applying Cramer's Rule to the Vandermonde System</h3>
+
+<p>For our system, the coefficient matrix A and constants vector b are:</p>
+<div class="cramer-ident" style="margin-bottom:.25rem;">
+  <div style="text-align:center;font-size:.88rem;">
+    <div style="font-weight:700;color:var(--primary-light);margin-bottom:.3rem;">A (Vandermonde)</div>
+    <div class="mx" aria-label="A: row 1 is 1,1; row 2 is r₁,r₂">
+      <div class="mx-row"><span class="mx-cell">1</span><span class="mx-cell">1</span></div>
+      <div class="mx-row"><span class="mx-cell">r₁</span><span class="mx-cell">r₂</span></div>
+    </div>
+  </div>
+  <div style="text-align:center;font-size:.88rem;">
+    <div style="font-weight:700;color:var(--primary-light);margin-bottom:.3rem;">b (initial values)</div>
+    <div class="mx" aria-label="b: T(0) over T(1)">
+      <div class="mx-row"><span class="mx-cell">T(0)</span></div>
+      <div class="mx-row"><span class="mx-cell">T(1)</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h4 style="margin-top:0;">Step-by-step computation</h4>
+  <ol>
+    <li>
+      <strong>Main determinant D = det(A):</strong>
+      <div class="det-eq" aria-label="D equals det of Vandermonde matrix equals r₂ minus r₁">
+        <span class="det-label">D = det</span>
+        <div class="mx" aria-label="row 1: 1, 1; row 2: r₁, r₂">
+          <div class="mx-row"><span class="mx-cell">1</span><span class="mx-cell">1</span></div>
+          <div class="mx-row"><span class="mx-cell">r₁</span><span class="mx-cell">r₂</span></div>
+        </div>
+        <span class="det-label">= (1)(r₂) − (1)(r₁) = r₂ − r₁</span>
+      </div>
+    </li>
+    <li>
+      <strong>D₁ — replace column 1 with b (orange = replaced entries):</strong>
+      <div class="det-eq" aria-label="D₁ equals det of matrix with column 1 replaced by b">
+        <span class="det-label">D₁ = det</span>
+        <div class="mx" aria-label="row 1: T(0), 1; row 2: T(1), r₂; column 1 is replaced">
+          <div class="mx-row"><span class="mx-cell mx-col-replaced">T(0)</span><span class="mx-cell">1</span></div>
+          <div class="mx-row"><span class="mx-cell mx-col-replaced">T(1)</span><span class="mx-cell">r₂</span></div>
+        </div>
+        <span class="det-label">= T(0)·r₂ − 1·T(1) = T(0)r₂ − T(1)</span>
+      </div>
+    </li>
+    <li>
+      <strong>D₂ — replace column 2 with b (orange = replaced entries):</strong>
+      <div class="det-eq" aria-label="D₂ equals det of matrix with column 2 replaced by b">
+        <span class="det-label">D₂ = det</span>
+        <div class="mx" aria-label="row 1: 1, T(0); row 2: r₁, T(1); column 2 is replaced">
+          <div class="mx-row"><span class="mx-cell">1</span><span class="mx-cell mx-col-replaced">T(0)</span></div>
+          <div class="mx-row"><span class="mx-cell">r₁</span><span class="mx-cell mx-col-replaced">T(1)</span></div>
+        </div>
+        <span class="det-label">= 1·T(1) − T(0)·r₁ = T(1) − r₁T(0)</span>
+      </div>
+    </li>
+    <li>
+      <strong>Solve for the constants:</strong>
+      <div class="formula-box">A₁ = D₁ / D = (T(0)r₂ − T(1)) / (r₂ − r₁)
+A₂ = D₂ / D = (T(1) − r₁T(0)) / (r₂ − r₁)</div>
+    </li>
+  </ol>
+</div>
+
+<h3>3.3 Worked Example</h3>
+
+<div class="callout accent">
+  <div class="callout-label">📝 Example</div>
+  <p style="margin-bottom:0;">A recurrence has characteristic roots r₁ = 2, r₂ = 3 and initial values T(0) = 3, T(1) = 7. Find the closed-form solution T(n).</p>
+</div>
+
+<details>
+  <summary>Show full solution</summary>
+  <div class="detail-body">
+    <p><strong>Step 1 — Write the solution form.</strong> Since r₁ ≠ r₂:</p>
+    <div class="formula-box">T(n) = A₁ · 2ⁿ + A₂ · 3ⁿ</div>
+
+    <p><strong>Step 2 — Set up the linear system.</strong></p>
+    <div class="formula-box">n = 0:  A₁ + A₂   = 3
+n = 1:  2A₁ + 3A₂ = 7</div>
+
+    <p><strong>Step 3 — Compute the three determinants.</strong></p>
+    <div class="formula-box">D  = r₂ − r₁         = 3 − 2 = 1
+D₁ = T(0)r₂ − T(1) = 3·3 − 7 = 9 − 7 = 2
+D₂ = T(1) − r₁T(0) = 7 − 2·3 = 7 − 6 = 1</div>
+
+    <p><strong>Step 4 — Apply Cramer's Rule.</strong></p>
+    <div class="formula-box">A₁ = D₁ / D = 2 / 1 = 2
+A₂ = D₂ / D = 1 / 1 = 1</div>
+
+    <p><strong>Step 5 — Write the closed-form solution.</strong></p>
+    <div class="formula-box">T(n) = 2 · 2ⁿ + 1 · 3ⁿ</div>
+
+    <p><strong>Verification:</strong></p>
+    <div class="formula-box">T(0) = 2·1 + 1·1 = 3  ✓
+T(1) = 2·2 + 1·3 = 4 + 3 = 7  ✓
+T(2) = 2·4 + 1·9 = 8 + 9 = 17
+T(3) = 2·8 + 1·27 = 16 + 27 = 43</div>
+  </div>
+</details>
+
+<!-- ════════════════ §4  FIRST-ORDER CASE ════════════════ -->
+<h2 id="first-order" tabindex="-1">4 · The First-Order Case</h2>
+
+<h3>4.1 Why Only One Initial Condition Is Needed</h3>
+
+<p>A first-order homogeneous recurrence has the form T(n) = c · T(n−1). Its characteristic equation is simply r = c, giving one root. The solution form with one unknown is:</p>
+<div class="formula-box">T(n) = A₁ · rⁿ</div>
+
+<p>Now substitute n = 0. Since r⁰ = 1 for any r:</p>
+<div class="formula-box">T(0) = A₁ · 1  →  A₁ = T(0)</div>
+
+<p>There is no system to solve. The one constant equals the initial value directly.</p>
+
+<div class="callout success">
+  <div class="callout-label">✅ Closed-form result</div>
+  <p style="margin-bottom:0;">For any first-order homogeneous recurrence T(n) = c · T(n−1) with initial value T(0):</p>
+  <div class="formula-box" style="margin-top:.5rem;">T(n) = T(0) · cⁿ</div>
+  <p style="margin-bottom:0;">This is a geometric sequence with first term T(0) and common ratio c. No Vandermonde matrix, no Cramer's Rule needed.</p>
+</div>
+
+<h3>4.2 Example</h3>
+<p>T(n) = 3 · T(n−1) with T(0) = 5. Then T(n) = 5 · 3ⁿ.</p>
+
+<div class="table-wrap">
+<table>
+  <caption>Table 2. First five terms of T(n) = 5 · 3ⁿ</caption>
+  <thead>
+    <tr><th scope="col">n</th><th scope="col">Calculation</th><th scope="col">Value</th><th scope="col">Recurrence check: 3 · T(n−1)</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>0</td><td>5 · 3⁰ = 5 · 1</td><td>5</td><td>— (initial value)</td></tr>
+    <tr><td>1</td><td>5 · 3¹ = 5 · 3</td><td>15</td><td>3 · 5 = 15 ✓</td></tr>
+    <tr><td>2</td><td>5 · 3² = 5 · 9</td><td>45</td><td>3 · 15 = 45 ✓</td></tr>
+    <tr><td>3</td><td>5 · 3³ = 5 · 27</td><td>135</td><td>3 · 45 = 135 ✓</td></tr>
+    <tr><td>4</td><td>5 · 3⁴ = 5 · 81</td><td>405</td><td>3 · 135 = 405 ✓</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3>4.3 Comparing First-Order and Second-Order (Distinct Roots)</h3>
+
+<div class="table-wrap">
+<table>
+  <caption>Table 3. First-order vs. second-order with distinct roots</caption>
+  <thead>
+    <tr><th scope="col">Feature</th><th scope="col">First-Order T(n)=c·T(n−1)</th><th scope="col">Second-Order T(n)=c₁T(n−1)+c₂T(n−2), distinct roots</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Characteristic roots</td><td>1 root (r = c)</td><td>2 roots r₁, r₂</td></tr>
+    <tr><td>Solution form</td><td>T(n) = A₁rⁿ</td><td>T(n) = A₁r₁ⁿ + A₂r₂ⁿ</td></tr>
+    <tr><td>Initial conditions</td><td>T(0) only</td><td>T(0) and T(1)</td></tr>
+    <tr><td>Constant to find</td><td>A₁ = T(0) directly</td><td>A₁ and A₂ from a 2×2 system</td></tr>
+    <tr><td>Tool needed</td><td>None (substitution only)</td><td>Cramer's Rule (or row reduction)</td></tr>
+    <tr><td>Coefficient matrix</td><td>No matrix</td><td>2×2 Vandermonde matrix [1 1; r₁ r₂]</td></tr>
+    <tr><td>Determinant</td><td>N/A</td><td>r₂ − r₁ (nonzero iff r₁ ≠ r₂)</td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ════════════════ §5  CALCULATOR ════════════════ -->
+<h2 id="calculator" tabindex="-1">5 · Interactive Calculator</h2>
+
+<p>Enter two distinct characteristic roots and the two initial values. The calculator applies Cramer's Rule step by step and displays the closed-form solution.</p>
+
+<div class="card">
+  <h3 style="margin-top:0;">Cramer's Rule Calculator — Second-Order Recurrence</h3>
+  <div class="calc-grid">
+    <div class="calc-field">
+      <label for="c-r1">Characteristic root r₁</label>
+      <input id="c-r1" type="number" value="2" step="any">
+    </div>
+    <div class="calc-field">
+      <label for="c-r2">Characteristic root r₂</label>
+      <input id="c-r2" type="number" value="3" step="any">
+    </div>
+    <div class="calc-field">
+      <label for="c-t0">Initial value T(0)</label>
+      <input id="c-t0" type="number" value="3" step="any">
+    </div>
+    <div class="calc-field">
+      <label for="c-t1">Initial value T(1)</label>
+      <input id="c-t1" type="number" value="7" step="any">
+    </div>
+  </div>
+  <button class="calc-btn" id="calc-btn">Compute</button>
+  <p id="calc-status" class="calc-status" aria-live="polite"></p>
+
+  <h4>Determinants</h4>
+  <div class="calc-output" id="calc-det" aria-live="polite"></div>
+
+  <h4>Solution</h4>
+  <div class="calc-output" id="calc-sol" aria-live="polite"></div>
+</div>
+
+<!-- ════════════════ §6  KNOWLEDGE CHECKS ════════════════ -->
+<h2 id="knowledge-checks" tabindex="-1">6 · Knowledge Checks</h2>
+<p>These are <strong>ungraded</strong> self-checks. Select your answer and click <em>Check Answer</em> for immediate explanatory feedback.</p>
+
+<!-- KC V.1 -->
+<div class="kc" id="kc-v1-box">
+  <div class="kc-title">✏️ Knowledge Check V.1 — Vandermonde Determinant</div>
+  <fieldset>
+    <legend>What is the determinant of the 2×2 Vandermonde matrix [1  1 ; r₁  r₂]?</legend>
+    <label><input type="radio" name="kc-v1" value="a"> r₁ + r₂</label>
+    <label><input type="radio" name="kc-v1" value="b"> r₁ − r₂</label>
+    <label><input type="radio" name="kc-v1" value="c"> r₂ − r₁</label>
+    <label><input type="radio" name="kc-v1" value="d"> r₁ · r₂</label>
+  </fieldset>
+  <button class="kc-btn" onclick="checkKC('v1','c','Correct! Applying the 2×2 determinant formula ad − bc gives 1·r₂ − 1·r₁ = r₂ − r₁. Notice the order: the larger-indexed root minus the smaller-indexed root. This is why distinct roots guarantee a unique solution — the determinant is nonzero.','Not quite. The 2×2 determinant formula is ad − bc. For [1  1 ; r₁  r₂]: a=1, b=1, c=r₁, d=r₂, so the determinant is 1·r₂ − 1·r₁ = r₂ − r₁. Watch the order of subtraction.')">Check Answer</button>
+  <div class="kc-feedback" id="fb-v1"></div>
+</div>
+
+<!-- KC V.2 -->
+<div class="kc" id="kc-v2-box">
+  <div class="kc-title">✏️ Knowledge Check V.2 — First-Order Closed Form</div>
+  <fieldset>
+    <legend>A first-order recurrence satisfies T(n) = 3 · T(n−1) with T(0) = 5. What is the closed-form solution T(n)?</legend>
+    <label><input type="radio" name="kc-v2" value="a"> T(n) = 3 · 5ⁿ</label>
+    <label><input type="radio" name="kc-v2" value="b"> T(n) = 5 · 3ⁿ</label>
+    <label><input type="radio" name="kc-v2" value="c"> T(n) = 5 + 3n</label>
+    <label><input type="radio" name="kc-v2" value="d"> T(n) = 5ⁿ + 3ⁿ</label>
+  </fieldset>
+  <button class="kc-btn" onclick="checkKC('v2','b','Correct! For a first-order recurrence T(n) = c · T(n−1), the solution is T(n) = T(0) · cⁿ. Here c = 3 and T(0) = 5, so T(n) = 5 · 3ⁿ. Quick check: T(0) = 5 · 1 = 5 ✓ and T(1) = 5 · 3 = 15 = 3 · 5 ✓.','Not quite. The first-order solution is T(n) = T(0) · cⁿ, where c is the root (the coefficient of T(n−1)) and T(0) is the initial value. Here c = 3 and T(0) = 5, so T(n) = 5 · 3ⁿ — the initial value is the coefficient, and the root is the base.')">Check Answer</button>
+  <div class="kc-feedback" id="fb-v2"></div>
+</div>
+
+<!-- KC V.3 -->
+<div class="kc" id="kc-v3-box">
+  <div class="kc-title">✏️ Knowledge Check V.3 — Applying Cramer's Rule</div>
+  <fieldset>
+    <legend>A recurrence has characteristic roots r₁ = 2 and r₂ = 5, with T(0) = 3 and T(1) = 12. Using Cramer's Rule, what is A₁?</legend>
+    <label><input type="radio" name="kc-v3" value="a"> 3</label>
+    <label><input type="radio" name="kc-v3" value="b"> 2</label>
+    <label><input type="radio" name="kc-v3" value="c"> 1</label>
+    <label><input type="radio" name="kc-v3" value="d"> 5/3</label>
+  </fieldset>
+  <button class="kc-btn" onclick="checkKC('v3','c','Correct! D = r₂ − r₁ = 5 − 2 = 3. D₁ = T(0)·r₂ − T(1) = 3·5 − 12 = 15 − 12 = 3. So A₁ = D₁/D = 3/3 = 1. For completeness: D₂ = T(1) − r₁·T(0) = 12 − 2·3 = 6, so A₂ = 6/3 = 2. Full solution: T(n) = 1·2ⁿ + 2·5ⁿ. Verify: T(0) = 1+2 = 3 ✓ and T(1) = 2+10 = 12 ✓.','Not quite. First compute D = r₂ − r₁ = 5 − 2 = 3. Then D₁ = T(0)·r₂ − T(1) = 3·5 − 12 = 3. Finally A₁ = D₁/D = 3/3 = 1.')">Check Answer</button>
+  <div class="kc-feedback" id="fb-v3"></div>
+</div>
+
+<!-- ════════════════ SUMMARY ════════════════ -->
+<div class="callout success" style="margin-top:2rem;">
+  <div class="callout-label">✅ Summary</div>
+  <ul style="margin-bottom:0;">
+    <li>A second-order recurrence T(n) = c₁T(n−1) + c₂T(n−2) has characteristic equation r² − c₁r − c₂ = 0.</li>
+    <li>With two <em>distinct</em> roots r₁ and r₂, the solution form is T(n) = A₁r₁ⁿ + A₂r₂ⁿ. Plugging in n = 0 and n = 1 produces a 2×2 Vandermonde system.</li>
+    <li>The 2×2 Vandermonde determinant is r₂ − r₁. When r₁ ≠ r₂ this is nonzero, guaranteeing a unique solution via Cramer's Rule: A₁ = (T(0)r₂ − T(1))/(r₂ − r₁) and A₂ = (T(1) − r₁T(0))/(r₂ − r₁).</li>
+    <li>The first-order case T(n) = c · T(n−1) has exactly one root and one unknown: A₁ = T(0) directly, giving T(n) = T(0) · cⁿ with no matrix system needed.</li>
+  </ul>
+</div>
+
+</main>
+
+<!-- ════════════════ JAVASCRIPT ════════════════ -->
+<script>
+/* ── Knowledge-check grading ── */
+function checkKC(id, correctVal, correctMsg, incorrectMsg) {
+  const sel = document.querySelector('input[name="kc-' + id + '"]:checked');
+  const fb  = document.getElementById('fb-' + id);
+  if (!sel) {
+    fb.textContent = 'Please select an answer first.';
+    fb.className   = 'kc-feedback incorrect';
+    fb.style.display = 'block';
+    return;
+  }
+  fb.innerHTML     = (sel.value === correctVal ? '✅ ' + correctMsg : '❌ ' + incorrectMsg);
+  fb.className     = 'kc-feedback ' + (sel.value === correctVal ? 'correct' : 'incorrect');
+  fb.style.display = 'block';
+  fb.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+/* ── Nav smooth scroll ── */
+document.querySelectorAll('.nav-bar a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) {
+      e.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth' });
+      target.focus({ preventScroll: true });
+    }
+  });
+});
+
+/* ── Cramer's Rule calculator ── */
+(function () {
+  function fmt(n) {
+    if (!Number.isFinite(n)) return 'undefined';
+    const v = Math.abs(n) < 1e-10 ? 0 : n;
+    if (Number.isInteger(v)) return String(v);
+    const s = v.toFixed(6);
+    return s.replace(/(\.\d*?)0+$/, '$1').replace(/\.$/, '');
+  }
+
+  function solve() {
+    const r1 = parseFloat(document.getElementById('c-r1').value);
+    const r2 = parseFloat(document.getElementById('c-r2').value);
+    const t0 = parseFloat(document.getElementById('c-t0').value);
+    const t1 = parseFloat(document.getElementById('c-t1').value);
+    const detEl    = document.getElementById('calc-det');
+    const solEl    = document.getElementById('calc-sol');
+    const statusEl = document.getElementById('calc-status');
+
+    if ([r1, r2, t0, t1].some(Number.isNaN)) {
+      detEl.textContent    = 'Enter a number in every field.';
+      solEl.textContent    = '';
+      statusEl.textContent = 'Please fill in all four fields.';
+      statusEl.className   = 'calc-status warn';
+      return;
+    }
+
+    const D  = r2 - r1;
+    const D1 = t0 * r2 - t1;
+    const D2 = t1 - r1 * t0;
+
+    detEl.textContent =
+      `D  = r₂ − r₁         = ${fmt(r2)} − ${fmt(r1)} = ${fmt(D)}\n` +
+      `D₁ = T(0)·r₂ − T(1) = ${fmt(t0)}·${fmt(r2)} − ${fmt(t1)} = ${fmt(D1)}\n` +
+      `D₂ = T(1) − r₁·T(0) = ${fmt(t1)} − ${fmt(r1)}·${fmt(t0)} = ${fmt(D2)}`;
+
+    if (Math.abs(D) < 1e-10) {
+      solEl.textContent    = 'r₁ = r₂, so D = 0.\nCramer\'s Rule requires distinct roots (D ≠ 0).\nChoose two different values for r₁ and r₂.';
+      statusEl.textContent = 'Repeated root — distinct roots required.';
+      statusEl.className   = 'calc-status warn';
+      return;
+    }
+
+    const A1 = D1 / D;
+    const A2 = D2 / D;
+
+    const check0 = A1 + A2;
+    const check1 = A1 * r1 + A2 * r2;
+
+    solEl.textContent =
+      `A₁ = D₁ / D = ${fmt(D1)} / ${fmt(D)} = ${fmt(A1)}\n` +
+      `A₂ = D₂ / D = ${fmt(D2)} / ${fmt(D)} = ${fmt(A2)}\n\n` +
+      `T(n) = ${fmt(A1)}·(${fmt(r1)})ⁿ + ${fmt(A2)}·(${fmt(r2)})ⁿ\n\n` +
+      `Verify:  T(0) = ${fmt(A1)} + ${fmt(A2)} = ${fmt(check0)}  (expected ${fmt(t0)})\n` +
+      `         T(1) = ${fmt(A1)}·${fmt(r1)} + ${fmt(A2)}·${fmt(r2)} = ${fmt(check1)}  (expected ${fmt(t1)})`;
+
+    statusEl.textContent = 'Unique solution found — determinant is nonzero.';
+    statusEl.className   = 'calc-status ok';
+  }
+
+  ['c-r1','c-r2','c-t0','c-t1'].forEach(id =>
+    document.getElementById(id).addEventListener('input', solve)
+  );
+  document.getElementById('calc-btn').addEventListener('click', solve);
+  solve();
+})();
+</script>
+</body>
+</html>

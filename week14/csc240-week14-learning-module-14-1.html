@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 14.1 – The Greedy Paradigm and Minimum Spanning Trees</title>
+<style>
+:root{
+--primary:#1a5276;
+--primary-light:#2980b9;
+--accent:#e67e22;
+--accent-light:#f5cba7;
+--bg:#fdfdfd;
+--card-bg:#ffffff;
+--text:#212529;
+--text-muted:#555;
+--border:#ddd;
+--success:#27ae60;
+--success-bg:#eafaf1;
+--danger:#c0392b;
+--danger-bg:#fdedec;
+--info-bg:#eaf2f8;
+--code-bg:#f4f6f7;
+--radius:8px;
+--shadow:0 2px 6px rgba(0,0,0,.08);
+--focus-ring:0 0 0 3px rgba(41,128,185,.45);
+}
+*,*::before,*::after{box-sizing:border-box;}
+body{
+font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+font-size:1rem;line-height:1.65;color:var(--text);
+background:var(--bg);margin:0;padding:0;
+}
+/* ── NAV BAR ── */
+.nav-bar{
+position:sticky;top:0;z-index:100;
+background:var(--primary);padding:.5rem 1rem;
+display:flex;flex-wrap:wrap;gap:.35rem .75rem;
+align-items:center;
+}
+.nav-bar a{
+color:#fff;text-decoration:none;font-size:.85rem;
+padding:.3rem .55rem;border-radius:4px;
+transition:background .2s;
+}
+.nav-bar a:hover,.nav-bar a:focus-visible{
+background:rgba(255,255,255,.2);outline:none;
+}
+.nav-bar a:focus-visible{box-shadow:var(--focus-ring);}
+.nav-title{font-weight:700;font-size:.95rem;margin-right:auto;color:#fff;}
+/* ── LAYOUT ── */
+.container{max-width:960px;margin:0 auto;padding:1.25rem 1.5rem 3rem;}
+h1,h2,h3,h4{color:var(--primary);margin-top:0;}
+h1{font-size:1.65rem;border-bottom:3px solid var(--accent);padding-bottom:.4rem;margin-bottom:.25rem;}
+.subtitle{color:var(--text-muted);font-size:.95rem;margin-bottom:1.5rem;}
+h2{font-size:1.35rem;margin-top:2.25rem;margin-bottom:.6rem;scroll-margin-top:60px;}
+h3{font-size:1.1rem;margin-top:1.4rem;margin-bottom:.45rem;}
+p{margin:.55rem 0;}
+ul,ol{margin:.4rem 0 .8rem 1.25rem;}
+li{margin-bottom:.3rem;}
+code{background:var(--code-bg);padding:.15rem .35rem;border-radius:3px;font-size:.92em;}
+/* ── CARDS & CALLOUTS ── */
+.card{
+background:var(--card-bg);border:1px solid var(--border);
+border-radius:var(--radius);padding:1rem 1.25rem;
+margin:1rem 0;box-shadow:var(--shadow);
+}
+.callout{
+border-left:4px solid var(--primary-light);
+background:var(--info-bg);
+border-radius:var(--radius);
+padding:.85rem 1rem;margin:1rem 0;
+}
+.callout.accent{border-left-color:var(--accent);background:#fef5e7;}
+.callout.success{border-left-color:var(--success);background:var(--success-bg);}
+.callout-label{font-weight:700;margin-bottom:.25rem;display:flex;align-items:center;gap:.4rem;}
+.callout-label .icon{font-size:1.15em;}
+/* ── DEFINITION BOX ── */
+.def-box{
+background:#f0f4f8;border:1px solid #b0c4d8;
+border-radius:var(--radius);padding:.85rem 1rem;margin:.8rem 0;
+}
+.def-box .def-term{font-weight:700;color:var(--primary);}
+/* ── TABLE ── */
+.table-wrap{overflow-x:auto;margin:1rem 0;}
+table{
+width:100%;border-collapse:collapse;font-size:.93rem;
+}
+th,td{
+border:1px solid var(--border);padding:.55rem .7rem;text-align:left;
+}
+th{background:var(--primary);color:#fff;font-weight:600;}
+tr:nth-child(even){background:#f7f9fb;}
+caption{caption-side:top;font-weight:700;margin-bottom:.35rem;text-align:left;color:var(--primary);}
+/* ── COLLAPSIBLE / TOGGLE ── */
+details{
+margin:.7rem 0;border:1px solid var(--border);
+border-radius:var(--radius);overflow:hidden;
+}
+summary{
+cursor:pointer;padding:.65rem .9rem;font-weight:600;
+background:#f0f4f8;list-style:none;
+display:flex;align-items:center;gap:.45rem;
+}
+summary::-webkit-details-marker{display:none;}
+summary::before{content:'▸';transition:transform .2s;display:inline-block;}
+details[open]>summary::before{transform:rotate(90deg);}
+summary:focus-visible{outline:2px solid var(--primary-light);outline-offset:-2px;}
+details .detail-body{padding:.75rem 1rem;}
+/* ── TABS ── */
+.tabs{margin:1rem 0;}
+.tab-btns{display:flex;flex-wrap:wrap;gap:0;border-bottom:2px solid var(--border);}
+.tab-btn{
+background:transparent;border:none;padding:.55rem 1rem;
+font-size:.92rem;font-weight:600;cursor:pointer;
+border-bottom:3px solid transparent;color:var(--text-muted);
+transition:color .2s,border-color .2s;
+}
+.tab-btn:hover{color:var(--primary);}
+.tab-btn:focus-visible{box-shadow:var(--focus-ring);outline:none;}
+.tab-btn[aria-selected="true"]{color:var(--primary);border-bottom-color:var(--accent);}
+.tab-panel{padding:.9rem .5rem;display:none;}
+.tab-panel.active{display:block;}
+/* ── KNOWLEDGE CHECK ── */
+.kc{
+border:2px solid var(--primary-light);border-radius:var(--radius);
+padding:1rem 1.15rem;margin:1.25rem 0;background:#fff;
+}
+.kc-title{font-weight:700;font-size:1.05rem;color:var(--primary);margin-bottom:.6rem;display:flex;align-items:center;gap:.4rem;}
+.kc fieldset{border:none;padding:0;margin:0 0 .6rem;}
+.kc legend{font-weight:600;margin-bottom:.45rem;}
+.kc label{
+display:flex;align-items:flex-start;gap:.45rem;
+padding:.35rem .5rem;border-radius:4px;cursor:pointer;margin-bottom:.2rem;
+transition:background .15s;
+}
+.kc label:hover{background:#f0f4f8;}
+.kc input[type="radio"]{margin-top:.25rem;flex-shrink:0;}
+.kc input[type="radio"]:focus-visible{box-shadow:var(--focus-ring);}
+.kc-btn{
+background:var(--primary);color:#fff;border:none;
+padding:.5rem 1.35rem;border-radius:4px;font-size:.92rem;
+cursor:pointer;font-weight:600;transition:background .2s;
+}
+.kc-btn:hover{background:var(--primary-light);}
+.kc-btn:focus-visible{box-shadow:var(--focus-ring);outline:none;}
+.kc-feedback{
+margin-top:.6rem;padding:.65rem .85rem;border-radius:var(--radius);
+font-size:.93rem;display:none;
+}
+.kc-feedback.correct{background:var(--success-bg);border:1px solid var(--success);color:#1e7e34;}
+.kc-feedback.incorrect{background:var(--danger-bg);border:1px solid var(--danger);color:#922b21;}
+/* ── FIGURE ── */
+.figure{text-align:center;margin:1rem 0;}
+.figure svg{max-width:100%;height:auto;}
+.figure figcaption{font-size:.85rem;color:var(--text-muted);margin-top:.3rem;}
+/* ── MISC ── */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0;}
+@media(max-width:600px){
+.container{padding:1rem .75rem 2rem;}
+h1{font-size:1.3rem;}
+h2{font-size:1.15rem;}
+.nav-bar{padding:.4rem .6rem;}
+.nav-bar a{font-size:.78rem;padding:.25rem .4rem;}
+}
+</style>
+</head>
+<body>
+
+<!-- ════════════════ NAVIGATION BAR ════════════════ -->
+<nav class="nav-bar" aria-label="Module 14.1 section navigation">
+  <span class="nav-title">14.1 Greedy &amp; MST</span>
+  <a href="#where-we-are">Where We Are</a>
+  <a href="#greedy-paradigm">Greedy Paradigm</a>
+  <a href="#mst-defs">MST Definitions</a>
+  <a href="#cut-property">Cut Property</a>
+  <a href="#preview-algos">Algorithm Preview</a>
+  <a href="#visualizer">Visualizer Activity</a>
+  <a href="#knowledge-checks">Knowledge Checks</a>
+</nav>
+
+<main class="container">
+
+<!-- ════════════════ HEADER ════════════════ -->
+<h1>Module 14.1 – The Greedy Paradigm &amp; Minimum Spanning Trees</h1>
+<p class="subtitle">Week 14 · CSC 240 Discrete Structures · Template Anchor Module</p>
+
+<!-- ════════════════ §1  WHERE WE ARE ════════════════ -->
+<h2 id="where-we-are" tabindex="-1">1 · Where We Are</h2>
+
+<p>Over the past thirteen weeks you have built a substantial toolkit: propositional and predicate logic, proof techniques, sets, functions, relations, counting, recursion, and—most recently in Weeks 12–13—the rich world of <strong>graphs and trees</strong>. You learned that a <em>tree</em> is a connected, acyclic graph, and you explored traversals (BFS, DFS) that let you walk through a graph systematically. This week we ask a deceptively simple question: <em>Given a weighted graph, how do we connect every vertex at the lowest total cost?</em></p>
+
+<p>That question is not academic trivia. Imagine a telecommunications company laying fiber-optic cable between cities. Each potential cable route has a cost (trenching, permits, distance). The company wants every city reachable from every other city, but it also wants to minimize total expenditure. This is the <strong>Minimum Spanning Tree (MST)</strong> problem, and it arises in network design, circuit wiring, pipeline routing, image segmentation, and even clustering in machine learning.</p>
+
+<p>In this opening module we establish the <strong>greedy paradigm</strong>—a powerful algorithm-design strategy—and formally define the MST problem. We then prove the <strong>Cut Property</strong>, the theoretical engine behind every MST algorithm you will study in Modules 14.2–14.3. By the end of this page you should be able to explain <em>why</em> greedy choices work for MSTs, setting the stage for Kruskal's and Prim's algorithms next.</p>
+
+<div class="callout accent">
+  <div class="callout-label"><span class="icon">🎯</span> Learning Objectives (Module 14.1)</div>
+  <ul style="margin-bottom:0;">
+    <li>Define the greedy paradigm and identify its two key ingredients: the greedy-choice property and optimal substructure.</li>
+    <li>State the MST problem precisely and relate spanning trees to Week 12 tree definitions.</li>
+    <li>State and explain the Cut Property, including an intuitive proof sketch.</li>
+    <li>Distinguish greedy, brute-force, and dynamic-programming strategies at a high level.</li>
+  </ul>
+</div>
+
+<!-- ════════════════ §2  GREEDY PARADIGM ════════════════ -->
+<h2 id="greedy-paradigm" tabindex="-1">2 · The Greedy Paradigm</h2>
+
+<h3>2.1 What Does "Greedy" Mean?</h3>
+<p>A <strong>greedy algorithm</strong> builds a solution <em>one piece at a time</em>, always choosing the piece that looks best <em>right now</em>, without reconsidering earlier choices. In everyday language: "Take the best available option at each step and never look back."</p>
+
+<div class="def-box">
+  <p><span class="def-term">Greedy Paradigm.</span> An algorithm design strategy in which, at every decision point, the locally optimal choice is made with the expectation that these local optima combine into a globally optimal solution.</p>
+</div>
+
+<p>Not every problem yields to greediness. For a greedy algorithm to produce an optimal result, the problem must exhibit two structural properties:</p>
+
+<div class="card">
+  <h4 style="margin-top:0;">Two Key Ingredients</h4>
+  <ol>
+    <li><strong>Greedy-Choice Property</strong> — A globally optimal solution can be assembled by making locally optimal (greedy) choices. In other words, the choice that looks best right now is <em>safe</em>; it will not prevent us from reaching the overall optimum.</li>
+    <li><strong>Optimal Substructure</strong> — After making a greedy choice, the remaining sub-problem is itself an optimization problem of the same type, and an optimal solution to the whole includes an optimal solution to the sub-problem.</li>
+  </ol>
+</div>
+
+<h3>2.2 The Coin-Change Analogy</h3>
+<p>Suppose you are a cashier in the United States and need to give a customer 87 cents in change using the fewest coins possible. The greedy approach: always pick the <strong>largest denomination</strong> that does not exceed the remaining amount.</p>
+
+<div class="callout">
+  <div class="callout-label"><span class="icon">🪙</span> Greedy Coin-Change Trace (U.S. denominations: 25¢, 10¢, 5¢, 1¢)</div>
+  <p style="margin-bottom:.2rem;">Remaining: 87¢ → take <strong>25¢</strong> → 62¢ → take <strong>25¢</strong> → 37¢ → take <strong>25¢</strong> → 12¢ → take <strong>10¢</strong> → 2¢ → take <strong>1¢</strong> → 1¢ → take <strong>1¢</strong> → 0¢.</p>
+  <p style="margin-bottom:0;"><strong>Result:</strong> 6 coins (3 quarters, 1 dime, 2 pennies). This is optimal for U.S. coins.</p>
+</div>
+
+<details>
+  <summary>⚠️ When Greedy Fails — A Cautionary Example</summary>
+  <div class="detail-body">
+    <p>Imagine a fictional currency with denominations 1¢, 3¢, and 4¢. To make <strong>6¢</strong>:</p>
+    <ul>
+      <li><strong>Greedy:</strong> 4¢ + 1¢ + 1¢ = 3 coins.</li>
+      <li><strong>Optimal:</strong> 3¢ + 3¢ = 2 coins.</li>
+    </ul>
+    <p>The greedy choice (pick 4¢ first) is <em>not safe</em> here because the denomination set lacks the greedy-choice property. Problems like this require <strong>dynamic programming</strong> to solve optimally.</p>
+  </div>
+</details>
+
+<h3>2.3 Greedy vs. Brute Force vs. Dynamic Programming</h3>
+
+<!-- TABS: strategy comparison -->
+<div class="tabs" id="strategy-tabs">
+  <div class="tab-btns" role="tablist" aria-label="Algorithm strategy comparison">
+    <button class="tab-btn" role="tab" aria-selected="true" aria-controls="panel-bf" id="tab-bf">Brute Force</button>
+    <button class="tab-btn" role="tab" aria-selected="false" aria-controls="panel-dp" id="tab-dp">Dynamic Programming</button>
+    <button class="tab-btn" role="tab" aria-selected="false" aria-controls="panel-gr" id="tab-gr">Greedy</button>
+  </div>
+  <div class="tab-panel active" role="tabpanel" id="panel-bf" aria-labelledby="tab-bf">
+    <p><strong>Brute Force</strong> examines <em>every</em> possible solution and selects the best. It always finds the optimum but is typically far too slow for large inputs. For an MST on a dense graph with n vertices, the number of spanning trees can grow exponentially (Cayley's formula gives n<sup>n−2</sup> labeled trees on K<sub>n</sub>).</p>
+  </div>
+  <div class="tab-panel" role="tabpanel" id="panel-dp" aria-labelledby="tab-dp">
+    <p><strong>Dynamic Programming (DP)</strong> breaks a problem into overlapping sub-problems, solves each once, and stores results to avoid redundant work. DP is more efficient than brute force and handles problems where greedy fails (e.g., the fictional coin-change example). However, DP typically requires more memory and a more complex formulation than greedy.</p>
+  </div>
+  <div class="tab-panel" role="tabpanel" id="panel-gr" aria-labelledby="tab-gr">
+    <p><strong>Greedy</strong> is the simplest and often the fastest of the three, but it only works when the problem structure guarantees that local optima lead to a global optimum. When it works, greedy is elegant and efficient. The MST problem is a classic success story for greedy algorithms.</p>
+  </div>
+</div>
+
+<!-- ════════════════ §3  MST DEFINITIONS ════════════════ -->
+<h2 id="mst-defs" tabindex="-1">3 · MST Definitions and Properties</h2>
+
+<h3>3.1 Recall: Trees (Week 12 Connection)</h3>
+<p>In Week 12 you learned that a <strong>tree</strong> is a connected, acyclic, undirected graph. Key facts we will rely on:</p>
+<ul>
+  <li>A tree on n vertices has exactly n − 1 edges.</li>
+  <li>Between any two vertices in a tree there is a <em>unique</em> path.</li>
+  <li>Removing any edge disconnects the tree; adding any edge creates exactly one cycle.</li>
+</ul>
+
+<h3>3.2 Spanning Tree</h3>
+<div class="def-box">
+  <p><span class="def-term">Spanning Tree.</span> Let G = (V, E) be a connected, undirected graph. A <strong>spanning tree</strong> of G is a subgraph T = (V, E<sub>T</sub>) that is a tree and includes <em>every</em> vertex of G. Because T is a tree on |V| vertices, it has exactly |V| − 1 edges.</p>
+</div>
+
+<h3>3.3 Minimum Spanning Tree</h3>
+<div class="def-box">
+  <p><span class="def-term">Minimum Spanning Tree (MST).</span> Let G = (V, E, w) be a connected, undirected, weighted graph where w : E → ℝ assigns a weight (cost) to each edge. A <strong>minimum spanning tree</strong> of G is a spanning tree T whose total weight</p>
+  <p style="text-align:center; font-style:italic;">w(T) = Σ<sub>e ∈ E<sub>T</sub></sub> w(e)</p>
+  <p>is as small as possible among all spanning trees of G.</p>
+</div>
+
+<h3>3.4 Existence and Uniqueness</h3>
+<details>
+  <summary>Existence — Why does an MST always exist?</summary>
+  <div class="detail-body">
+    <p>Every connected graph has at least one spanning tree (you can obtain one by repeatedly removing edges from cycles until none remain). Since the number of spanning trees is finite and each has a well-defined total weight, at least one must achieve the minimum. Therefore an MST always exists for a connected weighted graph.</p>
+  </div>
+</details>
+<details>
+  <summary>Uniqueness — Is the MST always unique?</summary>
+  <div class="detail-body">
+    <p>Not necessarily. If two or more edges share the same weight, there may be multiple distinct MSTs with the same total cost. However, if <strong>all edge weights are distinct</strong>, then the MST is unique. (This can be proved using the Cut Property, which we develop next.)</p>
+  </div>
+</details>
+
+<h3>3.5 Example Graph</h3>
+<p>We will use the following small weighted graph throughout this module and the rest of Week 14.</p>
+
+<div class="figure" role="img" aria-label="Weighted graph with 5 vertices A through E. Edges and weights: A-B 4, A-C 1, B-C 3, B-E 2, C-D 5, C-E 6, D-E 7.">
+  <svg viewBox="0 0 440 260" width="440" height="260" xmlns="http://www.w3.org/2000/svg" style="font-family:inherit;">
+    <!-- edges -->
+    <line x1="80" y1="60" x2="280" y2="60" stroke="#888" stroke-width="2"/>
+    <line x1="80" y1="60" x2="160" y2="200" stroke="#888" stroke-width="2"/>
+    <line x1="280" y1="60" x2="160" y2="200" stroke="#888" stroke-width="2"/>
+    <line x1="280" y1="60" x2="360" y2="200" stroke="#888" stroke-width="2"/>
+    <line x1="160" y1="200" x2="360" y2="200" stroke="#888" stroke-width="2"/>
+    <line x1="160" y1="200" x2="260" y2="140" stroke="#888" stroke-width="2"/>
+    <line x1="360" y1="200" x2="260" y2="140" stroke="#888" stroke-width="2"/>
+    <!-- edge labels -->
+    <rect x="165" y="36" width="24" height="20" rx="4" fill="#fff" stroke="#ccc"/>
+    <text x="177" y="51" text-anchor="middle" font-size="13" font-weight="700" fill="#c0392b">4</text>
+    <rect x="96" y="118" width="24" height="20" rx="4" fill="#fff" stroke="#ccc"/>
+    <text x="108" y="133" text-anchor="middle" font-size="13" font-weight="700" fill="#c0392b">1</text>
+    <rect x="208" y="118" width="24" height="20" rx="4" fill="#fff" stroke="#ccc"/>
+    <text x="220" y="133" text-anchor="middle" font-size="13" font-weight="700" fill="#c0392b">3</text>
+    <rect x="308" y="118" width="24" height="20" rx="4" fill="#fff" stroke="#ccc"/>
+    <text x="320" y="133" text-anchor="middle" font-size="13" font-weight="700" fill="#c0392b">2</text>
+    <rect x="195" y="160" width="24" height="20" rx="4" fill="#fff" stroke="#ccc"/>
+    <text x="207" y="175" text-anchor="middle" font-size="13" font-weight="700" fill="#c0392b">5</text>
+    <rect x="248" y="208" width="24" height="20" rx="4" fill="#fff" stroke="#ccc"/>
+    <text x="260" y="223" text-anchor="middle" font-size="13" font-weight="700" fill="#c0392b">6</text>
+    <rect x="300" y="160" width="24" height="20" rx="4" fill="#fff" stroke="#ccc"/>
+    <text x="312" y="175" text-anchor="middle" font-size="13" font-weight="700" fill="#c0392b">7</text>
+    <!-- vertices -->
+    <circle cx="80" cy="60" r="20" fill="#2980b9" stroke="#1a5276" stroke-width="2"/>
+    <text x="80" y="65" text-anchor="middle" fill="#fff" font-weight="700" font-size="15">A</text>
+    <circle cx="280" cy="60" r="20" fill="#2980b9" stroke="#1a5276" stroke-width="2"/>
+    <text x="280" y="65" text-anchor="middle" fill="#fff" font-weight="700" font-size="15">B</text>
+    <circle cx="160" cy="200" r="20" fill="#2980b9" stroke="#1a5276" stroke-width="2"/>
+    <text x="160" y="205" text-anchor="middle" fill="#fff" font-weight="700" font-size="15">C</text>
+    <circle cx="260" cy="140" r="20" fill="#2980b9" stroke="#1a5276" stroke-width="2"/>
+    <text x="260" y="145" text-anchor="middle" fill="#fff" font-weight="700" font-size="15">D</text>
+    <circle cx="360" cy="200" r="20" fill="#2980b9" stroke="#1a5276" stroke-width="2"/>
+    <text x="360" y="205" text-anchor="middle" fill="#fff" font-weight="700" font-size="15">E</text>
+  </svg>
+  <figcaption>Figure 1. Weighted graph G with vertices {A, B, C, D, E}. Edge weights shown in red.</figcaption>
+</div>
+
+<details>
+  <summary>Work It Out — What is the MST of this graph?</summary>
+  <div class="detail-body">
+    <p>Sort edges by weight: A–C (1), B–E (2), B–C (3), A–B (4), C–D (5), C–E (6), D–E (7).</p>
+    <p>We need |V| − 1 = 4 edges. Picking the lightest edges that avoid cycles:</p>
+    <ol>
+      <li><strong>A–C (1)</strong> — connects A and C. ✓</li>
+      <li><strong>B–E (2)</strong> — connects B and E. ✓</li>
+      <li><strong>B–C (3)</strong> — connects components {A,C} and {B,E}. ✓</li>
+      <li><strong>C–D (5)</strong> — connects D to the rest. ✓</li>
+    </ol>
+    <p><strong>MST edges:</strong> {A–C, B–E, B–C, C–D} with total weight 1 + 2 + 3 + 5 = 11.</p>
+    <p>(We skipped A–B (4) because it would create a cycle — A and B were already connected through A–C–B. C–E (6) and D–E (7) were not needed once all vertices were reached.)</p>
+  </div>
+</details>
+
+<!-- ════════════════ §4  CUT PROPERTY ════════════════ -->
+<h2 id="cut-property" tabindex="-1">4 · The Cut Property</h2>
+
+<p>The Cut Property is the <em>theoretical foundation</em> for greedy MST algorithms. It tells us exactly when it is <strong>safe</strong> to include an edge in the MST—i.e., when a greedy choice is guaranteed to be correct.</p>
+
+<h3>4.1 Definitions</h3>
+
+<div class="def-box">
+  <p><span class="def-term">Cut.</span> A <strong>cut</strong> of a connected graph G = (V, E) is a partition of the vertex set into two non-empty subsets (S, V ∖ S).</p>
+</div>
+
+<div class="def-box">
+  <p><span class="def-term">Crossing Edge.</span> An edge {u, v} ∈ E <strong>crosses</strong> the cut (S, V ∖ S) if one endpoint is in S and the other is in V ∖ S.</p>
+</div>
+
+<h3>4.2 Statement of the Cut Property</h3>
+
+<div class="card" style="border-left:4px solid var(--accent);">
+  <h4 style="margin-top:0;">Theorem (Cut Property)</h4>
+  <p>Let G = (V, E, w) be a connected, weighted, undirected graph. For any cut (S, V ∖ S), if edge e is the <strong>unique minimum-weight crossing edge</strong>, then e belongs to every MST of G.</p>
+  <p style="font-size:.9rem;color:var(--text-muted);margin-bottom:0;">(If there are ties for the minimum crossing edge, at least one of them is in some MST.)</p>
+</div>
+
+<h3>4.3 Intuitive Explanation</h3>
+<p>Think of the cut as a wall dividing the vertices into two rooms. To build a spanning tree you <em>must</em> include at least one edge that crosses this wall (otherwise the two rooms are disconnected). Among all edges crossing the wall, the lightest one is the cheapest way to "bridge" the two sides. Choosing any heavier crossing edge instead would only increase the total cost, so the lightest crossing edge is always a safe greedy pick.</p>
+
+<h3>4.4 Proof Sketch (by Contradiction)</h3>
+
+<details>
+  <summary>Expand proof sketch</summary>
+  <div class="detail-body">
+    <p><strong>Setup.</strong> Suppose, for contradiction, that e = {u, v} is the unique minimum-weight edge crossing cut (S, V ∖ S), but there exists an MST T* that does <em>not</em> contain e.</p>
+    <ol>
+      <li>Since T* is a spanning tree, it connects u and v via some path P. Because u ∈ S and v ∈ V ∖ S, the path P must cross the cut at least once. Let e′ = {x, y} be a crossing edge on P (with e′ ≠ e).</li>
+      <li>Because e is the <em>unique</em> minimum-weight crossing edge, we have w(e) &lt; w(e′).</li>
+      <li>Construct a new tree T′ = T* − e′ + e. Removing e′ from T* splits it into two components; adding e reconnects them (since e also crosses the cut). So T′ is a spanning tree.</li>
+      <li>w(T′) = w(T*) − w(e′) + w(e) &lt; w(T*).</li>
+      <li>This contradicts the assumption that T* is a <em>minimum</em> spanning tree. ∎</li>
+    </ol>
+  </div>
+</details>
+
+<h3>4.5 Cut Property on Our Example</h3>
+
+<details>
+  <summary>Worked Example — Applying the Cut Property to Figure 1</summary>
+  <div class="detail-body">
+    <p>Consider the cut S = {A}, V ∖ S = {B, C, D, E}.</p>
+    <p>Crossing edges: A–B (weight 4) and A–C (weight 1).</p>
+    <p>The unique minimum-weight crossing edge is <strong>A–C (1)</strong>. By the Cut Property, A–C must be in every MST of G. ✓ (Consistent with our MST found earlier.)</p>
+    <p>Now consider the cut S = {A, C}, V ∖ S = {B, D, E}.</p>
+    <p>Crossing edges: A–B (4), B–C (3), C–D (5), C–E (6).</p>
+    <p>The unique minimum-weight crossing edge is <strong>B–C (3)</strong>. By the Cut Property, B–C must be in every MST. ✓</p>
+  </div>
+</details>
+
+<!-- ════════════════ §5  PREVIEW TABLE ════════════════ -->
+<h2 id="preview-algos" tabindex="-1">5 · Preview: Three Greedy Algorithms</h2>
+
+<p>In Modules 14.2 and 14.3 you will study two MST algorithms in detail, and in Module 14.4 you will study a shortest-path algorithm. Here is a compact preview so you can see how the greedy paradigm manifests differently in each.</p>
+
+<div class="table-wrap">
+<table>
+  <caption>Table 1. Three Greedy Graph Algorithms at a Glance</caption>
+  <thead>
+    <tr>
+      <th scope="col">Algorithm</th>
+      <th scope="col">Problem Solved</th>
+      <th scope="col">Greedy Choice</th>
+      <th scope="col">Module</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Kruskal's</strong></td>
+      <td>Minimum Spanning Tree</td>
+      <td>Always add the lightest edge that does not create a cycle (global edge sort).</td>
+      <td>14.2</td>
+    </tr>
+    <tr>
+      <td><strong>Prim's</strong></td>
+      <td>Minimum Spanning Tree</td>
+      <td>Always add the lightest edge connecting a visited vertex to an unvisited vertex (grow a single tree).</td>
+      <td>14.3</td>
+    </tr>
+    <tr>
+      <td><strong>Dijkstra's</strong></td>
+      <td>Single-Source Shortest Paths</td>
+      <td>Always process the unvisited vertex with the smallest tentative distance from the source.</td>
+      <td>14.4</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="callout">
+  <div class="callout-label"><span class="icon">💡</span> Key Insight</div>
+  <p style="margin-bottom:0;">Both Kruskal's and Prim's solve the <em>same</em> problem (MST) but use <em>different</em> greedy strategies. Their correctness both follow from the Cut Property. Dijkstra's solves a different problem (shortest paths, not MST) and relies on a related but distinct argument.</p>
+</div>
+
+<!-- ════════════════ §6  VISUALIZER ACTIVITY ════════════════ -->
+<h2 id="visualizer" tabindex="-1">6 · Guided Visualizer Activity</h2>
+
+<div class="callout accent">
+  <div class="callout-label"><span class="icon">🖥️</span> Tool Reference</div>
+  <p style="margin-bottom:0;">For this activity, use the <strong>VisuAlgo MST visualization tool</strong> at <strong>visualgo.net/en/mst</strong> — open it in a separate browser tab. (Do not worry if the interface has minor updates; the core functionality is stable.)</p>
+</div>
+
+<p>Follow these steps to build intuition before we formalize the algorithms in Modules 14.2–14.3.</p>
+
+<div class="card">
+  <h4 style="margin-top:0;">Step-by-Step Instructions</h4>
+  <ol>
+    <li><strong>Open the tool</strong> and select or draw a small graph with 5–7 vertices and weighted edges. (You can use the "Example Graphs" dropdown or create a custom one.)</li>
+    <li><strong>Run Kruskal's algorithm</strong> using the controls. At each step, observe:
+      <ul>
+        <li>Which edge is being considered? Is it the lightest remaining edge?</li>
+        <li>Is the edge accepted or rejected? Why? (Hint: cycles.)</li>
+        <li>How many edges are in the MST so far?</li>
+      </ul>
+    </li>
+    <li><strong>Reset</strong> the visualization and <strong>run Prim's algorithm</strong> on the same graph. Observe:
+      <ul>
+        <li>The algorithm grows a single tree from a starting vertex.</li>
+        <li>At each step, which edge is added? It is the lightest edge from the "visited" set to the "unvisited" set.</li>
+        <li>Can you identify the <em>cut</em> being used at each step?</li>
+      </ul>
+    </li>
+    <li><strong>Compare results.</strong> Both algorithms should produce an MST with the same total weight (and often the same tree, especially if edge weights are distinct).</li>
+    <li><strong>Experiment:</strong> Try a graph where two edges have the <em>same</em> weight. Do Kruskal's and Prim's produce different MSTs? Do those MSTs have the same total weight?</li>
+  </ol>
+</div>
+
+<details>
+  <summary>What to Look For — Key Observations</summary>
+  <div class="detail-body">
+    <ul>
+      <li><strong>Kruskal's</strong> processes edges globally (sorted by weight) and may grow multiple disconnected components that merge over time.</li>
+      <li><strong>Prim's</strong> always maintains one connected component that expands outward, like a growing blob.</li>
+      <li>Both algorithms add exactly |V| − 1 edges total.</li>
+      <li>Every edge added by either algorithm can be justified by the Cut Property applied to an appropriate cut.</li>
+    </ul>
+  </div>
+</details>
+
+<!-- ════════════════ §7  KNOWLEDGE CHECKS ════════════════ -->
+<h2 id="knowledge-checks" tabindex="-1">7 · Knowledge Checks</h2>
+<p>These are <strong>ungraded</strong> self-checks to reinforce your understanding. Select your answer and click <em>Check Answer</em> for immediate feedback.</p>
+
+<!-- ── KC 14.1a ── -->
+<div class="kc" id="kc-14-1a">
+  <div class="kc-title"><span class="icon">✏️</span> Knowledge Check 14.1a — Greedy Paradigm</div>
+  <fieldset>
+    <legend>Which two properties must a problem exhibit for a greedy algorithm to guarantee an optimal solution?</legend>
+    <label><input type="radio" name="kc1a" value="a"> Overlapping sub-problems and memoization</label>
+    <label><input type="radio" name="kc1a" value="b"> Greedy-choice property and optimal substructure</label>
+    <label><input type="radio" name="kc1a" value="c"> Divide-and-conquer structure and logarithmic depth</label>
+    <label><input type="radio" name="kc1a" value="d"> Polynomial time complexity and determinism</label>
+  </fieldset>
+  <button class="kc-btn" onclick="checkKC('kc1a','b', 'Correct! The greedy-choice property ensures each local decision is safe, and optimal substructure ensures the remaining sub-problem can also be solved optimally.', 'Not quite. &quot;Overlapping sub-problems and memoization&quot; characterize dynamic programming, not greedy algorithms. The two required properties are the greedy-choice property and optimal substructure.')">Check Answer</button>
+  <div class="kc-feedback" id="fb-kc1a"></div>
+</div>
+
+<!-- ── KC 14.1b ── -->
+<div class="kc" id="kc-14-1b">
+  <div class="kc-title"><span class="icon">✏️</span> Knowledge Check 14.1b — Spanning Tree Edge Count</div>
+  <fieldset>
+    <legend>A connected graph has 8 vertices. How many edges does any spanning tree of this graph have?</legend>
+    <label><input type="radio" name="kc1b" value="a"> 6</label>
+    <label><input type="radio" name="kc1b" value="b"> 7</label>
+    <label><input type="radio" name="kc1b" value="c"> 8</label>
+    <label><input type="radio" name="kc1b" value="d"> It depends on the number of edges in the original graph.</label>
+  </fieldset>
+  <button class="kc-btn" onclick="checkKC('kc1b','b', 'Correct! A spanning tree on n vertices always has exactly n − 1 edges. For n = 8, that is 7 edges.', 'Not quite. Remember: a tree on n vertices always has exactly n − 1 edges. A spanning tree includes all 8 vertices, so it has 8 − 1 = 7 edges, regardless of how many edges the original graph has.')">Check Answer</button>
+  <div class="kc-feedback" id="fb-kc1b"></div>
+</div>
+
+<!-- ── KC 14.1c ── -->
+<div class="kc" id="kc-14-1c">
+  <div class="kc-title"><span class="icon">✏️</span> Knowledge Check 14.1c — Cut Property Application</div>
+  <fieldset>
+    <legend>In the graph from Figure 1, consider the cut S = {A, B, C}, V ∖ S = {D, E}. The crossing edges are B–E (2), C–D (5), C–E (6), and D–E (7). Wait — is D–E really a crossing edge for this cut?</legend>
+    <label><input type="radio" name="kc1c" value="a"> Yes, because D and E are in different parts of the partition.</label>
+    <label><input type="radio" name="kc1c" value="b"> No, because both D and E are in V ∖ S = {D, E}, so D–E does not cross the cut.</label>
+    <label><input type="radio" name="kc1c" value="c"> Yes, because D–E is the heaviest edge in the graph.</label>
+    <label><input type="radio" name="kc1c" value="d"> It depends on whether D–E is in the MST.</label>
+  </fieldset>
+  <button class="kc-btn" onclick="checkKC('kc1c','b', 'Correct! Edge D–E has both endpoints in {D, E} ⊆ V ∖ S, so it does NOT cross the cut. The actual crossing edges are B–E (2), C–D (5), and C–E (6). By the Cut Property, B–E (2) — the unique lightest crossing edge — must be in every MST.', 'Review the definition: a crossing edge must have one endpoint in S and the other in V ∖ S. Since both D and E are in V ∖ S = {D, E}, edge D–E does not cross this cut.')">Check Answer</button>
+  <div class="kc-feedback" id="fb-kc1c"></div>
+</div>
+
+<!-- ── KC 14.1d ── -->
+<div class="kc" id="kc-14-1d">
+  <div class="kc-title"><span class="icon">✏️</span> Knowledge Check 14.1d — Greedy vs. Other Strategies</div>
+  <fieldset>
+    <legend>A friend claims: "Greedy algorithms always find the optimal solution for any optimization problem." Which response is most accurate?</legend>
+    <label><input type="radio" name="kc1d" value="a"> True — greedy is guaranteed optimal because it always picks the best local choice.</label>
+    <label><input type="radio" name="kc1d" value="b"> False — greedy works only when the problem has the greedy-choice property and optimal substructure; otherwise it may produce a sub-optimal result.</label>
+    <label><input type="radio" name="kc1d" value="c"> False — greedy algorithms never produce optimal solutions; they are only used as heuristics.</label>
+    <label><input type="radio" name="kc1d" value="d"> True — but only if we sort the input first.</label>
+  </fieldset>
+  <button class="kc-btn" onclick="checkKC('kc1d','b', 'Correct! Greedy algorithms are powerful but not universally optimal. They require the greedy-choice property and optimal substructure. The fictional coin-change example (Section 2.2) shows a case where greedy fails.', 'Not quite. Greedy algorithms do produce optimal solutions for some problems (like MST and U.S. coin change), but they can fail for others (like the fictional 1¢/3¢/4¢ coin system). The key is whether the problem has the right structural properties.')">Check Answer</button>
+  <div class="kc-feedback" id="fb-kc1d"></div>
+</div>
+
+<!-- ════════════════ WRAP-UP ════════════════ -->
+<div class="callout success" style="margin-top:2rem;">
+  <div class="callout-label"><span class="icon">✅</span> Module 14.1 Summary</div>
+  <ul style="margin-bottom:0;">
+    <li>The <strong>greedy paradigm</strong> builds solutions by making locally optimal choices; it requires the greedy-choice property and optimal substructure.</li>
+    <li>A <strong>spanning tree</strong> of a connected graph with n vertices is a connected, acyclic subgraph containing all n vertices and exactly n − 1 edges.</li>
+    <li>A <strong>minimum spanning tree</strong> minimizes total edge weight among all spanning trees.</li>
+    <li>The <strong>Cut Property</strong> guarantees that the lightest edge crossing any cut is safe to include in the MST—this is the theoretical engine behind Kruskal's and Prim's algorithms.</li>
+  </ul>
+</div>
+
+<p><strong>Up Next:</strong> In <em>Module 14.2</em>, we dive into <strong>Kruskal's Algorithm</strong>, trace it step-by-step on our example graph, and see how the Union-Find data structure makes cycle detection efficient.</p>
+
+</main><!-- end container -->
+
+<!-- ════════════════ JAVASCRIPT ════════════════ -->
+<script>
+/* ── Tab switching ── */
+(function(){
+  const tabGroups = document.querySelectorAll('.tabs');
+  tabGroups.forEach(group => {
+    const btns = group.querySelectorAll('.tab-btn');
+    const panels = group.querySelectorAll('.tab-panel');
+    btns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        btns.forEach(b => { b.setAttribute('aria-selected','false'); });
+        panels.forEach(p => { p.classList.remove('active'); });
+        btn.setAttribute('aria-selected','true');
+        const target = document.getElementById(btn.getAttribute('aria-controls'));
+        if(target) target.classList.add('active');
+      });
+      btn.addEventListener('keydown', e => {
+        const idx = Array.from(btns).indexOf(btn);
+        let next = -1;
+        if(e.key === 'ArrowRight') next = (idx + 1) % btns.length;
+        if(e.key === 'ArrowLeft') next = (idx - 1 + btns.length) % btns.length;
+        if(next >= 0){ e.preventDefault(); btns[next].focus(); btns[next].click(); }
+      });
+    });
+  });
+})();
+
+/* ── Knowledge Check grading ── */
+function checkKC(name, correctVal, correctMsg, incorrectMsg){
+  const sel = document.querySelector('input[name="'+name+'"]:checked');
+  const fb = document.getElementById('fb-'+name);
+  if(!sel){
+    fb.textContent = 'Please select an answer first.';
+    fb.className = 'kc-feedback incorrect';
+    fb.style.display = 'block';
+    return;
+  }
+  if(sel.value === correctVal){
+    fb.innerHTML = '✅ ' + correctMsg;
+    fb.className = 'kc-feedback correct';
+  } else {
+    fb.innerHTML = '❌ ' + incorrectMsg;
+    fb.className = 'kc-feedback incorrect';
+  }
+  fb.style.display = 'block';
+  fb.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+/* ── Smooth scroll for nav links ── */
+document.querySelectorAll('.nav-bar a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const target = document.querySelector(a.getAttribute('href'));
+    if(target){ e.preventDefault(); target.scrollIntoView({behavior:'smooth'}); target.focus({preventScroll:true}); }
+  });
+});
+</script>
+</body>
+</html>

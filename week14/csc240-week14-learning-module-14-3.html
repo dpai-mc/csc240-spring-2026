@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 14.3 – Prim's Algorithm and MST Comparison</title>
+<style>
+:root {
+  --primary: #2D3B45;
+  --accent: #0772A1;
+  --accent-dark: #065a80;
+  --light-bg: #F5F7FA;
+  --white: #FFFFFF;
+  --border: #C7CDD1;
+  --success: #0B874B;
+  --success-bg: #E6F5ED;
+  --error: #D4380D;
+  --error-bg: #FFF1EC;
+  --warning-bg: #FFF8E1;
+  --warning-border: #F5A623;
+  --info-bg: #E8F4FD;
+  --info-border: #0772A1;
+  --text: #2D3B45;
+  --text-light: #556270;
+  --shadow: 0 2px 4px rgba(0,0,0,0.1);
+  --radius: 8px;
+  --nav-height: 60px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;font-size:16px;line-height:1.6;color:var(--text);background:var(--light-bg);}
+.module-wrapper{max-width:960px;margin:0 auto;padding:0 1rem 3rem;}
+
+/* ── NAV BAR ── */
+.nav-bar{position:sticky;top:0;z-index:1000;background:var(--primary);border-bottom:3px solid var(--accent);padding:0;box-shadow:var(--shadow);}
+.nav-inner{max-width:960px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:0;padding:0 1rem;}
+.nav-bar a{color:#fff;text-decoration:none;font-size:.82rem;padding:.65rem .55rem;display:block;border-bottom:3px solid transparent;transition:background .2s,border-color .2s;}
+.nav-bar a:hover,.nav-bar a:focus{background:rgba(255,255,255,.12);border-bottom-color:var(--accent);outline:none;}
+.nav-bar a:focus-visible{outline:2px solid #fff;outline-offset:-2px;border-radius:2px;}
+[id]{scroll-margin-top:80px;}
+
+/* ── HERO / HEADER ── */
+.module-hero{background:linear-gradient(135deg,var(--primary) 0%,#1a6b8a 100%);color:#fff;padding:2.5rem 2rem;border-radius:0 0 var(--radius) var(--radius);margin-bottom:2rem;box-shadow:var(--shadow);}
+.module-hero h1{font-size:1.9rem;margin-bottom:.4rem;line-height:1.25;}
+.module-hero .subtitle{font-size:1.1rem;opacity:.92;margin-bottom:1rem;}
+.module-hero .meta{display:flex;flex-wrap:wrap;gap:1.2rem;font-size:.88rem;opacity:.85;}
+.module-hero .meta span{display:flex;align-items:center;gap:.35rem;}
+
+/* ── SECTIONS ── */
+.section{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:1.5rem;box-shadow:var(--shadow);overflow:hidden;}
+.section-header{background:var(--primary);color:#fff;padding:1rem 1.5rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none;border:none;width:100%;text-align:left;font:inherit;font-size:1.15rem;font-weight:600;line-height:1.3;}
+.section-header:focus-visible{outline:2px solid #fff;outline-offset:-2px;}
+.section-header .chevron{transition:transform .3s;font-size:1.2rem;flex-shrink:0;margin-left:.75rem;}
+.section-header[aria-expanded="true"] .chevron{transform:rotate(180deg);}
+.section-body{padding:1.5rem;display:none;}
+.section-body.open{display:block;}
+
+/* ── HEADINGS INSIDE SECTIONS ── */
+.section-body h3{color:var(--accent);font-size:1.15rem;margin:1.4rem 0 .6rem;padding-bottom:.3rem;border-bottom:2px solid var(--accent);}
+.section-body h3:first-child{margin-top:0;}
+.section-body h4{color:var(--primary);font-size:1.02rem;margin:1rem 0 .4rem;}
+
+/* ── CALLOUTS ── */
+.callout{border-left:4px solid;border-radius:var(--radius);padding:1rem 1.25rem;margin:1rem 0;font-size:.95rem;}
+.callout-title{font-weight:700;margin-bottom:.25rem;display:flex;align-items:center;gap:.4rem;}
+.callout.concept{background:var(--info-bg);border-color:var(--info-border);}
+.callout.concept .callout-title{color:var(--info-border);}
+.callout.tip{background:#F0FAF0;border-color:var(--success);}
+.callout.tip .callout-title{color:var(--success);}
+.callout.warning{background:var(--warning-bg);border-color:var(--warning-border);}
+.callout.warning .callout-title{color:#B8860B;}
+.callout.connection{background:#F3EEFF;border-color:#7C4DFF;}
+.callout.connection .callout-title{color:#7C4DFF;}
+
+/* ── CODE / PSEUDOCODE ── */
+.pseudocode-block{background:#1E1E1E;color:#D4D4D4;border-radius:var(--radius);padding:1.25rem 1.5rem;margin:1rem 0;font-family:'Courier New',Courier,monospace;font-size:.88rem;line-height:1.65;overflow-x:auto;white-space:pre;counter-reset:line-num;}
+.pseudocode-block .ln{display:inline-block;min-width:2.2em;color:#6A737D;text-align:right;margin-right:1em;user-select:none;}
+.kw{color:#569CD6;font-weight:700;}
+.fn{color:#DCDCAA;}
+.cm{color:#6A9955;font-style:italic;}
+.vr{color:#9CDCFE;}
+.str{color:#CE9178;}
+.num{color:#B5CEA8;}
+
+/* ── TABLES ── */
+.table-wrap{overflow-x:auto;margin:1rem 0;}
+table{width:100%;border-collapse:collapse;font-size:.92rem;}
+th{background:var(--primary);color:#fff;padding:.7rem .8rem;text-align:left;font-weight:600;}
+td{padding:.65rem .8rem;border-bottom:1px solid var(--border);}
+tr:nth-child(even){background:var(--light-bg);}
+caption{caption-side:top;text-align:left;font-weight:700;color:var(--primary);margin-bottom:.4rem;font-size:.95rem;}
+.highlight-row{background:#E8F4FD !important;font-weight:600;}
+
+/* ── STEP TRACE TABLE ── */
+.trace-step{background:var(--info-bg);border:1px solid var(--info-border);border-radius:var(--radius);padding:1rem 1.25rem;margin:.75rem 0;}
+.trace-step .step-title{font-weight:700;color:var(--accent);margin-bottom:.35rem;}
+
+/* ── KNOWLEDGE CHECKS ── */
+.kc-container{background:var(--light-bg);border:2px solid var(--accent);border-radius:var(--radius);padding:1.5rem;margin:1.2rem 0;}
+.kc-container h4{color:var(--accent);margin:0 0 .8rem;font-size:1.05rem;}
+.kc-option{display:flex;align-items:flex-start;gap:.5rem;padding:.45rem .6rem;margin:.25rem 0;border-radius:6px;cursor:pointer;border:2px solid transparent;transition:background .15s,border-color .15s;}
+.kc-option:hover{background:rgba(7,114,161,.06);}
+.kc-option input[type="radio"]{margin-top:.25rem;accent-color:var(--accent);width:18px;height:18px;flex-shrink:0;}
+.kc-option label{cursor:pointer;flex:1;}
+.kc-feedback{margin-top:.8rem;padding:.85rem 1rem;border-radius:6px;display:none;font-size:.93rem;line-height:1.5;}
+.kc-feedback.correct{display:block;background:var(--success-bg);border:1px solid var(--success);color:#065F30;}
+.kc-feedback.incorrect{display:block;background:var(--error-bg);border:1px solid var(--error);color:#9A2B0D;}
+.kc-btn{background:var(--accent);color:#fff;border:none;padding:.55rem 1.5rem;border-radius:6px;cursor:pointer;font-size:.95rem;font-weight:600;margin-top:.5rem;transition:background .2s;}
+.kc-btn:hover,.kc-btn:focus{background:var(--accent-dark);}
+.kc-btn:focus-visible{outline:3px solid var(--accent);outline-offset:2px;}
+.kc-btn:disabled{opacity:.6;cursor:not-allowed;}
+
+/* ── INTERACTIVE TRACE ── */
+.trace-interactive{border:2px solid var(--accent);border-radius:var(--radius);overflow:hidden;margin:1rem 0;}
+.trace-controls{display:flex;gap:.5rem;padding:.75rem 1rem;background:var(--light-bg);border-bottom:1px solid var(--border);flex-wrap:wrap;align-items:center;}
+.trace-controls button{background:var(--accent);color:#fff;border:none;padding:.4rem 1rem;border-radius:6px;cursor:pointer;font-size:.88rem;font-weight:600;transition:background .2s;}
+.trace-controls button:hover,.trace-controls button:focus{background:var(--accent-dark);}
+.trace-controls button:focus-visible{outline:3px solid var(--accent);outline-offset:2px;}
+.trace-controls button:disabled{opacity:.5;cursor:not-allowed;}
+.trace-display{padding:1.25rem;min-height:120px;}
+.trace-counter{font-size:.88rem;color:var(--text-light);margin-left:auto;}
+
+/* ── COMPARISON TABLE HIGHLIGHT ── */
+.cmp-table td.pro{background:#E6F5ED;font-weight:600;}
+.cmp-table td.con{background:#FFF1EC;}
+
+/* ── GRAPH DIAGRAM (SVG) ── */
+.graph-container{text-align:center;margin:1rem 0;overflow-x:auto;}
+.graph-container svg{max-width:100%;height:auto;}
+
+/* ── LISTS ── */
+.section-body ul,.section-body ol{margin:.5rem 0 .5rem 1.4rem;}
+.section-body li{margin-bottom:.3rem;}
+.section-body p{margin:.5rem 0;}
+
+/* ── MISC ── */
+strong{color:var(--primary);}
+code{background:#EEF1F5;padding:.15rem .35rem;border-radius:4px;font-size:.9em;font-family:'Courier New',Courier,monospace;}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:600px){
+  .module-hero{padding:1.5rem 1rem;}
+  .module-hero h1{font-size:1.4rem;}
+  .section-body{padding:1rem;}
+  .nav-bar a{font-size:.74rem;padding:.55rem .35rem;}
+  .pseudocode-block{font-size:.8rem;padding:1rem;}
+  table{font-size:.82rem;}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════ NAVIGATION BAR ══════════════ -->
+<nav class="nav-bar" aria-label="Module 14.3 section navigation">
+  <div class="nav-inner">
+    <a href="#context">Context</a>
+    <a href="#algorithm">Algorithm</a>
+    <a href="#heap">Min-Heap</a>
+    <a href="#example">Example</a>
+    <a href="#complexity">Complexity</a>
+    <a href="#comparison">Comparison</a>
+    <a href="#visualizer">Visualizer</a>
+    <a href="#checks">Checks</a>
+  </div>
+</nav>
+
+<!-- ══════════════ HERO ══════════════ -->
+<div class="module-wrapper">
+<header class="module-hero">
+  <h1>Module 14.3 – Prim's Algorithm &amp; MST Comparison</h1>
+  <div class="subtitle">The vertex-centric approach to Minimum Spanning Trees</div>
+  <div class="meta">
+    <span>📅 Week 14</span>
+    <span>⏱️ Estimated Time: 60–75 minutes</span>
+    <span>📖 Module 3 of 3</span>
+  </div>
+</header>
+
+<!-- ══════════════ SECTION 1 – OPENING CONTEXT ══════════════ -->
+<section class="section" id="context">
+  <button class="section-header" aria-expanded="true" aria-controls="context-body" onclick="toggleSection(this)">
+    <span>1 &nbsp;Opening Context — From Kruskal's to Prim's</span>
+    <span class="chevron" aria-hidden="true">▼</span>
+  </button>
+  <div class="section-body open" id="context-body" role="region">
+
+    <h3>Quick Recap: Kruskal's Algorithm (Module 14.2)</h3>
+    <p>In Module 14.2 you learned <strong>Kruskal's algorithm</strong>, an <em>edge-centric</em> greedy strategy for building a Minimum Spanning Tree (MST):</p>
+    <ol>
+      <li>Sort every edge by weight.</li>
+      <li>Process edges lightest-first; add an edge if it connects two different components (Union-Find cycle check).</li>
+      <li>Stop after $$|V| - 1$$ edges.</li>
+    </ol>
+    <p>Kruskal's works globally—it doesn't care <em>where</em> in the graph the next cheapest edge lives. Now we shift to a fundamentally different perspective.</p>
+
+    <h3>Introducing Prim's Algorithm — Vertex-Centric Growth</h3>
+    <p><strong>Prim's algorithm</strong> grows the MST from a single starting vertex, one vertex at a time, always choosing the <em>lightest edge that crosses the boundary</em> between "already in the tree" and "not yet in the tree." Think of it as a <strong>greedy frontier expansion</strong>.</p>
+
+    <div class="callout concept">
+      <div class="callout-title">💡 Key Intuition</div>
+      If you have ever seen <strong>Breadth-First Search (BFS)</strong>, Prim's feels similar—but instead of a FIFO queue that explores by <em>hop count</em>, Prim's uses a <strong>min-priority queue</strong> that explores by <em>edge weight</em>. Swap the queue type, and the traversal strategy changes from "nearest by hops" to "nearest by cost."
+    </div>
+
+    <h3>Two Algorithms, One Theorem</h3>
+    <p>Both Kruskal's and Prim's are proven correct by the same foundation—the <strong>Cut Property</strong> (Module 14.1). Every greedy choice each algorithm makes selects the minimum-weight edge crossing some cut, guaranteeing the result is an MST.</p>
+
+    <div class="callout connection">
+      <div class="callout-title">🔗 Final Project Connection</div>
+      Your <strong>Final Project Analysis Document (Component 4)</strong> requires you to compare two graph algorithms and justify which is more suitable for a given scenario. The Kruskal's-vs-Prim's comparison table in Section 6 of this module is designed to give you a reusable framework for that analysis.
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════ SECTION 2 – PRIM'S ALGORITHM ══════════════ -->
+<section class="section" id="algorithm">
+  <button class="section-header" aria-expanded="true" aria-controls="algorithm-body" onclick="toggleSection(this)">
+    <span>2 &nbsp;Prim's Algorithm — Greedy Vertex Growth</span>
+    <span class="chevron" aria-hidden="true">▼</span>
+  </button>
+  <div class="section-body open" id="algorithm-body" role="region">
+
+    <h3>High-Level Idea</h3>
+    <ol>
+      <li><strong>Initialize:</strong> Pick any start vertex $$s$$. Set its <em>key</em> (cheapest known connection cost) to 0; set every other vertex's key to $$\infty$$. Insert all vertices into a min-priority queue keyed on these values.</li>
+      <li><strong>Repeat</strong> until the queue is empty:
+        <ol type="a">
+          <li><strong>Extract-Min:</strong> Remove the vertex $$u$$ with the smallest key. Add $$u$$ (and its connecting edge) to the MST.</li>
+          <li><strong>Relax neighbors:</strong> For every neighbor $$v$$ of $$u$$ still in the queue, if $$w(u,v) < \text{key}[v]$$, then update $$\text{key}[v] \leftarrow w(u,v)$$ and record $$\text{parent}[v] \leftarrow u$$ (this is the <strong>decreaseKey</strong> operation).</li>
+        </ol>
+      </li>
+      <li><strong>Result:</strong> The parent pointers form the MST.</li>
+    </ol>
+
+    <div class="callout concept">
+      <div class="callout-title">💡 The Greedy Choice</div>
+      At every step, Prim's selects the lightest edge crossing the cut $$(S, V \setminus S)$$, where $$S$$ is the set of vertices already extracted. By the <strong>Cut Property</strong>, this edge is safe to add to the MST.
+    </div>
+
+    <h3>Pseudocode</h3>
+    <div class="pseudocode-block" role="figure" aria-label="Prim's algorithm pseudocode">
+<span class="ln"> 1</span><span class="kw">function</span> <span class="fn">Prim</span>(G, s):
+<span class="ln"> 2</span>    <span class="kw">for each</span> vertex <span class="vr">v</span> ∈ G.V:
+<span class="ln"> 3</span>        <span class="vr">key</span>[v] ← ∞
+<span class="ln"> 4</span>        <span class="vr">parent</span>[v] ← <span class="kw">NIL</span>
+<span class="ln"> 5</span>        <span class="vr">inQueue</span>[v] ← <span class="kw">TRUE</span>
+<span class="ln"> 6</span>    <span class="vr">key</span>[s] ← <span class="num">0</span>
+<span class="ln"> 7</span>    <span class="vr">Q</span> ← <span class="fn">MinHeap</span>(G.V, key)       <span class="cm">// Build heap on key values</span>
+<span class="ln"> 8</span>
+<span class="ln"> 9</span>    <span class="kw">while</span> Q ≠ ∅:
+<span class="ln">10</span>        <span class="vr">u</span> ← <span class="fn">extractMin</span>(Q)          <span class="cm">// Vertex with smallest key</span>
+<span class="ln">11</span>        <span class="vr">inQueue</span>[u] ← <span class="kw">FALSE</span>
+<span class="ln">12</span>
+<span class="ln">13</span>        <span class="kw">for each</span> (<span class="vr">u</span>, <span class="vr">v</span>) ∈ G.Adj[u]:  <span class="cm">// All neighbors of u</span>
+<span class="ln">14</span>            <span class="kw">if</span> <span class="vr">inQueue</span>[v] <span class="kw">AND</span> w(u,v) &lt; <span class="vr">key</span>[v]:
+<span class="ln">15</span>                <span class="vr">key</span>[v] ← w(u,v)       <span class="cm">// decreaseKey</span>
+<span class="ln">16</span>                <span class="vr">parent</span>[v] ← u
+<span class="ln">17</span>
+<span class="ln">18</span>    <span class="kw">return</span> <span class="vr">parent</span>                 <span class="cm">// parent[] encodes the MST</span></div>
+
+    <h3>Key Data Structures</h3>
+    <div class="table-wrap">
+      <table>
+        <caption>Arrays maintained during Prim's</caption>
+        <thead><tr><th>Array</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><code>key[v]</code></td><td>Cheapest known edge weight connecting $$v$$ to the growing MST. Initialized to $$\infty$$; updated by <strong>decreaseKey</strong>.</td></tr>
+          <tr><td><code>parent[v]</code></td><td>The vertex in the MST that connects to $$v$$ via the edge of weight $$\text{key}[v]$$. Together, all parent pointers form the MST edges.</td></tr>
+          <tr><td><code>inQueue[v]</code></td><td>Boolean flag — <code>TRUE</code> if $$v$$ is still in the priority queue (not yet added to the MST).</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-title">✅ Remember</div>
+      <code>key[v]</code> is <strong>not</strong> the total path cost from the start (that would be Dijkstra's). It is only the weight of the single cheapest edge from any MST vertex to $$v$$.
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════ SECTION 3 – PRIORITY QUEUE / MIN-HEAP ══════════════ -->
+<section class="section" id="heap">
+  <button class="section-header" aria-expanded="true" aria-controls="heap-body" onclick="toggleSection(this)">
+    <span>3 &nbsp;The Priority Queue / Min-Heap</span>
+    <span class="chevron" aria-hidden="true">▼</span>
+  </button>
+  <div class="section-body open" id="heap-body" role="region">
+
+    <h3>Why a Min-Heap?</h3>
+    <p>Prim's algorithm repeatedly needs the vertex with the <em>smallest key</em>. A <strong>binary min-heap</strong> provides this efficiently:</p>
+
+    <div class="table-wrap">
+      <table>
+        <caption>Min-Heap Operations Used by Prim's</caption>
+        <thead><tr><th>Operation</th><th>What Prim's Uses It For</th><th>Binary Heap Cost</th></tr></thead>
+        <tbody>
+          <tr><td><strong>buildHeap</strong></td><td>Initialize the queue with all $$|V|$$ vertices</td><td>$$O(|V|)$$</td></tr>
+          <tr><td><strong>extractMin</strong></td><td>Get the next vertex to add to the MST</td><td>$$O(\log |V|)$$</td></tr>
+          <tr><td><strong>decreaseKey</strong></td><td>Update <code>key[v]</code> when a cheaper connecting edge is found</td><td>$$O(\log |V|)$$</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>How decreaseKey Works</h3>
+    <ol>
+      <li>Locate vertex $$v$$ in the heap (using an index map for $$O(1)$$ lookup).</li>
+      <li>Replace its key with the new, smaller value.</li>
+      <li><strong>Bubble up</strong> (sift up): swap $$v$$ with its parent while $$v$$'s key is smaller than its parent's key.</li>
+    </ol>
+    <p>This restores the min-heap property in $$O(\log |V|)$$ time because the heap has height $$\lfloor \log_2 |V| \rfloor$$.</p>
+
+    <div class="callout concept">
+      <div class="callout-title">💡 decreaseKey Is the Critical Operation</div>
+      Without decreaseKey, you would need to remove and reinsert a vertex every time you find a cheaper edge—losing the efficiency advantage. The ability to update a key <em>in place</em> and restore heap order is what makes the binary-heap implementation of Prim's run in $$O((|V|+|E|) \log |V|)$$.
+    </div>
+
+    <h3>Alternative: Fibonacci Heap</h3>
+    <p>A <strong>Fibonacci heap</strong> achieves <em>amortized</em> $$O(1)$$ decreaseKey, which drops Prim's total to $$O(|E| + |V| \log |V|)$$. In practice, the constant factors are large, so binary heaps are used more often for moderate graph sizes. For this course, we focus on the <strong>binary min-heap</strong> implementation.</p>
+
+    <div class="callout connection">
+      <div class="callout-title">🔗 Final Project Connection (Component 4)</div>
+      When your Final Project asks you to analyze an algorithm's data-structure choices, this is a perfect example: the choice of heap type directly affects the asymptotic complexity. Documenting <em>why</em> a binary heap is chosen over a Fibonacci heap (or vice versa) is the kind of justified trade-off analysis the rubric rewards.
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════ SECTION 4 – WORKED EXAMPLE ══════════════ -->
+<section class="section" id="example">
+  <button class="section-header" aria-expanded="true" aria-controls="example-body" onclick="toggleSection(this)">
+    <span>4 &nbsp;Full Worked Example — 7-Vertex Graph</span>
+    <span class="chevron" aria-hidden="true">▼</span>
+  </button>
+  <div class="section-body open" id="example-body" role="region">
+
+    <h3>The Graph</h3>
+    <p>We use the <strong>same 7-vertex weighted graph</strong> from the Kruskal's trace in Module 14.2 so you can directly compare the two algorithms' behavior.</p>
+
+    <!-- SVG Graph Diagram -->
+    <div class="graph-container" role="img" aria-label="Weighted undirected graph with 7 vertices A through G. Edges: A-B 2, A-D 4, B-C 3, B-D 1, B-E 7, C-E 5, C-F 8, D-E 6, D-G 3, E-F 2, E-G 4, F-G 5.">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 380" width="560" height="380">
+        <!-- Edges -->
+        <line x1="100" y1="80" x2="250" y2="50" stroke="#999" stroke-width="2"/>
+        <text x="168" y="52" fill="#333" font-size="14" font-weight="700">2</text>
+
+        <line x1="100" y1="80" x2="180" y2="200" stroke="#999" stroke-width="2"/>
+        <text x="125" y="148" fill="#333" font-size="14" font-weight="700">4</text>
+
+        <line x1="250" y1="50" x2="400" y2="80" stroke="#999" stroke-width="2"/>
+        <text x="320" y="52" fill="#333" font-size="14" font-weight="700">3</text>
+
+        <line x1="250" y1="50" x2="180" y2="200" stroke="#999" stroke-width="2"/>
+        <text x="200" y="125" fill="#333" font-size="14" font-weight="700">1</text>
+
+        <line x1="250" y1="50" x2="330" y2="200" stroke="#999" stroke-width="2"/>
+        <text x="300" y="118" fill="#333" font-size="14" font-weight="700">7</text>
+
+        <line x1="400" y1="80" x2="330" y2="200" stroke="#999" stroke-width="2"/>
+        <text x="376" y="138" fill="#333" font-size="14" font-weight="700">5</text>
+
+        <line x1="400" y1="80" x2="470" y2="200" stroke="#999" stroke-width="2"/>
+        <text x="446" y="132" fill="#333" font-size="14" font-weight="700">8</text>
+
+        <line x1="180" y1="200" x2="330" y2="200" stroke="#999" stroke-width="2"/>
+        <text x="250" y="192" fill="#333" font-size="14" font-weight="700">6</text>
+
+        <line x1="180" y1="200" x2="280" y2="330" stroke="#999" stroke-width="2"/>
+        <text x="215" y="275" fill="#333" font-size="14" font-weight="700">3</text>
+
+        <line x1="330" y1="200" x2="470" y2="200" stroke="#999" stroke-width="2"/>
+        <text x="396" y="192" fill="#333" font-size="14" font-weight="700">2</text>
+
+        <line x1="330" y1="200" x2="280" y2="330" stroke="#999" stroke-width="2"/>
+        <text x="316" y="275" fill="#333" font-size="14" font-weight="700">4</text>
+
+        <line x1="470" y1="200" x2="280" y2="330" stroke="#999" stroke-width="2"/>
+        <text x="390" y="278" fill="#333" font-size="14" font-weight="700">5</text>
+
+        <!-- Vertices -->
+        <circle cx="100" cy="80" r="22" fill="#0772A1" stroke="#065a80" stroke-width="2"/>
+        <text x="100" y="86" text-anchor="middle" fill="#fff" font-size="16" font-weight="700">A</text>
+
+        <circle cx="250" cy="50" r="22" fill="#0772A1" stroke="#065a80" stroke-width="2"/>
+        <text x="250" y="56" text-anchor="middle" fill="#fff" font-size="16" font-weight="700">B</text>
+
+        <circle cx="400" cy="80" r="22" fill="#0772A1" stroke="#065a80" stroke-width="2"/>
+        <text x="400" y="86" text-anchor="middle" fill="#fff" font-size="16" font-weight="700">C</text>
+
+        <circle cx="180" cy="200" r="22" fill="#0772A1" stroke="#065a80" stroke-width="2"/>
+        <text x="180" y="206" text-anchor="middle" fill="#fff" font-size="16" font-weight="700">D</text>
+
+        <circle cx="330" cy="200" r="22" fill="#0772A1" stroke="#065a80" stroke-width="2"/>
+        <text x="330" y="206" text-anchor="middle" fill="#fff" font-size="16" font-weight="700">E</text>
+
+        <circle cx="470" cy="200" r="22" fill="#0772A1" stroke="#065a80" stroke-width="2"/>
+        <text x="470" y="206" text-anchor="middle" fill="#fff" font-size="16" font-weight="700">F</text>
+
+        <circle cx="280" cy="330" r="22" fill="#0772A1" stroke="#065a80" stroke-width="2"/>
+        <text x="280" y="336" text-anchor="middle" fill="#fff" font-size="16" font-weight="700">G</text>
+      </svg>
+    </div>
+
+    <h3>Edge List</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Edge</th><th>Weight</th></tr></thead>
+        <tbody>
+          <tr><td>B – D</td><td>1</td></tr>
+          <tr><td>A – B</td><td>2</td></tr>
+          <tr><td>E – F</td><td>2</td></tr>
+          <tr><td>B – C</td><td>3</td></tr>
+          <tr><td>D – G</td><td>3</td></tr>
+          <tr><td>A – D</td><td>4</td></tr>
+          <tr><td>E – G</td><td>4</td></tr>
+          <tr><td>C – E</td><td>5</td></tr>
+          <tr><td>F – G</td><td>5</td></tr>
+          <tr><td>D – E</td><td>6</td></tr>
+          <tr><td>B – E</td><td>7</td></tr>
+          <tr><td>C – F</td><td>8</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Interactive Step-by-Step Trace (Start Vertex = A)</h3>
+    <p>Click <strong>Next Step</strong> to advance through each extractMin and relaxation phase. The priority queue state and MST edges are shown at each step.</p>
+
+    <div class="trace-interactive" role="application" aria-label="Interactive Prim's algorithm trace">
+      <div class="trace-controls">
+        <button id="trace-prev" onclick="traceStep(-1)" disabled aria-label="Previous step">◀ Prev</button>
+        <button id="trace-next" onclick="traceStep(1)" aria-label="Next step">Next ▶</button>
+        <button id="trace-reset" onclick="traceReset()" aria-label="Reset trace">↺ Reset</button>
+        <span class="trace-counter" id="trace-counter" aria-live="polite">Step 0 / 7</span>
+      </div>
+      <div class="trace-display" id="trace-display" aria-live="polite"></div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-title">✅ Compare with Kruskal's</div>
+      Kruskal's on this same graph processed edges globally in weight order: B–D(1), A–B(2), E–F(2), B–C(3), D–G(3), C–E(5). Prim's grows outward from A and may add the same edges in a different order, but the <strong>total MST weight is identical: 16</strong>. Both algorithms produce a valid MST.
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════ SECTION 5 – TIME COMPLEXITY ══════════════ -->
+<section class="section" id="complexity">
+  <button class="section-header" aria-expanded="true" aria-controls="complexity-body" onclick="toggleSection(this)">
+    <span>5 &nbsp;Time Complexity Analysis</span>
+    <span class="chevron" aria-hidden="true">▼</span>
+  </button>
+  <div class="section-body open" id="complexity-body" role="region">
+
+    <h3>Counting Operations</h3>
+    <p>Let $$|V|$$ = number of vertices and $$|E|$$ = number of edges.</p>
+
+    <div class="table-wrap">
+      <table>
+        <caption>Prim's Operation Counts (Binary Min-Heap)</caption>
+        <thead><tr><th>Operation</th><th>Times Called</th><th>Cost per Call</th><th>Total</th></tr></thead>
+        <tbody>
+          <tr><td>buildHeap</td><td>1</td><td>$$O(|V|)$$</td><td>$$O(|V|)$$</td></tr>
+          <tr><td>extractMin</td><td>$$|V|$$</td><td>$$O(\log |V|)$$</td><td>$$O(|V| \log |V|)$$</td></tr>
+          <tr><td>decreaseKey</td><td>At most $$|E|$$</td><td>$$O(\log |V|)$$</td><td>$$O(|E| \log |V|)$$</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Deriving the Total</h3>
+    <p>Summing all contributions:</p>
+    <p style="text-align:center;font-size:1.1rem;margin:1rem 0;">
+      $$T(V,E) = O(|V|) + O(|V| \log |V|) + O(|E| \log |V|) = O\bigl((|V| + |E|) \log |V|\bigr)$$
+    </p>
+    <p>Since a connected graph has $$|E| \geq |V| - 1$$, the $$|E| \log |V|$$ term dominates, so we often write simply:</p>
+    <p style="text-align:center;font-size:1.1rem;margin:1rem 0;">
+      $$O(|E| \log |V|)$$
+    </p>
+
+    <div class="callout concept">
+      <div class="callout-title">💡 Same Big-O as Kruskal's!</div>
+      Kruskal's is $$O(|E| \log |E|)$$. Since $$\log |E| = O(\log |V|^2) = O(2 \log |V|) = O(\log |V|)$$, both algorithms have the <strong>same asymptotic complexity</strong> for connected graphs. The practical difference lies in constant factors and data-structure overhead, which we explore in the comparison table.
+    </div>
+
+    <h3>Dense Graphs: Adjacency Matrix Variant</h3>
+    <p>For <strong>dense graphs</strong> where $$|E| \approx |V|^2$$, a simpler implementation avoids the heap entirely:</p>
+    <ul>
+      <li>Store <code>key[]</code> in a plain array.</li>
+      <li>Each extractMin scans the array in $$O(|V|)$$.</li>
+      <li>decreaseKey is $$O(1)$$ (just update the array).</li>
+      <li>Total: $$|V|$$ extractions × $$O(|V|)$$ + $$|E|$$ relaxations × $$O(1)$$ = $$O(|V|^2)$$.</li>
+    </ul>
+    <p>For dense graphs, $$O(|V|^2)$$ beats $$O(|E| \log |V|) = O(|V|^2 \log |V|)$$, making the array version preferable.</p>
+
+  </div>
+</section>
+
+<!-- ══════════════ SECTION 6 – COMPARISON TABLE ══════════════ -->
+<section class="section" id="comparison">
+  <button class="section-header" aria-expanded="true" aria-controls="comparison-body" onclick="toggleSection(this)">
+    <span>6 &nbsp;Kruskal's vs. Prim's — Head-to-Head Comparison</span>
+    <span class="chevron" aria-hidden="true">▼</span>
+  </button>
+  <div class="section-body open" id="comparison-body" role="region">
+
+    <h3>Comprehensive Comparison Table</h3>
+    <p>This table is a key reference for your <strong>Final Project Analysis Document</strong>. Study it carefully.</p>
+
+    <div class="table-wrap">
+      <table class="cmp-table">
+        <caption>Kruskal's vs. Prim's — Full Comparison</caption>
+        <thead>
+          <tr><th style="width:22%">Criterion</th><th style="width:39%">Kruskal's</th><th style="width:39%">Prim's</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Approach</strong></td>
+            <td><strong>Edge-centric</strong> — processes edges globally by weight</td>
+            <td><strong>Vertex-centric</strong> — grows MST from a single source vertex</td>
+          </tr>
+          <tr>
+            <td><strong>Core Data Structure</strong></td>
+            <td>Union-Find (Disjoint Set)</td>
+            <td>Min-Priority Queue (Binary Heap)</td>
+          </tr>
+          <tr>
+            <td><strong>Cycle Avoidance</strong></td>
+            <td>Union-Find <code>find()</code> — skip edge if both endpoints share a root</td>
+            <td>Implicit — only vertices still in the queue are candidates; no back-edges possible</td>
+          </tr>
+          <tr>
+            <td><strong>Requires Sorted Edges?</strong></td>
+            <td>Yes — sort all edges first: $$O(|E| \log |E|)$$</td>
+            <td>No — heap manages ordering dynamically</td>
+          </tr>
+          <tr>
+            <td><strong>Time Complexity</strong></td>
+            <td>$$O(|E| \log |E|)$$ ≈ $$O(|E| \log |V|)$$</td>
+            <td>$$O((|V|+|E|) \log |V|)$$ with binary heap; $$O(|V|^2)$$ with array</td>
+          </tr>
+          <tr>
+            <td><strong>Best for Sparse Graphs</strong><br>($$|E| \approx |V|$$)</td>
+            <td class="pro">✔ Preferred — sorting a small edge list is fast; Union-Find is lightweight</td>
+            <td>Acceptable, but heap overhead can be higher</td>
+          </tr>
+          <tr>
+            <td><strong>Best for Dense Graphs</strong><br>($$|E| \approx |V|^2$$)</td>
+            <td class="con">Sorting $$|V|^2$$ edges is expensive</td>
+            <td class="pro">✔ Preferred — array-based variant runs in $$O(|V|^2)$$</td>
+          </tr>
+          <tr>
+            <td><strong>Disconnected Graphs</strong></td>
+            <td class="pro">✔ Naturally produces a Minimum Spanning <em>Forest</em> (one tree per component)</td>
+            <td class="con">Only finds the MST of the component containing the start vertex; must be run once per component</td>
+          </tr>
+          <tr>
+            <td><strong>Graph Representation</strong></td>
+            <td>Edge list (natural fit)</td>
+            <td>Adjacency list (natural fit)</td>
+          </tr>
+          <tr>
+            <td><strong>Ease of Implementation</strong></td>
+            <td>Simpler if Union-Find is available</td>
+            <td>Requires indexed priority queue (more complex)</td>
+          </tr>
+          <tr>
+            <td><strong>Parallelizability</strong></td>
+            <td>Edge sorting is parallelizable; Union-Find merges are sequential</td>
+            <td>Sequential frontier growth; less naturally parallel</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Decision Flowchart (Text Version)</h3>
+    <div class="callout tip">
+      <div class="callout-title">✅ When to Choose Which</div>
+      <ol>
+        <li><strong>Is the graph sparse</strong> ($$|E|$$ close to $$|V|$$)? → Lean toward <strong>Kruskal's</strong>.</li>
+        <li><strong>Is the graph dense</strong> ($$|E|$$ close to $$|V|^2$$)? → Lean toward <strong>Prim's</strong> (array variant).</li>
+        <li><strong>Is the graph potentially disconnected</strong> and you need a spanning forest? → <strong>Kruskal's</strong> handles this natively.</li>
+        <li><strong>Do you already have an adjacency list</strong> and a priority queue library? → <strong>Prim's</strong> avoids building an edge list and sorting.</li>
+        <li><strong>Tie?</strong> Both produce correct MSTs with the same asymptotic complexity. Choose based on available data structures and implementation comfort.</li>
+      </ol>
+    </div>
+
+    <div class="callout connection">
+      <div class="callout-title">🔗 Final Project Guidance</div>
+      In your Analysis Document, <strong>do not simply state "Prim's is better."</strong> Instead, specify the graph characteristics (density, representation, connectedness) and explain <em>why</em> those characteristics favor one algorithm. Use specific rows from the comparison table as evidence. This is the level of justified reasoning the rubric expects.
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════ SECTION 7 – VISUALIZER ACTIVITY ══════════════ -->
+<section class="section" id="visualizer">
+  <button class="section-header" aria-expanded="true" aria-controls="visualizer-body" onclick="toggleSection(this)">
+    <span>7 &nbsp;Guided Visualizer Activity</span>
+    <span class="chevron" aria-hidden="true">▼</span>
+  </button>
+  <div class="section-body open" id="visualizer-body" role="region">
+
+    <h3>Explore Prim's with VisuAlgo</h3>
+    <p>Use the <strong>VisuAlgo MST visualization tool at visualgo.net/en/mst</strong> — open it in a separate browser tab. Follow these steps:</p>
+
+    <h4>Part A: Run Prim's</h4>
+    <ol>
+      <li>Open the VisuAlgo MST page in a new tab.</li>
+      <li>Click <strong>"Example Graphs"</strong> and select a graph with 6–8 vertices (or create a custom graph matching the 7-vertex example above).</li>
+      <li>Select <strong>"Prim's"</strong> from the algorithm menu.</li>
+      <li>Choose a start vertex and click <strong>"Run."</strong></li>
+      <li>Step through the animation slowly. At each step, observe:
+        <ul>
+          <li>Which vertex is extracted from the priority queue (highlighted).</li>
+          <li>Which neighbors have their keys updated (decreaseKey).</li>
+          <li>Which edge is added to the MST (changes color).</li>
+        </ul>
+      </li>
+      <li>Record the order of edges added and the total MST weight.</li>
+    </ol>
+
+    <h4>Part B: Compare with Kruskal's</h4>
+    <ol>
+      <li>On the <strong>same graph</strong>, switch to <strong>"Kruskal's"</strong> and run it.</li>
+      <li>Compare:
+        <ul>
+          <li>Were the same edges selected? (They should be, if the MST is unique.)</li>
+          <li>Were they selected in the same order? (Usually not!)</li>
+          <li>Is the total weight the same? (Always yes, for a correct implementation.)</li>
+        </ul>
+      </li>
+    </ol>
+
+    <h4>Part C: Reflection Questions (Ungraded — For Your Notes)</h4>
+    <ol>
+      <li>Did Prim's ever consider an edge that Kruskal's rejected? Why or why not?</li>
+      <li>If you change the start vertex for Prim's, does the MST change? Under what conditions might it?</li>
+      <li>Which visualization felt more intuitive to you — the global edge sorting of Kruskal's or the frontier expansion of Prim's?</li>
+    </ol>
+
+    <div class="callout warning">
+      <div class="callout-title">⚠️ Note on External Tools</div>
+      VisuAlgo is a third-party educational tool and is not maintained by our college. If the site is unavailable, you can still study the interactive trace in Section 4 above and the static trace table below.
+    </div>
+
+    <h3>Static Trace Summary Table</h3>
+    <div class="table-wrap">
+      <table>
+        <caption>Prim's Trace on 7-Vertex Graph (Start = A) — Summary</caption>
+        <thead><tr><th>Step</th><th>Extract</th><th>Edge Added</th><th>Weight</th><th>MST Vertices</th><th>Running Total</th></tr></thead>
+        <tbody>
+          <tr><td>0</td><td>A</td><td>— (start)</td><td>0</td><td>{A}</td><td>0</td></tr>
+          <tr><td>1</td><td>B</td><td>A–B</td><td>2</td><td>{A, B}</td><td>2</td></tr>
+          <tr><td>2</td><td>D</td><td>B–D</td><td>1</td><td>{A, B, D}</td><td>3</td></tr>
+          <tr><td>3</td><td>C</td><td>B–C</td><td>3</td><td>{A, B, D, C}</td><td>6</td></tr>
+          <tr><td>4</td><td>G</td><td>D–G</td><td>3</td><td>{A, B, D, C, G}</td><td>9</td></tr>
+          <tr><td>5</td><td>E</td><td>C–E</td><td>5</td><td>{A, B, D, C, G, E}</td><td>14</td></tr>
+          <tr><td>6</td><td>F</td><td>E–F</td><td>2</td><td>{A, B, D, C, G, E, F}</td><td>16</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════ SECTION 8 – KNOWLEDGE CHECKS ══════════════ -->
+<section class="section" id="checks">
+  <button class="section-header" aria-expanded="true" aria-controls="checks-body" onclick="toggleSection(this)">
+    <span>8 &nbsp;Knowledge Checks 14.3a – 14.3d</span>
+    <span class="chevron" aria-hidden="true">▼</span>
+  </button>
+  <div class="section-body open" id="checks-body" role="region">
+
+    <p>These checks are <strong>ungraded</strong> and provide immediate feedback to help you self-assess before moving on.</p>
+
+    <!-- KC 14.3a -->
+    <div class="kc-container" id="kc-a">
+      <h4>Knowledge Check 14.3a — Prim's Core Mechanism</h4>
+      <p>In Prim's algorithm, what does the <code>key[v]</code> value represent for a vertex $$v$$ that is still in the priority queue?</p>
+      <fieldset style="border:none;padding:0;margin:0;">
+        <legend class="sr-only">Select one answer for Knowledge Check 14.3a</legend>
+        <div class="kc-option">
+          <input type="radio" id="kca1" name="kca" value="1">
+          <label for="kca1">A. The total shortest-path distance from the start vertex to $$v$$</label>
+        </div>
+        <div class="kc-option">
+          <input type="radio" id="kca2" name="kca" value="2">
+          <label for="kca2">B. The weight of the lightest edge connecting $$v$$ to any vertex already in the MST</label>
+        </div>
+        <div class="kc-option">
+          <input type="radio" id="kca3" name="kca" value="3">
+          <label for="kca3">C. The degree of vertex $$v$$ in the original graph</label>
+        </div>
+        <div class="kc-option">
+          <input type="radio" id="kca4" name="kca" value="4">
+          <label for="kca4">D. The number of edges processed so far that are incident to $$v$$</label>
+        </div>
+      </fieldset>
+      <button class="kc-btn" onclick="checkAnswer('kca','2','kca-fb')">Check Answer</button>
+      <div id="kca-fb" class="kc-feedback" role="alert"></div>
+    </div>
+
+    <!-- KC 14.3b -->
+    <div class="kc-container" id="kc-b">
+      <h4>Knowledge Check 14.3b — decreaseKey Complexity</h4>
+      <p>When using a <strong>binary min-heap</strong>, what is the time complexity of a single <code>decreaseKey</code> operation?</p>
+      <fieldset style="border:none;padding:0;margin:0;">
+        <legend class="sr-only">Select one answer for Knowledge Check 14.3b</legend>
+        <div class="kc-option">
+          <input type="radio" id="kcb1" name="kcb" value="1">
+          <label for="kcb1">A. $$O(1)$$</label>
+        </div>
+        <div class="kc-option">
+          <input type="radio" id="kcb2" name="kcb" value="2">
+          <label for="kcb2">B. $$O(\log |V|)$$</label>
+        </div>
+        <div class="kc-option">
+          <input type="radio" id="kcb3" name="kcb" value="3">
+          <label for="kcb3">C. $$O(|V|)$$</label>
+        </div>
+        <div class="kc-option">
+          <input type="radio" id="kcb4" name="kcb" value="4">
+          <label for="kcb4">D. $$O(|E|)$$</label>
+        </div>
+      </fieldset>
+      <button class="kc-btn" onclick="checkAnswer('kcb','2','kcb-fb')">Check Answer</button>
+      <div id="kcb-fb" class="kc-feedback" role="alert"></div>
+    </div>
+
+    <!-- KC 14.3c -->
+    <div class="kc-container" id="kc-c">
+      <h4>Knowledge Check 14.3c — Kruskal's vs. Prim's on Dense Graphs</h4>
+      <p>For a <strong>dense graph</strong> where $$|E| \approx |V|^2$$, which statement is most accurate?</p>
+      <fieldset style="border:none;padding:0;margin:0;">
+        <legend class="sr-only">Select one answer for Knowledge Check 14.3c</legend>
+        <div class="kc-option">
+          <input type="radio" id="kcc1" name="kcc" value="1">
+          <label for="kcc1">A. Kruskal's is faster because Union-Find operations are $$O(1)$$</label>
+        </div>
+        <div class="kc-option">
+          <input type="radio" id="kcc2" name="kcc" value="2">
+          <label for="kcc2">B. Prim's (array-based) at $$O(|V|^2)$$ is preferable to Kruskal's at $$O(|V|^2 \log |V|)$$</label>
+        </div>
+        <div class="kc-option">
+          <input type="radio" id="kcc3" name="kcc" value="3">
+          <label for="kcc3">C. Both algorithms have identical performance regardless of density</label>
+        </div>
+        <div class="kc-option">
+          <input type="radio" id="kcc4" name="kcc" value="4">
+          <label for="kcc4">D. Neither algorithm works correctly on dense graphs</label>
+        </div>
+      </fieldset>
+      <button class="kc-btn" onclick="checkAnswer('kcc','2','kcc-fb')">Check Answer</button>
+      <div id="kcc-fb" class="kc-feedback" role="alert"></div>
+    </div>
+
+    <!-- KC 14.3d -->
+    <div class="kc-container" id="kc-d">
+      <h4>Knowledge Check 14.3d — Disconnected Graphs</h4>
+      <p>You have a graph with <strong>three connected components</strong> and you need a Minimum Spanning Forest. Which approach is more straightforward?</p>
+      <fieldset style="border:none;padding:0;margin:0;">
+        <legend class="sr-only">Select one answer for Knowledge Check 14.3d</legend>
+        <div class="kc-option">
+          <input type="radio" id="kcd1" name="kcd" value="1">
+          <label for="kcd1">A. Prim's — it automatically discovers all three components in one run</label>
+        </div>
+        <div class="kc-option">
+          <input type="radio" id="kcd2" name="kcd" value="2">
+          <label for="kcd2">B. Kruskal's — it naturally produces a spanning forest without modification</label>
+        </div>
+        <div class="kc-option">
+          <input type="radio" id="kcd3" name="kcd" value="3">
+          <label for="kcd3">C. Neither algorithm can handle disconnected graphs</label>
+        </div>
+        <div class="kc-option">
+          <input type="radio" id="kcd4" name="kcd" value="4">
+          <label for="kcd4">D. Both algorithms handle disconnected graphs identically with no extra work</label>
+        </div>
+      </fieldset>
+      <button class="kc-btn" onclick="checkAnswer('kcd','2','kcd-fb')">Check Answer</button>
+      <div id="kcd-fb" class="kc-feedback" role="alert"></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════ MODULE SUMMARY ══════════════ -->
+<section class="section">
+  <button class="section-header" aria-expanded="true" aria-controls="summary-body" onclick="toggleSection(this)">
+    <span>Module 14.3 Summary</span>
+    <span class="chevron" aria-hidden="true">▼</span>
+  </button>
+  <div class="section-body open" id="summary-body" role="region">
+    <h3>Key Takeaways</h3>
+    <ul>
+      <li><strong>Prim's algorithm</strong> is a vertex-centric greedy MST algorithm that grows a tree from a single source by always adding the cheapest crossing edge.</li>
+      <li>It relies on a <strong>min-priority queue</strong> with <code>extractMin</code> and <code>decreaseKey</code> as its critical operations.</li>
+      <li>With a binary min-heap, Prim's runs in $$O((|V|+|E|) \log |V|)$$; with a plain array on dense graphs, it runs in $$O(|V|^2)$$.</li>
+      <li>Kruskal's and Prim's have the <strong>same asymptotic complexity</strong> but differ in approach, data structures, and practical suitability depending on graph density and connectivity.</li>
+      <li>Both algorithms are justified by the <strong>Cut Property</strong> (Module 14.1).</li>
+    </ul>
+
+    <h3>What's Next</h3>
+    <p>You now have a complete toolkit for MST algorithms. In the remaining weeks, you will apply this knowledge in your <strong>Final Project</strong>, where the comparison framework from Section 6 will directly support your algorithm-choice justification in Component 4.</p>
+
+    <div class="callout connection">
+      <div class="callout-title">🔗 CSLO Alignment</div>
+      This module supports <strong>CSLO 5</strong>: <em>Solve problems using graphs including implementation of graph search algorithms.</em> The MST algorithms (Kruskal's and Prim's) and their comparative analysis are direct applications of graph-based problem solving.
+    </div>
+  </div>
+</section>
+
+</div><!-- end module-wrapper -->
+
+<script>
+/* ── Section Toggle ── */
+function toggleSection(btn){
+  const expanded=btn.getAttribute('aria-expanded')==='true';
+  btn.setAttribute('aria-expanded',String(!expanded));
+  const body=document.getElementById(btn.getAttribute('aria-controls'));
+  if(body)body.classList.toggle('open',!expanded);
+}
+
+/* ── Knowledge Check Engine ── */
+const kcFeedback={
+  kca:{
+    '2':{correct:true,msg:'<strong>Correct!</strong> <code>key[v]</code> stores the weight of the lightest edge connecting <em>v</em> to any vertex already extracted into the MST. This is <em>not</em> a total path cost (that would be Dijkstra\'s algorithm). The distinction is critical: Prim\'s only cares about single-edge connection cost to the growing tree.'},
+    _wrong:'<strong>Not quite.</strong> <code>key[v]</code> represents the weight of the cheapest single edge from <em>v</em> to any vertex already in the MST — not a total path distance, not a degree count, and not an edge counter. Review the pseudocode in Section 2: line 15 sets <code>key[v] ← w(u,v)</code>, a single edge weight.'
+  },
+  kcb:{
+    '2':{correct:true,msg:'<strong>Correct!</strong> In a binary min-heap, <code>decreaseKey</code> updates the key and then bubbles the element up. The heap has height ⌊log₂|V|⌋, so the worst case is <em>O</em>(log |V|). This is the operation called on line 15 of the pseudocode each time a cheaper connecting edge is found.'},
+    _wrong:'<strong>Not quite.</strong> A binary min-heap has height ⌊log₂|V|⌋. After decreasing a key, the element may need to bubble up to the root — that\'s at most log |V| swaps, giving <em>O</em>(log |V|). It\'s not <em>O</em>(1) (that\'s Fibonacci heap amortized), not <em>O</em>(|V|) (that\'s a linear scan), and not <em>O</em>(|E|).'
+  },
+  kcc:{
+    '2':{correct:true,msg:'<strong>Correct!</strong> On a dense graph where |E| ≈ |V|², Kruskal\'s must sort ≈ |V|² edges at cost <em>O</em>(|V|² log |V|). Prim\'s array-based variant scans the key array |V| times at <em>O</em>(|V|) each, totaling <em>O</em>(|V|²) — saving a log factor. This is a key insight for your Final Project analysis.'},
+    _wrong:'<strong>Not quite.</strong> On dense graphs (|E| ≈ |V|²), Kruskal\'s sorting step costs <em>O</em>(|V|² log |V|), while Prim\'s array-based variant achieves <em>O</em>(|V|²). The log |V| factor saved by Prim\'s makes it preferable for dense graphs. Review the complexity analysis in Section 5 and the comparison table in Section 6.'
+  },
+  kcd:{
+    '2':{correct:true,msg:'<strong>Correct!</strong> Kruskal\'s processes edges globally and uses Union-Find to manage components. If the graph is disconnected, it simply produces a spanning tree for each component — a Minimum Spanning Forest — with no modification needed. Prim\'s, by contrast, only reaches vertices in the component of its start vertex; you\'d need to detect unvisited vertices and restart Prim\'s for each component.'},
+    _wrong:'<strong>Not quite.</strong> Kruskal\'s naturally handles disconnected graphs because it processes all edges globally via Union-Find, producing a spanning forest automatically. Prim\'s only grows from its start vertex and can\'t reach other components without being restarted. Review the "Disconnected Graphs" row in the comparison table (Section 6).'
+  }
+};
+
+function checkAnswer(name,correctVal,fbId){
+  const sel=document.querySelector('input[name="'+name+'"]:checked');
+  const fb=document.getElementById(fbId);
+  if(!sel){fb.className='kc-feedback incorrect';fb.innerHTML='<strong>Please select an answer first.</strong>';fb.style.display='block';return;}
+  const data=kcFeedback[name];
+  if(sel.value===correctVal){
+    fb.className='kc-feedback correct';
+    fb.innerHTML=data[correctVal].msg;
+  }else{
+    fb.className='kc-feedback incorrect';
+    fb.innerHTML=data._wrong;
+  }
+  fb.style.display='block';
+}
+
+/* ── Interactive Trace Data ── */
+const traceSteps=[
+  {
+    title:'Initialization (Step 0)',
+    html:'<strong>Start vertex: A</strong><br><br>'+
+      '<strong>key[ ]:</strong> A=<span style="color:#0772A1;font-weight:700">0</span>, B=∞, C=∞, D=∞, E=∞, F=∞, G=∞<br>'+
+      '<strong>parent[ ]:</strong> all NIL<br>'+
+      '<strong>Priority Queue:</strong> {A(0), B(∞), C(∞), D(∞), E(∞), F(∞), G(∞)}<br>'+
+      '<strong>MST Edges:</strong> (none)<br><strong>MST Weight:</strong> 0'
+  },
+  {
+    title:'Step 1 — Extract A (key = 0)',
+    html:'<strong>extractMin → A</strong> (key = 0). A is the start; no edge added yet.<br><br>'+
+      '<em>Relax neighbors of A:</em><br>'+
+      '&nbsp;&nbsp;• A–B (w=2): 2 &lt; ∞ → key[B] = 2, parent[B] = A &nbsp; <span style="color:#0772A1">⬇ decreaseKey</span><br>'+
+      '&nbsp;&nbsp;• A–D (w=4): 4 &lt; ∞ → key[D] = 4, parent[D] = A &nbsp; <span style="color:#0772A1">⬇ decreaseKey</span><br><br>'+
+      '<strong>key[ ]:</strong> B=<span style="color:#0772A1;font-weight:700">2</span>, C=∞, D=<span style="color:#0772A1;font-weight:700">4</span>, E=∞, F=∞, G=∞<br>'+
+      '<strong>Queue:</strong> {B(2), D(4), C(∞), E(∞), F(∞), G(∞)}<br>'+
+      '<strong>MST Vertices:</strong> {A} &nbsp; <strong>MST Weight:</strong> 0'
+  },
+  {
+    title:'Step 2 — Extract B (key = 2)',
+    html:'<strong>extractMin → B</strong> (key = 2). <strong>MST edge: A–B (w=2)</strong><br><br>'+
+      '<em>Relax neighbors of B:</em><br>'+
+      '&nbsp;&nbsp;• B–C (w=3): 3 &lt; ∞ → key[C] = 3, parent[C] = B &nbsp; <span style="color:#0772A1">⬇ decreaseKey</span><br>'+
+      '&nbsp;&nbsp;• B–D (w=1): 1 &lt; 4 → key[D] = 1, parent[D] = B &nbsp; <span style="color:#0772A1">⬇ decreaseKey</span><br>'+
+      '&nbsp;&nbsp;• B–E (w=7): 7 &lt; ∞ → key[E] = 7, parent[E] = B &nbsp; <span style="color:#0772A1">⬇ decreaseKey</span><br><br>'+
+      '<strong>key[ ]:</strong> C=<span style="color:#0772A1;font-weight:700">3</span>, D=<span style="color:#0772A1;font-weight:700">1</span>, E=<span style="color:#0772A1;font-weight:700">7</span>, F=∞, G=∞<br>'+
+      '<strong>Queue:</strong> {D(1), C(3), E(7), F(∞), G(∞)}<br>'+
+      '<strong>MST Vertices:</strong> {A, B} &nbsp; <strong>MST Edges:</strong> A–B &nbsp; <strong>Weight:</strong> 2'
+  },
+  {
+    title:'Step 3 — Extract D (key = 1)',
+    html:'<strong>extractMin → D</strong> (key = 1). <strong>MST edge: B–D (w=1)</strong><br><br>'+
+      '<em>Relax neighbors of D:</em><br>'+
+      '&nbsp;&nbsp;• D–A: A already extracted — skip<br>'+
+      '&nbsp;&nbsp;• D–B: B already extracted — skip<br>'+
+      '&nbsp;&nbsp;• D–E (w=6): 6 &lt; 7 → key[E] = 6, parent[E] = D &nbsp; <span style="color:#0772A1">⬇ decreaseKey</span><br>'+
+      '&nbsp;&nbsp;• D–G (w=3): 3 &lt; ∞ → key[G] = 3, parent[G] = D &nbsp; <span style="color:#0772A1">⬇ decreaseKey</span><br><br>'+
+      '<strong>key[ ]:</strong> C=3, E=<span style="color:#0772A1;font-weight:700">6</span>, F=∞, G=<span style="color:#0772A1;font-weight:700">3</span><br>'+
+      '<strong>Queue:</strong> {C(3), G(3), E(6), F(∞)}<br>'+
+      '<strong>MST Vertices:</strong> {A, B, D} &nbsp; <strong>MST Edges:</strong> A–B, B–D &nbsp; <strong>Weight:</strong> 3'
+  },
+  {
+    title:'Step 4 — Extract C (key = 3)',
+    html:'<strong>extractMin → C</strong> (key = 3, tie with G — alphabetical). <strong>MST edge: B–C (w=3)</strong><br><br>'+
+      '<em>Relax neighbors of C:</em><br>'+
+      '&nbsp;&nbsp;• C–B: B already extracted — skip<br>'+
+      '&nbsp;&nbsp;• C–E (w=5): 5 &lt; 6 → key[E] = 5, parent[E] = C &nbsp; <span style="color:#0772A1">⬇ decreaseKey</span><br>'+
+      '&nbsp;&nbsp;• C–F (w=8): 8 &lt; ∞ → key[F] = 8, parent[F] = C &nbsp; <span style="color:#0772A1">⬇ decreaseKey</span><br><br>'+
+      '<strong>key[ ]:</strong> E=<span style="color:#0772A1;font-weight:700">5</span>, F=<span style="color:#0772A1;font-weight:700">8</span>, G=3<br>'+
+      '<strong>Queue:</strong> {G(3), E(5), F(8)}<br>'+
+      '<strong>MST Vertices:</strong> {A, B, D, C} &nbsp; <strong>MST Edges:</strong> A–B, B–D, B–C &nbsp; <strong>Weight:</strong> 6'
+  },
+  {
+    title:'Step 5 — Extract G (key = 3)',
+    html:'<strong>extractMin → G</strong> (key = 3). <strong>MST edge: D–G (w=3)</strong><br><br>'+
+      '<em>Relax neighbors of G:</em><br>'+
+      '&nbsp;&nbsp;• G–D: D already extracted — skip<br>'+
+      '&nbsp;&nbsp;• G–E (w=4): 4 &lt; 5 → key[E] = 4, parent[E] = G &nbsp; <span style="color:#0772A1">⬇ decreaseKey</span><br>'+
+      '&nbsp;&nbsp;• G–F (w=5): 5 &lt; 8 → key[F] = 5, parent[F] = G &nbsp; <span style="color:#0772A1">⬇ decreaseKey</span><br><br>'+
+      '<strong>key[ ]:</strong> E=<span style="color:#0772A1;font-weight:700">4</span>, F=<span style="color:#0772A1;font-weight:700">5</span><br>'+
+      '<strong>Queue:</strong> {E(4), F(5)}<br>'+
+      '<strong>MST Vertices:</strong> {A, B, D, C, G} &nbsp; <strong>MST Edges:</strong> A–B, B–D, B–C, D–G &nbsp; <strong>Weight:</strong> 9'
+  },
+  {
+    title:'Step 6 — Extract E (key = 4)',
+    html:'<strong>extractMin → E</strong> (key = 4). <strong>MST edge: G–E (w=4)</strong><br><br>'+
+      '<em>Relax neighbors of E:</em><br>'+
+      '&nbsp;&nbsp;• E–B, E–C, E–D, E–G: all already extracted — skip<br>'+
+      '&nbsp;&nbsp;• E–F (w=2): 2 &lt; 5 → key[F] = 2, parent[F] = E &nbsp; <span style="color:#0772A1">⬇ decreaseKey</span><br><br>'+
+      '<strong>key[ ]:</strong> F=<span style="color:#0772A1;font-weight:700">2</span><br>'+
+      '<strong>Queue:</strong> {F(2)}<br>'+
+      '<strong>MST Vertices:</strong> {A, B, D, C, G, E} &nbsp; <strong>MST Edges:</strong> A–B, B–D, B–C, D–G, G–E &nbsp; <strong>Weight:</strong> 13'
+  },
+  {
+    title:'Step 7 — Extract F (key = 2) ✓ Complete!',
+    html:'<strong>extractMin → F</strong> (key = 2). <strong>MST edge: E–F (w=2)</strong><br><br>'+
+      'Queue is now empty. Algorithm terminates.<br><br>'+
+      '<strong style="font-size:1.05rem;color:#0B874B;">Final MST Edges: A–B(2), B–D(1), B–C(3), D–G(3), G–E(4), E–F(2)</strong><br>'+
+      '<strong style="font-size:1.05rem;color:#0B874B;">Total MST Weight: 2 + 1 + 3 + 3 + 4 + 2 = 15</strong><br><br>'+
+      '<em>Note: The edge order differs from Kruskal\'s (which processed B–D, A–B, E–F, B–C, D–G, C–E), and some edges differ (Prim\'s chose G–E instead of C–E), but both produce a valid MST. In graphs with unique edge weights, both algorithms yield the identical MST. Here, ties (both weight 3 and other near-ties) allow valid MSTs with different edge selections, but the total weight remains optimal.</em>'
+  }
+];
+
+let traceIdx=0;
+function renderTrace(){
+  const d=document.getElementById('trace-display');
+  const s=traceSteps[traceIdx];
+  d.innerHTML='<div class="trace-step"><div class="step-title">'+s.title+'</div>'+s.html+'</div>';
+  document.getElementById('trace-counter').textContent='Step '+traceIdx+' / '+(traceSteps.length-1);
+  document.getElementById('trace-prev').disabled=(traceIdx===0);
+  document.getElementById('trace-next').disabled=(traceIdx===traceSteps.length-1);
+}
+function traceStep(dir){
+  traceIdx=Math.max(0,Math.min(traceSteps.length-1,traceIdx+dir));
+  renderTrace();
+}
+function traceReset(){traceIdx=0;renderTrace();}
+renderTrace();
+</script>
+</body>
+</html>

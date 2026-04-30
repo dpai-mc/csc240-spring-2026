@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 14 Overview – Graph Algorithms: Greedy Strategies, MSTs &amp; Shortest Paths</title>
+<style>
+:root {
+  --primary: #1a5276;
+  --primary-light: #2980b9;
+  --accent: #148f77;
+  --accent-light: #1abc9c;
+  --warm: #d4ac0d;
+  --warm-bg: #fef9e7;
+  --bg: #ffffff;
+  --surface: #f4f6f8;
+  --text: #212529;
+  --text-muted: #5a6270;
+  --border: #d5d8dc;
+  --focus: #f39c12;
+  --radius: 8px;
+  --shadow: 0 2px 6px rgba(0,0,0,0.08);
+  --max-w: 960px;
+  --scroll-offset: 72px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text);
+  background: var(--bg);
+}
+
+/* Focus styles */
+*:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* Skip link */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 1rem;
+  background: var(--primary);
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius);
+  z-index: 1000;
+  font-weight: 600;
+  text-decoration: none;
+}
+.skip-link:focus {
+  top: 0.5rem;
+}
+
+/* Nav bar */
+.nav-bar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--primary);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+.nav-inner {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem 1rem;
+}
+.nav-bar a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 0.35rem 0.65rem;
+  border-radius: 4px;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+.nav-bar a:hover,
+.nav-bar a:focus-visible {
+  background: rgba(255,255,255,0.2);
+  outline-color: #fff;
+}
+
+/* Scroll offset for anchors */
+[id] { scroll-margin-top: var(--scroll-offset); }
+
+/* Main container */
+.container {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+}
+
+/* Header banner */
+.hero {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+  color: #fff;
+  border-radius: var(--radius);
+  padding: 2rem 1.75rem;
+  margin-bottom: 2rem;
+}
+.hero-label {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0.85;
+  margin-bottom: 0.25rem;
+}
+.hero h1 {
+  font-size: 1.65rem;
+  line-height: 1.25;
+  margin-bottom: 0.5rem;
+}
+.hero p {
+  font-size: 1rem;
+  opacity: 0.92;
+  max-width: 680px;
+}
+
+/* Section headings */
+.section { margin-bottom: 2rem; }
+.section-heading {
+  font-size: 1.25rem;
+  color: var(--primary);
+  border-bottom: 3px solid var(--accent-light);
+  padding-bottom: 0.35rem;
+  margin-bottom: 1rem;
+}
+
+/* Prose */
+.prose p { margin-bottom: 1rem; }
+
+/* Callout box */
+.callout {
+  background: var(--warm-bg);
+  border-left: 4px solid var(--warm);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+  font-size: 0.95rem;
+}
+.callout-title {
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+/* Goals list */
+.goals-list {
+  list-style: none;
+  display: grid;
+  gap: 0.6rem;
+}
+.goals-list li {
+  background: var(--surface);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+}
+.goals-list li::before { content: none; }
+.goal-num {
+  font-weight: 700;
+  color: var(--accent);
+  margin-right: 0.35rem;
+}
+
+/* Collapsible / accordion */
+.accordion { margin-bottom: 1.25rem; }
+.accordion-btn {
+  width: 100%;
+  text-align: left;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.85rem 1.1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: background 0.2s;
+}
+.accordion-btn:hover { background: #e8ecf0; }
+.accordion-btn .chevron {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  transition: transform 0.25s ease;
+  flex-shrink: 0;
+}
+.accordion-btn[aria-expanded="true"] .chevron {
+  transform: rotate(180deg);
+}
+.accordion-panel {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease, padding 0.25s ease;
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 var(--radius) var(--radius);
+  padding: 0 1.1rem;
+}
+.accordion-panel.open {
+  max-height: 2000px;
+  padding: 1rem 1.1rem 1.25rem;
+}
+
+/* Activity table */
+.activity-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+  margin-top: 0.5rem;
+}
+.activity-table th,
+.activity-table td {
+  text-align: left;
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+.activity-table thead th {
+  background: var(--primary);
+  color: #fff;
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+}
+.activity-table tbody tr:nth-child(even) { background: var(--surface); }
+.badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: 12px;
+  white-space: nowrap;
+}
+.badge-read { background: #d5f5e3; color: #1e8449; }
+.badge-practice { background: #d6eaf8; color: #1a5276; }
+.badge-graded { background: #fadbd8; color: #922b21; }
+.badge-project { background: #f9e79f; color: #7d6608; }
+
+/* Concept cards */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-top: 0.75rem;
+}
+.concept-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.1rem;
+  box-shadow: var(--shadow);
+}
+.concept-card h3 {
+  font-size: 1rem;
+  color: var(--primary);
+  margin-bottom: 0.35rem;
+}
+.concept-card p {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+.card-icon {
+  font-size: 1.5rem;
+  margin-bottom: 0.35rem;
+  display: block;
+}
+
+/* Timeline */
+.timeline {
+  list-style: none;
+  position: relative;
+  padding-left: 1.5rem;
+  margin-top: 0.75rem;
+}
+.timeline::before {
+  content: "";
+  position: absolute;
+  left: 6px;
+  top: 4px;
+  bottom: 4px;
+  width: 3px;
+  background: var(--accent-light);
+  border-radius: 2px;
+}
+.timeline li {
+  position: relative;
+  margin-bottom: 0.9rem;
+  padding-left: 1rem;
+  font-size: 0.95rem;
+}
+.timeline li::before {
+  content: "";
+  position: absolute;
+  left: -1.5rem;
+  top: 0.45rem;
+  width: 13px;
+  height: 13px;
+  background: var(--accent);
+  border: 2px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px var(--accent-light);
+}
+.timeline .step-label {
+  font-weight: 700;
+  color: var(--primary);
+}
+
+/* Ahead box */
+.ahead-box {
+  background: linear-gradient(135deg, #eaf2f8 0%, #d5f5e3 100%);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.5rem;
+}
+.ahead-box h2 { color: var(--primary); margin-bottom: 0.5rem; font-size: 1.15rem; }
+.ahead-box p { margin-bottom: 0.5rem; font-size: 0.95rem; }
+.ahead-box p:last-child { margin-bottom: 0; }
+
+/* Responsive */
+@media (max-width: 600px) {
+  .hero { padding: 1.5rem 1.1rem; }
+  .hero h1 { font-size: 1.3rem; }
+  .nav-inner { gap: 0.15rem; }
+  .nav-bar a { font-size: 0.78rem; padding: 0.3rem 0.45rem; }
+  .card-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main-content">Skip to main content</a>
+
+<!-- Navigation bar -->
+<nav class="nav-bar" aria-label="Page sections">
+  <div class="nav-inner">
+    <a href="#welcome">Welcome</a>
+    <a href="#goals">Goals</a>
+    <a href="#activities">Activities</a>
+    <a href="#concepts">Key Concepts</a>
+    <a href="#time">Time Management</a>
+    <a href="#ahead">Looking Ahead</a>
+  </div>
+</nav>
+
+<main id="main-content" class="container">
+
+  <!-- Hero banner -->
+  <header class="hero" id="welcome">
+    <div class="hero-label">CSC 240 · Week 14 of 17</div>
+    <h1>Graph Algorithms: Greedy Strategies, MSTs &amp; Shortest Paths</h1>
+    <p>From GPS navigation to network backbone design — this week you learn the algorithms that power them.</p>
+  </header>
+
+  <!-- Welcome section -->
+  <section class="section" aria-labelledby="welcome-heading">
+    <h2 class="section-heading" id="welcome-heading">Welcome to Week 14</h2>
+    <div class="prose">
+      <p>
+        This week marks the algorithmic heart of CSC 240. You will explore the <strong>greedy paradigm</strong> — a powerful strategy for building optimal solutions one step at a time — and apply it to two classic problems: finding <strong>Minimum Spanning Trees</strong> (Kruskal's and Prim's algorithms) and computing <strong>shortest paths</strong> (Dijkstra's algorithm). These are the same ideas behind everyday technologies like GPS routing, internet packet delivery, and cost-efficient network design.
+      </p>
+      <p>
+        You will also kick off the <strong>Final Project</strong> this week, giving you a full four weeks to plan, build, and refine it. The project asks you to pull together concepts from across the course, so starting early matters.
+      </p>
+    </div>
+    <div class="callout" role="note">
+      <div class="callout-title" aria-hidden="true">⏱️ Honest Workload Note</div>
+      <p>
+        Week 14 is the <strong>most algorithmically intensive week</strong> of the semester, with an estimated <strong>9 hours</strong> of work. You have two deliverables (PE-09 and PS-09) plus the Final Project assignment to review. Budget your time early, follow the recommended module order below, and don't hesitate to ask questions in the discussion board. You've got this.
+      </p>
+    </div>
+  </section>
+
+  <!-- Learning Goals -->
+  <section class="section" id="goals" aria-labelledby="goals-heading">
+    <h2 class="section-heading" id="goals-heading">Week 14 Learning Goals</h2>
+    <p style="margin-bottom:0.75rem; font-size:0.95rem; color:var(--text-muted);">By the end of this week you will be able to:</p>
+    <ol class="goals-list" role="list">
+      <li><span class="goal-num">1.</span> Explain the greedy paradigm and identify problems where a greedy strategy yields an optimal solution.</li>
+      <li><span class="goal-num">2.</span> Trace and implement <strong>Kruskal's algorithm</strong> using the Union-Find data structure to build a minimum spanning tree.</li>
+      <li><span class="goal-num">3.</span> Trace and implement <strong>Prim's algorithm</strong> using a priority queue to build a minimum spanning tree.</li>
+      <li><span class="goal-num">4.</span> Trace and implement <strong>Dijkstra's algorithm</strong> to find shortest paths in a weighted graph with non-negative edge weights.</li>
+      <li><span class="goal-num">5.</span> Compare Kruskal's, Prim's, and Dijkstra's algorithms in terms of strategy, data structures, and time complexity.</li>
+      <li><span class="goal-num">6.</span> Connect these graph algorithms to real-world applications such as network design, GPS routing, and infrastructure optimization.</li>
+    </ol>
+  </section>
+
+  <!-- Required Activities (collapsible) -->
+  <section class="section" id="activities" aria-labelledby="activities-heading">
+    <h2 class="section-heading" id="activities-heading">Required Activities</h2>
+
+    <!-- Learning Modules accordion -->
+    <div class="accordion">
+      <button class="accordion-btn" aria-expanded="true" aria-controls="panel-modules" id="btn-modules">
+        <span>📖 Learning Modules (14.1 – 14.5)</span>
+        <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 10l5 5 5-5z"/></svg>
+      </button>
+      <div class="accordion-panel open" id="panel-modules" role="region" aria-labelledby="btn-modules">
+        <table class="activity-table">
+          <thead>
+            <tr>
+              <th scope="col">Module</th>
+              <th scope="col">Topic</th>
+              <th scope="col">Type</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>14.1</td>
+              <td>The Greedy Paradigm</td>
+              <td><span class="badge badge-read">Reading</span></td>
+            </tr>
+            <tr>
+              <td>14.2</td>
+              <td>Kruskal's Algorithm &amp; Union-Find</td>
+              <td><span class="badge badge-read">Reading</span></td>
+            </tr>
+            <tr>
+              <td>14.3</td>
+              <td>Prim's Algorithm &amp; Priority Queues</td>
+              <td><span class="badge badge-read">Reading</span></td>
+            </tr>
+            <tr>
+              <td>14.4</td>
+              <td>Dijkstra's Shortest Path Algorithm</td>
+              <td><span class="badge badge-read">Reading</span></td>
+            </tr>
+            <tr>
+              <td>14.5</td>
+              <td>Applications, Comparison &amp; Final Project Planning</td>
+              <td><span class="badge badge-read">Reading</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Graded Work accordion -->
+    <div class="accordion">
+      <button class="accordion-btn" aria-expanded="true" aria-controls="panel-graded" id="btn-graded">
+        <span>📝 Graded Deliverables</span>
+        <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 10l5 5 5-5z"/></svg>
+      </button>
+      <div class="accordion-panel open" id="panel-graded" role="region" aria-labelledby="btn-graded">
+        <table class="activity-table">
+          <thead>
+            <tr>
+              <th scope="col">Assignment</th>
+              <th scope="col">Description</th>
+              <th scope="col">Type</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>PE-09</td>
+              <td>Programming Exercise — implement graph algorithms covered in Modules 14.1–14.4</td>
+              <td><span class="badge badge-graded">Graded</span></td>
+            </tr>
+            <tr>
+              <td>PS-09</td>
+              <td>Problem Set — analytical and proof-based problems on greedy strategies, MSTs, and shortest paths</td>
+              <td><span class="badge badge-graded">Graded</span></td>
+            </tr>
+            <tr>
+              <td>Final Project</td>
+              <td>Assigned this week; due at the end of Week 17. Review the project description and begin planning in Module 14.5.</td>
+              <td><span class="badge badge-project">Project</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <p style="font-size:0.88rem; color:var(--text-muted); margin-top:0.75rem;">
+          Check Canvas for all due dates. The Final Project has its own dedicated assignment page with full requirements.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Key Concepts -->
+  <section class="section" id="concepts" aria-labelledby="concepts-heading">
+    <h2 class="section-heading" id="concepts-heading">Key Concepts &amp; Themes</h2>
+    <div class="card-grid">
+      <div class="concept-card">
+        <span class="card-icon" aria-hidden="true">🎯</span>
+        <h3>Greedy Paradigm</h3>
+        <p>Make the locally optimal choice at each step and prove it leads to a globally optimal solution.</p>
+      </div>
+      <div class="concept-card">
+        <span class="card-icon" aria-hidden="true">🌲</span>
+        <h3>Minimum Spanning Trees</h3>
+        <p>Connect every vertex at minimum total cost — the foundation of efficient network design.</p>
+      </div>
+      <div class="concept-card">
+        <span class="card-icon" aria-hidden="true">✂️</span>
+        <h3>Kruskal's Algorithm</h3>
+        <p>Sort edges by weight and grow a forest, using Union-Find to avoid cycles.</p>
+      </div>
+      <div class="concept-card">
+        <span class="card-icon" aria-hidden="true">🔗</span>
+        <h3>Prim's Algorithm</h3>
+        <p>Expand a single tree one vertex at a time, selecting the cheapest crossing edge via a priority queue.</p>
+      </div>
+      <div class="concept-card">
+        <span class="card-icon" aria-hidden="true">🗺️</span>
+        <h3>Dijkstra's Algorithm</h3>
+        <p>Find shortest paths from a source vertex in graphs with non-negative weights — the engine behind GPS routing.</p>
+      </div>
+      <div class="concept-card">
+        <span class="card-icon" aria-hidden="true">🧰</span>
+        <h3>Supporting Structures</h3>
+        <p>Union-Find (disjoint sets) and priority queues — essential data structures that make these algorithms efficient.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Time Management -->
+  <section class="section" id="time" aria-labelledby="time-heading">
+    <h2 class="section-heading" id="time-heading">Time Management Guidance</h2>
+
+    <div class="callout" role="note">
+      <div class="callout-title">💡 Recommended Approach</div>
+      <p>Work through Modules 14.1 – 14.5 <strong>in sequence</strong>. Each module builds on the previous one. Resist the urge to skip ahead to the assignments before you have the conceptual foundation.</p>
+    </div>
+
+    <ol class="timeline" role="list">
+      <li>
+        <span class="step-label">Step 1 — Foundations (Modules 14.1 – 14.2)</span><br>
+        Read the greedy paradigm overview, then study Kruskal's algorithm and Union-Find. Trace the examples by hand.
+      </li>
+      <li>
+        <span class="step-label">Step 2 — Prim's Algorithm (Module 14.3)</span><br>
+        Study Prim's algorithm and priority queues. Compare it with Kruskal's approach. <strong>After completing this module, you have enough background to start PE-09.</strong>
+      </li>
+      <li>
+        <span class="step-label">Step 3 — Dijkstra's Algorithm (Module 14.4)</span><br>
+        Work through Dijkstra's shortest-path algorithm. Note similarities with Prim's and differences in what each algorithm optimizes.
+      </li>
+      <li>
+        <span class="step-label">Step 4 — Wrap-Up &amp; Project Planning (Module 14.5)</span><br>
+        Review the algorithm comparison, explore real-world applications, and read the Final Project description. Begin your project planning.
+      </li>
+      <li>
+        <span class="step-label">Step 5 — Complete &amp; Submit</span><br>
+        Finish PE-09 (programming) and PS-09 (problem set). Review your work before submitting.
+      </li>
+    </ol>
+  </section>
+
+  <!-- Looking Ahead -->
+  <section class="section" id="ahead" aria-labelledby="ahead-heading">
+    <div class="ahead-box">
+      <h2 id="ahead-heading">Looking Ahead</h2>
+      <p>
+        <strong>Week 15</strong> shifts focus to <strong>trees and binary search trees (BSTs)</strong>, extending the graph foundations you build this week into one of the most important structures in computer science.
+      </p>
+      <p>
+        <strong>Quiz 5</strong> takes place in <strong>Week 16</strong> and covers material from Weeks 14–16. Approximately <strong>40% of Quiz 5</strong> draws from Week 14 content, so solid understanding now pays dividends later.
+      </p>
+      <p>
+        The <strong>Final Project</strong> is due at the end of <strong>Week 17</strong>. Use the remaining weeks to develop and refine your project alongside the new material.
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<script>
+(function(){
+  var buttons = document.querySelectorAll('.accordion-btn');
+  buttons.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var expanded = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', String(!expanded));
+      var panel = document.getElementById(btn.getAttribute('aria-controls'));
+      if(expanded){
+        panel.classList.remove('open');
+      } else {
+        panel.classList.add('open');
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>
