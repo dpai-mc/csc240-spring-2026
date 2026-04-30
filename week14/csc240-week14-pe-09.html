@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PE-09: Graph Algorithms Implementation | CSC 240 Week 14</title>
+<style>
+:root {
+  --primary: #1a5276;
+  --primary-light: #2980b9;
+  --accent: #148f77;
+  --accent-light: #1abc9c;
+  --bg: #ffffff;
+  --bg-alt: #f4f6f7;
+  --bg-phase: #eaf2f8;
+  --text: #212529;
+  --text-muted: #5d6d7e;
+  --border: #d5dbdb;
+  --focus: #f39c12;
+  --warning: #e74c3c;
+  --success: #27ae60;
+  --radius: 6px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; font-size: 1rem; line-height: 1.65; color: var(--text); background: var(--bg); }
+.container { max-width: 960px; margin: 0 auto; padding: 0 1.25rem 3rem; }
+
+/* Skip link */
+.skip-link { position: absolute; top: -100px; left: 0; background: var(--primary); color: #fff; padding: .5rem 1rem; z-index: 1000; font-weight: 600; }
+.skip-link:focus { top: 0; }
+
+/* Navigation bar */
+nav.topnav { background: var(--primary); position: sticky; top: 0; z-index: 100; padding: .5rem 0; }
+nav.topnav ul { list-style: none; display: flex; flex-wrap: wrap; gap: .25rem .5rem; max-width: 960px; margin: 0 auto; padding: 0 1.25rem; }
+nav.topnav a { color: #fff; text-decoration: none; padding: .35rem .65rem; border-radius: var(--radius); font-size: .85rem; display: inline-block; }
+nav.topnav a:hover, nav.topnav a:focus { background: var(--primary-light); outline: 2px solid var(--focus); outline-offset: 2px; }
+
+/* Scroll offset for anchors */
+[id] { scroll-margin-top: 60px; }
+
+/* Header */
+header.lab-header { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color: #fff; padding: 2rem 1.5rem; border-radius: 0 0 var(--radius) var(--radius); margin-bottom: 2rem; }
+header.lab-header h1 { font-size: 1.65rem; margin-bottom: .35rem; }
+header.lab-header .subtitle { font-size: 1.05rem; opacity: .92; }
+header.lab-header .meta { margin-top: .75rem; font-size: .88rem; opacity: .85; display: flex; flex-wrap: wrap; gap: .5rem 1.5rem; }
+
+/* Sections */
+section { margin-bottom: 2.25rem; }
+h2 { font-size: 1.35rem; color: var(--primary); border-bottom: 3px solid var(--accent); padding-bottom: .35rem; margin-bottom: 1rem; }
+h3 { font-size: 1.12rem; color: var(--primary); margin: 1.25rem 0 .5rem; }
+h4 { font-size: 1rem; color: var(--accent); margin: 1rem 0 .4rem; }
+p, li { margin-bottom: .5rem; }
+ul, ol { padding-left: 1.5rem; }
+
+/* Info / alert boxes */
+.info-box { background: var(--bg-phase); border-left: 4px solid var(--primary-light); padding: 1rem 1.25rem; border-radius: var(--radius); margin: 1rem 0; }
+.alert-box { background: #fdf2e9; border-left: 4px solid var(--focus); padding: 1rem 1.25rem; border-radius: var(--radius); margin: 1rem 0; }
+.success-box { background: #eafaf1; border-left: 4px solid var(--success); padding: 1rem 1.25rem; border-radius: var(--radius); margin: 1rem 0; }
+
+/* Phase cards */
+.phase-card { background: var(--bg-alt); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem 1.5rem; margin: 1.25rem 0; }
+.phase-card .phase-label { display: inline-block; background: var(--primary); color: #fff; font-size: .8rem; font-weight: 700; padding: .2rem .65rem; border-radius: var(--radius); margin-bottom: .65rem; text-transform: uppercase; letter-spacing: .03em; }
+
+/* Tables */
+table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: .93rem; }
+th, td { border: 1px solid var(--border); padding: .55rem .75rem; text-align: left; }
+th { background: var(--primary); color: #fff; font-weight: 600; }
+tr:nth-child(even) { background: var(--bg-alt); }
+caption { font-weight: 700; margin-bottom: .4rem; text-align: left; color: var(--primary); }
+
+/* Collapsible details */
+details { border: 1px solid var(--border); border-radius: var(--radius); margin: .75rem 0; }
+details summary { cursor: pointer; padding: .6rem 1rem; font-weight: 600; background: var(--bg-alt); border-radius: var(--radius); list-style: none; display: flex; align-items: center; gap: .5rem; }
+details summary::before { content: "▶"; font-size: .75rem; transition: transform .2s; }
+details[open] summary::before { transform: rotate(90deg); }
+details summary:focus { outline: 2px solid var(--focus); outline-offset: 2px; }
+details .details-body { padding: .75rem 1rem 1rem; }
+
+/* Textareas */
+.notes-group { margin: .75rem 0; }
+.notes-group label { display: block; font-weight: 600; margin-bottom: .3rem; color: var(--primary); }
+textarea { width: 100%; min-height: 100px; padding: .6rem; border: 1px solid var(--border); border-radius: var(--radius); font-family: inherit; font-size: .93rem; resize: vertical; }
+textarea:focus { outline: 2px solid var(--focus); outline-offset: 1px; border-color: var(--focus); }
+
+/* Code blocks */
+code { background: #ecf0f1; padding: .15rem .35rem; border-radius: 3px; font-size: .9em; }
+pre { background: #2c3e50; color: #ecf0f1; padding: 1rem; border-radius: var(--radius); overflow-x: auto; font-size: .88rem; line-height: 1.5; margin: .75rem 0; }
+
+/* Buttons */
+.btn { display: inline-block; padding: .55rem 1.25rem; border: none; border-radius: var(--radius); font-size: .93rem; font-weight: 600; cursor: pointer; text-align: center; }
+.btn:focus { outline: 2px solid var(--focus); outline-offset: 2px; }
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:hover { background: var(--primary-light); }
+.btn-accent { background: var(--accent); color: #fff; }
+.btn-accent:hover { background: var(--accent-light); }
+.btn-bar { display: flex; flex-wrap: wrap; gap: .75rem; margin: 1rem 0; }
+
+/* Print styles */
+@media print {
+  nav.topnav, .skip-link, .btn-bar, button, details summary::before { display: none; }
+  details[open] summary { font-weight: 700; }
+  details .details-body { display: block !important; }
+  body { font-size: 11pt; }
+  header.lab-header { background: none !important; color: #000 !important; border: 2px solid #000; }
+  h2 { break-after: avoid; }
+  textarea { border: 1px solid #999; min-height: 60px; }
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  nav.topnav ul { flex-direction: column; }
+  header.lab-header h1 { font-size: 1.3rem; }
+  .phase-card { padding: 1rem; }
+}
+</style>
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<nav class="topnav" aria-label="Page navigation">
+<ul role="list">
+  <li><a href="#overview">Overview</a></li>
+  <li><a href="#scenario">Scenario</a></li>
+  <li><a href="#tasks">Tasks</a></li>
+  <li><a href="#phase1">Phase 1</a></li>
+  <li><a href="#phase2">Phase 2</a></li>
+  <li><a href="#phase3">Phase 3</a></li>
+  <li><a href="#phase4">Phase 4</a></li>
+  <li><a href="#observations">Observations</a></li>
+  <li><a href="#grading">Grading</a></li>
+  <li><a href="#deliverables">Deliverables</a></li>
+  <li><a href="#pitfalls">Pitfalls</a></li>
+</ul>
+</nav>
+
+<div class="container" id="main-content" role="main">
+
+<!-- ===== HEADER ===== -->
+<header class="lab-header">
+  <h1>PE-09: Graph Algorithms Implementation</h1>
+  <div class="subtitle">Programming Exercise &mdash; CSC 240 Discrete Structures, Week 14</div>
+  <div class="meta">
+    <span><strong>Points:</strong> 30</span>
+    <span><strong>Type:</strong> Programming Exercise</span>
+    <span><strong>Language:</strong> Java or C++</span>
+  </div>
+</header>
+
+<!-- ===== OVERVIEW ===== -->
+<section id="overview">
+  <h2>Overview &amp; Objectives</h2>
+  <p>PE-09 is the capstone programming exercise for the graph algorithms unit. You will implement four fundamental graph algorithms&mdash;BFS, DFS, one MST algorithm, and Dijkstra&rsquo;s shortest path&mdash;on adjacency list representations, then compare their performance on at least two different graph structures.</p>
+
+  <div class="info-box">
+    <strong>CSLO Alignment</strong><br>
+    <strong>CSLO 3:</strong> Implement graph/tree traversal methods in a programming language.<br>
+    <em>Supporting:</em> <strong>CSLO 4:</strong> Explain the relationship between mathematical induction and recursion/recurrence equations, and their relationship to computing systems. (DFS recursion connects to induction from Weeks 6 and 11.)
+  </div>
+
+  <h3>What This Exercise Assesses</h3>
+  <ul>
+    <li>Your ability to build a correct adjacency list representation supporting weighted, directed graphs.</li>
+    <li>Correct implementation of BFS and DFS (both recursive and iterative) with traversal-order output.</li>
+    <li>Implementation of one MST algorithm (Kruskal&rsquo;s <strong>or</strong> Prim&rsquo;s)&mdash;your choice, with written justification.</li>
+    <li>Implementation of Dijkstra&rsquo;s algorithm with distance output and path reconstruction.</li>
+    <li>Empirical performance comparison on at least two graph structures (e.g., sparse vs. dense, or small vs. large).</li>
+  </ul>
+
+  <div class="alert-box">
+    <strong>Final Project Scaffolding:</strong> PE-09 directly scaffolds the Final Project (assigned this week). The algorithms you implement here map to Final Project Components 2 (Traversal Algorithms, 50 pts) and 3 (Advanced Graph Algorithms, 75 pts). Treat PE-09 as a working prototype you can extend into your Final Project.
+  </div>
+</section>
+
+<!-- ===== SCENARIO ===== -->
+<section id="scenario">
+  <h2>Scenario: NetGraph Analysis Library</h2>
+  <p>You are a software engineer at <strong>NetGraph Solutions</strong>, a startup building a network infrastructure analysis tool. Your team needs a reusable graph analysis library that network engineers will use to:</p>
+  <ol>
+    <li><strong>Map network topology</strong> &mdash; represent routers, switches, and connections as a weighted, directed graph stored in adjacency lists.</li>
+    <li><strong>Discover reachable devices</strong> &mdash; use BFS (level-by-level hop counting) and DFS (deep path exploration) to traverse the network from any source device.</li>
+    <li><strong>Design minimum-cost cabling</strong> &mdash; compute a Minimum Spanning Tree so the engineering team can connect all nodes at the lowest total cable cost.</li>
+    <li><strong>Find fastest routes</strong> &mdash; run Dijkstra&rsquo;s algorithm to determine the shortest (lowest-latency) path between any two devices, including the full route.</li>
+  </ol>
+  <p>Your library must be tested on at least two network configurations (graph structures) so the team can verify correctness and compare algorithm performance across different topologies.</p>
+
+  <div class="success-box">
+    <strong>Why this matters:</strong> Every modern routing protocol (OSPF, IS-IS) and network design tool relies on exactly these algorithms. The code you write in PE-09 mirrors real infrastructure software.
+  </div>
+</section>
+
+<!-- ===== TASKS ===== -->
+<section id="tasks">
+  <h2>Tasks &amp; Procedure</h2>
+  <p>Complete the four phases below in order. Each phase builds on the previous one. For every phase, your code must compile, run, and produce the specified output.</p>
+
+  <!-- ── PHASE 1 ── -->
+  <div class="phase-card" id="phase1">
+    <span class="phase-label">Phase 1</span>
+    <h3>Graph Representation &mdash; Adjacency List</h3>
+    <p>Build the core data structure that all subsequent algorithms will operate on.</p>
+
+    <h4>Requirements</h4>
+    <ul>
+      <li>Implement a <strong>weighted, directed</strong> graph using an adjacency list. (Undirected graphs are modeled by adding edges in both directions.)</li>
+      <li>Support the following operations:
+        <ul>
+          <li><code>addVertex(v)</code></li>
+          <li><code>addEdge(u, v, weight)</code> &mdash; directed edge from <code>u</code> to <code>v</code></li>
+          <li><code>getNeighbors(v)</code> &mdash; returns list of <code>(neighbor, weight)</code> pairs</li>
+          <li><code>getVertexCount()</code> and <code>getEdgeCount()</code></li>
+          <li><code>printGraph()</code> &mdash; human-readable adjacency list output</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h4>Input / Output Specification</h4>
+    <ul>
+      <li><strong>Input:</strong> Your driver or test code constructs at least two graphs: one sparse (e.g., $$|E| \approx |V|$$) and one dense (e.g., $$|E| \approx |V|^2 / 2$$).</li>
+      <li><strong>Output:</strong> Print the adjacency list for each graph, showing each vertex followed by its neighbor list with weights.</li>
+    </ul>
+
+    <h4>Testing Guidance</h4>
+    <ul>
+      <li>Verify edge counts match expected values.</li>
+      <li>For undirected graphs, confirm each edge appears in both directions.</li>
+      <li>Test with a single-vertex graph (edge case) and a disconnected graph.</li>
+    </ul>
+
+    <details>
+      <summary>Hints &amp; Tips</summary>
+      <div class="details-body">
+        <ul>
+          <li>In Java, use <code>Map&lt;Integer, List&lt;int[]&gt;&gt;</code> or a custom <code>Edge</code> class. In C++, use <code>unordered_map&lt;int, vector&lt;pair&lt;int,int&gt;&gt;&gt;</code>.</li>
+          <li>Store edge weights as integers (latency in ms) to simplify testing. Use values between 1 and 100.</li>
+          <li>Consider creating a helper method <code>addUndirectedEdge(u, v, w)</code> that calls <code>addEdge</code> in both directions.</li>
+          <li>This adjacency list is the <strong>same representation</strong> required for Final Project Component 1 (Graph Builder, 50 pts)&mdash;design it well now and you can reuse it directly.</li>
+        </ul>
+      </div>
+    </details>
+  </div>
+
+  <!-- ── PHASE 2 ── -->
+  <div class="phase-card" id="phase2">
+    <span class="phase-label">Phase 2</span>
+    <h3>BFS and DFS Traversals</h3>
+    <p>Implement both traversal algorithms on your adjacency list from Phase 1. You studied these in Week 13&mdash;now you implement them.</p>
+
+    <h4>Requirements</h4>
+    <ul>
+      <li><strong>BFS:</strong> Queue-based, level-by-level traversal from a given source vertex. Output the traversal order and the level (distance in hops) of each vertex.</li>
+      <li><strong>DFS &mdash; Recursive:</strong> Implement DFS using the call stack. Output discovery order.</li>
+      <li><strong>DFS &mdash; Iterative:</strong> Implement DFS using an explicit stack. Output discovery order.</li>
+      <li>All three must use a <code>visited</code> set/array to avoid revisiting vertices.</li>
+    </ul>
+
+    <h4>Input / Output Specification</h4>
+    <ul>
+      <li><strong>Input:</strong> A graph (from Phase 1) and a source vertex.</li>
+      <li><strong>Output (BFS):</strong> <code>BFS from vertex 0: 0(L0) → 1(L1) → 3(L1) → 2(L2) → 4(L2)</code></li>
+      <li><strong>Output (DFS):</strong> <code>DFS-Recursive from vertex 0: 0 → 1 → 2 → 4 → 3</code></li>
+      <li>Both recursive and iterative DFS should produce output; note that traversal order may differ due to neighbor processing order&mdash;this is acceptable as long as the algorithm is correct.</li>
+    </ul>
+
+    <h4>Testing Guidance</h4>
+    <ul>
+      <li>Run BFS and DFS on a small graph (5&ndash;7 vertices) and verify output by hand-tracing.</li>
+      <li>Test on a disconnected graph&mdash;confirm that only the source&rsquo;s component is traversed.</li>
+      <li>Test on a single-vertex graph.</li>
+      <li>Compare recursive and iterative DFS outputs&mdash;they may differ in order but both must visit all reachable vertices exactly once.</li>
+    </ul>
+
+    <details>
+      <summary>Hints &amp; Tips</summary>
+      <div class="details-body">
+        <ul>
+          <li>For BFS, use a <code>Queue</code> (Java: <code>LinkedList</code>; C++: <code>queue</code>). Track levels by processing all vertices at the current level before moving to the next, or store <code>(vertex, level)</code> pairs in the queue.</li>
+          <li>For iterative DFS, use a <code>Stack</code> (Java: <code>ArrayDeque</code>; C++: <code>stack</code>). Push neighbors in reverse order if you want to match the recursive DFS order.</li>
+          <li>Mark vertices as visited <strong>when you enqueue/push them</strong>, not when you dequeue/pop&mdash;this prevents duplicates in the queue/stack.</li>
+          <li>Review the pseudocode from Week 13 Modules 13.1 (BFS) and 13.2 (DFS).</li>
+        </ul>
+      </div>
+    </details>
+  </div>
+
+  <!-- ── PHASE 3 ── -->
+  <div class="phase-card" id="phase3">
+    <span class="phase-label">Phase 3</span>
+    <h3>MST Algorithm &mdash; Kruskal&rsquo;s <em>or</em> Prim&rsquo;s (Your Choice)</h3>
+    <p>Implement <strong>one</strong> Minimum Spanning Tree algorithm. You choose which one&mdash;but you must justify your choice in the Observations section below.</p>
+
+    <h4>Option A: Kruskal&rsquo;s Algorithm</h4>
+    <ul>
+      <li>Sort all edges by weight.</li>
+      <li>Use a <strong>Union-Find (Disjoint Set Union)</strong> data structure with union by rank and path compression.</li>
+      <li>Process edges in order; add an edge to the MST if its endpoints are in different sets.</li>
+      <li>Time complexity: $$O(|E| \log |E|)$$ dominated by sorting.</li>
+    </ul>
+
+    <h4>Option B: Prim&rsquo;s Algorithm</h4>
+    <ul>
+      <li>Start from an arbitrary vertex; grow the MST by always adding the cheapest edge connecting the MST to a non-MST vertex.</li>
+      <li>Use a <strong>priority queue (min-heap)</strong> keyed on edge weight.</li>
+      <li>Time complexity: $$O((|V| + |E|) \log |V|)$$ with a binary heap.</li>
+    </ul>
+
+    <h4>Input / Output Specification</h4>
+    <ul>
+      <li><strong>Input:</strong> A connected, weighted, undirected graph (from Phase 1).</li>
+      <li><strong>Output:</strong>
+        <ul>
+          <li>List of MST edges with weights, e.g., <code>(0-1, w=4), (1-3, w=2), ...</code></li>
+          <li>Total MST weight.</li>
+          <li>Number of edges in the MST (should be $$|V| - 1$$).</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h4>Testing Guidance</h4>
+    <ul>
+      <li>Verify MST edge count equals $$|V| - 1$$.</li>
+      <li>Hand-compute the MST on your small test graph and compare.</li>
+      <li>Test on a graph with duplicate edge weights&mdash;MST may not be unique, but total weight must be minimal.</li>
+      <li>Test on a graph that is already a tree&mdash;MST should be the graph itself.</li>
+    </ul>
+
+    <details>
+      <summary>Hints &amp; Tips</summary>
+      <div class="details-body">
+        <ul>
+          <li><strong>Kruskal&rsquo;s:</strong> Implement Union-Find as a separate class/struct. The <code>find()</code> method should use path compression; the <code>union()</code> method should use union by rank. This keeps the amortized cost nearly $$O(1)$$ per operation.</li>
+          <li><strong>Prim&rsquo;s:</strong> In Java, use <code>PriorityQueue</code>. In C++, use <code>priority_queue</code> with <code>greater&lt;&gt;</code> for a min-heap. Since standard library priority queues don&rsquo;t support <code>decreaseKey</code>, you can insert duplicate entries and skip stale ones (lazy deletion).</li>
+          <li>Kruskal&rsquo;s tends to be simpler to implement and performs well on sparse graphs. Prim&rsquo;s is a better choice for dense graphs and shares structural similarity with Dijkstra&rsquo;s (Phase 4).</li>
+          <li>Your MST algorithm choice and justification will also be relevant for the Final Project Analysis Document (Component 5, 25 pts).</li>
+        </ul>
+      </div>
+    </details>
+  </div>
+
+  <!-- ── PHASE 4 ── -->
+  <div class="phase-card" id="phase4">
+    <span class="phase-label">Phase 4</span>
+    <h3>Dijkstra&rsquo;s Shortest Path Algorithm</h3>
+    <p>Implement Dijkstra&rsquo;s algorithm to find single-source shortest paths in a weighted graph with non-negative edge weights.</p>
+
+    <h4>Requirements</h4>
+    <ul>
+      <li>Maintain a distance array $$d[v]$$ initialized to $$\infty$$ for all vertices (source initialized to 0).</li>
+      <li>Use a <strong>priority queue (min-heap)</strong> to always process the vertex with the smallest tentative distance.</li>
+      <li>Perform <strong>edge relaxation</strong>: if $$d[u] + w(u,v) < d[v]$$, update $$d[v]$$ and record $$u$$ as $$v$$&rsquo;s predecessor.</li>
+      <li>After the algorithm completes, reconstruct the shortest path from source to each reachable vertex using predecessor pointers.</li>
+    </ul>
+
+    <h4>Input / Output Specification</h4>
+    <ul>
+      <li><strong>Input:</strong> A weighted graph (from Phase 1) and a source vertex. All edge weights must be non-negative.</li>
+      <li><strong>Output:</strong>
+        <ul>
+          <li>Distance table: <code>Vertex 0: dist=0 | Vertex 1: dist=4 | Vertex 2: dist=7 | ...</code></li>
+          <li>Shortest path reconstruction: <code>Path to vertex 4: 0 → 1 → 3 → 4 (total: 11)</code></li>
+          <li>If a vertex is unreachable, output <code>dist=∞, no path</code>.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h4>Testing Guidance</h4>
+    <ul>
+      <li>Hand-trace Dijkstra&rsquo;s on your small test graph and compare distances and paths.</li>
+      <li>Test with a disconnected graph&mdash;unreachable vertices should show $$\infty$$.</li>
+      <li>Test with a graph where the direct edge is <em>not</em> the shortest path (requires going through intermediate vertices).</li>
+      <li>Verify that path reconstruction produces a valid path whose edge weights sum to the reported distance.</li>
+    </ul>
+
+    <details>
+      <summary>Hints &amp; Tips</summary>
+      <div class="details-body">
+        <ul>
+          <li>Dijkstra&rsquo;s is structurally similar to Prim&rsquo;s&mdash;both use a min-heap and process vertices greedily. The key difference: Prim&rsquo;s keys on edge weight to MST; Dijkstra&rsquo;s keys on tentative distance from source.</li>
+          <li>Use the same lazy deletion approach as Prim&rsquo;s: when you pop a vertex from the priority queue, check if it has already been finalized (visited). If so, skip it.</li>
+          <li>For path reconstruction, store a <code>predecessor[]</code> array. After the algorithm finishes, trace back from the destination to the source using predecessors.</li>
+          <li>Use <code>Integer.MAX_VALUE</code> (Java) or <code>INT_MAX</code> (C++) for infinity&mdash;but be careful with overflow when adding weights. Use <code>Long</code> or check before adding.</li>
+          <li>If you implemented Prim&rsquo;s in Phase 3, you can refactor that code&mdash;change the priority queue key from edge weight to cumulative distance and add predecessor tracking.</li>
+        </ul>
+      </div>
+    </details>
+  </div>
+
+  <!-- ── PERFORMANCE COMPARISON ── -->
+  <div class="phase-card">
+    <span class="phase-label">Required</span>
+    <h3>Performance Comparison</h3>
+    <p>After completing all four phases, compare algorithm performance on <strong>at least two different graph structures</strong>. Record your findings in the Observations section below and include the comparison output in your submission.</p>
+
+    <h4>Suggested Graph Structures</h4>
+    <table>
+      <caption>Example Graph Configurations for Testing</caption>
+      <thead>
+        <tr><th>Graph</th><th>Type</th><th>Vertices</th><th>Approx. Edges</th><th>Characteristics</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Graph A</td><td>Sparse</td><td>50&ndash;100</td><td>$$\approx |V|$$ to $$2|V|$$</td><td>Few connections per node; resembles a rural network</td></tr>
+        <tr><td>Graph B</td><td>Dense</td><td>50&ndash;100</td><td>$$\approx |V|^2 / 4$$</td><td>Many connections per node; resembles a data center mesh</td></tr>
+      </tbody>
+    </table>
+
+    <h4>What to Measure and Report</h4>
+    <ul>
+      <li>Wall-clock execution time for each algorithm on each graph (use <code>System.nanoTime()</code> in Java or <code>chrono</code> in C++).</li>
+      <li>Number of edges processed / relaxation operations performed.</li>
+      <li>Observations: Does Kruskal&rsquo;s or Prim&rsquo;s perform better on sparse vs. dense? Does Dijkstra&rsquo;s slow down noticeably on the dense graph?</li>
+    </ul>
+
+    <details>
+      <summary>Hints &amp; Tips</summary>
+      <div class="details-body">
+        <ul>
+          <li>You can generate random graphs programmatically: create $$|V|$$ vertices, then add random edges with random weights until you reach the target edge count.</li>
+          <li>Run each algorithm multiple times (e.g., 5 runs) and report the average to reduce noise.</li>
+          <li>The comparison does not need to be a rigorous benchmark&mdash;the goal is to observe and reflect on how graph density affects algorithm performance.</li>
+        </ul>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ===== OBSERVATIONS ===== -->
+<section id="observations">
+  <h2>Observations &amp; Design Notes</h2>
+  <p>Use the fields below to plan your work, record design decisions, and document your observations. These notes are for your own reference and can be saved as a PDF using the button at the bottom of this page. They are <strong>not</strong> submitted as part of PE-09, but they will help you write the README and may inform your Final Project Analysis Document.</p>
+
+  <div class="notes-group">
+    <label for="notes-choice">MST Algorithm Choice &amp; Justification</label>
+    <textarea id="notes-choice" placeholder="Which MST algorithm did you choose (Kruskal's or Prim's)? Why? Consider: graph density of your test cases, ease of implementation, data structure availability, similarity to Dijkstra's, and suitability for the Final Project."></textarea>
+  </div>
+
+  <div class="notes-group">
+    <label for="notes-complexity">Complexity Analysis Notes</label>
+    <textarea id="notes-complexity" placeholder="Record the time and space complexity for each algorithm you implemented:&#10;• BFS: O(|V| + |E|) time, O(|V|) space&#10;• DFS: O(|V| + |E|) time, O(|V|) space&#10;• Your MST algorithm: ...&#10;• Dijkstra's: ...&#10;Explain how the adjacency list representation affects these complexities."></textarea>
+  </div>
+
+  <div class="notes-group">
+    <label for="notes-performance">Performance Comparison Observations</label>
+    <textarea id="notes-performance" placeholder="Record your performance comparison results here:&#10;• Graph A (sparse): BFS time = ?, DFS time = ?, MST time = ?, Dijkstra time = ?&#10;• Graph B (dense): BFS time = ?, DFS time = ?, MST time = ?, Dijkstra time = ?&#10;• Which algorithm showed the biggest difference between sparse and dense?&#10;• Did your results match the theoretical complexity predictions?"></textarea>
+  </div>
+
+  <div class="notes-group">
+    <label for="notes-design">Design Decisions &amp; Implementation Notes</label>
+    <textarea id="notes-design" placeholder="Document key design decisions:&#10;• Data structures used for adjacency list, priority queue, Union-Find&#10;• How you handled undirected edges (both directions?)&#10;• How you handled infinity in Dijkstra's&#10;• Any refactoring between Prim's and Dijkstra's&#10;• Challenges encountered and how you resolved them"></textarea>
+  </div>
+</section>
+
+<!-- ===== GRADING ===== -->
+<section id="grading">
+  <h2>Grading Breakdown</h2>
+  <p>PE-09 is worth <strong>30 points</strong> and is graded according to the following rubric:</p>
+
+  <table>
+    <caption>PE-09 Grading Rubric (30 points total)</caption>
+    <thead>
+      <tr><th>Criterion</th><th>Weight</th><th>Points</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Correctness</strong></td>
+        <td>50%</td>
+        <td>15</td>
+        <td>All four algorithms produce correct output on provided and edge-case inputs. BFS/DFS traversal orders are valid; MST weight is minimal and edge count is $$|V|-1$$; Dijkstra&rsquo;s distances and reconstructed paths are correct.</td>
+      </tr>
+      <tr>
+        <td><strong>Code Quality</strong></td>
+        <td>25%</td>
+        <td>7.5</td>
+        <td>Well-structured, readable code. Meaningful variable/method names. Consistent formatting. Modular design (separate methods/classes for each algorithm). No dead code.</td>
+      </tr>
+      <tr>
+        <td><strong>Documentation</strong></td>
+        <td>15%</td>
+        <td>4.5</td>
+        <td>README with compile/run instructions. Inline comments explaining non-obvious logic. MST algorithm choice justification. Brief complexity analysis for each algorithm.</td>
+      </tr>
+      <tr>
+        <td><strong>Testing</strong></td>
+        <td>10%</td>
+        <td>3</td>
+        <td>At least two different graph structures tested. Performance comparison output included. Edge cases tested (disconnected graph, single vertex, etc.).</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ===== DELIVERABLES ===== -->
+<section id="deliverables">
+  <h2>Deliverables &amp; Submission Notes</h2>
+
+  <h3>What to Submit</h3>
+  <ol>
+    <li><strong>Source Code</strong> &mdash; All <code>.java</code> or <code>.cpp</code> / <code>.h</code> files. Code must compile and run without external dependencies.</li>
+    <li><strong>README</strong> &mdash; A text or Markdown file containing:
+      <ul>
+        <li>Your name and the date.</li>
+        <li>Programming language and version used.</li>
+        <li>Compile and run instructions (exact commands).</li>
+        <li>MST algorithm choice and brief justification (2&ndash;3 sentences).</li>
+        <li>Brief complexity analysis for each algorithm (a few sentences or a table).</li>
+      </ul>
+    </li>
+    <li><strong>Test Cases / Output</strong> &mdash; Include sample output demonstrating:
+      <ul>
+        <li>BFS and DFS traversal on at least one graph.</li>
+        <li>MST output (edges, total weight).</li>
+        <li>Dijkstra&rsquo;s output (distances, reconstructed paths).</li>
+        <li>Performance comparison on at least two graph structures.</li>
+      </ul>
+    </li>
+  </ol>
+
+  <div class="info-box">
+    <strong>Where to Submit:</strong> Submit all files to the <strong>PE-09: Graph Algorithms Implementation</strong> assignment in Canvas. Check the assignment page in Canvas for the submission portal and any file format requirements. Do not submit to the Final Project assignment&mdash;PE-09 is a separate graded item.
+  </div>
+
+  <div class="alert-box">
+    <strong>Reminder:</strong> PE-09 is worth 30 points and is part of the Programming Exercises category (15% of your final grade). The due date is managed in Canvas&mdash;check the assignment page for the deadline.
+  </div>
+</section>
+
+<!-- ===== COMMON PITFALLS ===== -->
+<section id="pitfalls">
+  <h2>Common Pitfalls</h2>
+  <details>
+    <summary>Expand to view common implementation mistakes</summary>
+    <div class="details-body">
+      <h4>General</h4>
+      <ul>
+        <li><strong>Forgetting to reset the visited array</strong> between algorithm runs. If you run BFS, then DFS on the same graph without resetting, DFS will think all vertices are already visited.</li>
+        <li><strong>Off-by-one errors in vertex numbering.</strong> Decide whether vertices are 0-indexed or 1-indexed and be consistent everywhere.</li>
+        <li><strong>Not handling disconnected graphs.</strong> BFS/DFS from a single source will not visit all vertices in a disconnected graph&mdash;this is correct behavior, not a bug.</li>
+      </ul>
+
+      <h4>BFS / DFS</h4>
+      <ul>
+        <li><strong>Marking visited on pop instead of push.</strong> If you mark a vertex as visited when you dequeue/pop it (instead of when you enqueue/push it), you may add duplicate entries to the queue/stack, wasting time and potentially producing incorrect output.</li>
+        <li><strong>Iterative DFS producing different order than recursive DFS.</strong> This is normal&mdash;the explicit stack processes neighbors in a different order than the call stack. Both are valid DFS traversals.</li>
+      </ul>
+
+      <h4>Kruskal&rsquo;s Algorithm</h4>
+      <ul>
+        <li><strong>Not implementing path compression in Union-Find.</strong> Without path compression, <code>find()</code> degrades to $$O(|V|)$$ per call, making the overall algorithm much slower.</li>
+        <li><strong>Forgetting to stop after $$|V|-1$$ edges.</strong> Once the MST has $$|V|-1$$ edges, you can stop processing&mdash;no more edges are needed.</li>
+      </ul>
+
+      <h4>Prim&rsquo;s Algorithm</h4>
+      <ul>
+        <li><strong>Not handling the decreaseKey limitation.</strong> Standard library priority queues typically do not support <code>decreaseKey</code>. Use lazy deletion: insert a new entry with the updated key and skip stale entries when popping.</li>
+        <li><strong>Starting from a vertex not in the graph.</strong> Always validate the starting vertex.</li>
+      </ul>
+
+      <h4>Dijkstra&rsquo;s Algorithm</h4>
+      <ul>
+        <li><strong>Integer overflow when adding distances.</strong> If $$d[u]$$ is set to <code>Integer.MAX_VALUE</code> and you compute $$d[u] + w(u,v)$$, the result overflows. Check for infinity before adding, or use <code>long</code>.</li>
+        <li><strong>Using Dijkstra&rsquo;s on graphs with negative edge weights.</strong> Dijkstra&rsquo;s assumes non-negative weights. If any weight is negative, the algorithm may produce incorrect results.</li>
+        <li><strong>Forgetting to track predecessors for path reconstruction.</strong> The distance array alone tells you the shortest distance, but without predecessor pointers you cannot reconstruct the actual path.</li>
+        <li><strong>Not skipping already-finalized vertices.</strong> When using lazy deletion with the priority queue, you must check whether a popped vertex has already been processed. If it has, skip it.</li>
+      </ul>
+    </div>
+  </details>
+</section>
+
+<!-- ===== SAVE AS PDF ===== -->
+<div class="btn-bar" aria-label="Page actions">
+  <button class="btn btn-primary" id="savePdfBtn" type="button" aria-label="Save this page and your notes as a PDF">Save as PDF</button>
+</div>
+
+</div><!-- /.container -->
+
+<script>
+(function(){
+  "use strict";
+  var btn=document.getElementById("savePdfBtn");
+  if(!btn) return;
+  btn.addEventListener("click",function(){
+    /* Expand all details so notes are visible in print */
+    var details=document.querySelectorAll("details");
+    var prevStates=[];
+    details.forEach(function(d){prevStates.push(d.open);d.open=true;});
+    /* Convert textareas to visible divs for print (textareas sometimes don't print content) */
+    var areas=document.querySelectorAll("textarea");
+    var clones=[];
+    areas.forEach(function(ta){
+      var div=document.createElement("div");
+      div.style.whiteSpace="pre-wrap";
+      div.style.border="1px solid #999";
+      div.style.padding=".5rem";
+      div.style.minHeight="60px";
+      div.style.fontFamily="inherit";
+      div.style.fontSize=".93rem";
+      div.style.background="#fff";
+      div.textContent=ta.value||"(no notes entered)";
+      ta.parentNode.insertBefore(div,ta.nextSibling);
+      ta.style.display="none";
+      clones.push({ta:ta,div:div});
+    });
+    window.print();
+    /* Restore state */
+    details.forEach(function(d,i){d.open=prevStates[i];});
+    clones.forEach(function(c){c.ta.style.display="";c.div.parentNode.removeChild(c.div);});
+  });
+})();
+</script>
+
+</body>
+</html>
