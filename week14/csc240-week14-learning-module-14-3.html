@@ -189,7 +189,7 @@ code{background:#EEF1F5;padding:.15rem .35rem;border-radius:4px;font-size:.9em;f
     <ol>
       <li>Sort every edge by weight.</li>
       <li>Process edges lightest-first; add an edge if it connects two different components (Union-Find cycle check).</li>
-      <li>Stop after $$|V| - 1$$ edges.</li>
+      <li>Stop after |V| − 1 edges.</li>
     </ol>
     <p>Kruskal's works globally—it doesn't care <em>where</em> in the graph the next cheapest edge lives. Now we shift to a fundamentally different perspective.</p>
 
@@ -222,11 +222,11 @@ code{background:#EEF1F5;padding:.15rem .35rem;border-radius:4px;font-size:.9em;f
 
     <h3>High-Level Idea</h3>
     <ol>
-      <li><strong>Initialize:</strong> Pick any start vertex $$s$$. Set its <em>key</em> (cheapest known connection cost) to 0; set every other vertex's key to $$\infty$$. Insert all vertices into a min-priority queue keyed on these values.</li>
+      <li><strong>Initialize:</strong> Pick any start vertex s. Set its <em>key</em> (cheapest known connection cost) to 0; set every other vertex's key to ∞. Insert all vertices into a min-priority queue keyed on these values.</li>
       <li><strong>Repeat</strong> until the queue is empty:
         <ol type="a">
-          <li><strong>Extract-Min:</strong> Remove the vertex $$u$$ with the smallest key. Add $$u$$ (and its connecting edge) to the MST.</li>
-          <li><strong>Relax neighbors:</strong> For every neighbor $$v$$ of $$u$$ still in the queue, if $$w(u,v) < \text{key}[v]$$, then update $$\text{key}[v] \leftarrow w(u,v)$$ and record $$\text{parent}[v] \leftarrow u$$ (this is the <strong>decreaseKey</strong> operation).</li>
+          <li><strong>Extract-Min:</strong> Remove the vertex u with the smallest key. Add u (and its connecting edge) to the MST.</li>
+          <li><strong>Relax neighbors:</strong> For every neighbor v of u still in the queue, if w(u,v) &lt; key[v], then update key[v] ← w(u,v) and record parent[v] ← u (this is the <strong>decreaseKey</strong> operation).</li>
         </ol>
       </li>
       <li><strong>Result:</strong> The parent pointers form the MST.</li>
@@ -234,7 +234,7 @@ code{background:#EEF1F5;padding:.15rem .35rem;border-radius:4px;font-size:.9em;f
 
     <div class="callout concept">
       <div class="callout-title">💡 The Greedy Choice</div>
-      At every step, Prim's selects the lightest edge crossing the cut $$(S, V \setminus S)$$, where $$S$$ is the set of vertices already extracted. By the <strong>Cut Property</strong>, this edge is safe to add to the MST.
+      At every step, Prim's selects the lightest edge crossing the boundary cut (S, V ∖ S), where S is the set of vertices already extracted. By the <strong>Cut Property</strong>, this edge is safe to add to the MST.
     </div>
 
     <h3>Pseudocode</h3>
@@ -264,16 +264,16 @@ code{background:#EEF1F5;padding:.15rem .35rem;border-radius:4px;font-size:.9em;f
         <caption>Arrays maintained during Prim's</caption>
         <thead><tr><th>Array</th><th>Purpose</th></tr></thead>
         <tbody>
-          <tr><td><code>key[v]</code></td><td>Cheapest known edge weight connecting $$v$$ to the growing MST. Initialized to $$\infty$$; updated by <strong>decreaseKey</strong>.</td></tr>
-          <tr><td><code>parent[v]</code></td><td>The vertex in the MST that connects to $$v$$ via the edge of weight $$\text{key}[v]$$. Together, all parent pointers form the MST edges.</td></tr>
-          <tr><td><code>inQueue[v]</code></td><td>Boolean flag — <code>TRUE</code> if $$v$$ is still in the priority queue (not yet added to the MST).</td></tr>
+          <tr><td><code>key[v]</code></td><td>Cheapest known edge weight connecting v to the growing MST. Initialized to ∞; updated by <strong>decreaseKey</strong>.</td></tr>
+          <tr><td><code>parent[v]</code></td><td>The vertex in the MST that connects to v via the edge of weight key[v]. Together, all parent pointers form the MST edges.</td></tr>
+          <tr><td><code>inQueue[v]</code></td><td>Boolean flag — <code>TRUE</code> if v is still in the priority queue (not yet added to the MST).</td></tr>
         </tbody>
       </table>
     </div>
 
     <div class="callout tip">
       <div class="callout-title">✅ Remember</div>
-      <code>key[v]</code> is <strong>not</strong> the total path cost from the start (that would be Dijkstra's). It is only the weight of the single cheapest edge from any MST vertex to $$v$$.
+      <code>key[v]</code> is <strong>not</strong> the total path cost from the start (that would be Dijkstra's). It is only the weight of the single cheapest edge from any MST vertex to v.
     </div>
 
   </div>
@@ -295,28 +295,28 @@ code{background:#EEF1F5;padding:.15rem .35rem;border-radius:4px;font-size:.9em;f
         <caption>Min-Heap Operations Used by Prim's</caption>
         <thead><tr><th>Operation</th><th>What Prim's Uses It For</th><th>Binary Heap Cost</th></tr></thead>
         <tbody>
-          <tr><td><strong>buildHeap</strong></td><td>Initialize the queue with all $$|V|$$ vertices</td><td>$$O(|V|)$$</td></tr>
-          <tr><td><strong>extractMin</strong></td><td>Get the next vertex to add to the MST</td><td>$$O(\log |V|)$$</td></tr>
-          <tr><td><strong>decreaseKey</strong></td><td>Update <code>key[v]</code> when a cheaper connecting edge is found</td><td>$$O(\log |V|)$$</td></tr>
+          <tr><td><strong>buildHeap</strong></td><td>Initialize the queue with all |V| vertices</td><td>O(|V|)</td></tr>
+          <tr><td><strong>extractMin</strong></td><td>Get the next vertex to add to the MST</td><td>O(log |V|)</td></tr>
+          <tr><td><strong>decreaseKey</strong></td><td>Update <code>key[v]</code> when a cheaper connecting edge is found</td><td>O(log |V|)</td></tr>
         </tbody>
       </table>
     </div>
 
     <h3>How decreaseKey Works</h3>
     <ol>
-      <li>Locate vertex $$v$$ in the heap (using an index map for $$O(1)$$ lookup).</li>
+      <li>Locate vertex v in the heap (using an index map for O(1) lookup).</li>
       <li>Replace its key with the new, smaller value.</li>
-      <li><strong>Bubble up</strong> (sift up): swap $$v$$ with its parent while $$v$$'s key is smaller than its parent's key.</li>
+      <li><strong>Bubble up</strong> (sift up): swap v with its parent while v's key is smaller than its parent's key.</li>
     </ol>
-    <p>This restores the min-heap property in $$O(\log |V|)$$ time because the heap has height $$\lfloor \log_2 |V| \rfloor$$.</p>
+    <p>This restores the min-heap property in O(log |V|) time because the heap has height ⌊log₂ |V|⌋.</p>
 
     <div class="callout concept">
       <div class="callout-title">💡 decreaseKey Is the Critical Operation</div>
-      Without decreaseKey, you would need to remove and reinsert a vertex every time you find a cheaper edge—losing the efficiency advantage. The ability to update a key <em>in place</em> and restore heap order is what makes the binary-heap implementation of Prim's run in $$O((|V|+|E|) \log |V|)$$.
+      Without decreaseKey, you would need to remove and reinsert a vertex every time you find a cheaper edge—losing the efficiency advantage. The ability to update a key <em>in place</em> and restore heap order is what makes the binary-heap implementation of Prim's run in O((|V| + |E|) log |V|).
     </div>
 
     <h3>Alternative: Fibonacci Heap</h3>
-    <p>A <strong>Fibonacci heap</strong> achieves <em>amortized</em> $$O(1)$$ decreaseKey, which drops Prim's total to $$O(|E| + |V| \log |V|)$$. In practice, the constant factors are large, so binary heaps are used more often for moderate graph sizes. For this course, we focus on the <strong>binary min-heap</strong> implementation.</p>
+    <p>A <strong>Fibonacci heap</strong> achieves <em>amortized</em> O(1) decreaseKey, which drops Prim's total to O(|E| + |V| log |V|). In practice, the constant factors are large, so binary heaps are used more often for moderate graph sizes. For this course, we focus on the <strong>binary min-heap</strong> implementation.</p>
 
     <div class="callout connection">
       <div class="callout-title">🔗 Final Project Connection (Component 4)</div>
@@ -452,16 +452,16 @@ code{background:#EEF1F5;padding:.15rem .35rem;border-radius:4px;font-size:.9em;f
   <div class="section-body open" id="complexity-body" role="region">
 
     <h3>Counting Operations</h3>
-    <p>Let $$|V|$$ = number of vertices and $$|E|$$ = number of edges.</p>
+    <p>Let |V| = number of vertices and |E| = number of edges.</p>
 
     <div class="table-wrap">
       <table>
         <caption>Prim's Operation Counts (Binary Min-Heap)</caption>
         <thead><tr><th>Operation</th><th>Times Called</th><th>Cost per Call</th><th>Total</th></tr></thead>
         <tbody>
-          <tr><td>buildHeap</td><td>1</td><td>$$O(|V|)$$</td><td>$$O(|V|)$$</td></tr>
-          <tr><td>extractMin</td><td>$$|V|$$</td><td>$$O(\log |V|)$$</td><td>$$O(|V| \log |V|)$$</td></tr>
-          <tr><td>decreaseKey</td><td>At most $$|E|$$</td><td>$$O(\log |V|)$$</td><td>$$O(|E| \log |V|)$$</td></tr>
+          <tr><td>buildHeap</td><td>1</td><td>O(|V|)</td><td>O(|V|)</td></tr>
+          <tr><td>extractMin</td><td>|V|</td><td>O(log |V|)</td><td>O(|V| log |V|)</td></tr>
+          <tr><td>decreaseKey</td><td>At most |E|</td><td>O(log |V|)</td><td>O(|E| log |V|)</td></tr>
         </tbody>
       </table>
     </div>
@@ -469,27 +469,27 @@ code{background:#EEF1F5;padding:.15rem .35rem;border-radius:4px;font-size:.9em;f
     <h3>Deriving the Total</h3>
     <p>Summing all contributions:</p>
     <p style="text-align:center;font-size:1.1rem;margin:1rem 0;">
-      $$T(V,E) = O(|V|) + O(|V| \log |V|) + O(|E| \log |V|) = O\bigl((|V| + |E|) \log |V|\bigr)$$
+      T(V,E) = O(|V|) + O(|V| log |V|) + O(|E| log |V|) = O((|V| + |E|) log |V|)
     </p>
-    <p>Since a connected graph has $$|E| \geq |V| - 1$$, the $$|E| \log |V|$$ term dominates, so we often write simply:</p>
+    <p>Since a connected graph has |E| ≥ |V| − 1, the |E| log |V| term dominates, so we often write simply:</p>
     <p style="text-align:center;font-size:1.1rem;margin:1rem 0;">
-      $$O(|E| \log |V|)$$
+      O(|E| log |V|)
     </p>
 
     <div class="callout concept">
       <div class="callout-title">💡 Same Big-O as Kruskal's!</div>
-      Kruskal's is $$O(|E| \log |E|)$$. Since $$\log |E| = O(\log |V|^2) = O(2 \log |V|) = O(\log |V|)$$, both algorithms have the <strong>same asymptotic complexity</strong> for connected graphs. The practical difference lies in constant factors and data-structure overhead, which we explore in the comparison table.
+      Kruskal's is O(|E| log |E|). Since log |E| = O(log |V|²) = O(2 log |V|) = O(log |V|), both algorithms have the <strong>same asymptotic complexity</strong> for connected graphs. The practical difference lies in constant factors and data-structure overhead, which we explore in the comparison table.
     </div>
 
     <h3>Dense Graphs: Adjacency Matrix Variant</h3>
-    <p>For <strong>dense graphs</strong> where $$|E| \approx |V|^2$$, a simpler implementation avoids the heap entirely:</p>
+    <p>For <strong>dense graphs</strong> where |E| ≈ |V|², a simpler implementation avoids the heap entirely:</p>
     <ul>
       <li>Store <code>key[]</code> in a plain array.</li>
-      <li>Each extractMin scans the array in $$O(|V|)$$.</li>
-      <li>decreaseKey is $$O(1)$$ (just update the array).</li>
-      <li>Total: $$|V|$$ extractions × $$O(|V|)$$ + $$|E|$$ relaxations × $$O(1)$$ = $$O(|V|^2)$$.</li>
+      <li>Each extractMin scans the array in O(|V|).</li>
+      <li>decreaseKey is O(1) (just update the array).</li>
+      <li>Total: |V| extractions × O(|V|) + |E| relaxations × O(1) = O(|V|²).</li>
     </ul>
-    <p>For dense graphs, $$O(|V|^2)$$ beats $$O(|E| \log |V|) = O(|V|^2 \log |V|)$$, making the array version preferable.</p>
+    <p>For dense graphs, O(|V|²) beats O(|E| log |V|) = O(|V|² log |V|), making the array version preferable.</p>
 
   </div>
 </section>
@@ -529,23 +529,23 @@ code{background:#EEF1F5;padding:.15rem .35rem;border-radius:4px;font-size:.9em;f
           </tr>
           <tr>
             <td><strong>Requires Sorted Edges?</strong></td>
-            <td>Yes — sort all edges first: $$O(|E| \log |E|)$$</td>
+            <td>Yes — sort all edges first: O(|E| log |E|)</td>
             <td>No — heap manages ordering dynamically</td>
           </tr>
           <tr>
             <td><strong>Time Complexity</strong></td>
-            <td>$$O(|E| \log |E|)$$ ≈ $$O(|E| \log |V|)$$</td>
-            <td>$$O((|V|+|E|) \log |V|)$$ with binary heap; $$O(|V|^2)$$ with array</td>
+            <td>O(|E| log |E|) ≈ O(|E| log |V|)</td>
+            <td>O((|V|+|E|) log |V|) with binary heap; O(|V|²) with array</td>
           </tr>
           <tr>
-            <td><strong>Best for Sparse Graphs</strong><br>($$|E| \approx |V|$$)</td>
+            <td><strong>Best for Sparse Graphs</strong><br>(|E| ≈ |V|)</td>
             <td class="pro">✔ Preferred — sorting a small edge list is fast; Union-Find is lightweight</td>
             <td>Acceptable, but heap overhead can be higher</td>
           </tr>
           <tr>
-            <td><strong>Best for Dense Graphs</strong><br>($$|E| \approx |V|^2$$)</td>
-            <td class="con">Sorting $$|V|^2$$ edges is expensive</td>
-            <td class="pro">✔ Preferred — array-based variant runs in $$O(|V|^2)$$</td>
+            <td><strong>Best for Dense Graphs</strong><br>(|E| ≈ |V|²)</td>
+            <td class="con">Sorting |V|² edges is expensive</td>
+            <td class="pro">✔ Preferred — array-based variant runs in O(|V|²)</td>
           </tr>
           <tr>
             <td><strong>Disconnected Graphs</strong></td>
@@ -575,8 +575,8 @@ code{background:#EEF1F5;padding:.15rem .35rem;border-radius:4px;font-size:.9em;f
     <div class="callout tip">
       <div class="callout-title">✅ When to Choose Which</div>
       <ol>
-        <li><strong>Is the graph sparse</strong> ($$|E|$$ close to $$|V|$$)? → Lean toward <strong>Kruskal's</strong>.</li>
-        <li><strong>Is the graph dense</strong> ($$|E|$$ close to $$|V|^2$$)? → Lean toward <strong>Prim's</strong> (array variant).</li>
+        <li><strong>Is the graph sparse</strong> (|E| close to |V|)? → Lean toward <strong>Kruskal's</strong>.</li>
+        <li><strong>Is the graph dense</strong> (|E| close to |V|²)? → Lean toward <strong>Prim's</strong> (array variant).</li>
         <li><strong>Is the graph potentially disconnected</strong> and you need a spanning forest? → <strong>Kruskal's</strong> handles this natively.</li>
         <li><strong>Do you already have an adjacency list</strong> and a priority queue library? → <strong>Prim's</strong> avoids building an edge list and sorting.</li>
         <li><strong>Tie?</strong> Both produce correct MSTs with the same asymptotic complexity. Choose based on available data structures and implementation comfort.</li>
@@ -675,24 +675,24 @@ code{background:#EEF1F5;padding:.15rem .35rem;border-radius:4px;font-size:.9em;f
     <!-- KC 14.3a -->
     <div class="kc-container" id="kc-a">
       <h4>Knowledge Check 14.3a — Prim's Core Mechanism</h4>
-      <p>In Prim's algorithm, what does the <code>key[v]</code> value represent for a vertex $$v$$ that is still in the priority queue?</p>
+      <p>In Prim's algorithm, what does the <code>key[v]</code> value represent for a vertex v that is still in the priority queue?</p>
       <fieldset style="border:none;padding:0;margin:0;">
         <legend class="sr-only">Select one answer for Knowledge Check 14.3a</legend>
         <div class="kc-option">
           <input type="radio" id="kca1" name="kca" value="1">
-          <label for="kca1">A. The total shortest-path distance from the start vertex to $$v$$</label>
+          <label for="kca1">A. The total shortest-path distance from the start vertex to v</label>
         </div>
         <div class="kc-option">
           <input type="radio" id="kca2" name="kca" value="2">
-          <label for="kca2">B. The weight of the lightest edge connecting $$v$$ to any vertex already in the MST</label>
+          <label for="kca2">B. The weight of the lightest edge connecting v to any vertex already in the MST</label>
         </div>
         <div class="kc-option">
           <input type="radio" id="kca3" name="kca" value="3">
-          <label for="kca3">C. The degree of vertex $$v$$ in the original graph</label>
+          <label for="kca3">C. The degree of vertex v in the original graph</label>
         </div>
         <div class="kc-option">
           <input type="radio" id="kca4" name="kca" value="4">
-          <label for="kca4">D. The number of edges processed so far that are incident to $$v$$</label>
+          <label for="kca4">D. The number of edges processed so far that are incident to v</label>
         </div>
       </fieldset>
       <button class="kc-btn" onclick="checkAnswer('kca','2','kca-fb')">Check Answer</button>
@@ -707,19 +707,19 @@ code{background:#EEF1F5;padding:.15rem .35rem;border-radius:4px;font-size:.9em;f
         <legend class="sr-only">Select one answer for Knowledge Check 14.3b</legend>
         <div class="kc-option">
           <input type="radio" id="kcb1" name="kcb" value="1">
-          <label for="kcb1">A. $$O(1)$$</label>
+          <label for="kcb1">A. O(1)</label>
         </div>
         <div class="kc-option">
           <input type="radio" id="kcb2" name="kcb" value="2">
-          <label for="kcb2">B. $$O(\log |V|)$$</label>
+          <label for="kcb2">B. O(log |V|)</label>
         </div>
         <div class="kc-option">
           <input type="radio" id="kcb3" name="kcb" value="3">
-          <label for="kcb3">C. $$O(|V|)$$</label>
+          <label for="kcb3">C. O(|V|)</label>
         </div>
         <div class="kc-option">
           <input type="radio" id="kcb4" name="kcb" value="4">
-          <label for="kcb4">D. $$O(|E|)$$</label>
+          <label for="kcb4">D. O(|E|)</label>
         </div>
       </fieldset>
       <button class="kc-btn" onclick="checkAnswer('kcb','2','kcb-fb')">Check Answer</button>
@@ -729,16 +729,16 @@ code{background:#EEF1F5;padding:.15rem .35rem;border-radius:4px;font-size:.9em;f
     <!-- KC 14.3c -->
     <div class="kc-container" id="kc-c">
       <h4>Knowledge Check 14.3c — Kruskal's vs. Prim's on Dense Graphs</h4>
-      <p>For a <strong>dense graph</strong> where $$|E| \approx |V|^2$$, which statement is most accurate?</p>
+      <p>For a <strong>dense graph</strong> where |E| ≈ |V|², which statement is most accurate?</p>
       <fieldset style="border:none;padding:0;margin:0;">
         <legend class="sr-only">Select one answer for Knowledge Check 14.3c</legend>
         <div class="kc-option">
           <input type="radio" id="kcc1" name="kcc" value="1">
-          <label for="kcc1">A. Kruskal's is faster because Union-Find operations are $$O(1)$$</label>
+          <label for="kcc1">A. Kruskal's is faster because Union-Find operations are O(1)</label>
         </div>
         <div class="kc-option">
           <input type="radio" id="kcc2" name="kcc" value="2">
-          <label for="kcc2">B. Prim's (array-based) at $$O(|V|^2)$$ is preferable to Kruskal's at $$O(|V|^2 \log |V|)$$</label>
+          <label for="kcc2">B. Prim's (array-based) at O(|V|²) is preferable to Kruskal's at O(|V|² log |V|)</label>
         </div>
         <div class="kc-option">
           <input type="radio" id="kcc3" name="kcc" value="3">
@@ -794,7 +794,7 @@ code{background:#EEF1F5;padding:.15rem .35rem;border-radius:4px;font-size:.9em;f
     <ul>
       <li><strong>Prim's algorithm</strong> is a vertex-centric greedy MST algorithm that grows a tree from a single source by always adding the cheapest crossing edge.</li>
       <li>It relies on a <strong>min-priority queue</strong> with <code>extractMin</code> and <code>decreaseKey</code> as its critical operations.</li>
-      <li>With a binary min-heap, Prim's runs in $$O((|V|+|E|) \log |V|)$$; with a plain array on dense graphs, it runs in $$O(|V|^2)$$.</li>
+      <li>With a binary min-heap, Prim's runs in O((|V|+|E|) log |V|); with a plain array on dense graphs, it runs in O(|V|²).</li>
       <li>Kruskal's and Prim's have the <strong>same asymptotic complexity</strong> but differ in approach, data structures, and practical suitability depending on graph density and connectivity.</li>
       <li>Both algorithms are justified by the <strong>Cut Property</strong> (Module 14.1).</li>
     </ul>
