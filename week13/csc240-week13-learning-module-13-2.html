@@ -313,22 +313,22 @@ details .detail-body{padding:4px 18px 18px;}
 <!-- ============================================================ -->
 <h2 id="timestamps">4 &nbsp;Discovery and Finish Timestamps</h2>
 
-<p>The recursive DFS algorithm maintains a global clock. Each vertex $$v$$ gets two timestamps:</p>
+<p>The recursive DFS algorithm maintains a global clock. Each vertex v gets two timestamps:</p>
 
 <ul>
-  <li><strong>$$d[v]$$</strong> — <em>discovery time</em>: when $$v$$ is first encountered (colored GRAY).</li>
-  <li><strong>$$f[v]$$</strong> — <em>finish time</em>: when $$v$$'s subtree is fully explored (colored BLACK).</li>
+  <li><strong>d[v]</strong> — <em>discovery time</em>: when v is first encountered (colored GRAY).</li>
+  <li><strong>f[v]</strong> — <em>finish time</em>: when v's subtree is fully explored (colored BLACK).</li>
 </ul>
 
-<p>For a graph with $$|V|$$ vertices, the timestamps use the integers $$1$$ through $$2|V|$$ (each vertex accounts for exactly two ticks of the clock).</p>
+<p>For a graph with |V| vertices, the timestamps use the integers 1 through 2|V| (each vertex accounts for exactly two ticks of the clock).</p>
 
 <h3>4.1 &nbsp;The Parenthesis Theorem</h3>
 
 <div class="callout definition">
   <div class="callout-title">📖 Parenthesis Theorem</div>
-  <p>For any two vertices $$u$$ and $$v$$ in a DFS, exactly one of the following is true:</p>
+  <p>For any two vertices u and v in a DFS, exactly one of the following is true:</p>
   <ol style="margin-bottom:0;">
-    <li>The intervals $$[d[u], f[u]]$$ and $$[d[v], f[v]]$$ are <strong>entirely disjoint</strong> — neither is an ancestor of the other in the DFS tree.</li>
+    <li>The intervals [d[u], f[u]] and [d[v], f[v]] are <strong>entirely disjoint</strong> — neither is an ancestor of the other in the DFS tree.</li>
     <li>One interval <strong>entirely contains</strong> the other — the vertex with the containing interval is an ancestor of the other in the DFS tree.</li>
   </ol>
   <p style="margin-top:8px;margin-bottom:0;">No two intervals <em>partially overlap</em>. If you replace each discovery with "<code>(</code>" and each finish with "<code>)</code>", you get a string of properly nested parentheses — hence the name.</p>
@@ -402,23 +402,23 @@ details .detail-body{padding:4px 18px 18px;}
   <tr><th>Edge Type</th><th>Description</th><th>Timestamp Condition</th></tr>
   <tr>
     <td><strong>Tree edge</strong></td>
-    <td>Edge $$(u, v)$$ where $$v$$ is WHITE when explored from $$u$$. These edges form the DFS tree.</td>
-    <td>$$d[u] < d[v] < f[v] < f[u]$$</td>
+    <td>Edge (u, v) where v is WHITE when explored from u. These edges form the DFS tree.</td>
+    <td>d[u] &lt; d[v] &lt; f[v] &lt; f[u]</td>
   </tr>
   <tr>
     <td><strong>Back edge</strong></td>
-    <td>Edge $$(u, v)$$ where $$v$$ is GRAY — $$v$$ is an ancestor of $$u$$ in the DFS tree. <em>Back edges indicate cycles.</em></td>
-    <td>$$d[v] < d[u] < f[u] < f[v]$$</td>
+    <td>Edge (u, v) where v is GRAY — v is an ancestor of u in the DFS tree. <em>Back edges indicate cycles.</em></td>
+    <td>d[v] &lt; d[u] &lt; f[u] &lt; f[v]</td>
   </tr>
   <tr>
     <td><strong>Forward edge</strong></td>
-    <td>Edge $$(u, v)$$ where $$v$$ is BLACK and $$v$$ is a descendant of $$u$$ (not via a tree edge).</td>
-    <td>$$d[u] < d[v] < f[v] < f[u]$$</td>
+    <td>Edge (u, v) where v is BLACK and v is a descendant of u (not via a tree edge).</td>
+    <td>d[u] &lt; d[v] &lt; f[v] &lt; f[u]</td>
   </tr>
   <tr>
     <td><strong>Cross edge</strong></td>
-    <td>Edge $$(u, v)$$ where $$v$$ is BLACK and $$v$$ is neither an ancestor nor a descendant of $$u$$.</td>
-    <td>$$d[v] < f[v] < d[u] < f[u]$$</td>
+    <td>Edge (u, v) where v is BLACK and v is neither an ancestor nor a descendant of u.</td>
+    <td>d[v] &lt; f[v] &lt; d[u] &lt; f[u]</td>
   </tr>
 </table>
 
@@ -439,28 +439,28 @@ details .detail-body{padding:4px 18px 18px;}
 <!-- ============================================================ -->
 <!--  SECTION 6 — COMPLEXITY                                     -->
 <!-- ============================================================ -->
-<h2 id="complexity">6 &nbsp;Time Complexity: $$O(|V| + |E|)$$</h2>
+<h2 id="complexity">6 &nbsp;Time Complexity: O(|V| + |E|)</h2>
 
 <p>The complexity analysis for DFS mirrors BFS almost exactly.</p>
 
 <h3>6.1 &nbsp;On an Adjacency List</h3>
 <ol>
-  <li><strong>Initialization:</strong> The outer loop in <code>DFS(G)</code> visits every vertex once to check its color → $$O(|V|)$$.</li>
-  <li><strong>DFS-Visit calls:</strong> Each vertex is the argument of <code>DFS-Visit</code> at most once (it must be WHITE to enter). Inside <code>DFS-Visit(G, u)</code>, we scan the adjacency list of $$u$$, which has $$\deg(u)$$ entries.</li>
-  <li><strong>Total adjacency-list work:</strong> Summing over all vertices: $$\sum_{u \in V} \deg(u) = 2|E|$$ for undirected graphs (by the Handshaking Lemma from Week&nbsp;12) or $$|E|$$ for directed graphs.</li>
+  <li><strong>Initialization:</strong> The outer loop in <code>DFS(G)</code> visits every vertex once to check its color → O(|V|).</li>
+  <li><strong>DFS-Visit calls:</strong> Each vertex is the argument of <code>DFS-Visit</code> at most once (it must be WHITE to enter). Inside <code>DFS-Visit(G, u)</code>, we scan the adjacency list of u, which has deg(u) entries.</li>
+  <li><strong>Total adjacency-list work:</strong> Summing over all vertices: ∑ deg(u) = 2|E| for undirected graphs (by the Handshaking Lemma from Week&nbsp;12) or |E| for directed graphs.</li>
 </ol>
 
 <p>Therefore:</p>
 
-$$T_{\text{DFS}} = O(|V| + |E|)$$
+<p class="text-center"><strong>T<sub>DFS</sub> = O(|V| + |E|)</strong></p>
 
 <p>This is the same asymptotic complexity as BFS. Both algorithms are <strong>linear</strong> in the size of the graph.</p>
 
 <h3>6.2 &nbsp;On an Adjacency Matrix</h3>
 
-<p>If the graph is stored as an adjacency matrix, checking all neighbors of a vertex takes $$O(|V|)$$ instead of $$O(\deg(u))$$. Summing over all vertices:</p>
+<p>If the graph is stored as an adjacency matrix, checking all neighbors of a vertex takes O(|V|) instead of O(deg(u)). Summing over all vertices:</p>
 
-$$T_{\text{DFS-matrix}} = O(|V|^2)$$
+<p class="text-center"><strong>T<sub>DFS-matrix</sub> = O(|V|²)</strong></p>
 
 <p>This is why adjacency lists are preferred for traversal algorithms on sparse graphs — the same conclusion you reached for BFS in Module&nbsp;13.1.</p>
 
@@ -766,23 +766,23 @@ public class DFSIterative {
 
 <h3>9.1 &nbsp;What We Want to Prove</h3>
 
-<p><strong>Claim:</strong> Starting from any source vertex $$s$$, <code>DFS-Visit(G, s)</code> correctly visits every vertex reachable from $$s$$.</p>
+<p><strong>Claim:</strong> Starting from any source vertex s, <code>DFS-Visit(G, s)</code> correctly visits every vertex reachable from s.</p>
 
-<h3>9.2 &nbsp;Proof by Strong Induction on $$k$$, the Number of Reachable Vertices</h3>
+<h3>9.2 &nbsp;Proof by Strong Induction on k, the Number of Reachable Vertices</h3>
 
-<h4>Base Case ($$k = 1$$)</h4>
-<p>If only one vertex is reachable from $$s$$ (namely $$s$$ itself, with no unvisited neighbors), then <code>DFS-Visit(G, s)</code> discovers $$s$$, finds no WHITE neighbors, and finishes. The single reachable vertex is correctly visited. ✓</p>
+<h4>Base Case (k = 1)</h4>
+<p>If only one vertex is reachable from s (namely s itself, with no unvisited neighbors), then <code>DFS-Visit(G, s)</code> discovers s, finds no WHITE neighbors, and finishes. The single reachable vertex is correctly visited. ✓</p>
 
 <h4>Inductive Hypothesis</h4>
-<p>Assume that for every graph and every source vertex, if the number of reachable unvisited vertices is at most $$k$$ (for some $$k \geq 1$$), then <code>DFS-Visit</code> correctly visits all of them.</p>
+<p>Assume that for every graph and every source vertex, if the number of reachable unvisited vertices is at most k (for some k ≥ 1), then <code>DFS-Visit</code> correctly visits all of them.</p>
 
-<h4>Inductive Step (show it works for $$k + 1$$)</h4>
-<p>Suppose $$s$$ can reach $$k + 1$$ unvisited vertices (including itself). When <code>DFS-Visit(G, s)</code> runs:</p>
+<h4>Inductive Step (show it works for k + 1)</h4>
+<p>Suppose s can reach k + 1 unvisited vertices (including itself). When <code>DFS-Visit(G, s)</code> runs:</p>
 <ol>
-  <li>It discovers $$s$$ and marks it GRAY.</li>
-  <li>For each WHITE neighbor $$w$$ of $$s$$, it calls <code>DFS-Visit(G, w)</code>. At the time of this call, the number of unvisited vertices reachable from $$w$$ is <strong>at most $$k$$</strong> (because $$s$$ itself is already GRAY and won't be counted again, and some vertices may have been visited by earlier recursive calls).</li>
-  <li>By the <strong>inductive hypothesis</strong>, each such call correctly visits all vertices reachable from $$w$$.</li>
-  <li>After all neighbors are processed, every vertex reachable from $$s$$ has been visited.</li>
+  <li>It discovers s and marks it GRAY.</li>
+  <li>For each WHITE neighbor w of s, it calls <code>DFS-Visit(G, w)</code>. At the time of this call, the number of unvisited vertices reachable from w is <strong>at most k</strong> (because s itself is already GRAY and won't be counted again, and some vertices may have been visited by earlier recursive calls).</li>
+  <li>By the <strong>inductive hypothesis</strong>, each such call correctly visits all vertices reachable from w.</li>
+  <li>After all neighbors are processed, every vertex reachable from s has been visited.</li>
 </ol>
 
 <p>By the principle of mathematical induction, <code>DFS-Visit</code> correctly visits all reachable vertices for any graph of any size. ∎</p>
@@ -819,7 +819,7 @@ public class DFSIterative {
 <div class="kc-section" id="kc2">
   <div class="kc-header">Knowledge Check 2 — Timestamps and the Parenthesis Theorem</div>
   <div class="kc-body">
-    <p class="kc-question">In the worked trace (Section 7), vertex E has timestamps $$d[E]=5$$ and $$f[E]=12$$, while vertex C has $$d[C]=6$$ and $$f[C]=9$$. What does the parenthesis theorem tell us about the relationship between E and C in the DFS tree?</p>
+    <p class="kc-question">In the worked trace (Section 7), vertex E has timestamps d[E]=5 and f[E]=12, while vertex C has d[C]=6 and f[C]=9. What does the parenthesis theorem tell us about the relationship between E and C in the DFS tree?</p>
     <ul class="kc-options" role="radiogroup" aria-label="Knowledge Check 2 options">
       <li><label><input type="radio" name="kc2" value="a"> E and C are in disjoint subtrees (intervals are disjoint).</label></li>
       <li><label><input type="radio" name="kc2" value="b"> C is an ancestor of E in the DFS tree.</label></li>
