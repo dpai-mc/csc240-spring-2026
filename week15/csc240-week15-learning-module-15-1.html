@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 15.1 – Tree Fundamentals and Terminology</title>
+<style>
+:root {
+  --primary: #1a5276;
+  --primary-light: #2980b9;
+  --accent: #148f77;
+  --accent-light: #a3e4d7;
+  --bg: #ffffff;
+  --bg-alt: #f4f6f7;
+  --text: #212529;
+  --text-muted: #5d6d7e;
+  --border: #d5dbdb;
+  --callout-info-bg: #eaf2f8;
+  --callout-info-border: #2980b9;
+  --callout-warn-bg: #fef9e7;
+  --callout-warn-border: #f39c12;
+  --callout-success-bg: #e8f8f5;
+  --callout-success-border: #1abc9c;
+  --callout-def-bg: #f4ecf7;
+  --callout-def-border: #8e44ad;
+  --nav-height: 52px;
+  --radius: 6px;
+  --shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 1rem;
+  line-height: 1.65;
+  color: var(--text);
+  background: var(--bg);
+  margin: 0;
+  padding: 0;
+}
+
+/* NAV BAR */
+.top-nav {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.75rem;
+  background: var(--primary);
+  padding: 0.5rem 1.25rem;
+  box-shadow: var(--shadow);
+}
+.top-nav .nav-title {
+  font-weight: 700;
+  color: #fff;
+  margin-right: 1rem;
+  font-size: 0.95rem;
+}
+.top-nav a {
+  color: #d6eaf8;
+  text-decoration: none;
+  font-size: 0.85rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--radius);
+  transition: background 0.2s, color 0.2s;
+}
+.top-nav a:hover,
+.top-nav a:focus {
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+/* MAIN */
+main {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 3rem;
+}
+
+h1, h2, h3, h4 {
+  color: var(--primary);
+  scroll-margin-top: calc(var(--nav-height) + 16px);
+}
+h1 { font-size: 1.75rem; margin-top: 0; border-bottom: 3px solid var(--accent); padding-bottom: 0.4rem; }
+h2 { font-size: 1.35rem; margin-top: 2rem; border-bottom: 2px solid var(--border); padding-bottom: 0.3rem; }
+h3 { font-size: 1.1rem; margin-top: 1.5rem; }
+
+.subtitle {
+  color: var(--text-muted);
+  font-size: 0.92rem;
+  margin-top: -0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+/* CALLOUT BOXES */
+.callout {
+  border-left: 4px solid var(--callout-info-border);
+  background: var(--callout-info-bg);
+  padding: 0.9rem 1rem;
+  margin: 1.25rem 0;
+  border-radius: var(--radius);
+}
+.callout.definition {
+  border-left-color: var(--callout-def-border);
+  background: var(--callout-def-bg);
+}
+.callout.success {
+  border-left-color: var(--callout-success-border);
+  background: var(--callout-success-bg);
+}
+.callout.warning {
+  border-left-color: var(--callout-warn-border);
+  background: var(--callout-warn-bg);
+}
+.callout-title {
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+  font-size: 0.95rem;
+}
+
+/* DEFINITION LIST */
+.vocab-grid {
+  display: grid;
+  grid-template-columns: 10rem 1fr;
+  gap: 0.4rem 1rem;
+  margin: 1rem 0;
+}
+.vocab-grid dt {
+  font-weight: 700;
+  color: var(--primary);
+}
+.vocab-grid dd {
+  margin: 0;
+}
+
+/* COLLAPSIBLE / DETAILS */
+details {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin: 1rem 0;
+  background: var(--bg-alt);
+}
+details summary {
+  cursor: pointer;
+  padding: 0.7rem 1rem;
+  font-weight: 600;
+  color: var(--primary);
+  list-style: none;
+  position: relative;
+  padding-left: 1.6rem;
+}
+details summary::-webkit-details-marker { display: none; }
+details summary::before {
+  content: "▸";
+  position: absolute;
+  left: 0.7rem;
+  transition: transform 0.2s;
+}
+details[open] summary::before { transform: rotate(90deg); }
+details summary:focus {
+  outline: 2px solid var(--primary-light);
+  outline-offset: 2px;
+}
+details .details-body {
+  padding: 0.5rem 1rem 1rem;
+  border-top: 1px solid var(--border);
+}
+
+/* TABS */
+.tabs {
+  margin: 1.25rem 0;
+}
+.tab-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  border-bottom: 2px solid var(--border);
+}
+.tab-btn {
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-bottom: none;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  border-radius: var(--radius) var(--radius) 0 0;
+  transition: background 0.2s, color 0.2s;
+}
+.tab-btn:hover { background: #eaecee; }
+.tab-btn:focus {
+  outline: 2px solid var(--primary-light);
+  outline-offset: 2px;
+}
+.tab-btn[aria-selected="true"] {
+  background: var(--bg);
+  color: var(--primary);
+  border-bottom: 2px solid var(--bg);
+  margin-bottom: -2px;
+}
+.tab-panel {
+  display: none;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 var(--radius) var(--radius);
+  background: var(--bg);
+}
+.tab-panel.active { display: block; }
+
+/* KNOWLEDGE CHECK */
+.kc-question {
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+  margin: 1rem 0;
+}
+.kc-question p { margin: 0.3rem 0; }
+.kc-options { list-style: none; padding: 0; margin: 0.5rem 0; }
+.kc-options li { margin: 0.3rem 0; }
+.kc-options label { cursor: pointer; display: flex; align-items: baseline; gap: 0.4rem; }
+.kc-options input[type="radio"] { margin: 0; }
+.kc-btn {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  padding: 0.45rem 1.1rem;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  transition: background 0.2s;
+}
+.kc-btn:hover { background: var(--primary-light); }
+.kc-btn:focus { outline: 2px solid var(--accent); outline-offset: 2px; }
+.kc-feedback {
+  margin-top: 0.6rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  display: none;
+}
+.kc-feedback.correct { background: var(--callout-success-bg); border-left: 4px solid var(--callout-success-border); }
+.kc-feedback.incorrect { background: var(--callout-warn-bg); border-left: 4px solid var(--callout-warn-border); }
+
+/* DIAGRAM */
+.diagram-container {
+  text-align: center;
+  margin: 1.25rem 0;
+}
+.diagram-container svg {
+  max-width: 100%;
+  height: auto;
+}
+.diagram-caption {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-top: 0.4rem;
+}
+
+/* CODE / FORMULA */
+code {
+  background: #ecf0f1;
+  padding: 0.15rem 0.4rem;
+  border-radius: 3px;
+  font-size: 0.9em;
+}
+pre {
+  background: #2c3e50;
+  color: #ecf0f1;
+  padding: 1rem;
+  border-radius: var(--radius);
+  overflow-x: auto;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  white-space: pre;
+}
+pre code {
+  background: none;
+  padding: 0;
+  font-size: inherit;
+  color: inherit;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 0.92rem;
+}
+th, td {
+  border: 1px solid var(--border);
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+}
+th { background: var(--primary); color: #fff; }
+td:first-child { font-weight: 500; }
+
+/* RESPONSIVE */
+@media (max-width: 600px) {
+  .vocab-grid { grid-template-columns: 1fr; }
+  .vocab-grid dt { margin-top: 0.5rem; }
+  .top-nav { padding: 0.4rem 0.75rem; }
+}
+</style>
+</head>
+<body>
+
+<nav class="top-nav" aria-label="Module 15.1 section navigation">
+  <span class="nav-title">Module 15.1</span>
+  <a href="#why-trees">Why Trees?</a>
+  <a href="#formal-def">Formal Definition</a>
+  <a href="#rooted-vocab">Rooted Trees &amp; Vocabulary</a>
+  <a href="#binary-trees">Binary Trees</a>
+  <a href="#array-rep">Array Representation</a>
+  <a href="#checks">Knowledge Checks</a>
+</nav>
+
+<main>
+
+<h1>Module 15.1 &ndash; Tree Fundamentals and Terminology</h1>
+<p class="subtitle">CSC 240 &middot; Week 15 of 17 &middot; Introduction to Trees &middot; Estimated time: 55&ndash;70 minutes<br>
+<strong>CSLO 3:</strong> Implement graph/tree traversal methods in a programming language.</p>
+
+<!-- ============================================================ -->
+<h2 id="why-trees">1 &mdash; Why Trees Matter</h2>
+
+<p>Every time you open a file explorer, parse an HTML document, or evaluate an arithmetic expression, you are working with a <em>tree</em>. Trees are the data structures that give hierarchy to otherwise flat information: directories contain subdirectories, programming-language grammars nest expressions inside expressions, and database indexes guide searches through sorted key spaces.</p>
+
+<p>From a graph-theory perspective, a tree is simply a <strong>connected, acyclic graph</strong>&mdash;a concept you first met in Week&nbsp;12 when we defined graphs, vertices, and edges. In Week&nbsp;13 you saw that BFS and DFS naturally produce <em>spanning trees</em> of a connected graph, and in Week&nbsp;14 Kruskal's and Prim's algorithms found <em>minimum spanning trees</em>. This week we turn the spotlight on the tree itself: its vocabulary, its structural properties, and the specialized forms (binary trees, BSTs, expression trees) that dominate computing.</p>
+
+<p>We will also revisit the proof-by-induction technique from Week&nbsp;6. Two of the most important tree properties&mdash;the edge-count theorem and the maximum-node formula for binary trees&mdash;have elegant inductive proofs that reinforce why induction is the natural tool for recursive structures.</p>
+
+<!-- ============================================================ -->
+<h2 id="formal-def">2 &mdash; Formal Definition and Properties</h2>
+
+<div class="callout definition">
+  <p class="callout-title">Definition &mdash; Tree (Graph-Theoretic)</p>
+  <p>A <strong>tree</strong> is an undirected graph <em>T</em> = (<em>V</em>, <em>E</em>) that is <em>connected</em> and <em>acyclic</em> (contains no cycles).</p>
+</div>
+
+<h3>Equivalent Characterizations</h3>
+<p>The following statements are all equivalent for a graph <em>G</em> with <em>n</em> vertices. Any one can serve as the definition of a tree:</p>
+<ol>
+  <li><em>G</em> is connected and acyclic.</li>
+  <li><em>G</em> is connected and has exactly <em>n</em> &minus; 1 edges.</li>
+  <li><em>G</em> is acyclic and has exactly <em>n</em> &minus; 1 edges.</li>
+  <li>There is exactly one simple path between every pair of vertices in <em>G</em>.</li>
+  <li><em>G</em> is connected, but removing any single edge disconnects it (every edge is a bridge).</li>
+</ol>
+
+<div class="callout">
+  <p class="callout-title">Connection to Week 12</p>
+  <p>Recall that a <em>connected</em> graph is one where a path exists between every pair of vertices. A <em>cycle</em> is a closed walk with no repeated vertices (except start = end). Trees are the &ldquo;minimally connected&rdquo; graphs&mdash;connected with the fewest possible edges.</p>
+</div>
+
+<h3>The <em>n</em> &minus; 1 Edge Theorem</h3>
+<p><strong>Theorem:</strong> Every tree with <em>n</em> &ge; 1 vertices has exactly <em>n</em> &minus; 1 edges.</p>
+
+<details>
+  <summary>Proof by Strong Induction (click to expand)</summary>
+  <div class="details-body">
+    <p><strong>Base case:</strong> <em>n</em> = 1. A single-vertex tree has 0 edges. <em>n</em> &minus; 1 = 0. &#10003;</p>
+    <p><strong>Inductive hypothesis:</strong> Assume every tree with <em>k</em> vertices (1 &le; <em>k</em> &lt; <em>n</em>) has exactly <em>k</em> &minus; 1 edges.</p>
+    <p><strong>Inductive step:</strong> Let <em>T</em> be a tree with <em>n</em> vertices (<em>n</em> &ge; 2). Because <em>T</em> is connected and has at least two vertices, it has at least one edge. Pick any edge <em>e</em> = {<em>u</em>, <em>v</em>}. Removing <em>e</em> disconnects <em>T</em> (since every edge in a tree is a bridge), producing exactly two connected components <em>T</em><sub>1</sub> and <em>T</em><sub>2</sub> with <em>n</em><sub>1</sub> and <em>n</em><sub>2</sub> vertices respectively, where <em>n</em><sub>1</sub> + <em>n</em><sub>2</sub> = <em>n</em> and both <em>n</em><sub>1</sub>, <em>n</em><sub>2</sub> &ge; 1.</p>
+    <p>Each component is still acyclic (removing an edge cannot create a cycle) and connected, so each is a tree. By the inductive hypothesis:</p>
+    <ul>
+      <li><em>T</em><sub>1</sub> has <em>n</em><sub>1</sub> &minus; 1 edges</li>
+      <li><em>T</em><sub>2</sub> has <em>n</em><sub>2</sub> &minus; 1 edges</li>
+    </ul>
+    <p>Total edges in <em>T</em> = edges in <em>T</em><sub>1</sub> + edges in <em>T</em><sub>2</sub> + the removed edge <em>e</em>:</p>
+    <p>(<em>n</em><sub>1</sub> &minus; 1) + (<em>n</em><sub>2</sub> &minus; 1) + 1 = <em>n</em><sub>1</sub> + <em>n</em><sub>2</sub> &minus; 1 = <em>n</em> &minus; 1. &#x220e;</p>
+  </div>
+</details>
+
+<!-- Self-check pause -->
+<div class="callout success">
+  <p class="callout-title">&#10003; Quick Self-Check</p>
+  <p>A tree has 10 vertices. How many edges does it have? <strong>Answer:</strong> 9. If you&rsquo;re given a connected graph with 10 vertices and 10 edges, can it be a tree? No&mdash;it would contain exactly one cycle.</p>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="rooted-vocab">3 &mdash; Rooted Trees and Core Vocabulary</h2>
+
+<h3>Free Tree vs. Rooted Tree</h3>
+<p>A <strong>free tree</strong> (or unrooted tree) has no distinguished vertex. A <strong>rooted tree</strong> designates one vertex as the <em>root</em>, which imposes a parent&ndash;child hierarchy: edges point &ldquo;downward&rdquo; from root to leaves.</p>
+
+<div class="callout definition">
+  <p class="callout-title">Definition &mdash; Rooted Tree</p>
+  <p>A <strong>rooted tree</strong> is a tree in which one vertex <em>r</em> is designated as the root. For every other vertex <em>v</em>, the unique path from <em>r</em> to <em>v</em> determines the parent&ndash;child relationships along that path.</p>
+</div>
+
+<!-- ANNOTATED DIAGRAM -->
+<div class="diagram-container">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 280" width="400" height="280" role="img" aria-label="Rooted tree diagram showing root A with children B and C; B has children D and E; C has child F; E has children G and H.">
+    <!-- Edges -->
+    <line x1="200" y1="30" x2="120" y2="100" stroke="#2c3e50" stroke-width="2"/>
+    <line x1="200" y1="30" x2="280" y2="100" stroke="#2c3e50" stroke-width="2"/>
+    <line x1="120" y1="100" x2="70" y2="180" stroke="#2c3e50" stroke-width="2"/>
+    <line x1="120" y1="100" x2="170" y2="180" stroke="#2c3e50" stroke-width="2"/>
+    <line x1="280" y1="100" x2="310" y2="180" stroke="#2c3e50" stroke-width="2"/>
+    <line x1="170" y1="180" x2="140" y2="255" stroke="#2c3e50" stroke-width="2"/>
+    <line x1="170" y1="180" x2="210" y2="255" stroke="#2c3e50" stroke-width="2"/>
+    <!-- Nodes -->
+    <circle cx="200" cy="30" r="16" fill="#1a5276" stroke="#148f77" stroke-width="2"/>
+    <text x="200" y="35" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">A</text>
+    <circle cx="120" cy="100" r="16" fill="#2980b9"/>
+    <text x="120" y="105" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">B</text>
+    <circle cx="280" cy="100" r="16" fill="#2980b9"/>
+    <text x="280" y="105" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">C</text>
+    <circle cx="70" cy="180" r="16" fill="#1abc9c"/>
+    <text x="70" y="185" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">D</text>
+    <circle cx="170" cy="180" r="16" fill="#2980b9"/>
+    <text x="170" y="185" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">E</text>
+    <circle cx="310" cy="180" r="16" fill="#1abc9c"/>
+    <text x="310" y="185" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">F</text>
+    <circle cx="140" cy="255" r="16" fill="#1abc9c"/>
+    <text x="140" y="260" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">G</text>
+    <circle cx="210" cy="255" r="16" fill="#1abc9c"/>
+    <text x="210" y="260" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">H</text>
+    <!-- Legend -->
+    <rect x="330" y="20" width="12" height="12" fill="#1a5276" rx="2"/>
+    <text x="347" y="31" font-size="11" fill="#333">Root</text>
+    <rect x="330" y="40" width="12" height="12" fill="#2980b9" rx="2"/>
+    <text x="347" y="51" font-size="11" fill="#333">Internal</text>
+    <rect x="330" y="60" width="12" height="12" fill="#1abc9c" rx="2"/>
+    <text x="347" y="71" font-size="11" fill="#333">Leaf</text>
+  </svg>
+  <p class="diagram-caption">Figure 1: A rooted tree with root A, internal nodes B, C, E, and leaves D, F, G, H.</p>
+</div>
+
+<h3>Vocabulary Block</h3>
+<dl class="vocab-grid">
+  <dt>Root</dt>
+  <dd>The designated top vertex (A in Figure&nbsp;1). It has no parent.</dd>
+
+  <dt>Parent</dt>
+  <dd>The vertex directly above a given vertex on the path to the root. E.g., parent(E) = B.</dd>
+
+  <dt>Child</dt>
+  <dd>A vertex directly below a given vertex. E.g., children(B) = {D, E}.</dd>
+
+  <dt>Sibling</dt>
+  <dd>Vertices sharing the same parent. D and E are siblings.</dd>
+
+  <dt>Leaf</dt>
+  <dd>A vertex with no children (degree 1 in the rooted tree, except a root that stands alone). Leaves here: D, F, G, H.</dd>
+
+  <dt>Internal node</dt>
+  <dd>A non-leaf vertex (has at least one child). Internal nodes: A, B, C, E.</dd>
+
+  <dt>Ancestor</dt>
+  <dd>Any vertex on the path from a vertex up to the root. Ancestors of G: E, B, A.</dd>
+
+  <dt>Descendant</dt>
+  <dd>Any vertex in the subtree rooted at a given vertex. Descendants of B: D, E, G, H.</dd>
+
+  <dt>Subtree</dt>
+  <dd>The tree formed by a vertex and all its descendants. The subtree rooted at E contains {E, G, H}.</dd>
+
+  <dt>Depth</dt>
+  <dd>The number of edges on the path from the root to a vertex. depth(A) = 0, depth(E) = 2, depth(G) = 3.</dd>
+
+  <dt>Height</dt>
+  <dd>The number of edges on the longest path from a vertex down to a leaf. height(A) = 3, height(E) = 1, height(D) = 0. The <em>height of the tree</em> is the height of the root.</dd>
+
+  <dt>Level</dt>
+  <dd>The set of all vertices at the same depth. Level 0 = {A}, Level 1 = {B, C}, Level 2 = {D, E, F}, Level 3 = {G, H}.</dd>
+</dl>
+
+<div class="callout warning">
+  <p class="callout-title">Common Confusion: Height vs. Depth</p>
+  <p><strong>Depth</strong> is measured <em>downward from the root</em> to the vertex. <strong>Height</strong> is measured <em>downward from the vertex</em> to its deepest leaf descendant. They go in opposite directions. The root has depth 0 but may have large height; leaves have height 0 but may have large depth.</p>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="binary-trees">4 &mdash; Binary Trees</h2>
+
+<div class="callout definition">
+  <p class="callout-title">Definition &mdash; Binary Tree</p>
+  <p>A <strong>binary tree</strong> is a rooted tree in which every vertex has at most two children, distinguished as the <em>left child</em> and the <em>right child</em>.</p>
+</div>
+
+<h3>Types of Binary Trees</h3>
+<div class="tabs" role="tablist" aria-label="Binary tree types">
+  <div class="tab-buttons">
+    <button class="tab-btn" role="tab" aria-selected="true" aria-controls="panel-full" id="tab-full">Full</button>
+    <button class="tab-btn" role="tab" aria-selected="false" aria-controls="panel-complete" id="tab-complete">Complete</button>
+    <button class="tab-btn" role="tab" aria-selected="false" aria-controls="panel-perfect" id="tab-perfect">Perfect</button>
+  </div>
+  <div class="tab-panel active" role="tabpanel" id="panel-full" aria-labelledby="tab-full">
+    <h4>Full Binary Tree</h4>
+    <p>Every vertex has <strong>0 or 2</strong> children&mdash;no vertex has exactly one child.</p>
+    <p><strong>Property:</strong> If a full binary tree has <em>i</em> internal nodes, it has exactly <em>i</em> + 1 leaves and 2<em>i</em> + 1 total nodes.</p>
+    <p><em>Example:</em> An expression tree is always full&mdash;every operator has exactly two operands.</p>
+  </div>
+  <div class="tab-panel" role="tabpanel" id="panel-complete" aria-labelledby="tab-complete">
+    <h4>Complete Binary Tree</h4>
+    <p>Every level is fully filled <strong>except possibly the last</strong>, and the last level is filled <em>from left to right</em> with no gaps.</p>
+    <p><strong>Property:</strong> A complete binary tree of height <em>h</em> has between 2<sup><em>h</em></sup> and 2<sup><em>h</em>+1</sup> &minus; 1 nodes (inclusive).</p>
+    <p><em>Why it matters:</em> Complete binary trees map perfectly to arrays (see Section&nbsp;5), which is why heaps use this shape.</p>
+  </div>
+  <div class="tab-panel" role="tabpanel" id="panel-perfect" aria-labelledby="tab-perfect">
+    <h4>Perfect Binary Tree</h4>
+    <p>Every internal node has exactly 2 children <strong>and</strong> all leaves are at the same depth.</p>
+    <p><strong>Property:</strong> A perfect binary tree of height <em>h</em> has exactly 2<sup><em>h</em>+1</sup> &minus; 1 nodes and 2<sup><em>h</em></sup> leaves.</p>
+    <p><em>Note:</em> Every perfect binary tree is both full and complete, but the converse is not true.</p>
+  </div>
+</div>
+
+<h3>Key Property Formulas</h3>
+<table>
+  <thead>
+    <tr><th>Property</th><th>Formula</th><th>Notes</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Edges in any tree</td><td><em>n</em> &minus; 1</td><td>Proved above</td></tr>
+    <tr><td>Max nodes at depth <em>d</em> (binary)</td><td>2<sup><em>d</em></sup></td><td>Level <em>d</em> has at most 2<sup><em>d</em></sup> nodes</td></tr>
+    <tr><td>Max nodes in binary tree of height <em>h</em></td><td>2<sup><em>h</em>+1</sup> &minus; 1</td><td>Sum of geometric series</td></tr>
+    <tr><td>Min height for <em>n</em> nodes (binary)</td><td>⌊log<sub>2</sub> <em>n</em>⌋</td><td>Achieved by complete tree</td></tr>
+    <tr><td>Full binary tree: leaves vs. internal</td><td>ℓ = <em>i</em> + 1</td><td>ℓ = leaves, <em>i</em> = internal nodes</td></tr>
+  </tbody>
+</table>
+
+<h3>Induction Proof: Max-Node Formula</h3>
+<details>
+  <summary>Proof: A binary tree of height <em>h</em> has at most 2<sup><em>h</em>+1</sup> &minus; 1 nodes (click to expand)</summary>
+  <div class="details-body">
+    <p><strong>Theorem:</strong> For <em>h</em> &ge; 0, a binary tree of height <em>h</em> has at most 2<sup><em>h</em>+1</sup> &minus; 1 nodes.</p>
+    <p><strong>Base case:</strong> <em>h</em> = 0. The tree is a single root. Nodes = 1. Formula: 2<sup>0+1</sup> &minus; 1 = 2 &minus; 1 = 1. &#10003;</p>
+    <p><strong>Inductive hypothesis:</strong> Assume that for all <em>k</em> &lt; <em>h</em>, a binary tree of height <em>k</em> has at most 2<sup><em>k</em>+1</sup> &minus; 1 nodes.</p>
+    <p><strong>Inductive step:</strong> Consider a binary tree <em>T</em> of height <em>h</em> (<em>h</em> &ge; 1). The root has at most two subtrees, <em>T</em><sub>L</sub> and <em>T</em><sub>R</sub>, each with height at most <em>h</em> &minus; 1. By the inductive hypothesis, each subtree has at most 2<sup>(<em>h</em>&minus;1)+1</sup> &minus; 1 = 2<sup><em>h</em></sup> &minus; 1 nodes.</p>
+    <p>Total nodes in <em>T</em>:</p>
+    <p>nodes(<em>T</em>) &le; 1 + (2<sup><em>h</em></sup> &minus; 1) + (2<sup><em>h</em></sup> &minus; 1) = 1 + 2<sup><em>h</em>+1</sup> &minus; 2 = 2<sup><em>h</em>+1</sup> &minus; 1. &#x220e;</p>
+    <p><em>Connection to Week&nbsp;6:</em> This proof uses the same strong-induction template you practiced with divisibility and summation formulas.</p>
+  </div>
+</details>
+
+<!-- ============================================================ -->
+<h2 id="array-rep">5 &mdash; Array Representation of Complete Binary Trees</h2>
+
+<p>Because a complete binary tree has no &ldquo;gaps&rdquo; except at the trailing end of the last level, we can store it in a contiguous array with <strong>no pointers</strong>. This is the representation used by binary heaps.</p>
+
+<h3>Index Formulas (0-based indexing)</h3>
+<p>Store the root at index 0, then fill level by level, left to right:</p>
+
+<table>
+  <thead>
+    <tr><th>Relationship</th><th>Formula</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Left child of node at index <em>i</em></td><td>2<em>i</em> + 1</td></tr>
+    <tr><td>Right child of node at index <em>i</em></td><td>2<em>i</em> + 2</td></tr>
+    <tr><td>Parent of node at index <em>i</em> (for <em>i</em> &gt; 0)</td><td>⌊(<em>i</em> &minus; 1) / 2⌋</td></tr>
+  </tbody>
+</table>
+
+<details>
+  <summary>Worked Example: Mapping a tree to an array (click to expand)</summary>
+  <div class="details-body">
+    <p>Consider a complete binary tree with nodes labeled by level order: A, B, C, D, E, F.</p>
+<pre><code>    A           Array: [A, B, C, D, E, F]
+   / \          Index:  0  1  2  3  4  5
+  B   C
+ / \ /
+D  E F</code></pre>
+    <p>Verify the formulas:</p>
+    <ul>
+      <li>Left child of A (index 0): 2(0) + 1 = 1 &rarr; B &#10003;</li>
+      <li>Right child of A (index 0): 2(0) + 2 = 2 &rarr; C &#10003;</li>
+      <li>Left child of B (index 1): 2(1) + 1 = 3 &rarr; D &#10003;</li>
+      <li>Parent of E (index 4): ⌊(4 &minus; 1) / 2⌋ = ⌊1.5⌋ = 1 &rarr; B &#10003;</li>
+      <li>Parent of F (index 5): ⌊(5 &minus; 1) / 2⌋ = ⌊2⌋ = 2 &rarr; C &#10003;</li>
+    </ul>
+    <p><strong>Why this matters:</strong> In Module&nbsp;15.4 (Binary Search Trees) and in your Final Project, you may choose between pointer-based and array-based representations. Heaps always use this array layout because insert and delete operations need only index arithmetic&mdash;no pointer chasing.</p>
+  </div>
+</details>
+
+<div class="callout">
+  <p class="callout-title">1-Based Indexing Variant</p>
+  <p>Some textbooks store the root at index 1 (leaving index 0 unused). In that case: left child = 2<em>i</em>, right child = 2<em>i</em> + 1, parent = ⌊<em>i</em> / 2⌋. Both conventions are correct&mdash;just be consistent.</p>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="checks">6 &mdash; Knowledge Checks</h2>
+
+<p>These ungraded checks help you confirm your understanding before moving to Module 15.2. Try each one before revealing the feedback.</p>
+
+<!-- CHECK 15.1a -->
+<div class="kc-question" id="kc-a">
+  <p><strong>Check 15.1a:</strong> A tree has 15 vertices. How many edges does it have?</p>
+  <ul class="kc-options">
+    <li><label><input type="radio" name="kc-a" value="0"> 15</label></li>
+    <li><label><input type="radio" name="kc-a" value="1"> 14</label></li>
+    <li><label><input type="radio" name="kc-a" value="2"> 16</label></li>
+    <li><label><input type="radio" name="kc-a" value="3"> It depends on the tree&rsquo;s shape</label></li>
+  </ul>
+  <button class="kc-btn" onclick="checkAnswer('kc-a','1')">Check Answer</button>
+  <div class="kc-feedback" id="fb-kc-a" role="alert"></div>
+</div>
+
+<!-- CHECK 15.1b -->
+<div class="kc-question" id="kc-b">
+  <p><strong>Check 15.1b:</strong> In Figure&nbsp;1, what is the depth of vertex E and the height of vertex B?</p>
+  <ul class="kc-options">
+    <li><label><input type="radio" name="kc-b" value="0"> depth(E) = 2, height(B) = 2</label></li>
+    <li><label><input type="radio" name="kc-b" value="1"> depth(E) = 2, height(B) = 1</label></li>
+    <li><label><input type="radio" name="kc-b" value="2"> depth(E) = 3, height(B) = 2</label></li>
+    <li><label><input type="radio" name="kc-b" value="3"> depth(E) = 1, height(B) = 3</label></li>
+  </ul>
+  <button class="kc-btn" onclick="checkAnswer('kc-b','0')">Check Answer</button>
+  <div class="kc-feedback" id="fb-kc-b" role="alert"></div>
+</div>
+
+<!-- CHECK 15.1c -->
+<div class="kc-question" id="kc-c">
+  <p><strong>Check 15.1c:</strong> Which of the following is true about a <em>complete</em> binary tree?</p>
+  <ul class="kc-options">
+    <li><label><input type="radio" name="kc-c" value="0"> Every internal node has exactly 2 children.</label></li>
+    <li><label><input type="radio" name="kc-c" value="1"> All levels are fully filled except possibly the last, which is filled left-to-right.</label></li>
+    <li><label><input type="radio" name="kc-c" value="2"> All leaves are at the same depth.</label></li>
+    <li><label><input type="radio" name="kc-c" value="3"> It must have exactly 2<sup>h+1</sup> &minus; 1 nodes.</label></li>
+  </ul>
+  <button class="kc-btn" onclick="checkAnswer('kc-c','1')">Check Answer</button>
+  <div class="kc-feedback" id="fb-kc-c" role="alert"></div>
+</div>
+
+<!-- CHECK 15.1d -->
+<div class="kc-question" id="kc-d">
+  <p><strong>Check 15.1d:</strong> What is the maximum number of nodes in a binary tree of height 4?</p>
+  <ul class="kc-options">
+    <li><label><input type="radio" name="kc-d" value="0"> 16</label></li>
+    <li><label><input type="radio" name="kc-d" value="1"> 31</label></li>
+    <li><label><input type="radio" name="kc-d" value="2"> 15</label></li>
+    <li><label><input type="radio" name="kc-d" value="3"> 32</label></li>
+  </ul>
+  <button class="kc-btn" onclick="checkAnswer('kc-d','1')">Check Answer</button>
+  <div class="kc-feedback" id="fb-kc-d" role="alert"></div>
+</div>
+
+<!-- CHECK 15.1e -->
+<div class="kc-question" id="kc-e">
+  <p><strong>Check 15.1e:</strong> In a 0-based array representation of a complete binary tree, the node at index 7 has its parent at which index?</p>
+  <ul class="kc-options">
+    <li><label><input type="radio" name="kc-e" value="0"> 3</label></li>
+    <li><label><input type="radio" name="kc-e" value="1"> 4</label></li>
+    <li><label><input type="radio" name="kc-e" value="2"> 2</label></li>
+    <li><label><input type="radio" name="kc-e" value="3"> 6</label></li>
+  </ul>
+  <button class="kc-btn" onclick="checkAnswer('kc-e','0')">Check Answer</button>
+  <div class="kc-feedback" id="fb-kc-e" role="alert"></div>
+</div>
+
+<div class="callout success">
+  <p class="callout-title">&#10003; What&rsquo;s Next</p>
+  <p>Once you feel confident with these definitions and properties, continue to <strong>Module 15.2 &ndash; Tree Traversal Algorithms</strong>, where you will walk through trees systematically and connect traversals to the BFS and DFS patterns from Week&nbsp;13.</p>
+</div>
+
+</main>
+
+<script>
+// Tab functionality
+(function(){
+  var tabBtns = document.querySelectorAll('.tab-btn');
+  tabBtns.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var parent = btn.closest('.tabs');
+      parent.querySelectorAll('.tab-btn').forEach(function(b){ b.setAttribute('aria-selected','false'); });
+      parent.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
+      btn.setAttribute('aria-selected','true');
+      var panelId = btn.getAttribute('aria-controls');
+      document.getElementById(panelId).classList.add('active');
+    });
+    btn.addEventListener('keydown', function(e){
+      var btns = Array.from(btn.parentNode.querySelectorAll('.tab-btn'));
+      var idx = btns.indexOf(btn);
+      if(e.key === 'ArrowRight'){ e.preventDefault(); btns[(idx+1)%btns.length].focus(); btns[(idx+1)%btns.length].click(); }
+      if(e.key === 'ArrowLeft'){ e.preventDefault(); btns[(idx-1+btns.length)%btns.length].focus(); btns[(idx-1+btns.length)%btns.length].click(); }
+    });
+  });
+})();
+
+// Knowledge Check feedback
+var feedback = {
+  'kc-a': {
+    correct: "Correct! By the n − 1 edge theorem, a tree with 15 vertices always has exactly 14 edges, regardless of its shape. This is one of the equivalent characterizations of a tree.",
+    incorrect: "Not quite. Remember the fundamental theorem: every tree with n vertices has exactly n − 1 edges. For n = 15, that gives 15 − 1 = 14 edges. This holds for ALL trees—shape doesn’t matter."
+  },
+  'kc-b': {
+    correct: "Correct! Depth is measured from the root downward: A→B→E gives depth(E) = 2. Height is measured from the vertex to its deepest descendant leaf: B→E→G (or H) gives height(B) = 2.",
+    incorrect: "Not quite. Depth of E: count edges on the path from root A to E: A→B→E = 2 edges, so depth(E) = 2. Height of B: the longest downward path from B to a leaf is B→E→G = 2 edges, so height(B) = 2."
+  },
+  'kc-c': {
+    correct: "Correct! A complete binary tree fills every level except possibly the last, and the last level is filled from left to right. This is what makes the array representation work without gaps. Note: ‘every internal node has 2 children’ describes a full tree, and ‘all leaves at same depth’ describes a perfect tree.",
+    incorrect: "Review the tab panel above. A complete binary tree is defined by: all levels fully filled except possibly the last, which is filled left-to-right. Option A describes a full binary tree; option C describes a perfect binary tree; option D is only true for perfect trees (a complete tree can have fewer nodes)."
+  },
+  'kc-d': {
+    correct: "Correct! Using the formula: 2^(h+1) − 1 = 2^5 − 1 = 32 − 1 = 31. This is achieved by a perfect binary tree of height 4 (all 5 levels completely filled).",
+    incorrect: "Apply the max-node formula: 2^(h+1) − 1. For h = 4: 2^5 − 1 = 32 − 1 = 31. Remember, height 4 means 5 levels (levels 0 through 4), and the maximum is reached when every level is completely full (a perfect binary tree)."
+  },
+  'kc-e': {
+    correct: "Correct! Parent index = ⌊(i − 1) / 2⌋ = ⌊(7 − 1) / 2⌋ = ⌊6 / 2⌋ = ⌊3⌋ = 3. Verify: the node at index 3 has left child at 2(3)+1 = 7. ✓",
+    incorrect: "Use the parent formula: ⌊(i − 1) / 2⌋. For i = 7: ⌊(7 − 1) / 2⌋ = ⌊6 / 2⌋ = ⌊3⌋ = 3. To verify, the node at index 3 has left child at 2(3)+1 = 7. ✓"
+  }
+};
+
+function checkAnswer(name, correctVal){
+  var selected = document.querySelector('input[name="'+name+'"]:checked');
+  var fbEl = document.getElementById('fb-'+name);
+  if(!selected){
+    fbEl.textContent = "Please select an answer first.";
+    fbEl.className = "kc-feedback incorrect";
+    fbEl.style.display = "block";
+    return;
+  }
+  if(selected.value === correctVal){
+    fbEl.innerHTML = feedback[name].correct;
+    fbEl.className = "kc-feedback correct";
+  } else {
+    fbEl.innerHTML = feedback[name].incorrect;
+    fbEl.className = "kc-feedback incorrect";
+  }
+  fbEl.style.display = "block";
+}
+</script>
+
+</body>
+</html>

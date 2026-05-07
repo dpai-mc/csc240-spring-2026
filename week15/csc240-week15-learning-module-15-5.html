@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 15.5 – Trees in the Final Project and Quiz 5 Preview</title>
+<style>
+:root {
+  --primary: #2D3B45;
+  --accent: #0772A1;
+  --accent-light: #E8F4F9;
+  --success: #2E7D32;
+  --success-light: #E8F5E9;
+  --warning: #F57C00;
+  --warning-light: #FFF3E0;
+  --info: #1565C0;
+  --info-light: #E3F2FD;
+  --border: #D1D5DA;
+  --bg: #FFFFFF;
+  --text: #2D3B45;
+  --text-light: #5A6872;
+  --card-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  --radius: 6px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--text);
+  background: var(--bg);
+  padding-bottom: 3rem;
+}
+
+/* Sticky Navigation */
+.nav-bar {
+  position: sticky;
+  top: 0;
+  background: var(--primary);
+  padding: 0.6rem 1rem;
+  z-index: 1000;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  align-items: center;
+}
+
+.nav-bar a {
+  color: #FFFFFF;
+  text-decoration: none;
+  font-size: 0.85rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: var(--radius);
+  transition: background 0.2s;
+}
+
+.nav-bar a:hover,
+.nav-bar a:focus {
+  background: var(--accent);
+  outline: 2px solid #FFFFFF;
+  outline-offset: 1px;
+}
+
+/* Main Content */
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem;
+}
+
+h1 {
+  font-size: 1.75rem;
+  color: var(--primary);
+  border-bottom: 3px solid var(--accent);
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.module-subtitle {
+  font-size: 1rem;
+  color: var(--text-light);
+  margin-bottom: 1.5rem;
+}
+
+h2 {
+  font-size: 1.4rem;
+  color: var(--primary);
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 2px solid var(--border);
+}
+
+h3 {
+  font-size: 1.15rem;
+  color: var(--accent);
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+h4 {
+  font-size: 1rem;
+  color: var(--primary);
+  margin-top: 1rem;
+  margin-bottom: 0.4rem;
+}
+
+p, li {
+  margin-bottom: 0.6rem;
+}
+
+ul, ol {
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Callout Boxes */
+.callout {
+  border-left: 4px solid var(--accent);
+  background: var(--accent-light);
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius);
+  margin: 1.25rem 0;
+}
+
+.callout-success {
+  border-left-color: var(--success);
+  background: var(--success-light);
+}
+
+.callout-warning {
+  border-left-color: var(--warning);
+  background: var(--warning-light);
+}
+
+.callout-info {
+  border-left-color: var(--info);
+  background: var(--info-light);
+}
+
+.callout-title {
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+}
+
+/* Tables */
+.table-wrapper {
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+
+th, td {
+  border: 1px solid var(--border);
+  padding: 0.6rem 0.8rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+th {
+  background: var(--primary);
+  color: #FFFFFF;
+  font-weight: 600;
+}
+
+tr:nth-child(even) {
+  background: #F8F9FA;
+}
+
+/* Tabs */
+.tabs-container {
+  margin: 1.5rem 0;
+}
+
+.tab-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  border-bottom: 2px solid var(--border);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tab-list li {
+  margin: 0;
+}
+
+.tab-btn {
+  background: none;
+  border: 2px solid transparent;
+  border-bottom: none;
+  padding: 0.6rem 1.25rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-light);
+  cursor: pointer;
+  border-radius: var(--radius) var(--radius) 0 0;
+  transition: all 0.2s;
+  position: relative;
+  bottom: -2px;
+}
+
+.tab-btn:hover {
+  color: var(--accent);
+  background: var(--accent-light);
+}
+
+.tab-btn:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.tab-btn[aria-selected="true"] {
+  color: var(--accent);
+  border-color: var(--border);
+  border-bottom: 2px solid var(--bg);
+  background: var(--bg);
+}
+
+.tab-panel {
+  border: 2px solid var(--border);
+  border-top: none;
+  padding: 1.5rem;
+  border-radius: 0 0 var(--radius) var(--radius);
+}
+
+.tab-panel[hidden] {
+  display: none;
+}
+
+/* Checklist */
+.checklist {
+  list-style: none;
+  padding: 0;
+}
+
+.checklist li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #EEE;
+}
+
+.checklist li:last-child {
+  border-bottom: none;
+}
+
+.checklist input[type="checkbox"] {
+  width: 1.2rem;
+  height: 1.2rem;
+  margin-top: 0.2rem;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.checklist label {
+  cursor: pointer;
+  flex: 1;
+}
+
+/* Knowledge Checks */
+.kc-container {
+  background: #F8F9FA;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  margin: 1.25rem 0;
+}
+
+.kc-container h4 {
+  color: var(--accent);
+  margin-top: 0;
+}
+
+.kc-options {
+  list-style: none;
+  padding: 0;
+  margin: 0.75rem 0;
+}
+
+.kc-options li {
+  margin-bottom: 0.4rem;
+}
+
+.kc-options label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  cursor: pointer;
+  padding: 0.4rem 0.6rem;
+  border-radius: var(--radius);
+  transition: background 0.2s;
+}
+
+.kc-options label:hover {
+  background: var(--accent-light);
+}
+
+.kc-options input[type="radio"] {
+  margin-top: 0.25rem;
+  flex-shrink: 0;
+}
+
+.kc-btn {
+  background: var(--accent);
+  color: #FFFFFF;
+  border: none;
+  padding: 0.5rem 1.25rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.kc-btn:hover {
+  background: #055A80;
+}
+
+.kc-btn:focus {
+  outline: 3px solid var(--warning);
+  outline-offset: 2px;
+}
+
+.kc-feedback {
+  margin-top: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius);
+  display: none;
+  font-size: 0.92rem;
+}
+
+.kc-feedback.correct {
+  display: block;
+  background: var(--success-light);
+  border: 1px solid var(--success);
+  color: #1B5E20;
+}
+
+.kc-feedback.incorrect {
+  display: block;
+  background: #FFEBEE;
+  border: 1px solid #C62828;
+  color: #B71C1C;
+}
+
+/* Progress counter */
+.progress-note {
+  font-size: 0.85rem;
+  color: var(--text-light);
+  margin-top: 0.5rem;
+  font-style: italic;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .nav-bar { gap: 0.15rem 0.5rem; }
+  .nav-bar a { font-size: 0.78rem; padding: 0.25rem 0.4rem; }
+  h1 { font-size: 1.4rem; }
+  h2 { font-size: 1.2rem; }
+  .tab-btn { padding: 0.5rem 0.75rem; font-size: 0.85rem; }
+  .tab-panel { padding: 1rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- Navigation Bar -->
+<nav class="nav-bar" aria-label="Module navigation">
+  <a href="#overview">Overview</a>
+  <a href="#project-section">Final Project</a>
+  <a href="#roadmap">Roadmap</a>
+  <a href="#analysis">Analysis Doc</a>
+  <a href="#quiz-section">Quiz 5 Guide</a>
+  <a href="#knowledge-checks">Knowledge Checks</a>
+</nav>
+
+<div class="container">
+
+<!-- Section 1: Overview -->
+<h1 id="overview">Module 15.5 – Trees in the Final Project &amp; Quiz 5 Preview</h1>
+<p class="module-subtitle">Week 15 &bull; Synthesis Module &bull; No new tree concepts introduced</p>
+
+<div class="callout callout-info">
+  <p class="callout-title">What This Module Does</p>
+  <p>This is a <strong>synthesis and planning</strong> module. You will not encounter new tree theory here. Instead, you will connect everything from Modules 15.1–15.4 to two forward-looking deliverables:</p>
+  <ul>
+    <li><strong>Final Project Component 4</strong> — Tree-Based Internal Structure (50 pts, due Week 17)</li>
+    <li><strong>Quiz 5</strong> — Covering Weeks 14–16 (end of Week 16)</li>
+  </ul>
+  <p>Use this module as your planning guide and study launchpad.</p>
+</div>
+
+<!-- Tabs: Final Project vs. Quiz 5 -->
+<div class="tabs-container" id="project-section">
+  <h2>Final Project &amp; Quiz 5 Planning</h2>
+  <ul class="tab-list" role="tablist" aria-label="Main content tabs">
+    <li role="presentation"><button class="tab-btn" role="tab" id="tab-project" aria-selected="true" aria-controls="panel-project" tabindex="0">Final Project Component 4</button></li>
+    <li role="presentation"><button class="tab-btn" role="tab" id="tab-quiz" aria-selected="false" aria-controls="panel-quiz" tabindex="-1">Quiz 5 Study Guide</button></li>
+  </ul>
+
+  <!-- Tab Panel: Final Project -->
+  <div class="tab-panel" role="tabpanel" id="panel-project" aria-labelledby="tab-project">
+
+    <h3>Component 4 Overview</h3>
+    <p>Component 4 asks you to integrate a <strong>tree-based data structure</strong> into the graph application you have been building across the semester. You must choose one of two options and implement it so that it meaningfully supports your graph's operations.</p>
+
+    <div class="callout">
+      <p class="callout-title">Key Requirements (Both Options)</p>
+      <ul>
+        <li>The tree structure must be <strong>integrated</strong> with your existing graph — not a standalone demo.</li>
+        <li>You must implement core operations (insert, delete/extract, search/traverse) with clear documentation.</li>
+        <li>Your code must include comments explaining how the tree supports the graph algorithm or data management.</li>
+        <li>Component 5 (Analysis Document) will require you to analyze the complexity of your tree choice — plan for that now.</li>
+      </ul>
+    </div>
+
+    <h3>Option A vs. Option B Comparison</h3>
+    <div class="table-wrapper">
+      <table>
+        <caption class="sr-only">Comparison of Option A (Min-Heap / Priority Queue) and Option B (BST for Node Data)</caption>
+        <thead>
+          <tr>
+            <th scope="col">Design Factor</th>
+            <th scope="col">Option A: Min-Heap / Priority Queue</th>
+            <th scope="col">Option B: BST for Node Data</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Purpose in Graph</strong></td>
+            <td>Supports Dijkstra's shortest-path or Prim's MST by efficiently extracting the minimum-weight edge/vertex</td>
+            <td>Stores and retrieves graph node metadata (labels, weights, attributes) in sorted order</td>
+          </tr>
+          <tr>
+            <td><strong>Core Operations</strong></td>
+            <td>Insert, Extract-Min, Decrease-Key, Heapify</td>
+            <td>Insert, Search, Delete, In-Order Traversal</td>
+          </tr>
+          <tr>
+            <td><strong>Time Complexity (average)</strong></td>
+            <td>Insert: O(log <em>n</em>); Extract-Min: O(log <em>n</em>)</td>
+            <td>Insert: O(log <em>n</em>); Search: O(log <em>n</em>); Traversal: O(<em>n</em>)</td>
+          </tr>
+          <tr>
+            <td><strong>Underlying Structure</strong></td>
+            <td>Complete binary tree (array-based representation)</td>
+            <td>Binary search tree (pointer/reference-based nodes)</td>
+          </tr>
+          <tr>
+            <td><strong>Traversal Used</strong></td>
+            <td>Level-order (implicit in array); primarily extraction-focused</td>
+            <td>In-order (sorted output), pre-order (serialization), post-order (deletion)</td>
+          </tr>
+          <tr>
+            <td><strong>Pros</strong></td>
+            <td>
+              <ul>
+                <li>Guaranteed O(log <em>n</em>) extract-min</li>
+                <li>Cache-friendly array layout</li>
+                <li>Natural fit for greedy algorithms</li>
+              </ul>
+            </td>
+            <td>
+              <ul>
+                <li>Supports range queries and sorted iteration</li>
+                <li>Flexible node-level operations</li>
+                <li>Demonstrates multiple traversal strategies</li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Cons</strong></td>
+            <td>
+              <ul>
+                <li>Decrease-Key can be tricky to implement</li>
+                <li>No efficient arbitrary search</li>
+                <li>Less demonstration of traversal variety</li>
+              </ul>
+            </td>
+            <td>
+              <ul>
+                <li>Worst case O(<em>n</em>) if unbalanced</li>
+                <li>Deletion logic is more complex</li>
+                <li>May require balancing (AVL) for guarantees</li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Best If Your Project…</strong></td>
+            <td>Focuses on shortest-path or MST algorithms</td>
+            <td>Focuses on data management, lookup, or sorted reporting</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout callout-success">
+      <p class="callout-title">Choosing Your Option</p>
+      <p>Neither option is inherently harder or easier — choose based on your graph project's <strong>algorithmic focus</strong>. If your project already implements or plans to implement Dijkstra's or Prim's, Option A is the natural fit. If your project emphasizes node management and reporting, Option B aligns better.</p>
+    </div>
+
+    <!-- Roadmap -->
+    <h3 id="roadmap">Implementation Roadmap</h3>
+    <p>Use this three-week milestone plan to pace your work. Starting early is critical — Week 17 should be for polish and documentation, not core implementation.</p>
+
+    <div class="table-wrapper">
+      <table>
+        <caption class="sr-only">Three-week implementation milestones for Component 4</caption>
+        <thead>
+          <tr>
+            <th scope="col">Week</th>
+            <th scope="col">Milestone</th>
+            <th scope="col">Deliverable / Checkpoint</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Week 15</strong> (This Week)</td>
+            <td>Design and scaffold</td>
+            <td>
+              <ul>
+                <li>Choose Option A or B</li>
+                <li>Sketch class/function interfaces</li>
+                <li>Identify integration points with your existing graph code</li>
+                <li>Write pseudocode for core operations</li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Week 16</strong></td>
+            <td>Core implementation and testing</td>
+            <td>
+              <ul>
+                <li>Implement insert, delete/extract, and search/traverse</li>
+                <li>Write unit tests for each operation</li>
+                <li>Integrate tree structure with graph (e.g., use heap in Dijkstra's loop or BST for node lookups)</li>
+                <li>Begin drafting complexity notes for Analysis Document</li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Week 17</strong></td>
+            <td>Polish, document, submit</td>
+            <td>
+              <ul>
+                <li>Refine edge cases and error handling</li>
+                <li>Add code comments explaining tree–graph integration</li>
+                <li>Complete Analysis Document section on tree complexity</li>
+                <li>Final testing and submission</li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Analysis Document -->
+    <h3 id="analysis">Connecting to the Analysis Document (Component 5)</h3>
+    <p>Component 5 asks you to provide a written analysis of your project's data structures and algorithms. For your tree structure, be prepared to address the following questions:</p>
+
+    <div class="callout callout-warning">
+      <p class="callout-title">Complexity Questions to Address in Your Analysis</p>
+      <ol>
+        <li><strong>Time Complexity:</strong> What is the best-case, average-case, and worst-case time complexity for each core operation (insert, delete/extract, search)?</li>
+        <li><strong>Space Complexity:</strong> How much additional memory does your tree structure require relative to the number of graph nodes/edges?</li>
+        <li><strong>Why This Structure?</strong> Justify your choice (Option A or B) in terms of the algorithmic needs of your graph project. What would happen if you used a simpler structure (e.g., unsorted array)?</li>
+        <li><strong>Traversal Analysis:</strong> Which traversal(s) does your implementation use, and why? What is the time complexity of a full traversal?</li>
+        <li><strong>Trade-offs:</strong> What did you gain and what did you sacrifice by choosing this tree structure over the alternative option?</li>
+      </ol>
+    </div>
+
+    <p>You do not need to write the Analysis Document now, but keeping these questions in mind as you implement will make the writing process much smoother in Week 17.</p>
+
+  </div><!-- end panel-project -->
+
+  <!-- Tab Panel: Quiz 5 -->
+  <div class="tab-panel" role="tabpanel" id="panel-quiz" aria-labelledby="tab-quiz" hidden>
+
+    <h3 id="quiz-section">Quiz 5 Study Guide</h3>
+    <p>Quiz 5 covers material from <strong>Weeks 14–16</strong>. The tree content from this week (Week 15) is a major component. AVL trees and hashing from Week 16 will also appear — review those modules once they are available.</p>
+
+    <h4>Topic Coverage Table</h4>
+    <div class="table-wrapper">
+      <table>
+        <caption class="sr-only">Quiz 5 topic areas, question types, and review modules</caption>
+        <thead>
+          <tr>
+            <th scope="col">Topic Area</th>
+            <th scope="col">Expected Question Types</th>
+            <th scope="col">Modules to Review</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Tree Terminology &amp; Properties</td>
+            <td>Definitions, identify properties from diagrams, true/false</td>
+            <td>Module 15.1</td>
+          </tr>
+          <tr>
+            <td>Tree Traversals (Pre-, In-, Post-, Level-order)</td>
+            <td>Trace traversal output, reconstruct tree from traversal pairs, application scenarios</td>
+            <td>Module 15.2</td>
+          </tr>
+          <tr>
+            <td>Expression Trees</td>
+            <td>Build expression tree from infix/postfix, evaluate, convert between notations</td>
+            <td>Module 15.3</td>
+          </tr>
+          <tr>
+            <td>BST Operations (Insert, Search, Delete)</td>
+            <td>Trace insertions, find node, determine tree shape after deletions, complexity questions</td>
+            <td>Module 15.4</td>
+          </tr>
+          <tr>
+            <td>AVL Trees (Week 16)</td>
+            <td>Identify imbalance, perform rotations, determine balance factors</td>
+            <td>Week 16 modules (forthcoming)</td>
+          </tr>
+          <tr>
+            <td>Hashing (Week 16)</td>
+            <td>Compute hash values, resolve collisions, compare strategies</td>
+            <td>Week 16 modules (forthcoming)</td>
+          </tr>
+          <tr>
+            <td>Graph Foundations (Week 14)</td>
+            <td>Terminology, representations (adjacency matrix/list), traversals (BFS/DFS)</td>
+            <td>Week 14 modules</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout callout-info">
+      <p class="callout-title">Study Tip</p>
+      <p>The best preparation is <strong>active practice</strong>: trace algorithms by hand, draw trees, and work through the knowledge checks in each module. Passive re-reading is far less effective for this material.</p>
+    </div>
+
+    <h4>Self-Assessment Checklist</h4>
+    <p>Use this checklist to track your confidence on each topic. Check items you feel prepared for. This is session-only — your checks will not be saved when you leave the page.</p>
+
+    <ul class="checklist" aria-label="Self-assessment checklist for Quiz 5 preparation">
+      <li>
+        <input type="checkbox" id="chk1">
+        <label for="chk1">I can define key tree terms: root, leaf, internal node, height, depth, degree, subtree.</label>
+      </li>
+      <li>
+        <input type="checkbox" id="chk2">
+        <label for="chk2">I can identify whether a given tree is a full, complete, or perfect binary tree.</label>
+      </li>
+      <li>
+        <input type="checkbox" id="chk3">
+        <label for="chk3">I can perform pre-order, in-order, post-order, and level-order traversals on a given tree.</label>
+      </li>
+      <li>
+        <input type="checkbox" id="chk4">
+        <label for="chk4">I can reconstruct a binary tree given two traversal sequences (e.g., pre-order + in-order).</label>
+      </li>
+      <li>
+        <input type="checkbox" id="chk5">
+        <label for="chk5">I can build an expression tree from a postfix expression and evaluate it.</label>
+      </li>
+      <li>
+        <input type="checkbox" id="chk6">
+        <label for="chk6">I can convert between infix, prefix, and postfix using an expression tree.</label>
+      </li>
+      <li>
+        <input type="checkbox" id="chk7">
+        <label for="chk7">I can trace BST insert and search operations and state the resulting tree structure.</label>
+      </li>
+      <li>
+        <input type="checkbox" id="chk8">
+        <label for="chk8">I can perform BST deletion (all three cases: leaf, one child, two children).</label>
+      </li>
+      <li>
+        <input type="checkbox" id="chk9">
+        <label for="chk9">I can state the best-case and worst-case time complexity for BST operations.</label>
+      </li>
+      <li>
+        <input type="checkbox" id="chk10">
+        <label for="chk10">I understand the difference between a min-heap and a BST and when to use each.</label>
+      </li>
+      <li>
+        <input type="checkbox" id="chk11">
+        <label for="chk11">I can explain how a priority queue (heap) supports Dijkstra's algorithm.</label>
+      </li>
+      <li>
+        <input type="checkbox" id="chk12">
+        <label for="chk12">I can define and work with graph terminology (vertices, edges, directed/undirected, weighted).</label>
+      </li>
+      <li>
+        <input type="checkbox" id="chk13">
+        <label for="chk13">I can represent a graph using an adjacency matrix and an adjacency list.</label>
+      </li>
+      <li>
+        <input type="checkbox" id="chk14">
+        <label for="chk14">I can trace BFS and DFS on a graph and state the visit order.</label>
+      </li>
+      <li>
+        <input type="checkbox" id="chk15">
+        <label for="chk15">(Week 16) I will review AVL rotations and hashing once those modules are released.</label>
+      </li>
+    </ul>
+
+    <p class="progress-note" id="checklist-progress">0 of 15 items checked</p>
+
+  </div><!-- end panel-quiz -->
+</div><!-- end tabs-container -->
+
+<!-- Knowledge Checks -->
+<h2 id="knowledge-checks">Knowledge Checks</h2>
+<p>These ungraded checks help you confirm your understanding of the synthesis concepts in this module. They are not submitted for a grade.</p>
+
+<!-- Check 15.5a -->
+<div class="kc-container" id="kc-a">
+  <h4>Check 15.5a — Choosing a Tree Structure</h4>
+  <p>You are building a graph application that finds the shortest path between cities using Dijkstra's algorithm. Which tree-based structure is the most appropriate internal component, and why?</p>
+  <ul class="kc-options">
+    <li><label><input type="radio" name="kc-a" value="1"> A BST, because it can store city names in sorted order for quick alphabetical lookup.</label></li>
+    <li><label><input type="radio" name="kc-a" value="2"> A min-heap (priority queue), because Dijkstra's requires efficiently extracting the vertex with the smallest tentative distance.</label></li>
+    <li><label><input type="radio" name="kc-a" value="3"> A max-heap, because we want the longest path first to eliminate it.</label></li>
+    <li><label><input type="radio" name="kc-a" value="4"> An expression tree, because we need to evaluate distance formulas.</label></li>
+  </ul>
+  <button class="kc-btn" onclick="checkAnswer('kc-a', '2')" aria-label="Check answer for knowledge check 15.5a">Check Answer</button>
+  <div class="kc-feedback" id="kc-a-feedback"></div>
+</div>
+
+<!-- Check 15.5b -->
+<div class="kc-container" id="kc-b">
+  <h4>Check 15.5b — Complexity Analysis Preparation</h4>
+  <p>For your Analysis Document, you need to discuss the worst-case time complexity of searching in a BST. Which of the following is correct?</p>
+  <ul class="kc-options">
+    <li><label><input type="radio" name="kc-b" value="1"> O(1) — BSTs always find elements in constant time using the root.</label></li>
+    <li><label><input type="radio" name="kc-b" value="2"> O(log <em>n</em>) — BSTs are always balanced, guaranteeing logarithmic search.</label></li>
+    <li><label><input type="radio" name="kc-b" value="3"> O(<em>n</em>) — In the worst case (degenerate/skewed tree), search visits every node.</label></li>
+    <li><label><input type="radio" name="kc-b" value="4"> O(<em>n</em> log <em>n</em>) — Each level requires a linear scan.</label></li>
+  </ul>
+  <button class="kc-btn" onclick="checkAnswer('kc-b', '3')" aria-label="Check answer for knowledge check 15.5b">Check Answer</button>
+  <div class="kc-feedback" id="kc-b-feedback"></div>
+</div>
+
+<!-- Check 15.5c -->
+<div class="kc-container" id="kc-c">
+  <h4>Check 15.5c — Integration Planning</h4>
+  <p>A student chooses Option B (BST) for their graph project. They plan to store graph vertices in the BST keyed by vertex label. Which traversal would produce a <strong>sorted listing</strong> of all vertex labels?</p>
+  <ul class="kc-options">
+    <li><label><input type="radio" name="kc-c" value="1"> Pre-order traversal</label></li>
+    <li><label><input type="radio" name="kc-c" value="2"> In-order traversal</label></li>
+    <li><label><input type="radio" name="kc-c" value="3"> Post-order traversal</label></li>
+    <li><label><input type="radio" name="kc-c" value="4"> Level-order traversal</label></li>
+  </ul>
+  <button class="kc-btn" onclick="checkAnswer('kc-c', '2')" aria-label="Check answer for knowledge check 15.5c">Check Answer</button>
+  <div class="kc-feedback" id="kc-c-feedback"></div>
+</div>
+
+<!-- Closing -->
+<div class="callout callout-success" style="margin-top: 2rem;">
+  <p class="callout-title">Week 15 Complete!</p>
+  <p>You have now covered all tree fundamentals for this course: terminology, traversals, expression trees, BST operations, and how trees integrate into your final project. Next week (Week 16) introduces <strong>AVL trees</strong> and <strong>hashing</strong> — the final new topics before Quiz 5. Use the roadmap above to begin your Component 4 design work this week.</p>
+</div>
+
+</div><!-- end container -->
+
+<script>
+// Tab functionality
+(function() {
+  const tabs = document.querySelectorAll('.tab-btn');
+  const panels = document.querySelectorAll('.tab-panel');
+
+  function activateTab(tab) {
+    tabs.forEach(function(t) {
+      t.setAttribute('aria-selected', 'false');
+      t.setAttribute('tabindex', '-1');
+    });
+    panels.forEach(function(p) {
+      p.hidden = true;
+    });
+    tab.setAttribute('aria-selected', 'true');
+    tab.setAttribute('tabindex', '0');
+    var panelId = tab.getAttribute('aria-controls');
+    document.getElementById(panelId).hidden = false;
+    tab.focus();
+  }
+
+  tabs.forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      activateTab(tab);
+    });
+    tab.addEventListener('keydown', function(e) {
+      var index = Array.from(tabs).indexOf(tab);
+      var newIndex = index;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        newIndex = (index + 1) % tabs.length;
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        newIndex = (index - 1 + tabs.length) % tabs.length;
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        newIndex = 0;
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        newIndex = tabs.length - 1;
+      }
+      if (newIndex !== index) {
+        activateTab(tabs[newIndex]);
+      }
+    });
+  });
+})();
+
+// Knowledge Check feedback
+var feedbackData = {
+  'kc-a': {
+    correct: '2',
+    correctMsg: '<strong>Correct!</strong> Dijkstra\'s algorithm repeatedly extracts the vertex with the smallest tentative distance. A min-heap provides this operation in O(log n) time, making it the ideal tree-based structure for this algorithm. This is the core rationale for Option A.',
+    incorrectMsg: '<strong>Not quite.</strong> Dijkstra\'s algorithm needs to repeatedly find and remove the vertex with the <em>smallest</em> tentative distance. A min-heap (priority queue) provides Extract-Min in O(log n), which directly supports this need. A BST could work but is not optimized for repeated minimum extraction. Review Module 15.4 and the Option A description above.'
+  },
+  'kc-b': {
+    correct: '3',
+    correctMsg: '<strong>Correct!</strong> In the worst case, a BST can degenerate into a linked list (e.g., if elements are inserted in sorted order), requiring O(n) comparisons to find an element. This is a key point to discuss in your Analysis Document — and a reason AVL trees (Week 16) add balancing guarantees.',
+    incorrectMsg: '<strong>Not quite.</strong> While a <em>balanced</em> BST gives O(log n) search, BSTs are not guaranteed to be balanced. If elements are inserted in sorted order, the tree degenerates into a linear chain (skewed tree), and search becomes O(n). This worst-case scenario is important for your Analysis Document.'
+  },
+  'kc-c': {
+    correct: '2',
+    correctMsg: '<strong>Correct!</strong> In-order traversal of a BST visits nodes in ascending key order (left → root → right). Since the BST is keyed by vertex label, in-order traversal produces an alphabetically/numerically sorted list of all vertex labels. This is one of the key advantages of Option B.',
+    incorrectMsg: '<strong>Not quite.</strong> In-order traversal (left → root → right) is the traversal that visits BST nodes in sorted key order. Pre-order and post-order produce different sequences useful for other purposes (serialization, deletion), and level-order visits by depth. Review Module 15.2 on traversal outputs.'
+  }
+};
+
+function checkAnswer(qName, correctValue) {
+  var selected = document.querySelector('input[name="' + qName + '"]:checked');
+  var feedbackEl = document.getElementById(qName + '-feedback');
+  var data = feedbackData[qName];
+
+  if (!selected) {
+    feedbackEl.className = 'kc-feedback incorrect';
+    feedbackEl.innerHTML = 'Please select an answer before checking.';
+    feedbackEl.style.display = 'block';
+    return;
+  }
+
+  if (selected.value === data.correct) {
+    feedbackEl.className = 'kc-feedback correct';
+    feedbackEl.innerHTML = data.correctMsg;
+  } else {
+    feedbackEl.className = 'kc-feedback incorrect';
+    feedbackEl.innerHTML = data.incorrectMsg;
+  }
+  feedbackEl.style.display = 'block';
+  feedbackEl.setAttribute('role', 'alert');
+}
+
+// Checklist progress counter
+(function() {
+  var checkboxes = document.querySelectorAll('.checklist input[type="checkbox"]');
+  var progressEl = document.getElementById('checklist-progress');
+  var total = checkboxes.length;
+
+  function updateProgress() {
+    var checked = document.querySelectorAll('.checklist input[type="checkbox"]:checked').length;
+    progressEl.textContent = checked + ' of ' + total + ' items checked';
+  }
+
+  checkboxes.forEach(function(cb) {
+    cb.addEventListener('change', updateProgress);
+  });
+})();
+</script>
+</body>
+</html>

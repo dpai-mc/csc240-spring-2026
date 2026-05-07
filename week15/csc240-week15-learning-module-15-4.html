@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 15.4 – Binary Search Trees (BSTs)</title>
+<style>
+:root {
+--primary: #2c3e50;
+--accent: #3498db;
+--accent-dark: #2980b9;
+--success: #27ae60;
+--warning: #f39c12;
+--danger: #e74c3c;
+--light-bg: #f8f9fa;
+--border: #dee2e6;
+--text: #2c3e50;
+--text-light: #6c757d;
+--callout-info-bg: #eaf4fc;
+--callout-info-border: #3498db;
+--callout-warn-bg: #fef9e7;
+--callout-warn-border: #f39c12;
+--callout-success-bg: #eafaf1;
+--callout-success-border: #27ae60;
+--callout-danger-bg: #fdedec;
+--callout-danger-border: #e74c3c;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+line-height: 1.7;
+color: var(--text);
+max-width: 960px;
+margin: 0 auto;
+padding: 0 1rem 3rem;
+}
+
+/* Sticky Navigation */
+.nav-bar {
+position: sticky;
+top: 0;
+background: var(--primary);
+padding: 0.6rem 1rem;
+z-index: 1000;
+border-radius: 0 0 6px 6px;
+display: flex;
+flex-wrap: wrap;
+gap: 0.3rem 1rem;
+align-items: center;
+}
+.nav-bar a {
+color: #fff;
+text-decoration: none;
+font-size: 0.82rem;
+padding: 0.2rem 0.5rem;
+border-radius: 3px;
+transition: background 0.2s;
+}
+.nav-bar a:hover, .nav-bar a:focus {
+background: var(--accent);
+outline: 2px solid var(--accent);
+}
+.nav-bar .nav-title {
+font-weight: 700;
+font-size: 0.9rem;
+margin-right: auto;
+}
+
+/* Header */
+.module-header {
+text-align: center;
+padding: 2.5rem 0 1.5rem;
+border-bottom: 3px solid var(--accent);
+margin-bottom: 2rem;
+}
+.module-header h1 {
+font-size: 1.9rem;
+color: var(--primary);
+margin-bottom: 0.4rem;
+}
+.module-header .subtitle {
+color: var(--text-light);
+font-size: 1rem;
+}
+.module-meta {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+gap: 0.8rem;
+margin-top: 1.2rem;
+}
+.meta-item {
+background: var(--light-bg);
+padding: 0.6rem 1rem;
+border-radius: 5px;
+font-size: 0.85rem;
+text-align: center;
+}
+.meta-item strong { display: block; color: var(--accent-dark); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* Sections */
+h2 {
+font-size: 1.5rem;
+color: var(--primary);
+margin: 2.5rem 0 1rem;
+padding-bottom: 0.4rem;
+border-bottom: 2px solid var(--border);
+}
+h3 {
+font-size: 1.2rem;
+color: var(--primary);
+margin: 1.5rem 0 0.7rem;
+}
+h4 {
+font-size: 1.05rem;
+color: var(--accent-dark);
+margin: 1.2rem 0 0.5rem;
+}
+
+p { margin-bottom: 1rem; }
+ul, ol { margin: 0.5rem 0 1rem 1.5rem; }
+li { margin-bottom: 0.4rem; }
+
+/* Callouts */
+.callout {
+border-left: 4px solid var(--callout-info-border);
+background: var(--callout-info-bg);
+padding: 1rem 1.2rem;
+margin: 1.2rem 0;
+border-radius: 0 5px 5px 0;
+}
+.callout-title {
+font-weight: 700;
+margin-bottom: 0.3rem;
+font-size: 0.95rem;
+}
+.callout.warning { border-left-color: var(--callout-warn-border); background: var(--callout-warn-bg); }
+.callout.success { border-left-color: var(--callout-success-border); background: var(--callout-success-bg); }
+.callout.danger { border-left-color: var(--callout-danger-border); background: var(--callout-danger-bg); }
+
+/* Code blocks */
+pre {
+background: #1e1e1e;
+color: #d4d4d4;
+padding: 1.2rem;
+border-radius: 6px;
+overflow-x: auto;
+font-size: 0.85rem;
+line-height: 1.5;
+margin: 1rem 0;
+}
+pre code { font-family: "Fira Code", "Consolas", "Courier New", monospace; }
+code {
+font-family: "Fira Code", "Consolas", "Courier New", monospace;
+background: #eee;
+padding: 0.15rem 0.4rem;
+border-radius: 3px;
+font-size: 0.88em;
+}
+pre code { background: none; padding: 0; }
+
+/* Tree diagrams */
+.tree-diagram {
+background: var(--light-bg);
+border: 1px solid var(--border);
+border-radius: 6px;
+padding: 1.2rem;
+margin: 1rem 0;
+font-family: "Fira Code", "Consolas", monospace;
+font-size: 0.85rem;
+line-height: 1.4;
+overflow-x: auto;
+white-space: pre;
+text-align: center;
+}
+
+/* Tables */
+table {
+width: 100%;
+border-collapse: collapse;
+margin: 1rem 0;
+font-size: 0.9rem;
+}
+th, td {
+border: 1px solid var(--border);
+padding: 0.6rem 0.8rem;
+text-align: center;
+}
+th {
+background: var(--primary);
+color: #fff;
+font-weight: 600;
+}
+tr:nth-child(even) { background: var(--light-bg); }
+
+/* Collapsible / details */
+details {
+border: 1px solid var(--border);
+border-radius: 6px;
+margin: 1rem 0;
+overflow: hidden;
+}
+details summary {
+background: var(--light-bg);
+padding: 0.8rem 1.2rem;
+cursor: pointer;
+font-weight: 600;
+font-size: 0.95rem;
+list-style: none;
+display: flex;
+align-items: center;
+gap: 0.5rem;
+}
+details summary::before {
+content: "▶";
+font-size: 0.75rem;
+transition: transform 0.2s;
+}
+details[open] summary::before { transform: rotate(90deg); }
+details .details-content { padding: 1rem 1.2rem; }
+
+/* Knowledge Checks */
+.kc-container {
+border: 2px solid var(--accent);
+border-radius: 8px;
+padding: 1.5rem;
+margin: 1.5rem 0;
+background: #fff;
+}
+.kc-container h4 { color: var(--accent-dark); margin-top: 0; }
+.kc-option {
+display: block;
+padding: 0.6rem 1rem;
+margin: 0.4rem 0;
+border: 1px solid var(--border);
+border-radius: 5px;
+cursor: pointer;
+transition: background 0.2s, border-color 0.2s;
+}
+.kc-option:hover { background: var(--light-bg); }
+.kc-option.correct { background: var(--callout-success-bg); border-color: var(--success); }
+.kc-option.incorrect { background: var(--callout-danger-bg); border-color: var(--danger); }
+.kc-feedback {
+margin-top: 0.8rem;
+padding: 0.8rem;
+border-radius: 5px;
+display: none;
+font-size: 0.9rem;
+}
+.kc-feedback.show { display: block; }
+.kc-feedback.correct-fb { background: var(--callout-success-bg); border: 1px solid var(--success); }
+.kc-feedback.incorrect-fb { background: var(--callout-danger-bg); border: 1px solid var(--danger); }
+
+/* Try-it-first */
+.try-first {
+background: var(--callout-warn-bg);
+border: 1px dashed var(--warning);
+border-radius: 6px;
+padding: 1rem 1.2rem;
+margin: 1rem 0;
+}
+.try-first p { margin-bottom: 0.5rem; font-weight: 600; color: var(--warning); }
+
+/* Side-by-side */
+.side-by-side {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 1rem;
+margin: 1rem 0;
+}
+@media (max-width: 700px) {
+.side-by-side { grid-template-columns: 1fr; }
+}
+.side-panel {
+border: 1px solid var(--border);
+border-radius: 6px;
+overflow: hidden;
+}
+.side-panel-header {
+background: var(--primary);
+color: #fff;
+padding: 0.5rem 1rem;
+font-weight: 600;
+font-size: 0.85rem;
+text-align: center;
+}
+.side-panel-body { padding: 1rem; }
+
+/* Accessibility: focus visible */
+*:focus-visible {
+outline: 3px solid var(--accent);
+outline-offset: 2px;
+}
+
+/* Skip link */
+.skip-link {
+position: absolute;
+top: -100px;
+left: 0;
+background: var(--accent);
+color: #fff;
+padding: 0.5rem 1rem;
+z-index: 9999;
+border-radius: 0 0 5px 0;
+}
+.skip-link:focus { top: 0; }
+</style>
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<!-- Navigation Bar -->
+<nav class="nav-bar" aria-label="Module navigation">
+<span class="nav-title">15.4 BSTs</span>
+<a href="#bst-property">BST Property</a>
+<a href="#inorder-sorted">Inorder &amp; Sorted Output</a>
+<a href="#bst-search">Search</a>
+<a href="#bst-insert">Insertion</a>
+<a href="#bst-delete">Deletion</a>
+<a href="#bst-validation">Validation</a>
+<a href="#complexity">Complexity</a>
+<a href="#avl-preview">AVL Preview</a>
+<a href="#code">Code</a>
+<a href="#checks">Checks</a>
+</nav>
+
+<!-- Main Content -->
+<main id="main-content">
+
+<header class="module-header">
+<h1>Module 15.4 – Binary Search Trees (BSTs)</h1>
+<p class="subtitle">CSC 240 – Discrete Structures &nbsp;|&nbsp; Week 15 of 17</p>
+<div class="module-meta">
+<div class="meta-item"><strong>CSLO</strong>CSLO 3</div>
+<div class="meta-item"><strong>Objectives</strong>6 &amp; 7</div>
+<div class="meta-item"><strong>Prerequisites</strong>Modules 15.1, 15.2</div>
+<div class="meta-item"><strong>Prepares For</strong>AVL Trees (Week 16), Final Project</div>
+</div>
+</header>
+
+<div class="callout">
+<p class="callout-title">📋 Module Overview</p>
+<p>A Binary Search Tree (BST) is a binary tree that maintains a sorting invariant: for every node, all keys in the left subtree are smaller and all keys in the right subtree are larger. This property enables efficient search, insertion, and deletion — all in O(<em>h</em>) time where <em>h</em> is the tree's height. This module covers the BST property, core operations (search, insert, delete with all three cases), validation, complexity analysis, and the motivation for balanced trees. BSTs are the most implementation-heavy topic of the week and directly prepare you for AVL trees (Week 16) and the Final Project.</p>
+</div>
+
+<div class="callout warning">
+<p class="callout-title">⚠️ Prerequisites</p>
+<p>This module assumes you have completed <strong>Module 15.1</strong> (tree terminology, binary tree structure, height) and <strong>Module 15.2</strong> (inorder traversal). If you are not comfortable performing an inorder traversal by hand, review Module 15.2 before proceeding.</p>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- SECTION 1: THE BST PROPERTY -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<section id="bst-property">
+<h2>1. The BST Property</h2>
+
+<h3>Formal Definition</h3>
+<p>A <strong>Binary Search Tree (BST)</strong> is a binary tree in which, for <em>every</em> node <em>x</em>:</p>
+<ul>
+<li>All keys in the <strong>left subtree</strong> of <em>x</em> are <strong>less than</strong> <em>x</em>.key.</li>
+<li>All keys in the <strong>right subtree</strong> of <em>x</em> are <strong>greater than</strong> <em>x</em>.key.</li>
+</ul>
+<p>This invariant must hold <em>recursively</em> for every node in the tree — not just the immediate children, but the <em>entire</em> subtree.</p>
+
+<div class="callout">
+<p class="callout-title">🔑 Key Point</p>
+<p>The BST property is a <strong>global</strong> constraint on subtrees, not merely a local parent-child relationship. A common mistake is checking only whether <code>left.key &lt; parent.key &lt; right.key</code> without verifying the entire subtree respects the bound. We will revisit this mistake in the Validation section.</p>
+</div>
+
+<h3>Valid BST Example</h3>
+<p>Consider this binary tree with keys [8, 3, 10, 1, 6, 14, 4, 7, 13]:</p>
+<div class="tree-diagram" role="img" aria-label="Valid BST with root 8, left subtree containing 3,1,6,4,7 and right subtree containing 10,14,13">
+            8
+          /   \
+        3      10
+       / \       \
+      1    6     14
+          / \    /
+         4   7  13
+</div>
+<p><strong>Verification:</strong></p>
+<ul>
+<li>Node 8: Left subtree keys {1, 3, 4, 6, 7} — all &lt; 8 ✓. Right subtree keys {10, 13, 14} — all &gt; 8 ✓.</li>
+<li>Node 3: Left subtree keys {1} — all &lt; 3 ✓. Right subtree keys {4, 6, 7} — all &gt; 3 ✓.</li>
+<li>Node 6: Left subtree keys {4} — all &lt; 6 ✓. Right subtree keys {7} — all &gt; 6 ✓.</li>
+<li>Node 10: No left subtree. Right subtree keys {13, 14} — all &gt; 10 ✓.</li>
+<li>Node 14: Left subtree keys {13} — all &lt; 14 ✓. No right subtree ✓.</li>
+<li>Leaves (1, 4, 7, 13): No subtrees to violate — trivially satisfy the property ✓.</li>
+</ul>
+
+<h3>Invalid BST Example (Non-Example)</h3>
+<div class="tree-diagram" role="img" aria-label="Invalid BST: node 12 is in the left subtree of 10 but 12 is greater than 10">
+            10
+          /    \
+        5      15
+       / \    /
+      2    12  13
+</div>
+<div class="callout danger">
+<p class="callout-title">❌ Violation</p>
+<p>Node 12 is in the <strong>left subtree</strong> of node 10 (it is the right child of 5, which is the left child of 10). However, 12 &gt; 10, which violates the BST property. The BST property requires that <em>all</em> keys in the left subtree of 10 must be less than 10 — including grandchildren and beyond.</p>
+<p>Note that locally, node 5 looks correct: left child 2 &lt; 5 and right child 12 &gt; 5. This is why local-only checking is insufficient.</p>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- SECTION 2: INORDER TRAVERSAL AND SORTED OUTPUT -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<section id="inorder-sorted">
+<h2>2. Inorder Traversal and Sorted Output</h2>
+
+<h3>The Key Insight</h3>
+<div class="callout success">
+<p class="callout-title">✨ Fundamental Theorem of BSTs</p>
+<p>An <strong>inorder traversal</strong> (Left → Root → Right) of a BST visits the keys in <strong>sorted ascending order</strong>.</p>
+</div>
+
+<p><strong>Why?</strong> By the BST property, for any node <em>x</em>:</p>
+<ol>
+<li>All keys in the left subtree are less than <em>x</em>.key — and the inorder traversal visits them <em>before</em> <em>x</em>.</li>
+<li>The root <em>x</em> is visited next.</li>
+<li>All keys in the right subtree are greater than <em>x</em>.key — and the inorder traversal visits them <em>after</em> <em>x</em>.</li>
+</ol>
+<p>By induction on the structure of the tree, the entire sequence is sorted.</p>
+
+<h3>Example: Inorder on Our Valid BST</h3>
+<p>Performing inorder traversal on the BST from Section 1:</p>
+<div class="tree-diagram" role="img" aria-label="Same valid BST from section 1">
+            8
+          /   \
+        3      10
+       / \       \
+      1    6     14
+          / \    /
+         4   7  13
+</div>
+<p><strong>Inorder result:</strong> 1, 3, 4, 6, 7, 8, 10, 13, 14 — sorted! ✓</p>
+
+<div class="callout">
+<p class="callout-title">🔗 Connection to Module 15.2</p>
+<p>In Module 15.2, you learned to perform inorder traversals on general binary trees. Now you see <em>why</em> inorder is special for BSTs: it recovers the sorted order. This connection is also the basis for one of our BST validation methods (Section 6).</p>
+</div>
+
+<h3>Practical Applications</h3>
+<ul>
+<li><strong>Sorting:</strong> Insert <em>n</em> keys into a BST, then perform inorder traversal → sorted output. (This is essentially tree sort.)</li>
+<li><strong>Range queries:</strong> Find all keys between <em>a</em> and <em>b</em> by performing a modified inorder traversal.</li>
+<li><strong>Validation:</strong> If inorder traversal does <em>not</em> produce sorted output, the tree is not a valid BST.</li>
+</ul>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- SECTION 3: BST SEARCH -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<section id="bst-search">
+<h2>3. BST Search</h2>
+
+<h3>Algorithm</h3>
+<p>Searching for a key <em>k</em> in a BST exploits the BST property to eliminate half the remaining tree at each step:</p>
+<pre><code>ALGORITHM BSTSearch(node, key):
+    IF node = NULL THEN
+        RETURN NULL              ← key not found
+    IF key = node.key THEN
+        RETURN node              ← found it
+    ELSE IF key &lt; node.key THEN
+        RETURN BSTSearch(node.left, key)   ← search left subtree
+    ELSE
+        RETURN BSTSearch(node.right, key)  ← search right subtree
+</code></pre>
+
+<p><strong>Time complexity:</strong> O(<em>h</em>) where <em>h</em> is the height of the tree. Each recursive call moves one level deeper.</p>
+
+<h3>Worked Example</h3>
+<div class="try-first">
+<p>✏️ Try it first!</p>
+<p>Using the BST below, trace the search for key <strong>7</strong>. Write down which nodes you visit and which direction you go at each step.</p>
+</div>
+<div class="tree-diagram" role="img" aria-label="BST with root 8, used for search example">
+            8
+          /   \
+        3      10
+       / \       \
+      1    6     14
+          / \    /
+         4   7  13
+</div>
+
+<details>
+<summary>Reveal Search Trace for key = 7</summary>
+<div class="details-content">
+<ol>
+<li><strong>Compare 7 with root 8:</strong> 7 &lt; 8 → go left</li>
+<li><strong>Compare 7 with node 3:</strong> 7 &gt; 3 → go right</li>
+<li><strong>Compare 7 with node 6:</strong> 7 &gt; 6 → go right</li>
+<li><strong>Compare 7 with node 7:</strong> 7 = 7 → <strong>FOUND!</strong></li>
+</ol>
+<p>Nodes visited: 8 → 3 → 6 → 7 (4 comparisons, depth = 3).</p>
+</div>
+</details>
+
+<details>
+<summary>Reveal Search Trace for key = 5 (not in tree)</summary>
+<div class="details-content">
+<ol>
+<li><strong>Compare 5 with root 8:</strong> 5 &lt; 8 → go left</li>
+<li><strong>Compare 5 with node 3:</strong> 5 &gt; 3 → go right</li>
+<li><strong>Compare 5 with node 6:</strong> 5 &lt; 6 → go left</li>
+<li><strong>Compare 5 with node 4:</strong> 5 &gt; 4 → go right</li>
+<li><strong>Node 4 has no right child:</strong> NULL → <strong>NOT FOUND</strong></li>
+</ol>
+<p>Nodes visited: 8 → 3 → 6 → 4 → NULL (4 comparisons + 1 null check).</p>
+</div>
+</details>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- SECTION 4: BST INSERTION -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<section id="bst-insert">
+<h2>4. BST Insertion</h2>
+
+<h3>Algorithm</h3>
+<p>Insertion follows the same compare-and-branch logic as search. When we reach a NULL position, that is where the new node belongs:</p>
+<pre><code>ALGORITHM BSTInsert(node, key):
+    IF node = NULL THEN
+        RETURN new Node(key)     ← create leaf node here
+    IF key &lt; node.key THEN
+        node.left ← BSTInsert(node.left, key)
+    ELSE IF key &gt; node.key THEN
+        node.right ← BSTInsert(node.right, key)
+    ELSE
+        ← key already exists; handle as needed (ignore/update)
+    RETURN node
+</code></pre>
+
+<p><strong>Key observation:</strong> New nodes are <em>always</em> inserted as leaf nodes. The existing tree structure is not modified.</p>
+<p><strong>Time complexity:</strong> O(<em>h</em>) — same as search.</p>
+
+<h3>Worked Example: Building a BST</h3>
+<div class="try-first">
+<p>✏️ Try it first!</p>
+<p>Insert the keys <strong>5, 3, 7, 1, 4, 6, 8</strong> (in that order) into an initially empty BST. Draw the tree after each insertion.</p>
+</div>
+
+<details>
+<summary>Reveal Step-by-Step Construction</summary>
+<div class="details-content">
+<h4>Step 1: Insert 5</h4>
+<div class="tree-diagram" role="img" aria-label="Single node 5">
+    5
+</div>
+<p>Tree is empty → 5 becomes the root.</p>
+
+<h4>Step 2: Insert 3</h4>
+<div class="tree-diagram" role="img" aria-label="5 with left child 3">
+    5
+   /
+  3
+</div>
+<p>3 &lt; 5 → insert as left child of 5.</p>
+
+<h4>Step 3: Insert 7</h4>
+<div class="tree-diagram" role="img" aria-label="5 with left child 3 and right child 7">
+    5
+   / \
+  3   7
+</div>
+<p>7 &gt; 5 → insert as right child of 5.</p>
+
+<h4>Step 4: Insert 1</h4>
+<div class="tree-diagram" role="img" aria-label="Balanced BST with 4 nodes">
+      5
+     / \
+    3   7
+   /
+  1
+</div>
+<p>1 &lt; 5 → go left; 1 &lt; 3 → insert as left child of 3.</p>
+
+<h4>Step 5: Insert 4</h4>
+<div class="tree-diagram" role="img" aria-label="BST with 5 nodes">
+      5
+     / \
+    3   7
+   / \
+  1   4
+</div>
+<p>4 &lt; 5 → go left; 4 &gt; 3 → insert as right child of 3.</p>
+
+<h4>Step 6: Insert 6</h4>
+<div class="tree-diagram" role="img" aria-label="BST with 6 nodes">
+      5
+     / \
+    3   7
+   / \ /
+  1  4 6
+</div>
+<p>6 &gt; 5 → go right; 6 &lt; 7 → insert as left child of 7.</p>
+
+<h4>Step 7: Insert 8</h4>
+<div class="tree-diagram" role="img" aria-label="Complete BST with 7 nodes, height 2">
+        5
+       / \
+      3    7
+     / \  / \
+    1  4 6   8
+</div>
+<p>8 &gt; 5 → go right; 8 &gt; 7 → insert as right child of 7.</p>
+
+<div class="callout success">
+<p class="callout-title">✅ Result</p>
+<p>This insertion order produces a <strong>perfectly balanced</strong> BST with height 2. With 7 nodes, the minimum possible height is ⌊log₂ 7⌋ = 2. Searching any key requires at most 3 comparisons.</p>
+</div>
+</div>
+</details>
+
+<h3>The Degenerate Worst Case</h3>
+<div class="try-first">
+<p>✏️ Try it first!</p>
+<p>Now insert the <strong>same 7 keys in sorted order</strong>: <strong>1, 3, 4, 5, 6, 7, 8</strong>. Draw the resulting BST.</p>
+</div>
+
+<details>
+<summary>Reveal Degenerate BST Construction</summary>
+<div class="details-content">
+<div class="tree-diagram" role="img" aria-label="Degenerate BST forming a right-leaning chain: 1-3-4-5-6-7-8">
+1
+ \
+  3
+   \
+    4
+     \
+      5
+       \
+        6
+         \
+          7
+           \
+            8
+</div>
+<p>Each key is larger than all previous keys, so every new node is inserted as the right child of the current rightmost node. The result is a <strong>linked list</strong> — not a tree in any useful sense!</p>
+
+<div class="callout danger">
+<p class="callout-title">⚠️ Worst Case</p>
+<p><strong>Height = 6</strong> (for 7 nodes). Searching for key 8 requires 7 comparisons — every single node must be visited. This is O(<em>n</em>) performance, no better than a linked list. Compare this to the balanced version above where the same search takes only 3 comparisons.</p>
+</div>
+</div>
+</details>
+
+<div class="callout warning">
+<p class="callout-title">💡 Critical Insight</p>
+<p>The <strong>shape</strong> of a BST depends entirely on the <strong>insertion order</strong>. The same set of keys can produce a balanced tree (height ≈ log <em>n</em>) or a degenerate chain (height = <em>n</em>&minus;1). This is the fundamental motivation for self-balancing trees like AVL trees (Week 16).</p>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- SECTION 5: BST DELETION -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<section id="bst-delete">
+<h2>5. BST Deletion — Three Cases</h2>
+
+<p>Deletion is the most complex BST operation because removing a node must preserve the BST property. There are three cases based on the number of children the target node has:</p>
+
+<h3>Case (a): Deleting a Leaf Node (0 children)</h3>
+<p><strong>Strategy:</strong> Simply remove the node. No restructuring needed.</p>
+<pre><code>CASE A - Leaf Deletion:
+    IF node.left = NULL AND node.right = NULL THEN
+        Replace node with NULL in its parent
+</code></pre>
+
+<h4>Example: Delete 4 from the balanced BST</h4>
+<div class="side-by-side">
+<div class="side-panel">
+<div class="side-panel-header">Before: Delete 4</div>
+<div class="side-panel-body">
+<div class="tree-diagram" role="img" aria-label="BST before deleting leaf 4">
+      5
+     / \
+    3    7
+   / \  / \
+  1  4 6   8
+</div>
+</div>
+</div>
+<div class="side-panel">
+<div class="side-panel-header">After</div>
+<div class="side-panel-body">
+<div class="tree-diagram" role="img" aria-label="BST after deleting leaf 4">
+      5
+     / \
+    3    7
+   /   / \
+  1   6   8
+</div>
+</div>
+</div>
+</div>
+<p>Node 4 is a leaf — remove it directly. The BST property is preserved.</p>
+
+<h3>Case (b): Deleting a Node with One Child</h3>
+<p><strong>Strategy:</strong> Replace the node with its only child. The child "moves up" to take the deleted node's position.</p>
+<pre><code>CASE B - One Child:
+    IF node has exactly one child (left OR right) THEN
+        Replace node with its child in the parent's link
+</code></pre>
+
+<h4>Example: Delete 3 from the tree (after we already removed 4)</h4>
+<div class="side-by-side">
+<div class="side-panel">
+<div class="side-panel-header">Before: Delete 3</div>
+<div class="side-panel-body">
+<div class="tree-diagram" role="img" aria-label="BST before deleting node 3 which has one child">
+      5
+     / \
+    3    7
+   /   / \
+  1   6   8
+</div>
+<p style="font-size:0.85rem; text-align:center;">Node 3 has only a left child (1).</p>
+</div>
+</div>
+<div class="side-panel">
+<div class="side-panel-header">After</div>
+<div class="side-panel-body">
+<div class="tree-diagram" role="img" aria-label="BST after deleting node 3, child 1 takes its place">
+      5
+     / \
+    1    7
+        / \
+       6   8
+</div>
+</div>
+</div>
+</div>
+<p>Node 3 is removed, and its only child (1) takes its place as the left child of 5. BST property preserved: 1 &lt; 5 ✓.</p>
+
+<h3>Case (c): Deleting a Node with Two Children</h3>
+<p><strong>Strategy:</strong> Find the node's <strong>inorder successor</strong> (smallest key in the right subtree) OR <strong>inorder predecessor</strong> (largest key in the left subtree). Copy that key into the target node, then delete the successor/predecessor (which will be Case a or b).</p>
+<pre><code>CASE C - Two Children:
+    1. Find the INORDER SUCCESSOR of node:
+       successor ← minimum node in node.right subtree
+       (go right once, then go left as far as possible)
+    2. Copy successor.key into node.key
+    3. Delete the successor node from node.right subtree
+       (successor has at most one child — its right child —
+        so this is Case A or Case B)
+</code></pre>
+
+<div class="callout">
+<p class="callout-title">💡 Why does this work?</p>
+<p>The inorder successor is the <em>smallest</em> key that is still <em>greater</em> than the deleted node's key. Replacing the deleted key with the successor's key maintains the BST property: everything in the left subtree is still smaller, and everything remaining in the right subtree is still larger.</p>
+</div>
+
+<h4>Example: Delete 5 (the root) from the original balanced BST</h4>
+<div class="try-first">
+<p>✏️ Try it first!</p>
+<p>Starting with the balanced BST [5, 3, 7, 1, 4, 6, 8], delete the root (5). Find its inorder successor, replace, and delete. Draw the final tree.</p>
+</div>
+
+<details>
+<summary>Reveal Deletion of Root (Two Children)</summary>
+<div class="details-content">
+<div class="tree-diagram" role="img" aria-label="Original BST with root 5">
+        5          ← delete this node (has two children)
+       / \
+      3    7
+     / \  / \
+    1  4 6   8
+</div>
+<p><strong>Step 1:</strong> Find inorder successor of 5. Go to right child (7), then go left as far as possible → node 6. The inorder successor is <strong>6</strong>.</p>
+<p><strong>Step 2:</strong> Copy 6 into the root position (replacing 5).</p>
+<p><strong>Step 3:</strong> Delete the original node 6 from the right subtree. Node 6 was a leaf (Case a) → simply remove it.</p>
+<div class="tree-diagram" role="img" aria-label="BST after deleting root 5, replaced by inorder successor 6">
+        6
+       / \
+      3    7
+     / \    \
+    1   4    8
+</div>
+<p><strong>Verify BST property:</strong></p>
+<ul>
+<li>Node 6: Left subtree {1,3,4} all &lt; 6 ✓; Right subtree {7,8} all &gt; 6 ✓</li>
+<li>Node 3: Left {1} &lt; 3 ✓; Right {4} &gt; 3 ✓</li>
+<li>Node 7: No left child; Right {8} &gt; 7 ✓</li>
+</ul>
+</div>
+</details>
+
+<h3>Complete Deletion Algorithm</h3>
+<pre><code>ALGORITHM BSTDelete(node, key):
+    IF node = NULL THEN
+        RETURN NULL                          ← key not found
+
+    IF key &lt; node.key THEN
+        node.left ← BSTDelete(node.left, key)
+    ELSE IF key &gt; node.key THEN
+        node.right ← BSTDelete(node.right, key)
+    ELSE
+        ← Found the node to delete
+        IF node.left = NULL THEN
+            RETURN node.right                ← Case A or B (no left child)
+        ELSE IF node.right = NULL THEN
+            RETURN node.left                 ← Case B (no right child)
+        ELSE
+            ← Case C: two children
+            successor ← FindMin(node.right)
+            node.key ← successor.key
+            node.right ← BSTDelete(node.right, successor.key)
+
+    RETURN node
+
+ALGORITHM FindMin(node):
+    WHILE node.left ≠ NULL DO
+        node ← node.left
+    RETURN node
+</code></pre>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- SECTION 6: BST VALIDATION -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<section id="bst-validation">
+<h2>6. BST Validation</h2>
+
+<p>Given a binary tree, how do we verify that it satisfies the BST property? There are two standard approaches.</p>
+
+<h3>Method 1: Inorder Traversal Check</h3>
+<p>Since an inorder traversal of a valid BST produces sorted output, we can:</p>
+<ol>
+<li>Perform an inorder traversal, collecting keys into a list.</li>
+<li>Check that the list is in strictly ascending order.</li>
+</ol>
+<pre><code>ALGORITHM ValidateBST_Inorder(root):
+    result ← []
+    InorderCollect(root, result)
+    FOR i FROM 1 TO result.length - 1 DO
+        IF result[i] ≤ result[i-1] THEN
+            RETURN false
+    RETURN true
+
+ALGORITHM InorderCollect(node, result):
+    IF node = NULL THEN RETURN
+    InorderCollect(node.left, result)
+    result.append(node.key)
+    InorderCollect(node.right, result)
+</code></pre>
+<p><strong>Time:</strong> $$O(n)$$. <strong>Space:</strong> $$O(n)$$ for the list (can be optimized to $$O(h)$$ by tracking only the previous value).</p>
+
+<h3>Method 2: Recursive Min/Max Bound Checking</h3>
+<p>Pass down valid bounds as you recurse. Each node must fall within the allowed range:</p>
+<pre><code>ALGORITHM ValidateBST_Bounds(node, minBound, maxBound):
+    IF node = NULL THEN
+        RETURN true
+    IF node.key ≤ minBound OR node.key ≥ maxBound THEN
+        RETURN false
+    RETURN ValidateBST_Bounds(node.left, minBound, node.key)
+        AND ValidateBST_Bounds(node.right, node.key, maxBound)
+
+― Initial call: ValidateBST_Bounds(root, -∞, +∞)
+</code></pre>
+<p><strong>Time:</strong> $$O(n)$$. <strong>Space:</strong> $$O(h)$$ (recursion stack only — more space-efficient).</p>
+
+<h3>The Common Mistake: Local-Only Checking</h3>
+<div class="callout danger">
+<p class="callout-title">❌ WRONG Approach</p>
+<pre><code>WRONG_Validate(node):
+    IF node = NULL THEN RETURN true
+    IF node.left ≠ NULL AND node.left.key ≥ node.key THEN
+        RETURN false
+    IF node.right ≠ NULL AND node.right.key ≤ node.key THEN
+        RETURN false
+    RETURN WRONG_Validate(node.left) AND WRONG_Validate(node.right)
+</code></pre>
+<p>This only checks <strong>immediate children</strong> against the parent. It would <em>incorrectly</em> validate our invalid example from Section 1:</p>
+</div>
+<div class="tree-diagram" role="img" aria-label="Invalid BST that passes local-only checking">
+            10
+          /    \
+        5      15
+       / \    /
+      2   12  13
+</div>
+<p>The local-only check passes every node:</p>
+<ul>
+<li>Node 10: left child 5 &lt; 10 ✓, right child 15 &gt; 10 ✓</li>
+<li>Node 5: left child 2 &lt; 5 ✓, right child 12 &gt; 5 ✓</li>
+<li>Node 15: left child 13 &lt; 15 ✓</li>
+</ul>
+<p>But 12 is in the left subtree of 10 and 12 &gt; 10 — <strong>INVALID!</strong> The min/max bound method catches this because when we recurse into node 5's right subtree, we pass maxBound = 10. Node 12 fails the check: 12 ≥ 10 → false.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- SECTION 7: COMPLEXITY ANALYSIS -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<section id="complexity">
+<h2>7. Complexity Analysis and Worst-Case Motivation</h2>
+
+<h3>Time Complexity Summary</h3>
+<p>All three core BST operations have the same complexity — they all traverse a root-to-leaf (or root-to-node) path:</p>
+
+<table>
+<thead>
+<tr>
+<th>Operation</th>
+<th>Best Case (Balanced)</th>
+<th>Average Case</th>
+<th>Worst Case (Degenerate)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Search</td>
+<td>O(log <em>n</em>)</td>
+<td>O(log <em>n</em>)</td>
+<td>O(<em>n</em>)</td>
+</tr>
+<tr>
+<td>Insert</td>
+<td>O(log <em>n</em>)</td>
+<td>O(log <em>n</em>)</td>
+<td>O(<em>n</em>)</td>
+</tr>
+<tr>
+<td>Delete</td>
+<td>O(log <em>n</em>)</td>
+<td>O(log <em>n</em>)</td>
+<td>O(<em>n</em>)</td>
+</tr>
+</tbody>
+</table>
+
+<p><strong>Why O(log <em>n</em>) in the balanced case?</strong> A balanced binary tree with <em>n</em> nodes has height <em>h</em> = O(log <em>n</em>). Since each operation follows a single path from root to leaf, it takes at most <em>h</em> + 1 comparisons.</p>
+
+<p><strong>Why O(<em>n</em>) in the worst case?</strong> A degenerate BST (linked list shape) has height <em>h</em> = <em>n</em> &minus; 1. Following a path from root to the deepest node visits all <em>n</em> nodes.</p>
+
+<h3>Visual Comparison: Balanced vs. Degenerate</h3>
+<div class="side-by-side">
+<div class="side-panel">
+<div class="side-panel-header">Balanced BST (h = 2, n = 7)</div>
+<div class="side-panel-body">
+<div class="tree-diagram" role="img" aria-label="Balanced BST with 7 nodes and height 2">
+        5
+       / \
+      3    7
+     / \  / \
+    1  4 6   8
+</div>
+<p style="text-align:center; font-size:0.85rem;">Height = 2 = ⌊log₂ 7⌋<br>Max comparisons: 3<br>Search time: O(log n)</p>
+</div>
+</div>
+<div class="side-panel">
+<div class="side-panel-header">Degenerate BST (h = 6, n = 7)</div>
+<div class="side-panel-body">
+<div class="tree-diagram" role="img" aria-label="Degenerate BST with 7 nodes forming a linked list">
+1
+ \
+  3
+   \
+    4
+     \
+      5
+       \
+        6
+         \
+          7
+           \
+            8
+</div>
+<p style="text-align:center; font-size:0.85rem;">Height = 6 = n − 1<br>Max comparisons: 7<br>Search time: O(n)</p>
+</div>
+</div>
+</div>
+
+<div class="callout warning">
+<p class="callout-title">🤔 The Fundamental Problem</p>
+<p>A plain BST provides <strong>no height guarantee</strong>. The shape depends entirely on the insertion order. In the worst case (sorted input), we get O(<em>n</em>) operations — no better than a linked list. We need a mechanism to <strong>automatically maintain balance</strong> regardless of insertion order. This is exactly what AVL trees provide.</p>
+</div>
+
+<h3>Space Complexity</h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Space</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Storage (all nodes)</td>
+<td>O(<em>n</em>)</td>
+</tr>
+<tr>
+<td>Recursive operations (stack depth)</td>
+<td>O(<em>h</em>)</td>
+</tr>
+<tr>
+<td>Iterative operations</td>
+<td>O(1)</td>
+</tr>
+</tbody>
+</table>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- SECTION 8: AVL PREVIEW -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<section id="avl-preview">
+<h2>8. Preview: AVL Trees (Week 16)</h2>
+
+<div class="callout success">
+<p class="callout-title">🔮 Coming Next Week</p>
+<p>In Week 16, you will learn about <strong>AVL trees</strong> — self-balancing BSTs invented by Adelson-Velsky and Landis. An AVL tree maintains a <strong>balance factor</strong> (the difference in height between left and right subtrees) of at most 1 for every node. When an insertion or deletion violates this constraint, the tree performs <strong>rotations</strong> (single or double) to restore balance. The result: AVL trees guarantee O(log <em>n</em>) height — and therefore O(log <em>n</em>) search, insert, and delete — regardless of the insertion order. No more degenerate linked-list trees!</p>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- SECTION 9: CODE IMPLEMENTATION -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<section id="code">
+<h2>9. Code Implementation (Java / C++)</h2>
+
+<p>Below are complete implementations of the BST Node class and all operations covered in this module. Both languages use the same recursive approach.</p>
+
+<details>
+<summary>Java Implementation</summary>
+<div class="details-content">
+<h4>Node Class</h4>
+<pre><code>public class BSTNode {
+    int key;
+    BSTNode left;
+    BSTNode right;
+
+    public BSTNode(int key) {
+        this.key = key;
+        this.left = null;
+        this.right = null;
+    }
+}</code></pre>
+
+<h4>Search</h4>
+<pre><code>public class BST {
+    private BSTNode root;
+
+    public BST() {
+        this.root = null;
+    }
+
+    // Recursive search: returns the node if found, null otherwise
+    public BSTNode search(BSTNode node, int key) {
+        if (node == null) {
+            return null;  // key not found
+        }
+        if (key == node.key) {
+            return node;  // found
+        } else if (key &lt; node.key) {
+            return search(node.left, key);  // search left
+        } else {
+            return search(node.right, key); // search right
+        }
+    }</code></pre>
+
+<h4>Insert</h4>
+<pre><code>    // Recursive insert: returns the (possibly new) root of the subtree
+    public BSTNode insert(BSTNode node, int key) {
+        if (node == null) {
+            return new BSTNode(key);  // create new leaf
+        }
+        if (key &lt; node.key) {
+            node.left = insert(node.left, key);
+        } else if (key &gt; node.key) {
+            node.right = insert(node.right, key);
+        }
+        // if key == node.key, duplicate; do nothing
+        return node;
+    }
+
+    public void insert(int key) {
+        root = insert(root, key);
+    }</code></pre>
+
+<h4>Delete</h4>
+<pre><code>    // Find the minimum node in a subtree
+    private BSTNode findMin(BSTNode node) {
+        while (node.left != null) {
+            node = node.left;
+        }
+        return node;
+    }
+
+    // Recursive delete: returns the (possibly new) root of the subtree
+    public BSTNode delete(BSTNode node, int key) {
+        if (node == null) {
+            return null;  // key not found
+        }
+
+        if (key &lt; node.key) {
+            node.left = delete(node.left, key);
+        } else if (key &gt; node.key) {
+            node.right = delete(node.right, key);
+        } else {
+            // Found the node to delete
+            // Case A: leaf node (both children null)
+            // Case B: one child
+            if (node.left == null) {
+                return node.right;
+            } else if (node.right == null) {
+                return node.left;
+            }
+            // Case C: two children
+            BSTNode successor = findMin(node.right);
+            node.key = successor.key;
+            node.right = delete(node.right, successor.key);
+        }
+        return node;
+    }
+
+    public void delete(int key) {
+        root = delete(root, key);
+    }</code></pre>
+
+<h4>Validate BST (Min/Max Bound Method)</h4>
+<pre><code>    // Recursive validation using bounds
+    public boolean isValidBST(BSTNode node, int min, int max) {
+        if (node == null) {
+            return true;
+        }
+        if (node.key &lt;= min || node.key &gt;= max) {
+            return false;
+        }
+        return isValidBST(node.left, min, node.key)
+            &amp;&amp; isValidBST(node.right, node.key, max);
+    }
+
+    public boolean isValidBST() {
+        return isValidBST(root, Integer.MIN_VALUE, Integer.MAX_VALUE);
+    }
+}</code></pre>
+</div>
+</details>
+
+<details>
+<summary>C++ Implementation</summary>
+<div class="details-content">
+<h4>Node Struct</h4>
+<pre><code>#include &lt;iostream&gt;
+#include &lt;climits&gt;
+using namespace std;
+
+struct BSTNode {
+    int key;
+    BSTNode* left;
+    BSTNode* right;
+
+    BSTNode(int k) : key(k), left(nullptr), right(nullptr) {}
+};</code></pre>
+
+<h4>Search</h4>
+<pre><code>// Recursive search: returns pointer to node if found, nullptr otherwise
+BSTNode* search(BSTNode* node, int key) {
+    if (node == nullptr) {
+        return nullptr;  // key not found
+    }
+    if (key == node-&gt;key) {
+        return node;  // found
+    } else if (key &lt; node-&gt;key) {
+        return search(node-&gt;left, key);  // search left
+    } else {
+        return search(node-&gt;right, key); // search right
+    }
+}</code></pre>
+
+<h4>Insert</h4>
+<pre><code>// Recursive insert: returns the (possibly new) root of the subtree
+BSTNode* insert(BSTNode* node, int key) {
+    if (node == nullptr) {
+        return new BSTNode(key);  // create new leaf
+    }
+    if (key &lt; node-&gt;key) {
+        node-&gt;left = insert(node-&gt;left, key);
+    } else if (key &gt; node-&gt;key) {
+        node-&gt;right = insert(node-&gt;right, key);
+    }
+    // if key == node-&gt;key, duplicate; do nothing
+    return node;
+}</code></pre>
+
+<h4>Delete</h4>
+<pre><code>// Find the minimum node in a subtree
+BSTNode* findMin(BSTNode* node) {
+    while (node-&gt;left != nullptr) {
+        node = node-&gt;left;
+    }
+    return node;
+}
+
+// Recursive delete: returns the (possibly new) root of the subtree
+BSTNode* deleteNode(BSTNode* node, int key) {
+    if (node == nullptr) {
+        return nullptr;  // key not found
+    }
+
+    if (key &lt; node-&gt;key) {
+        node-&gt;left = deleteNode(node-&gt;left, key);
+    } else if (key &gt; node-&gt;key) {
+        node-&gt;right = deleteNode(node-&gt;right, key);
+    } else {
+        // Found the node to delete
+        // Case A: leaf node OR Case B: one child
+        if (node-&gt;left == nullptr) {
+            BSTNode* temp = node-&gt;right;
+            delete node;
+            return temp;
+        } else if (node-&gt;right == nullptr) {
+            BSTNode* temp = node-&gt;left;
+            delete node;
+            return temp;
+        }
+        // Case C: two children
+        BSTNode* successor = findMin(node-&gt;right);
+        node-&gt;key = successor-&gt;key;
+        node-&gt;right = deleteNode(node-&gt;right, successor-&gt;key);
+    }
+    return node;
+}</code></pre>
+
+<h4>Validate BST (Min/Max Bound Method)</h4>
+<pre><code>// Recursive validation using bounds
+bool isValidBST(BSTNode* node, long minBound, long maxBound) {
+    if (node == nullptr) {
+        return true;
+    }
+    if (node-&gt;key &lt;= minBound || node-&gt;key &gt;= maxBound) {
+        return false;
+    }
+    return isValidBST(node-&gt;left, minBound, node-&gt;key)
+        &amp;&amp; isValidBST(node-&gt;right, node-&gt;key, maxBound);
+}
+
+bool isValidBST(BSTNode* root) {
+    return isValidBST(root, LONG_MIN, LONG_MAX);
+}</code></pre>
+
+<div class="callout">
+<p class="callout-title">📝 C++ Memory Note</p>
+<p>Unlike Java, C++ requires manual memory management. In the delete operation, we call <code>delete node;</code> to free memory. In production code, consider using smart pointers (<code>std::unique_ptr</code>) to avoid memory leaks.</p>
+</div>
+</div>
+</details>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- SECTION 10: KNOWLEDGE CHECKS -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<section id="checks">
+<h2>10. Knowledge Checks</h2>
+
+<p>These ungraded checks help you verify your understanding before attempting PS-10 problems 7–9. Try each question before revealing the answer.</p>
+
+<!-- Check 15.4a -->
+<div class="kc-container" id="kc-a">
+<h4>Check 15.4a — BST Property Recognition</h4>
+<p>Which of the following binary trees is a valid BST?</p>
+<div class="tree-diagram" role="img" aria-label="Tree A: root 20, left child 10 with right child 25, right child 30">Tree A:         Tree B:
+    20              15
+   /  \            /  \
+  10   30         10   20
+   \              /   / \
+   25            5  17  25
+</div>
+<button class="kc-option" data-correct="false" data-qid="kc-a" aria-label="Option: Tree A is valid">A. Tree A is a valid BST</button>
+<button class="kc-option" data-correct="true" data-qid="kc-a" aria-label="Option: Tree B is valid">B. Tree B is a valid BST</button>
+<button class="kc-option" data-correct="false" data-qid="kc-a" aria-label="Option: Both are valid">C. Both are valid BSTs</button>
+<button class="kc-option" data-correct="false" data-qid="kc-a" aria-label="Option: Neither is valid">D. Neither is a valid BST</button>
+<div class="kc-feedback" id="kc-a-fb"></div>
+</div>
+
+<!-- Check 15.4b -->
+<div class="kc-container" id="kc-b">
+<h4>Check 15.4b — Inorder Traversal of BST</h4>
+<p>Given the following BST, what is the inorder traversal sequence?</p>
+<div class="tree-diagram" role="img" aria-label="BST with root 15, left subtree 10,5,12, right subtree 20,17,25">
+        15
+       /  \
+     10    20
+    /  \   / \
+   5   12 17  25
+</div>
+<button class="kc-option" data-correct="false" data-qid="kc-b" aria-label="Option: 15,10,5,12,20,17,25">A. 15, 10, 5, 12, 20, 17, 25</button>
+<button class="kc-option" data-correct="true" data-qid="kc-b" aria-label="Option: 5,10,12,15,17,20,25">B. 5, 10, 12, 15, 17, 20, 25</button>
+<button class="kc-option" data-correct="false" data-qid="kc-b" aria-label="Option: 5,12,10,17,25,20,15">C. 5, 12, 10, 17, 25, 20, 15</button>
+<button class="kc-option" data-correct="false" data-qid="kc-b" aria-label="Option: 25,20,17,15,12,10,5">D. 25, 20, 17, 15, 12, 10, 5</button>
+<div class="kc-feedback" id="kc-b-fb"></div>
+</div>
+
+<!-- Check 15.4c -->
+<div class="kc-container" id="kc-c">
+<h4>Check 15.4c — BST Deletion Case Identification</h4>
+<p>In the BST below, you want to delete node <strong>20</strong>. Which deletion case applies?</p>
+<div class="tree-diagram" role="img" aria-label="BST where node 20 has two children: 17 and 25">
+        15
+       /  \
+     10    20
+    /  \   / \
+   5   12 17  25
+</div>
+<button class="kc-option" data-correct="false" data-qid="kc-c" aria-label="Option: Case A leaf">A. Case A (leaf deletion) — node 20 has no children</button>
+<button class="kc-option" data-correct="false" data-qid="kc-c" aria-label="Option: Case B one child">B. Case B (one child) — node 20 has exactly one child</button>
+<button class="kc-option" data-correct="true" data-qid="kc-c" aria-label="Option: Case C two children">C. Case C (two children) — node 20 has both left and right children</button>
+<div class="kc-feedback" id="kc-c-fb"></div>
+</div>
+
+<!-- Check 15.4d -->
+<div class="kc-container" id="kc-d">
+<h4>Check 15.4d — Worst-Case Complexity</h4>
+<p>You insert the keys 1, 2, 3, 4, 5, 6, 7 (in that order) into an empty BST. What is the time complexity of searching for key 7 in the resulting tree?</p>
+<button class="kc-option" data-correct="false" data-qid="kc-d" aria-label="Option: O(1)">A. O(1)</button>
+<button class="kc-option" data-correct="false" data-qid="kc-d" aria-label="Option: O(log n)">B. O(log <em>n</em>)</button>
+<button class="kc-option" data-correct="true" data-qid="kc-d" aria-label="Option: O(n)">C. O(<em>n</em>)</button>
+<button class="kc-option" data-correct="false" data-qid="kc-d" aria-label="Option: O(n log n)">D. O(<em>n</em> log <em>n</em>)</button>
+<div class="kc-feedback" id="kc-d-fb"></div>
+</div>
+
+<!-- Check 15.4e -->
+<div class="kc-container" id="kc-e">
+<h4>Check 15.4e — BST Validation</h4>
+<p>A student writes a BST validation function that only checks whether <code>left.key &lt; node.key</code> and <code>right.key &gt; node.key</code> for each node. Why is this approach incorrect?</p>
+<button class="kc-option" data-correct="false" data-qid="kc-e" aria-label="Option: It doesn't handle null nodes">A. It doesn't handle null nodes correctly</button>
+<button class="kc-option" data-correct="true" data-qid="kc-e" aria-label="Option: It only checks immediate children not entire subtrees">B. It only checks immediate children, not whether all descendants satisfy the bound constraints from ancestors</button>
+<button class="kc-option" data-correct="false" data-qid="kc-e" aria-label="Option: It uses the wrong comparison operators">C. It uses the wrong comparison operators (&lt; instead of ≤)</button>
+<button class="kc-option" data-correct="false" data-qid="kc-e" aria-label="Option: It doesn't check the root node">D. It doesn't check the root node</button>
+<div class="kc-feedback" id="kc-e-fb"></div>
+</div>
+
+</section>
+
+<!-- Summary / What's Next -->
+<div class="callout success" style="margin-top: 2.5rem;">
+<p class="callout-title">✅ Module 15.4 Complete</p>
+<p><strong>You can now:</strong></p>
+<ul>
+<li>State and verify the BST property for any binary tree</li>
+<li>Perform BST search, insert, and delete (all three cases)</li>
+<li>Validate a BST using both the inorder method and the min/max bound method</li>
+<li>Analyze BST time complexity and explain why degenerate trees are problematic</li>
+<li>Implement all BST operations in Java or C++</li>
+</ul>
+<p><strong>Next:</strong> Continue to <strong>Module 15.5 – Trees in the Final Project and Quiz 5 Preview</strong> to see how BSTs connect to your Final Project Component 4 and to begin preparing for Quiz 5. Also complete <strong>PS-10 problems 7–9</strong>, which cover BST construction, deletion, validation, and complexity analysis.</p>
+</div>
+
+</main>
+
+<script>
+(function() {
+    // Knowledge Check Feedback Data
+    const feedback = {
+        'kc-a': {
+            correct: 'Correct! Tree B is a valid BST. Every node satisfies the BST property: all keys in any left subtree are less than the node, and all keys in any right subtree are greater. Tree A is invalid because node 25 is in the LEFT subtree of root 20, but 25 > 20 — violating the BST property.',
+            incorrect: 'Not quite. Check Tree A carefully: node 25 is the right child of 10, which is in the LEFT subtree of root 20. Since 25 > 20, this violates the BST property (all keys in the left subtree of 20 must be less than 20). Tree B is valid — verify by checking that inorder traversal gives 5, 10, 15, 17, 20, 25 (sorted order).'
+        },
+        'kc-b': {
+            correct: 'Correct! Inorder traversal (Left → Root → Right) of a BST always produces keys in sorted ascending order. Starting from the leftmost node (5) and following the Left-Root-Right pattern gives: 5, 10, 12, 15, 17, 20, 25.',
+            incorrect: 'Remember: inorder traversal follows the pattern Left → Root → Right recursively. For a BST, this always produces sorted ascending order. Trace through: go left from 15 to 10, then left from 10 to 5 (leaf, visit 5), back to 10 (visit 10), right to 12 (visit 12), back to 15 (visit 15), right to 20, left to 17 (visit 17), back to 20 (visit 20), right to 25 (visit 25). Result: 5, 10, 12, 15, 17, 20, 25.'
+        },
+        'kc-c': {
+            correct: 'Correct! Node 20 has two children: left child 17 and right child 25. This is Case C (two children). To delete it, we find the inorder successor (smallest node in right subtree = 25, since 25 has no left child) or inorder predecessor (largest in left subtree = 17), copy that key into node 20\'s position, and then delete the successor/predecessor node.',
+            incorrect: 'Look at node 20 in the diagram. It has a left child (17) AND a right child (25). That means it has two children — Case C. Case A applies only to leaves (no children), and Case B applies only when there is exactly one child.'
+        },
+        'kc-d': {
+            correct: 'Correct! Inserting keys in sorted order (1, 2, 3, 4, 5, 6, 7) creates a degenerate BST — a right-leaning chain where each node is the right child of the previous one. The height is n − 1 = 6. Searching for 7 requires visiting all 7 nodes (following right pointers from 1 → 2 → 3 → 4 → 5 → 6 → 7), giving O(n) time.',
+            incorrect: 'Think about what happens when you insert sorted keys. Each new key is larger than all existing keys, so it always goes to the right. The tree becomes a linked list: 1 → 2 → 3 → 4 → 5 → 6 → 7. To find 7, you must traverse all 7 nodes. This is O(n), not O(log n). O(log n) would only apply if the tree were balanced.'
+        },
+        'kc-e': {
+            correct: 'Correct! The local-only check misses violations that occur across multiple levels. For example, a node might satisfy left.key < node.key and right.key > node.key locally, but a grandchild in the left subtree might be greater than an ancestor — violating the global BST property. The correct approach passes min/max bounds down through recursion so that every node is checked against ALL ancestor constraints, not just its immediate parent.',
+            incorrect: 'The key issue is about scope of checking. A local check only verifies the immediate parent-child relationship. But the BST property is GLOBAL: a node in the left subtree of the root must be less than the root, even if it is many levels deep. The correct approach (min/max bounds) propagates ancestor constraints downward so every node is verified against all relevant bounds.'
+        }
+    };
+
+    // Attach click handlers to all options
+    document.querySelectorAll('.kc-option').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var qid = this.getAttribute('data-qid');
+            var isCorrect = this.getAttribute('data-correct') === 'true';
+            var container = document.getElementById(qid);
+            var fbDiv = document.getElementById(qid + '-fb');
+
+            // Reset all options in this question
+            container.querySelectorAll('.kc-option').forEach(function(opt) {
+                opt.classList.remove('correct', 'incorrect');
+                opt.setAttribute('aria-pressed', 'false');
+            });
+
+            // Mark selected
+            if (isCorrect) {
+                this.classList.add('correct');
+                fbDiv.className = 'kc-feedback show correct-fb';
+                fbDiv.innerHTML = '<strong>✓ ' + feedback[qid].correct + '</strong>';
+            } else {
+                this.classList.add('incorrect');
+                fbDiv.className = 'kc-feedback show incorrect-fb';
+                fbDiv.innerHTML = '<strong>✗ </strong>' + feedback[qid].incorrect;
+            }
+            this.setAttribute('aria-pressed', 'true');
+        });
+    });
+})();
+</script>
+
+</body>
+</html>

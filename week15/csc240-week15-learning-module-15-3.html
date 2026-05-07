@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 15.3 – Expression Trees</title>
+<style>
+:root {
+  --primary: #2D3B45;
+  --accent: #0076B6;
+  --accent-dark: #005a8c;
+  --bg-light: #F5F7FA;
+  --bg-white: #FFFFFF;
+  --border: #D1D5DB;
+  --success: #067A46;
+  --success-bg: #ECFDF5;
+  --error: #B91C1C;
+  --error-bg: #FEF2F2;
+  --info: #1E40AF;
+  --info-bg: #EFF6FF;
+  --callout-border: #0076B6;
+  --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  --radius: 6px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-main);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--primary);
+  background: var(--bg-white);
+  padding-bottom: 3rem;
+}
+
+/* Sticky Navigation */
+.nav-bar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: var(--primary);
+  padding: 0.5rem 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.75rem;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+}
+.nav-bar a {
+  color: #FFFFFF;
+  text-decoration: none;
+  font-size: 0.85rem;
+  padding: 0.3rem 0.5rem;
+  border-radius: var(--radius);
+  transition: background 0.2s;
+}
+.nav-bar a:hover,
+.nav-bar a:focus {
+  background: var(--accent);
+  outline: 2px solid #FFFFFF;
+  outline-offset: 1px;
+}
+
+/* Main Container */
+.container {
+  max-width: 56rem;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem;
+}
+
+/* Headings */
+h1 {
+  font-size: 1.75rem;
+  margin-bottom: 0.25rem;
+  color: var(--primary);
+}
+.module-subtitle {
+  font-size: 1rem;
+  color: #555;
+  margin-bottom: 1.5rem;
+}
+h2 {
+  font-size: 1.4rem;
+  margin: 2rem 0 0.75rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 2px solid var(--accent);
+  color: var(--primary);
+}
+h3 {
+  font-size: 1.15rem;
+  margin: 1.25rem 0 0.5rem;
+  color: var(--primary);
+}
+
+/* Paragraphs & Lists */
+p { margin-bottom: 0.85rem; }
+ul, ol { margin: 0.5rem 0 1rem 1.5rem; }
+li { margin-bottom: 0.35rem; }
+
+/* Tables */
+.table-wrapper {
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+th, td {
+  border: 1px solid var(--border);
+  padding: 0.6rem 0.75rem;
+  text-align: left;
+}
+th {
+  background: var(--primary);
+  color: #FFFFFF;
+  font-weight: 600;
+}
+tr:nth-child(even) { background: var(--bg-light); }
+
+/* Code blocks */
+pre {
+  background: var(--bg-light);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+  overflow-x: auto;
+  margin: 0.75rem 0 1rem;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+code {
+  font-family: var(--font-mono);
+}
+p code, li code {
+  background: var(--bg-light);
+  padding: 0.15rem 0.35rem;
+  border-radius: 3px;
+  font-size: 0.9em;
+}
+
+/* Callout boxes */
+.callout {
+  border-left: 4px solid var(--callout-border);
+  background: var(--info-bg);
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius);
+  margin: 1rem 0;
+}
+.callout-title {
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  color: var(--info);
+}
+.callout.callout-tip {
+  border-left-color: var(--success);
+  background: var(--success-bg);
+}
+.callout.callout-tip .callout-title { color: var(--success); }
+
+/* Diagram placeholder */
+.diagram-box {
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  text-align: center;
+  margin: 1rem 0;
+  background: var(--bg-light);
+}
+.diagram-box .tree-ascii {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  line-height: 1.4;
+  display: inline-block;
+  text-align: left;
+}
+
+/* Collapsible / Details */
+details {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin: 0.75rem 0;
+  background: var(--bg-white);
+  box-shadow: var(--shadow);
+}
+details > summary {
+  padding: 0.7rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--bg-light);
+  border-radius: var(--radius);
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+details > summary::before {
+  content: "▶";
+  font-size: 0.75rem;
+  transition: transform 0.2s;
+}
+details[open] > summary::before {
+  transform: rotate(90deg);
+}
+details > summary:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+details > .details-content {
+  padding: 0.75rem 1rem 1rem;
+}
+
+/* Step-reveal pattern */
+.step-group { margin: 1rem 0; }
+.step-btn {
+  display: inline-block;
+  background: var(--accent);
+  color: #FFFFFF;
+  border: none;
+  padding: 0.45rem 0.9rem;
+  border-radius: var(--radius);
+  font-size: 0.88rem;
+  cursor: pointer;
+  margin: 0.3rem 0.3rem 0.3rem 0;
+  transition: background 0.2s;
+}
+.step-btn:hover,
+.step-btn:focus {
+  background: var(--accent-dark);
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.step-content {
+  display: none;
+  border-left: 3px solid var(--accent);
+  padding: 0.6rem 0.85rem;
+  margin: 0.5rem 0;
+  background: var(--bg-light);
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+.step-content.visible { display: block; }
+
+/* Knowledge Check */
+.kc-wrapper {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  margin: 1.25rem 0;
+  background: var(--bg-light);
+}
+.kc-wrapper h4 {
+  margin-bottom: 0.6rem;
+  font-size: 1rem;
+}
+.kc-options { list-style: none; margin: 0.5rem 0; padding: 0; }
+.kc-options li { margin-bottom: 0.4rem; }
+.kc-options label {
+  cursor: pointer;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.4rem 0.5rem;
+  border-radius: var(--radius);
+  transition: background 0.15s;
+}
+.kc-options label:hover { background: #E8EDF2; }
+.kc-options input[type="radio"] {
+  margin-top: 0.25rem;
+  accent-color: var(--accent);
+}
+.kc-submit {
+  background: var(--accent);
+  color: #FFFFFF;
+  border: none;
+  padding: 0.45rem 1rem;
+  border-radius: var(--radius);
+  font-size: 0.88rem;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: background 0.2s;
+}
+.kc-submit:hover,
+.kc-submit:focus {
+  background: var(--accent-dark);
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.kc-feedback {
+  margin-top: 0.6rem;
+  padding: 0.6rem 0.85rem;
+  border-radius: var(--radius);
+  font-size: 0.92rem;
+  display: none;
+}
+.kc-feedback.correct {
+  display: block;
+  background: var(--success-bg);
+  border: 1px solid var(--success);
+  color: var(--success);
+}
+.kc-feedback.incorrect {
+  display: block;
+  background: var(--error-bg);
+  border: 1px solid var(--error);
+  color: var(--error);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .nav-bar { padding: 0.4rem 0.5rem; }
+  .nav-bar a { font-size: 0.78rem; padding: 0.25rem 0.4rem; }
+  .container { padding: 1rem 0.75rem; }
+  h1 { font-size: 1.4rem; }
+  h2 { font-size: 1.2rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- Navigation Bar -->
+<nav class="nav-bar" aria-label="Module section navigation">
+  <a href="#what-is">What Is an Expression Tree?</a>
+  <a href="#traversal-notation">Traversal ↔ Notation</a>
+  <a href="#build-infix">Build from Infix</a>
+  <a href="#build-postfix">Build from Postfix</a>
+  <a href="#evaluate">Evaluate</a>
+  <a href="#compilers">Compilers &amp; ASTs</a>
+  <a href="#checks">Knowledge Checks</a>
+</nav>
+
+<div class="container">
+
+<!-- Module Header -->
+<h1>Module 15.3 – Expression Trees</h1>
+<p class="module-subtitle">Week 15 &bull; CSC 240 – Discrete Structures</p>
+
+<div class="callout">
+  <p class="callout-title">Module Overview</p>
+  <p>In this module you will learn how binary trees encode arithmetic expressions, how tree traversals produce different notations (infix, prefix, postfix), and how to build and evaluate expression trees algorithmically. This connects Week 15's tree traversal work to a powerful real-world application — and ties back to the stack-based algorithms you studied in CSC 221.</p>
+</div>
+
+<p><strong>Prerequisites:</strong> Module 15.1 (Tree Terminology &amp; Properties) and Module 15.2 (Tree Traversals — Preorder, Inorder, Postorder).</p>
+
+<!-- ====== Section 1 ====== -->
+<h2 id="what-is">1. What Is an Expression Tree?</h2>
+
+<p>An <strong>expression tree</strong> is a binary tree that represents an arithmetic (or logical) expression:</p>
+<ul>
+  <li>Every <strong>leaf node</strong> stores an <strong>operand</strong> (a variable or constant).</li>
+  <li>Every <strong>internal node</strong> stores an <strong>operator</strong> (such as +, −, ×, ÷).</li>
+  <li>The <strong>structure of the tree</strong> encodes the order of operations — no parentheses are needed.</li>
+</ul>
+
+<div class="callout callout-tip">
+  <p class="callout-title">Key Insight</p>
+  <p>Because the tree's branching determines which operands belong to which operator, an expression tree is inherently <em>unambiguous</em>. Parentheses, operator precedence rules, and associativity rules are all "baked in" to the tree structure.</p>
+</div>
+
+<h3>Example: <code>(a + b) × (c − d)</code></h3>
+
+<div class="diagram-box" aria-label="ASCII diagram of expression tree for (a + b) times (c minus d)">
+<pre class="tree-ascii" aria-hidden="true">
+          ×
+        /   \
+       +     −
+      / \   / \
+     a   b c   d
+</pre>
+<p><em>Figure 15.3.1 — Expression tree for (a + b) × (c − d)</em></p>
+</div>
+
+<p>Notice:</p>
+<ul>
+  <li>The root <code>×</code> is the <em>last</em> operation performed (lowest precedence in the original expression with its parentheses).</li>
+  <li>The left subtree represents <code>(a + b)</code>; the right subtree represents <code>(c − d)</code>.</li>
+  <li>Reading the tree via different traversals yields different notations — explored next.</li>
+</ul>
+
+<!-- ====== Section 2 ====== -->
+<h2 id="traversal-notation">2. Traversal ↔ Notation Correspondence</h2>
+
+<p>Each standard binary-tree traversal produces a well-known expression notation when applied to an expression tree:</p>
+
+<div class="table-wrapper">
+<table>
+  <thead>
+    <tr>
+      <th>Traversal Order</th>
+      <th>Notation Produced</th>
+      <th>Also Known As</th>
+      <th>Example Output</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Inorder (Left, Root, Right)</td>
+      <td>Infix</td>
+      <td>Standard algebraic notation</td>
+      <td><code>a + b × c − d</code> *</td>
+    </tr>
+    <tr>
+      <td>Preorder (Root, Left, Right)</td>
+      <td>Prefix</td>
+      <td>Polish Notation</td>
+      <td><code>× + a b − c d</code></td>
+    </tr>
+    <tr>
+      <td>Postorder (Left, Right, Root)</td>
+      <td>Postfix</td>
+      <td>Reverse Polish Notation (RPN)</td>
+      <td><code>a b + c d − ×</code></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p>* The raw inorder traversal of the tree in Figure 15.3.1 visits nodes in the sequence <code>a + b × c − d</code>. Without parentheses this is <strong>ambiguous</strong> — it could be misread using standard precedence. A <em>fully parenthesized</em> inorder traversal adds parentheses around each subtree: <code>((a + b) × (c − d))</code>.</p>
+
+<div class="callout">
+  <p class="callout-title">Why Prefix and Postfix Are Unambiguous</p>
+  <p>Both prefix and postfix notations are unambiguous <em>without</em> parentheses because the position of the operator relative to its operands, combined with a known arity (binary = 2 operands), uniquely determines grouping. This is why stack-based calculators and many compilers prefer postfix internally.</p>
+</div>
+
+<h3>Deriving All Three Notations from the Tree</h3>
+
+<p>Using the tree for <code>(a + b) × (c − d)</code>:</p>
+
+<div class="table-wrapper">
+<table>
+  <thead>
+    <tr><th>Notation</th><th>Traversal Applied</th><th>Result</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Infix (fully parenthesized)</td><td>Inorder with parens</td><td><code>((a + b) × (c − d))</code></td></tr>
+    <tr><td>Prefix (Polish)</td><td>Preorder</td><td><code>× + a b − c d</code></td></tr>
+    <tr><td>Postfix (RPN)</td><td>Postorder</td><td><code>a b + c d − ×</code></td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ====== Section 3 ====== -->
+<h2 id="build-infix">3. Building an Expression Tree from a Fully Parenthesized Infix Expression</h2>
+
+<p>A <strong>fully parenthesized infix expression</strong> has parentheses around every sub-expression, making parsing straightforward. For example: <code>((a + b) × (c − d))</code>.</p>
+
+<details>
+  <summary>Algorithm: Build from Fully Parenthesized Infix</summary>
+  <div class="details-content">
+<pre><code>BuildFromInfix(tokens):
+    Create an empty stack S
+    Create a new empty node, currentNode
+    Set tree root = currentNode
+    Push currentNode onto S
+
+    For each token in tokens:
+        If token == '(':
+            Create a new node as left child of currentNode
+            Push currentNode onto S
+            Set currentNode = left child
+
+        Else if token is an operand:
+            Set currentNode.value = token
+            Pop S to set currentNode = top of S
+
+        Else if token is an operator:
+            Set currentNode.value = token
+            Create a new node as right child of currentNode
+            Push currentNode onto S
+            Set currentNode = right child
+
+        Else if token == ')':
+            Pop S to set currentNode = top of S
+
+    Return root
+</code></pre>
+    <p><strong>Intuition:</strong> Each <code>(</code> means "descend left," each operator fills the current node and means "descend right," each operand fills a leaf, and each <code>)</code> means "ascend to parent." The stack tracks ancestors.</p>
+  </div>
+</details>
+
+<h3>Worked Example — Build from Infix</h3>
+
+<p>Expression: <code>((3 + 5) × (4 − 2))</code></p>
+<p><strong>Try each step yourself before revealing.</strong></p>
+
+<div class="step-group">
+  <button class="step-btn" aria-expanded="false" onclick="revealStep(this)">Show Step 1</button>
+  <div class="step-content" role="region">
+    <p><strong>Token <code>(</code> (outer):</strong> Create root node. Create left child; push root; descend left.</p>
+    <p>Stack: [root] &nbsp; | &nbsp; Current: root.left</p>
+  </div>
+
+  <button class="step-btn" aria-expanded="false" onclick="revealStep(this)">Show Step 2</button>
+  <div class="step-content" role="region">
+    <p><strong>Token <code>(</code>:</strong> Create left child of current; push current; descend left.</p>
+    <p>Stack: [root, root.left] &nbsp; | &nbsp; Current: root.left.left</p>
+  </div>
+
+  <button class="step-btn" aria-expanded="false" onclick="revealStep(this)">Show Step 3</button>
+  <div class="step-content" role="region">
+    <p><strong>Token <code>3</code> (operand):</strong> Set current.value = 3. Pop stack → current = root.left.</p>
+    <p>Stack: [root] &nbsp; | &nbsp; Current: root.left</p>
+  </div>
+
+  <button class="step-btn" aria-expanded="false" onclick="revealStep(this)">Show Step 4</button>
+  <div class="step-content" role="region">
+    <p><strong>Token <code>+</code> (operator):</strong> Set current.value = +. Create right child; push current; descend right.</p>
+    <p>Stack: [root, root.left(+)] &nbsp; | &nbsp; Current: root.left.right</p>
+  </div>
+
+  <button class="step-btn" aria-expanded="false" onclick="revealStep(this)">Show Step 5</button>
+  <div class="step-content" role="region">
+    <p><strong>Token <code>5</code> (operand):</strong> Set current.value = 5. Pop → current = root.left(+).</p>
+    <p>Stack: [root] &nbsp; | &nbsp; Current: root.left(+)</p>
+  </div>
+
+  <button class="step-btn" aria-expanded="false" onclick="revealStep(this)">Show Step 6</button>
+  <div class="step-content" role="region">
+    <p><strong>Token <code>)</code>:</strong> Pop → current = root.</p>
+    <p>Stack: [] &nbsp; | &nbsp; Current: root</p>
+  </div>
+
+  <button class="step-btn" aria-expanded="false" onclick="revealStep(this)">Show Step 7</button>
+  <div class="step-content" role="region">
+    <p><strong>Token <code>×</code> (operator):</strong> Set root.value = ×. Create right child; push root; descend right.</p>
+    <p>Stack: [root(×)] &nbsp; | &nbsp; Current: root.right</p>
+  </div>
+
+  <button class="step-btn" aria-expanded="false" onclick="revealStep(this)">Show Step 8</button>
+  <div class="step-content" role="region">
+    <p><strong>Token <code>(</code>:</strong> Create left child; push current; descend left.</p>
+    <p>Stack: [root(×), root.right] &nbsp; | &nbsp; Current: root.right.left</p>
+  </div>
+
+  <button class="step-btn" aria-expanded="false" onclick="revealStep(this)">Show Step 9</button>
+  <div class="step-content" role="region">
+    <p><strong>Token <code>4</code>:</strong> current.value = 4. Pop → current = root.right.</p>
+  </div>
+
+  <button class="step-btn" aria-expanded="false" onclick="revealStep(this)">Show Step 10</button>
+  <div class="step-content" role="region">
+    <p><strong>Token <code>−</code>:</strong> current.value = −. Create right child; push; descend right.</p>
+  </div>
+
+  <button class="step-btn" aria-expanded="false" onclick="revealStep(this)">Show Step 11</button>
+  <div class="step-content" role="region">
+    <p><strong>Token <code>2</code>:</strong> current.value = 2. Pop → current = root.right(−).</p>
+  </div>
+
+  <button class="step-btn" aria-expanded="false" onclick="revealStep(this)">Show Step 12</button>
+  <div class="step-content" role="region">
+    <p><strong>Token <code>)</code>:</strong> Pop → current = root(×).</p>
+  </div>
+
+  <button class="step-btn" aria-expanded="false" onclick="revealStep(this)">Show Step 13</button>
+  <div class="step-content" role="region">
+    <p><strong>Token <code>)</code> (outer):</strong> Pop → stack empty. Done!</p>
+    <p><strong>Final tree:</strong></p>
+<pre class="tree-ascii">
+      ×
+    /   \
+   +     −
+  / \   / \
+ 3   5 4   2
+</pre>
+  </div>
+</div>
+
+<!-- ====== Section 4 ====== -->
+<h2 id="build-postfix">4. Building an Expression Tree from Postfix — Stack Algorithm</h2>
+
+<p>The postfix (RPN) build algorithm is elegant and directly mirrors the stack-based evaluation you learned in CSC 221. Instead of computing a numeric result, we build tree nodes.</p>
+
+<details>
+  <summary>Algorithm: Build Expression Tree from Postfix</summary>
+  <div class="details-content">
+<pre><code>BuildFromPostfix(tokens):
+    Create an empty stack S   // stack of tree-node pointers
+
+    For each token in tokens:
+        If token is an operand:
+            Create a new leaf node with value = token
+            Push node onto S
+
+        Else if token is an operator:
+            Create a new node with value = token
+            Pop S → set node.right = popped node
+            Pop S → set node.left  = popped node
+            Push node onto S
+
+    // After processing all tokens, the stack has exactly one item:
+    Return Pop(S)   // this is the root of the expression tree
+</code></pre>
+    <p><strong>Key point:</strong> The first pop becomes the <em>right</em> child and the second pop becomes the <em>left</em> child (because a stack reverses order).</p>
+  </div>
+</details>
+
+<h3>Worked Example — Build from Postfix</h3>
+
+<p>Postfix expression: <code>3 5 + 4 2 − ×</code></p>
+<p><em>Attempt each step mentally, then reveal to check.</em></p>
+
+<div class="step-group">
+  <button class="step-btn" aria-expanded="false" onclick="revealStep(this)">Show Step 1: Token "3"</button>
+  <div class="step-content" role="region">
+    <p>Operand → create leaf [3]. Push onto stack.</p>
+    <p>Stack (bottom→top): <code>[3]</code></p>
+  </div>
+
+  <button class="step-btn" aria-expanded="false" onclick="revealStep(this)">Show Step 2: Token "5"</button>
+  <div class="step-content" role="region">
+    <p>Operand → create leaf [5]. Push.</p>
+    <p>Stack: <code>[3] [5]</code></p>
+  </div>
+
+  <button class="step-btn" aria-expanded="false" onclick="revealStep(this)">Show Step 3: Token "+"</button>
+  <div class="step-content" role="region">
+    <p>Operator → create node [+].</p>
+    <p>Pop → [5] becomes right child of [+].</p>
+    <p>Pop → [3] becomes left child of [+].</p>
+    <p>Push [+] (subtree rooted at +).</p>
+    <p>Stack: <code>[ +{3,5} ]</code></p>
+<pre class="tree-ascii">
+   +
+  / \
+ 3   5
+</pre>
+  </div>
+
+  <button class="step-btn" aria-expanded="false" onclick="revealStep(this)">Show Step 4: Token "4"</button>
+  <div class="step-content" role="region">
+    <p>Operand → create leaf [4]. Push.</p>
+    <p>Stack: <code>[ +{3,5} ] [4]</code></p>
+  </div>
+
+  <button class="step-btn" aria-expanded="false" onclick="revealStep(this)">Show Step 5: Token "2"</button>
+  <div class="step-content" role="region">
+    <p>Operand → create leaf [2]. Push.</p>
+    <p>Stack: <code>[ +{3,5} ] [4] [2]</code></p>
+  </div>
+
+  <button class="step-btn" aria-expanded="false" onclick="revealStep(this)">Show Step 6: Token "−"</button>
+  <div class="step-content" role="region">
+    <p>Operator → create node [−].</p>
+    <p>Pop → [2] becomes right child. Pop → [4] becomes left child.</p>
+    <p>Push [−].</p>
+    <p>Stack: <code>[ +{3,5} ] [ −{4,2} ]</code></p>
+  </div>
+
+  <button class="step-btn" aria-expanded="false" onclick="revealStep(this)">Show Step 7: Token "×"</button>
+  <div class="step-content" role="region">
+    <p>Operator → create node [×].</p>
+    <p>Pop → [−{4,2}] becomes right child. Pop → [+{3,5}] becomes left child.</p>
+    <p>Push [×]. Stack has one item — done!</p>
+<pre class="tree-ascii">
+      ×
+    /   \
+   +     −
+  / \   / \
+ 3   5 4   2
+</pre>
+    <p>This is the same tree as before. ✓</p>
+  </div>
+</div>
+
+<!-- ====== Section 5 ====== -->
+<h2 id="evaluate">5. Evaluating an Expression Tree (Recursive Postorder)</h2>
+
+<p>Evaluation follows a <strong>postorder</strong> pattern: evaluate left subtree, evaluate right subtree, then apply the operator at the root.</p>
+
+<details>
+  <summary>Algorithm: Recursive Evaluation</summary>
+  <div class="details-content">
+<pre><code>Evaluate(node):
+    If node is a leaf:
+        Return numeric value of node.value
+
+    leftVal  ← Evaluate(node.left)
+    rightVal ← Evaluate(node.right)
+
+    Switch node.value:
+        case '+': Return leftVal + rightVal
+        case '−': Return leftVal − rightVal
+        case '×': Return leftVal × rightVal
+        case '÷': Return leftVal ÷ rightVal
+</code></pre>
+    <p>This is essentially a postorder traversal that computes a value instead of printing.</p>
+  </div>
+</details>
+
+<h3>Comprehensive Worked Example — Full Pipeline</h3>
+
+<p>Let us walk through the complete pipeline for the expression <code>((3 + 5) × (4 − 2))</code>:</p>
+
+<div class="step-group">
+  <button class="step-btn" aria-expanded="false" onclick="revealStep(this)">Pipeline Step A: Build the Tree</button>
+  <div class="step-content" role="region">
+    <p>Using either the infix or postfix algorithm, we obtain:</p>
+<pre class="tree-ascii">
+      ×
+    /   \
+   +     −
+  / \   / \
+ 3   5 4   2
+</pre>
+  </div>
+
+  <button class="step-btn" aria-expanded="false" onclick="revealStep(this)">Pipeline Step B: Produce All Three Notations</button>
+  <div class="step-content" role="region">
+    <ul>
+      <li><strong>Infix (fully parenthesized):</strong> <code>((3 + 5) × (4 − 2))</code></li>
+      <li><strong>Prefix:</strong> <code>× + 3 5 − 4 2</code></li>
+      <li><strong>Postfix:</strong> <code>3 5 + 4 2 − ×</code></li>
+    </ul>
+  </div>
+
+  <button class="step-btn" aria-expanded="false" onclick="revealStep(this)">Pipeline Step C: Evaluate with Numeric Values</button>
+  <div class="step-content" role="region">
+    <p>Evaluate(root):</p>
+    <ol>
+      <li>Evaluate left subtree (rooted at +):
+        <ul>
+          <li>Evaluate(3) → 3</li>
+          <li>Evaluate(5) → 5</li>
+          <li>Apply +: 3 + 5 = <strong>8</strong></li>
+        </ul>
+      </li>
+      <li>Evaluate right subtree (rooted at −):
+        <ul>
+          <li>Evaluate(4) → 4</li>
+          <li>Evaluate(2) → 2</li>
+          <li>Apply −: 4 − 2 = <strong>2</strong></li>
+        </ul>
+      </li>
+      <li>Apply × at root: 8 × 2 = <strong>16</strong></li>
+    </ol>
+    <p>Final result: <strong>16</strong> ✓</p>
+  </div>
+</div>
+
+<!-- ====== Section 6 ====== -->
+<h2 id="compilers">6. Application: Compilers and Abstract Syntax Trees</h2>
+
+<p>Expression trees are a simplified form of the <strong>Abstract Syntax Tree (AST)</strong> that compilers build during the parsing phase. When you write source code, the compiler's parser converts your text into an AST that captures the hierarchical structure of every expression and statement — eliminating ambiguity from the flat text. The compiler then traverses this AST to perform type checking, optimization, and code generation. In particular, a postorder traversal of the AST naturally produces instructions for a stack-based virtual machine (like the Java Virtual Machine's bytecode), which is exactly why postfix notation and stack evaluation are so central to compiler design.</p>
+
+<!-- ====== Section 7 ====== -->
+<h2 id="checks">7. Knowledge Checks</h2>
+
+<p>These are ungraded self-checks. Use them to verify your understanding before moving on.</p>
+
+<!-- KC 15.3a -->
+<div class="kc-wrapper" id="kc-15-3a">
+  <h4>Check 15.3a — Traversal to Notation</h4>
+  <p>Given the expression tree below, what notation does a <strong>preorder</strong> traversal produce?</p>
+<pre class="tree-ascii" aria-label="Expression tree: root is minus, left child is star with children 2 and x, right child is 7">
+      −
+    /   \
+   ×     7
+  / \
+ 2   x
+</pre>
+  <ul class="kc-options">
+    <li><label><input type="radio" name="kc153a" value="a"> <code>2 × x − 7</code> (infix without full parentheses)</label></li>
+    <li><label><input type="radio" name="kc153a" value="b"> <code>− × 2 x 7</code></label></li>
+    <li><label><input type="radio" name="kc153a" value="c"> <code>2 x × 7 −</code></label></li>
+    <li><label><input type="radio" name="kc153a" value="d"> <code>× 2 x − 7</code></label></li>
+  </ul>
+  <button class="kc-submit" onclick="checkAnswer('kc153a','b','Correct! Preorder visits Root–Left–Right: − × 2 x 7. This is prefix (Polish) notation.','Incorrect. Preorder visits Root first, then Left subtree, then Right subtree. Starting at the root −, then the left subtree rooted at × (preorder: × 2 x), then the right leaf 7. Result: − × 2 x 7.')">Check Answer</button>
+  <div class="kc-feedback" id="kc153a-fb"></div>
+</div>
+
+<!-- KC 15.3b -->
+<div class="kc-wrapper" id="kc-15-3b">
+  <h4>Check 15.3b — Build from Postfix</h4>
+  <p>You are building an expression tree from the postfix expression <code>A B + C ×</code>. After processing the token <code>+</code>, what is on the stack?</p>
+  <ul class="kc-options">
+    <li><label><input type="radio" name="kc153b" value="a"> Two leaf nodes: [A] and [B]</label></li>
+    <li><label><input type="radio" name="kc153b" value="b"> One subtree node: [+ with left=A, right=B]</label></li>
+    <li><label><input type="radio" name="kc153b" value="c"> One subtree node: [+ with left=B, right=A]</label></li>
+    <li><label><input type="radio" name="kc153b" value="d"> The completed tree with × at the root</label></li>
+  </ul>
+  <button class="kc-submit" onclick="checkAnswer('kc153b','b','Correct! The operator + pops B (right child) then A (left child), creates the subtree, and pushes it back. The stack now holds one item: the subtree rooted at +.','Incorrect. When we encounter an operator in the postfix build algorithm, we pop two nodes — the first pop becomes the right child, the second pop becomes the left child. We then push the new subtree. After processing +, B was popped first (right) and A second (left), giving a subtree with + at root, A at left, B at right.')">Check Answer</button>
+  <div class="kc-feedback" id="kc153b-fb"></div>
+</div>
+
+<!-- KC 15.3c -->
+<div class="kc-wrapper" id="kc-15-3c">
+  <h4>Check 15.3c — Evaluation</h4>
+  <p>Evaluate the expression tree below:</p>
+<pre class="tree-ascii" aria-label="Expression tree: root is +, left child is × with children 2 and 6, right child is 1">
+      +
+    /   \
+   ×     1
+  / \
+ 2   6
+</pre>
+  <ul class="kc-options">
+    <li><label><input type="radio" name="kc153c" value="a"> 9</label></li>
+    <li><label><input type="radio" name="kc153c" value="b"> 13</label></li>
+    <li><label><input type="radio" name="kc153c" value="c"> 18</label></li>
+    <li><label><input type="radio" name="kc153c" value="d"> 12</label></li>
+  </ul>
+  <button class="kc-submit" onclick="checkAnswer('kc153c','b','Correct! Left subtree: 2 × 6 = 12. Right subtree: 1. Root: 12 + 1 = 13.','Incorrect. Use postorder evaluation: evaluate left subtree (2 × 6 = 12), evaluate right subtree (leaf = 1), then apply root operator: 12 + 1 = 13.')">Check Answer</button>
+  <div class="kc-feedback" id="kc153c-fb"></div>
+</div>
+
+<!-- KC 15.3d — True/False on infix ambiguity -->
+<div class="kc-wrapper" id="kc-15-3d">
+  <h4>Check 15.3d — True or False</h4>
+  <p><strong>Statement:</strong> "An inorder traversal of an expression tree always produces an unambiguous expression without needing parentheses."</p>
+  <ul class="kc-options">
+    <li><label><input type="radio" name="kc153d" value="a"> True</label></li>
+    <li><label><input type="radio" name="kc153d" value="b"> False</label></li>
+  </ul>
+  <button class="kc-submit" onclick="checkAnswer('kc153d','b','Correct! This statement is FALSE. A raw inorder traversal produces infix notation, which IS ambiguous without parentheses (or precedence/associativity conventions). For example, the tree for (2 + 3) × 4 yields \"2 + 3 × 4\" via plain inorder, which standard precedence would misinterpret as 2 + (3 × 4) = 14 instead of the intended 20. You must add parentheses to make infix unambiguous.','Incorrect. Infix notation without parentheses is ambiguous. Consider the expression (2 + 3) × 4: a plain inorder traversal gives \"2 + 3 × 4\", which could be misread as 2 + (3 × 4) = 14 under standard precedence. Parentheses are needed to preserve the tree\\'s intended grouping.')">Check Answer</button>
+  <div class="kc-feedback" id="kc153d-fb"></div>
+</div>
+
+<!-- Summary -->
+<div class="callout callout-tip">
+  <p class="callout-title">Module 15.3 Summary</p>
+  <ul>
+    <li>Expression trees encode arithmetic expressions with operators at internal nodes and operands at leaves — no parentheses needed.</li>
+    <li>Inorder → infix; preorder → prefix (Polish); postorder → postfix (RPN).</li>
+    <li>Build from fully parenthesized infix using a stack to track parent nodes.</li>
+    <li>Build from postfix using a stack of subtrees — mirrors the evaluation algorithm from CSC 221.</li>
+    <li>Evaluate recursively via postorder: evaluate children, then apply operator.</li>
+    <li>Compilers use ASTs (generalized expression trees) for parsing, optimization, and code generation.</li>
+  </ul>
+</div>
+
+<p><strong>Up Next:</strong> In Module 15.4, we will explore Binary Search Trees (BSTs) — combining tree structure with an ordering property to enable efficient searching and sorting.</p>
+
+</div><!-- end container -->
+
+<script>
+// Step-reveal functionality
+function revealStep(btn) {
+  var content = btn.nextElementSibling;
+  if (content && content.classList.contains('step-content')) {
+    var isVisible = content.classList.contains('visible');
+    content.classList.toggle('visible');
+    btn.setAttribute('aria-expanded', !isVisible);
+    if (!isVisible) {
+      content.setAttribute('tabindex', '-1');
+      content.focus();
+    }
+  }
+}
+
+// Knowledge check functionality
+function checkAnswer(name, correctValue, correctMsg, incorrectMsg) {
+  var radios = document.getElementsByName(name);
+  var selected = null;
+  for (var i = 0; i < radios.length; i++) {
+    if (radios[i].checked) {
+      selected = radios[i].value;
+      break;
+    }
+  }
+  var fbEl = document.getElementById(name + '-fb');
+  if (!selected) {
+    fbEl.className = 'kc-feedback incorrect';
+    fbEl.textContent = 'Please select an answer before checking.';
+    fbEl.style.display = 'block';
+    return;
+  }
+  if (selected === correctValue) {
+    fbEl.className = 'kc-feedback correct';
+    fbEl.textContent = correctMsg;
+  } else {
+    fbEl.className = 'kc-feedback incorrect';
+    fbEl.textContent = incorrectMsg;
+  }
+  fbEl.style.display = 'block';
+  fbEl.setAttribute('tabindex', '-1');
+  fbEl.focus();
+}
+</script>
+</body>
+</html>

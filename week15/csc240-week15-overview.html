@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 15 Overview – Introduction to Trees</title>
+<style>
+:root {
+  --primary: #2d4a7a;
+  --primary-light: #3a5f9e;
+  --accent: #4a90d9;
+  --bg: #ffffff;
+  --bg-alt: #f4f7fb;
+  --text: #2c3e50;
+  --text-light: #5a6c7e;
+  --border: #d1dce6;
+  --success: #27ae60;
+  --warning: #f39c12;
+  --radius: 8px;
+  --shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--text);
+  background: var(--bg);
+}
+
+/* Sticky Navigation */
+.nav-bar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--primary);
+  padding: 0.6rem 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.75rem;
+  align-items: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.nav-bar a {
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.nav-bar a:hover,
+.nav-bar a:focus {
+  background: var(--primary-light);
+  outline: 2px solid #ffffff;
+  outline-offset: 1px;
+}
+
+/* Main Content */
+.container {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 3rem;
+}
+
+/* Header */
+.week-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 3px solid var(--accent);
+}
+
+.week-label {
+  display: inline-block;
+  background: var(--primary);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.3rem 0.9rem;
+  border-radius: 20px;
+  margin-bottom: 0.75rem;
+}
+
+.week-header h1 {
+  font-size: 1.9rem;
+  color: var(--primary);
+  margin-bottom: 0.25rem;
+}
+
+.week-header .subtitle {
+  font-size: 1.05rem;
+  color: var(--text-light);
+  font-style: italic;
+}
+
+/* Section Styles */
+.section {
+  margin-bottom: 2rem;
+}
+
+.section h2 {
+  font-size: 1.35rem;
+  color: var(--primary);
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 2px solid var(--border);
+}
+
+.section p {
+  margin-bottom: 0.75rem;
+}
+
+/* Welcome Box */
+.welcome-box {
+  background: var(--bg-alt);
+  border-left: 4px solid var(--accent);
+  padding: 1.25rem 1.5rem;
+  border-radius: var(--radius);
+  margin-bottom: 2rem;
+}
+
+.welcome-box p {
+  margin-bottom: 0.6rem;
+}
+
+.welcome-box p:last-child {
+  margin-bottom: 0;
+}
+
+/* Goals List */
+.goals-list {
+  list-style: none;
+  padding: 0;
+}
+
+.goals-list li {
+  position: relative;
+  padding: 0.6rem 0 0.6rem 2rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.goals-list li:last-child {
+  border-bottom: none;
+}
+
+.goals-list li::before {
+  content: "✓";
+  position: absolute;
+  left: 0.4rem;
+  top: 0.6rem;
+  color: var(--success);
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+/* Accordion */
+.accordion {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow);
+}
+
+.accordion-item {
+  border-bottom: 1px solid var(--border);
+}
+
+.accordion-item:last-child {
+  border-bottom: none;
+}
+
+.accordion-btn {
+  width: 100%;
+  background: var(--bg-alt);
+  border: none;
+  padding: 1rem 1.25rem;
+  text-align: left;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--primary);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background 0.2s;
+}
+
+.accordion-btn:hover,
+.accordion-btn:focus {
+  background: #e8eff7;
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.accordion-btn .icon {
+  font-size: 1.2rem;
+  transition: transform 0.3s;
+  flex-shrink: 0;
+  margin-left: 0.5rem;
+}
+
+.accordion-btn[aria-expanded="true"] .icon {
+  transform: rotate(180deg);
+}
+
+.accordion-panel {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease;
+  background: var(--bg);
+}
+
+.accordion-panel-inner {
+  padding: 1rem 1.25rem 1.25rem;
+}
+
+.accordion-panel ul,
+.accordion-panel ol {
+  margin: 0.5rem 0 0.5rem 1.25rem;
+}
+
+.accordion-panel li {
+  margin-bottom: 0.5rem;
+}
+
+/* Activity Tag */
+.activity-tag {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.15rem 0.5rem;
+  border-radius: 3px;
+  margin-right: 0.4rem;
+  vertical-align: middle;
+}
+
+.tag-module { background: #dbeafe; color: #1e40af; }
+.tag-ps { background: #fef3c7; color: #92400e; }
+.tag-project { background: #d1fae5; color: #065f46; }
+
+/* Tip Box */
+.tip-box {
+  background: #fef9e7;
+  border: 1px solid #f9e79f;
+  border-left: 4px solid var(--warning);
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius);
+  margin-top: 0.75rem;
+}
+
+.tip-box strong {
+  color: #7d6608;
+}
+
+/* Looking Ahead Box */
+.ahead-box {
+  background: #eaf4fe;
+  border: 1px solid #b8d9f5;
+  border-left: 4px solid var(--accent);
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius);
+}
+
+/* Key Concepts */
+.key-concepts {
+  list-style: none;
+  padding: 0;
+}
+
+.key-concepts li {
+  padding: 0.5rem 0 0.5rem 1.75rem;
+  position: relative;
+}
+
+.key-concepts li::before {
+  content: "🔑";
+  position: absolute;
+  left: 0;
+  top: 0.5rem;
+  font-size: 0.95rem;
+}
+
+/* Footer */
+.page-footer {
+  text-align: center;
+  margin-top: 2.5rem;
+  padding-top: 1.25rem;
+  border-top: 2px solid var(--border);
+  color: var(--text-light);
+  font-size: 0.85rem;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .container {
+    padding: 1.25rem 1rem 2rem;
+  }
+  .week-header h1 {
+    font-size: 1.5rem;
+  }
+  .nav-bar {
+    justify-content: center;
+  }
+  .nav-bar a {
+    font-size: 0.78rem;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- Sticky Navigation -->
+<nav class="nav-bar" aria-label="Page section navigation">
+  <a href="#welcome">Welcome</a>
+  <a href="#goals">Goals</a>
+  <a href="#activities">Activities</a>
+  <a href="#concepts">Key Concepts</a>
+  <a href="#time-tip">Time Tip</a>
+  <a href="#looking-ahead">Looking Ahead</a>
+</nav>
+
+<main class="container">
+
+  <!-- Header -->
+  <header class="week-header">
+    <span class="week-label">Week 15 of 17</span>
+    <h1>Introduction to Trees</h1>
+    <p class="subtitle">CSC 240 – Discrete Structures &bull; Spring 2026</p>
+  </header>
+
+  <!-- Welcome Section -->
+  <section id="welcome" class="section">
+    <div class="welcome-box" role="region" aria-label="Welcome message">
+      <p><strong>Welcome to Week 15!</strong> This week we turn our attention to <strong>trees</strong> — one of the most important structures in computer science. Trees organize data hierarchically, power search algorithms, represent mathematical expressions, and form the backbone of databases, compilers, and file systems.</p>
+      <p>Week 15 is the <strong>third week of our graph-and-tree unit</strong>. You've spent Weeks 12–14 building graph fundamentals, mastering BFS/DFS, and implementing shortest-path and spanning-tree algorithms. Now we specialize: trees are graphs with elegant constraints (connected and acyclic), and that simplicity unlocks powerful operations. Next week (Week 16) you'll extend these ideas to self-balancing AVL trees and hashing.</p>
+      <p>This is a <strong>"learning module week"</strong> — your only graded deliverable is PS-10 (20 pts), and there is no Programming Exercise or discussion assignment. That lighter load is intentional: invest the extra time in deeply understanding the module content, interacting with the visualizers, and making progress on your <strong>Final Project</strong> (especially Component 4: Tree-Based Internal Structure). The concepts you build this week appear directly on Quiz 5 and in the Final Project.</p>
+    </div>
+  </section>
+
+  <!-- Learning Goals -->
+  <section id="goals" class="section">
+    <h2>Week 15 Learning Goals</h2>
+    <p>By the end of this week, you will be able to:</p>
+    <ul class="goals-list">
+      <li>Define and correctly use fundamental tree vocabulary — root, parent, child, sibling, leaf, internal node, height, depth, level, and subtree.</li>
+      <li>State and prove basic tree properties, such as: a tree with <em>n</em> vertices has exactly <em>n</em> &minus; 1 edges, and a binary tree of height <em>h</em> has at most 2<sup>h+1</sup> &minus; 1 nodes.</li>
+      <li>Perform preorder, inorder, postorder, and level-order traversals by hand on any binary tree and record the correct visit sequence.</li>
+      <li>Implement recursive tree traversals and a queue-based level-order traversal in Java or C++.</li>
+      <li>Build and evaluate expression trees from infix, prefix, and postfix expressions, and convert between notations using traversals.</li>
+      <li>Implement core Binary Search Tree (BST) operations — search, insert, and delete (all three cases) — and analyze their time complexity in best, average, and worst cases.</li>
+      <li>Explain why an unbalanced BST degenerates to O(<em>n</em>) performance and articulate the need for balanced trees (setting up AVL trees in Week 16).</li>
+    </ul>
+  </section>
+
+  <!-- Required Activities (Accordion) -->
+  <section id="activities" class="section">
+    <h2>Required Activities This Week</h2>
+    <p>Complete the five learning modules in order, then submit PS-10. Continue working on your Final Project throughout the week.</p>
+
+    <div class="accordion" role="list">
+
+      <!-- Module 15.1 -->
+      <div class="accordion-item" role="listitem">
+        <button class="accordion-btn" aria-expanded="false" aria-controls="panel-1" id="btn-1">
+          <span><span class="activity-tag tag-module">Module</span> 15.1: Tree Fundamentals and Terminology</span>
+          <span class="icon" aria-hidden="true">▼</span>
+        </button>
+        <div class="accordion-panel" id="panel-1" role="region" aria-labelledby="btn-1">
+          <div class="accordion-panel-inner">
+            <p>Learn what makes a tree a tree (connected + acyclic), distinguish rooted from free trees, and master the core vocabulary: root, parent, child, sibling, leaf, internal node, depth, height, level, and subtree. You'll also explore the differences between full, complete, and perfect binary trees and prove key node-count properties.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Module 15.2 -->
+      <div class="accordion-item" role="listitem">
+        <button class="accordion-btn" aria-expanded="false" aria-controls="panel-2" id="btn-2">
+          <span><span class="activity-tag tag-module">Module</span> 15.2: Tree Traversal Algorithms</span>
+          <span class="icon" aria-hidden="true">▼</span>
+        </button>
+        <div class="accordion-panel" id="panel-2" role="region" aria-labelledby="btn-2">
+          <div class="accordion-panel-inner">
+            <p>Explore the four standard traversal orders — preorder (Root-Left-Right), inorder (Left-Root-Right), postorder (Left-Right-Root), and level-order (BFS from root). Hand-trace each traversal on example trees, then study their recursive and queue-based implementations. You'll also connect these to the BFS and DFS algorithms you learned in Week 13.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Module 15.3 -->
+      <div class="accordion-item" role="listitem">
+        <button class="accordion-btn" aria-expanded="false" aria-controls="panel-3" id="btn-3">
+          <span><span class="activity-tag tag-module">Module</span> 15.3: Expression Trees</span>
+          <span class="icon" aria-hidden="true">▼</span>
+        </button>
+        <div class="accordion-panel" id="panel-3" role="region" aria-labelledby="btn-3">
+          <div class="accordion-panel-inner">
+            <p>Discover how compilers represent arithmetic expressions as binary trees (operators at internal nodes, operands at leaves). Practice building expression trees from infix and postfix expressions, evaluating them recursively, and converting between infix, prefix, and postfix notation by choosing the right traversal order.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Module 15.4 -->
+      <div class="accordion-item" role="listitem">
+        <button class="accordion-btn" aria-expanded="false" aria-controls="panel-4" id="btn-4">
+          <span><span class="activity-tag tag-module">Module</span> 15.4: Binary Search Trees</span>
+          <span class="icon" aria-hidden="true">▼</span>
+        </button>
+        <div class="accordion-panel" id="panel-4" role="region" aria-labelledby="btn-4">
+          <div class="accordion-panel-inner">
+            <p>Study the BST property (left subtree keys &lt; node key &lt; right subtree keys) and implement search, insert, and delete operations. Analyze best-case O(log <em>n</em>) vs. worst-case O(<em>n</em>) performance, see how inserting sorted data creates a degenerate "linked-list" tree, and understand why balanced trees (coming in Week 16) solve this problem.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Module 15.5 -->
+      <div class="accordion-item" role="listitem">
+        <button class="accordion-btn" aria-expanded="false" aria-controls="panel-5" id="btn-5">
+          <span><span class="activity-tag tag-module">Module</span> 15.5: Trees in the Final Project and Quiz 5 Preview</span>
+          <span class="icon" aria-hidden="true">▼</span>
+        </button>
+        <div class="accordion-panel" id="panel-5" role="region" aria-labelledby="btn-5">
+          <div class="accordion-panel-inner">
+            <p>Connect everything from Modules 15.1–15.4 to your Final Project (Component 4: Tree-Based Internal Structure) and preview what to expect on Quiz 5 at the end of Week 16. Use this module to choose between a BST or min-heap implementation, plan your traversal demonstration, and identify any gaps to review before the quiz.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- PS-10 -->
+      <div class="accordion-item" role="listitem">
+        <button class="accordion-btn" aria-expanded="false" aria-controls="panel-6" id="btn-6">
+          <span><span class="activity-tag tag-ps">Problem Set</span> PS-10: Tree Properties, BST Analysis, Expression Trees (20 pts)</span>
+          <span class="icon" aria-hidden="true">▼</span>
+        </button>
+        <div class="accordion-panel" id="panel-6" role="region" aria-labelledby="btn-6">
+          <div class="accordion-panel-inner">
+            <p>This week's graded assignment covers all of Topics 1–4: hand-tracing traversals, proving tree properties by induction, building expression trees and converting between notations, constructing BSTs from insertion sequences, performing deletions (all three cases), and analyzing worst-case complexity. Complete Modules 15.1–15.4 before starting.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Final Project -->
+      <div class="accordion-item" role="listitem">
+        <button class="accordion-btn" aria-expanded="false" aria-controls="panel-7" id="btn-7">
+          <span><span class="activity-tag tag-project">Final Project</span> Continue Component 4: Tree-Based Internal Structure</span>
+          <span class="icon" aria-hidden="true">▼</span>
+        </button>
+        <div class="accordion-panel" id="panel-7" role="region" aria-labelledby="btn-7">
+          <div class="accordion-panel-inner">
+            <p>Your Final Project is due at the end of Week 17. Component 4 (50 pts) requires you to implement a student-built tree structure (BST or min-heap) integrated with your graph application, including at least one traversal demonstration. Use this week's lighter workload to make significant progress — the concepts in Modules 15.1–15.4 map directly to what you need to build.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Key Concepts -->
+  <section id="concepts" class="section">
+    <h2>Key Concepts to Watch For</h2>
+    <p>As you work through the modules, pay special attention to these ideas — they appear on PS-10, Quiz 5, and in the Final Project:</p>
+    <ul class="key-concepts">
+      <li><strong>Tree terminology precision</strong> — being able to identify and name every part of a tree (root, leaf, height, depth, etc.) is the foundation for everything else this week.</li>
+      <li><strong>The four traversal orders</strong> — preorder, inorder, postorder, and level-order. Know the visit pattern for each and be able to hand-trace them quickly.</li>
+      <li><strong>Expression tree ↔ notation correspondence</strong> — inorder traversal gives infix, preorder gives prefix, postorder gives postfix. This is a favorite exam topic.</li>
+      <li><strong>BST operations and the BST property</strong> — search, insert, and especially delete (three cases). Understand why inorder traversal of a BST always produces sorted output.</li>
+      <li><strong>Worst-case degeneration</strong> — inserting keys in sorted order creates a linear tree with O(<em>n</em>) operations. This motivates balanced trees in Week 16.</li>
+      <li><strong>Connection to your Final Project</strong> — Component 4 requires a working tree implementation with traversal. Start planning your design now.</li>
+    </ul>
+  </section>
+
+  <!-- Time Management Tip -->
+  <section id="time-tip" class="section">
+    <h2>Time Management Tip</h2>
+    <div class="tip-box">
+      <p><strong>Suggested pacing for the week:</strong></p>
+      <ul>
+        <li><strong>Early in the week:</strong> Complete Modules 15.1, 15.2, and 15.3. These build the vocabulary and traversal skills you need for everything else.</li>
+        <li><strong>Mid-week:</strong> Work through Module 15.4 (Binary Search Trees), then start and submit PS-10 while the BST operations are fresh.</li>
+        <li><strong>End of the week:</strong> Complete Module 15.5 to plan your Final Project tree implementation and begin Quiz 5 preparation.</li>
+        <li><strong>Throughout the week:</strong> Dedicate at least 1–2 hours to coding progress on Final Project Component 4. The lighter assignment load this week is your opportunity to get ahead.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Looking Ahead -->
+  <section id="looking-ahead" class="section">
+    <h2>Looking Ahead</h2>
+    <div class="ahead-box">
+      <p><strong>Week 16</strong> extends BSTs with <strong>AVL trees</strong> — self-balancing binary search trees that guarantee O(log <em>n</em>) height through rotation operations. You'll also explore <strong>hashing</strong> as an alternative approach to fast data retrieval. The week concludes with <strong>Quiz 5</strong>, which covers Weeks 14–16 (graph algorithms, all tree content from this week, AVL trees, and hashing). A strong grasp of this week's material — especially BST operations and traversals — is essential for success on that quiz.</p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="page-footer">
+    <p>CSC 240 – Discrete Structures &bull; Mendocino College &bull; Spring 2026</p>
+    <p>Questions? Contact your instructor through Canvas or during office hours.</p>
+  </footer>
+
+</main>
+
+<script>
+(function() {
+  // Accordion functionality
+  const buttons = document.querySelectorAll('.accordion-btn');
+
+  buttons.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      const expanded = this.getAttribute('aria-expanded') === 'true';
+      const panel = document.getElementById(this.getAttribute('aria-controls'));
+
+      // Close all panels
+      buttons.forEach(function(b) {
+        b.setAttribute('aria-expanded', 'false');
+        var p = document.getElementById(b.getAttribute('aria-controls'));
+        if (p) p.style.maxHeight = null;
+      });
+
+      // Open clicked panel if it was closed
+      if (!expanded) {
+        this.setAttribute('aria-expanded', 'true');
+        panel.style.maxHeight = panel.scrollHeight + 'px';
+      }
+    });
+
+    btn.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        this.click();
+      }
+    });
+  });
+
+  // Smooth scroll for nav links
+  var navLinks = document.querySelectorAll('.nav-bar a');
+  navLinks.forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      var targetId = this.getAttribute('href').substring(1);
+      var target = document.getElementById(targetId);
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        target.setAttribute('tabindex', '-1');
+        target.focus({ preventScroll: true });
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>

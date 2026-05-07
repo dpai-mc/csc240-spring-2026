@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 15.2 – Tree Traversal Algorithms</title>
+<style>
+:root {
+  --primary: #2b5797;
+  --primary-dark: #1e3d6f;
+  --accent: #4a90d9;
+  --success: #2e7d32;
+  --warning: #f57c00;
+  --error: #c62828;
+  --bg: #ffffff;
+  --bg-alt: #f5f7fa;
+  --bg-code: #f0f4f8;
+  --text: #212121;
+  --text-light: #555555;
+  --border: #d0d7de;
+  --radius: 8px;
+  --shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--text);
+  background: var(--bg);
+  margin: 0;
+  padding: 0;
+}
+/* Sticky Nav */
+.nav-bar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: var(--primary);
+  padding: 0.5rem 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.75rem;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+}
+.nav-bar a {
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 0.85rem;
+  padding: 0.3rem 0.5rem;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+.nav-bar a:hover, .nav-bar a:focus {
+  background: rgba(255,255,255,0.2);
+  outline: 2px solid #ffffff;
+  outline-offset: 1px;
+}
+.nav-title {
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin-right: 1rem;
+  color: #ffffff;
+}
+/* Main content */
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+h1 {
+  color: var(--primary);
+  font-size: 1.8rem;
+  border-bottom: 3px solid var(--accent);
+  padding-bottom: 0.5rem;
+  margin-top: 0;
+}
+h2 {
+  color: var(--primary-dark);
+  font-size: 1.4rem;
+  margin-top: 2.5rem;
+  border-left: 4px solid var(--accent);
+  padding-left: 0.75rem;
+}
+h3 {
+  color: var(--primary);
+  font-size: 1.15rem;
+  margin-top: 1.5rem;
+}
+/* Callout boxes */
+.callout {
+  border-left: 4px solid var(--accent);
+  background: var(--bg-alt);
+  padding: 1rem 1.25rem;
+  margin: 1.25rem 0;
+  border-radius: var(--radius);
+}
+.callout-title {
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+  color: var(--primary-dark);
+}
+.callout.connection {
+  border-left-color: var(--warning);
+  background: #fff8e1;
+}
+.callout.definition {
+  border-left-color: var(--primary);
+}
+.callout.tip {
+  border-left-color: var(--success);
+  background: #e8f5e9;
+}
+/* Tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 0.95rem;
+}
+th, td {
+  border: 1px solid var(--border);
+  padding: 0.6rem 0.8rem;
+  text-align: left;
+}
+th {
+  background: var(--primary);
+  color: #ffffff;
+  font-weight: 600;
+}
+tr:nth-child(even) { background: var(--bg-alt); }
+/* Code blocks */
+pre {
+  background: var(--bg-code);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+code {
+  font-family: "Fira Code", "Consolas", "Courier New", monospace;
+}
+/* Collapsible / Details */
+details {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin: 1rem 0;
+  box-shadow: var(--shadow);
+}
+details > summary {
+  background: var(--bg-alt);
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: var(--radius);
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+details > summary::before {
+  content: "▶";
+  font-size: 0.75rem;
+  transition: transform 0.2s;
+}
+details[open] > summary::before {
+  transform: rotate(90deg);
+}
+details > summary:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+details > .detail-content {
+  padding: 1rem 1.25rem;
+}
+/* Step reveal */
+.step-container { margin: 1rem 0; }
+.step-btn {
+  background: var(--primary);
+  color: #ffffff;
+  border: none;
+  padding: 0.5rem 1.25rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  margin: 0.5rem 0.5rem 0.5rem 0;
+  transition: background 0.2s;
+}
+.step-btn:hover, .step-btn:focus {
+  background: var(--primary-dark);
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.step-btn:disabled {
+  background: #999;
+  cursor: not-allowed;
+}
+.step-content {
+  display: none;
+  padding: 0.75rem 1rem;
+  margin: 0.5rem 0;
+  background: var(--bg-alt);
+  border-left: 3px solid var(--accent);
+  border-radius: 4px;
+}
+.step-content.visible { display: block; }
+/* Knowledge checks */
+.kc-question {
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  margin: 1.25rem 0;
+}
+.kc-question h4 {
+  margin-top: 0;
+  color: var(--primary-dark);
+}
+.kc-options { list-style: none; padding: 0; margin: 0.75rem 0; }
+.kc-options li { margin: 0.4rem 0; }
+.kc-options label {
+  cursor: pointer;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.4rem 0.5rem;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+.kc-options label:hover { background: #e3ecf7; }
+.kc-options input[type="radio"] { margin-top: 0.25rem; }
+.kc-feedback {
+  display: none;
+  padding: 0.75rem 1rem;
+  margin-top: 0.75rem;
+  border-radius: 4px;
+  font-weight: 500;
+}
+.kc-feedback.correct {
+  display: block;
+  background: #e8f5e9;
+  border: 1px solid var(--success);
+  color: var(--success);
+}
+.kc-feedback.incorrect {
+  display: block;
+  background: #fbe9e7;
+  border: 1px solid var(--error);
+  color: var(--error);
+}
+.kc-submit {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1.25rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.kc-submit:hover, .kc-submit:focus {
+  background: var(--primary-dark);
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+/* Tree diagram */
+.tree-diagram {
+  text-align: center;
+  margin: 1.5rem 0;
+}
+.tree-diagram pre {
+  display: inline-block;
+  text-align: left;
+  font-size: 0.95rem;
+  background: #fff;
+  border: 2px solid var(--accent);
+  padding: 1.25rem 2rem;
+}
+/* Side-by-side code */
+.code-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+@media (max-width: 700px) {
+  .code-split { grid-template-columns: 1fr; }
+}
+.code-split > div > h4 {
+  margin: 0 0 0.5rem 0;
+  color: var(--primary);
+}
+/* Utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  border: 0;
+}
+.mnemonic {
+  font-weight: 700;
+  color: var(--primary);
+}
+</style>
+</head>
+<body>
+
+<!-- Navigation Bar -->
+<nav class="nav-bar" aria-label="Module navigation">
+  <span class="nav-title">Module 15.2</span>
+  <a href="#why-traversal">Why Traversal</a>
+  <a href="#four-traversals">Four Traversals</a>
+  <a href="#dfs-pseudocode">DFS Pseudocode</a>
+  <a href="#worked-example">Worked Example</a>
+  <a href="#level-order">Level-Order</a>
+  <a href="#complexity">Complexity</a>
+  <a href="#code">Code</a>
+  <a href="#checks">Checks</a>
+</nav>
+
+<div class="container">
+
+<!-- Header -->
+<h1>Module 15.2 – Tree Traversal Algorithms</h1>
+<p><strong>Week 15</strong> &nbsp;|&nbsp; Prerequisites: Module 15.1 (Tree Terminology &amp; Properties), Week 13 (Graph Traversals: BFS/DFS)</p>
+
+<div class="callout">
+<p class="callout-title">Module Objectives</p>
+<ul>
+<li>Define and distinguish preorder, inorder, postorder, and level-order traversals.</li>
+<li>Trace each traversal on a given binary tree and produce the correct node sequence.</li>
+<li>Implement recursive DFS traversals and queue-based level-order traversal in pseudocode, Java, and C++.</li>
+<li>Analyze time and space complexity of each traversal using Big-O notation (Week 11 connection).</li>
+<li>Connect tree traversals to BFS/DFS concepts from Week 13 graph algorithms.</li>
+</ul>
+</div>
+
+<!-- Section 1 -->
+<h2 id="why-traversal">1. Why Traversal Matters</h2>
+
+<p>A <strong>tree traversal</strong> is a systematic method for visiting every node in a tree exactly once. Without a traversal strategy, data stored in a tree is inaccessible—we need an algorithm to "walk" the structure.</p>
+
+<div class="callout connection">
+<p class="callout-title">🔗 Connection to Week 13 – Graph Traversals</p>
+<p>In Week 13 you learned two fundamental graph exploration strategies:</p>
+<ul>
+<li><strong>Depth-First Search (DFS)</strong> — explore as deep as possible before backtracking (uses a stack or recursion).</li>
+<li><strong>Breadth-First Search (BFS)</strong> — explore all neighbors at the current depth before going deeper (uses a queue).</li>
+</ul>
+<p>Trees are connected acyclic graphs, so the same strategies apply. <strong>Preorder, inorder, and postorder</strong> are all variants of DFS on a binary tree (they differ only in <em>when</em> the root is processed). <strong>Level-order</strong> is BFS applied to a tree starting at the root.</p>
+</div>
+
+<h3>Practical Applications</h3>
+<table>
+<thead>
+<tr><th>Traversal</th><th>Common Use Cases</th></tr>
+</thead>
+<tbody>
+<tr><td>Preorder</td><td>Copying a tree; prefix expression generation; serialization</td></tr>
+<tr><td>Inorder</td><td>Retrieving BST elements in sorted order</td></tr>
+<tr><td>Postorder</td><td>Deleting a tree (children before parent); postfix expressions; directory size calculation</td></tr>
+<tr><td>Level-order</td><td>Level-by-level printing; shortest-path in unweighted trees; BFS-based operations</td></tr>
+</tbody>
+</table>
+
+<!-- Section 2 -->
+<h2 id="four-traversals">2. The Four Traversals — Definitions &amp; Mnemonics</h2>
+
+<table>
+<thead>
+<tr><th>Traversal</th><th>Visit Order</th><th>Mnemonic</th><th>Type</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>Preorder</strong></td><td>Root → Left → Right</td><td class="mnemonic">R-L-R (Root first)</td><td>DFS</td></tr>
+<tr><td><strong>Inorder</strong></td><td>Left → Root → Right</td><td class="mnemonic">L-R-R (Root in middle)</td><td>DFS</td></tr>
+<tr><td><strong>Postorder</strong></td><td>Left → Right → Root</td><td class="mnemonic">L-R-R (Root last)</td><td>DFS</td></tr>
+<tr><td><strong>Level-order</strong></td><td>Level 0 → Level 1 → Level 2 → …</td><td class="mnemonic">Top-down, left-to-right</td><td>BFS</td></tr>
+</tbody>
+</table>
+
+<div class="callout tip">
+<p class="callout-title">💡 Memory Tip</p>
+<p>The name tells you <em>when</em> you visit the root relative to its subtrees:</p>
+<ul>
+<li><strong>Pre</strong>order = root is visited <em>before</em> (pre-) the subtrees.</li>
+<li><strong>In</strong>order = root is visited <em>in between</em> the left and right subtrees.</li>
+<li><strong>Post</strong>order = root is visited <em>after</em> (post-) the subtrees.</li>
+</ul>
+</div>
+
+<!-- Section 3 -->
+<h2 id="dfs-pseudocode">3. Depth-First Traversals — Pseudocode</h2>
+
+<p>All three DFS traversals share the same recursive structure; only the placement of the "visit" step changes.</p>
+
+<details>
+<summary>Preorder Traversal Pseudocode (Root → Left → Right)</summary>
+<div class="detail-content">
+<pre><code>PREORDER(node):
+    if node = NULL then return
+    VISIT(node)              ← process the current node
+    PREORDER(node.left)      ← recurse on left subtree
+    PREORDER(node.right)     ← recurse on right subtree</code></pre>
+</div>
+</details>
+
+<details>
+<summary>Inorder Traversal Pseudocode (Left → Root → Right)</summary>
+<div class="detail-content">
+<pre><code>INORDER(node):
+    if node = NULL then return
+    INORDER(node.left)       ← recurse on left subtree
+    VISIT(node)              ← process the current node
+    INORDER(node.right)      ← recurse on right subtree</code></pre>
+</div>
+</details>
+
+<details>
+<summary>Postorder Traversal Pseudocode (Left → Right → Root)</summary>
+<div class="detail-content">
+<pre><code>POSTORDER(node):
+    if node = NULL then return
+    POSTORDER(node.left)     ← recurse on left subtree
+    POSTORDER(node.right)    ← recurse on right subtree
+    VISIT(node)              ← process the current node</code></pre>
+</div>
+</details>
+
+<div class="callout definition">
+<p class="callout-title">Key Observation</p>
+<p>Each recursive call pushes a frame onto the call stack. The maximum depth of recursion equals the <strong>height <em>h</em></strong> of the tree. This is why the space complexity of recursive DFS traversals is O(<em>h</em>).</p>
+</div>
+
+<!-- Section 4 – Worked Example -->
+<h2 id="worked-example">4. Worked Example — Tracing All Four Traversals</h2>
+
+<p>Consider the following labeled binary tree. Try to trace each traversal yourself <em>before</em> revealing the answers below.</p>
+
+<div class="tree-diagram">
+<pre><code>            A
+          /   \
+        B       C
+       / \       \
+      D   E       F
+         / \     /
+        G   H   I</code></pre>
+</div>
+
+<p><strong>Tree structure summary:</strong></p>
+<ul>
+<li>Root: A</li>
+<li>A's children: left = B, right = C</li>
+<li>B's children: left = D, right = E</li>
+<li>C's children: left = (none), right = F</li>
+<li>E's children: left = G, right = H</li>
+<li>F's children: left = I, right = (none)</li>
+<li>D, G, H, I are leaves</li>
+</ul>
+
+<h3>Try It Yourself First!</h3>
+<p>On paper (or mentally), trace each traversal. Then click the buttons below to reveal each answer step by step.</p>
+
+<!-- Preorder Trace -->
+<h3>Preorder: Root → Left → Right</h3>
+<div class="step-container" id="preorder-steps">
+<button class="step-btn" aria-label="Show next preorder step" onclick="revealStep('preorder-steps')">Show Next Step</button>
+<button class="step-btn" aria-label="Show all preorder steps" onclick="revealAll('preorder-steps')">Show All</button>
+<div class="step-content" data-step="1"><strong>Step 1:</strong> Visit A (root)</div>
+<div class="step-content" data-step="2"><strong>Step 2:</strong> Go left → Visit B</div>
+<div class="step-content" data-step="3"><strong>Step 3:</strong> Go left → Visit D (leaf, backtrack)</div>
+<div class="step-content" data-step="4"><strong>Step 4:</strong> Go right from B → Visit E</div>
+<div class="step-content" data-step="5"><strong>Step 5:</strong> Go left → Visit G (leaf, backtrack)</div>
+<div class="step-content" data-step="6"><strong>Step 6:</strong> Go right from E → Visit H (leaf, backtrack to A)</div>
+<div class="step-content" data-step="7"><strong>Step 7:</strong> Go right from A → Visit C</div>
+<div class="step-content" data-step="8"><strong>Step 8:</strong> C has no left child; go right → Visit F</div>
+<div class="step-content" data-step="9"><strong>Step 9:</strong> Go left → Visit I (leaf, done)</div>
+<div class="step-content" data-step="10"><strong>Result: A, B, D, E, G, H, C, F, I</strong></div>
+</div>
+
+<!-- Inorder Trace -->
+<h3>Inorder: Left → Root → Right</h3>
+<div class="step-container" id="inorder-steps">
+<button class="step-btn" aria-label="Show next inorder step" onclick="revealStep('inorder-steps')">Show Next Step</button>
+<button class="step-btn" aria-label="Show all inorder steps" onclick="revealAll('inorder-steps')">Show All</button>
+<div class="step-content" data-step="1"><strong>Step 1:</strong> Go left from A → left from B → Visit D (leaf)</div>
+<div class="step-content" data-step="2"><strong>Step 2:</strong> Backtrack → Visit B (root of subtree)</div>
+<div class="step-content" data-step="3"><strong>Step 3:</strong> Go right to E → go left → Visit G (leaf)</div>
+<div class="step-content" data-step="4"><strong>Step 4:</strong> Backtrack → Visit E</div>
+<div class="step-content" data-step="5"><strong>Step 5:</strong> Go right from E → Visit H (leaf)</div>
+<div class="step-content" data-step="6"><strong>Step 6:</strong> Backtrack to root → Visit A</div>
+<div class="step-content" data-step="7"><strong>Step 7:</strong> Go right from A → C has no left child → Visit C</div>
+<div class="step-content" data-step="8"><strong>Step 8:</strong> Go right to F → go left → Visit I (leaf)</div>
+<div class="step-content" data-step="9"><strong>Step 9:</strong> Backtrack → Visit F (done)</div>
+<div class="step-content" data-step="10"><strong>Result: D, B, G, E, H, A, C, I, F</strong></div>
+</div>
+
+<!-- Postorder Trace -->
+<h3>Postorder: Left → Right → Root</h3>
+<div class="step-container" id="postorder-steps">
+<button class="step-btn" aria-label="Show next postorder step" onclick="revealStep('postorder-steps')">Show Next Step</button>
+<button class="step-btn" aria-label="Show all postorder steps" onclick="revealAll('postorder-steps')">Show All</button>
+<div class="step-content" data-step="1"><strong>Step 1:</strong> Go left from A → left from B → Visit D (leaf)</div>
+<div class="step-content" data-step="2"><strong>Step 2:</strong> Go right from B → left from E → Visit G (leaf)</div>
+<div class="step-content" data-step="3"><strong>Step 3:</strong> Go right from E → Visit H (leaf)</div>
+<div class="step-content" data-step="4"><strong>Step 4:</strong> Both children of E done → Visit E</div>
+<div class="step-content" data-step="5"><strong>Step 5:</strong> Both children of B done → Visit B</div>
+<div class="step-content" data-step="6"><strong>Step 6:</strong> Go right from A → C has no left; go right to F → left → Visit I (leaf)</div>
+<div class="step-content" data-step="7"><strong>Step 7:</strong> F has no right child → Visit F</div>
+<div class="step-content" data-step="8"><strong>Step 8:</strong> Both children of C done → Visit C</div>
+<div class="step-content" data-step="9"><strong>Step 9:</strong> Both children of A done → Visit A (done)</div>
+<div class="step-content" data-step="10"><strong>Result: D, G, H, E, B, I, F, C, A</strong></div>
+</div>
+
+<!-- Level-Order Trace -->
+<h3>Level-Order: BFS (Top-down, left-to-right)</h3>
+<div class="step-container" id="level-steps">
+<button class="step-btn" aria-label="Show next level-order step" onclick="revealStep('level-steps')">Show Next Step</button>
+<button class="step-btn" aria-label="Show all level-order steps" onclick="revealAll('level-steps')">Show All</button>
+<div class="step-content" data-step="1"><strong>Step 1:</strong> Enqueue A. Dequeue A → Visit A. Enqueue B, C.</div>
+<div class="step-content" data-step="2"><strong>Step 2:</strong> Dequeue B → Visit B. Enqueue D, E.</div>
+<div class="step-content" data-step="3"><strong>Step 3:</strong> Dequeue C → Visit C. Enqueue F (no left child).</div>
+<div class="step-content" data-step="4"><strong>Step 4:</strong> Dequeue D → Visit D (leaf, nothing to enqueue).</div>
+<div class="step-content" data-step="5"><strong>Step 5:</strong> Dequeue E → Visit E. Enqueue G, H.</div>
+<div class="step-content" data-step="6"><strong>Step 6:</strong> Dequeue F → Visit F. Enqueue I.</div>
+<div class="step-content" data-step="7"><strong>Step 7:</strong> Dequeue G → Visit G (leaf).</div>
+<div class="step-content" data-step="8"><strong>Step 8:</strong> Dequeue H → Visit H (leaf).</div>
+<div class="step-content" data-step="9"><strong>Step 9:</strong> Dequeue I → Visit I (leaf). Queue empty → done.</div>
+<div class="step-content" data-step="10"><strong>Result: A, B, C, D, E, F, G, H, I</strong></div>
+</div>
+
+<!-- Section 5 – Level Order -->
+<h2 id="level-order">5. Level-Order — Queue-Based Algorithm</h2>
+
+<p>Unlike the three DFS traversals, level-order does <strong>not</strong> use recursion. Instead, it uses a <strong>queue</strong> (FIFO) to process nodes level by level—exactly like BFS from Week 13.</p>
+
+<details>
+<summary>Level-Order Traversal Pseudocode</summary>
+<div class="detail-content">
+<pre><code>LEVEL_ORDER(root):
+    if root = NULL then return
+    create empty queue Q
+    Q.enqueue(root)
+
+    while Q is not empty:
+        node ← Q.dequeue()
+        VISIT(node)
+        if node.left ≠ NULL then Q.enqueue(node.left)
+        if node.right ≠ NULL then Q.enqueue(node.right)</code></pre>
+<p><strong>Why a queue?</strong> A queue ensures that all nodes at depth <em>d</em> are processed before any node at depth <em>d</em>+1. This is the defining property of BFS.</p>
+</div>
+</details>
+
+<div class="callout connection">
+<p class="callout-title">🔗 BFS Connection (Week 13)</p>
+<p>In Week 13, BFS on a general graph required a "visited" set to avoid revisiting nodes in cycles. Trees have no cycles, so <strong>no visited set is needed</strong>—each node is naturally reached exactly once through its unique parent.</p>
+</div>
+
+<!-- Section 6 – Complexity -->
+<h2 id="complexity">6. Complexity Analysis</h2>
+
+<p>Recall from <strong>Week 11</strong> that Big-O notation describes the upper bound on resource usage as input size grows. Let:</p>
+<ul>
+<li><em>n</em> = total number of nodes in the tree</li>
+<li><em>h</em> = height of the tree (longest root-to-leaf path)</li>
+<li><em>w</em> = maximum width (largest number of nodes at any single level)</li>
+</ul>
+
+<table>
+<thead>
+<tr><th>Traversal</th><th>Time Complexity</th><th>Space Complexity</th><th>Space Explanation</th></tr>
+</thead>
+<tbody>
+<tr><td>Preorder</td><td>O(<em>n</em>)</td><td>O(<em>h</em>)</td><td>Recursion stack depth = tree height</td></tr>
+<tr><td>Inorder</td><td>O(<em>n</em>)</td><td>O(<em>h</em>)</td><td>Recursion stack depth = tree height</td></tr>
+<tr><td>Postorder</td><td>O(<em>n</em>)</td><td>O(<em>h</em>)</td><td>Recursion stack depth = tree height</td></tr>
+<tr><td>Level-order</td><td>O(<em>n</em>)</td><td>O(<em>w</em>)</td><td>Queue holds at most one full level</td></tr>
+</tbody>
+</table>
+
+<div class="callout definition">
+<p class="callout-title">Why O(n) Time for All?</p>
+<p>Every traversal visits each node exactly once and performs a constant amount of work per node. Therefore, total work = c · n = O(<em>n</em>).</p>
+</div>
+
+<div class="callout tip">
+<p class="callout-title">💡 Best/Worst Cases for Space</p>
+<ul>
+<li><strong>Balanced tree:</strong> <em>h</em> = O(log <em>n</em>) and <em>w</em> = O(<em>n</em>/2) = O(<em>n</em>). DFS uses less space than BFS.</li>
+<li><strong>Skewed tree (degenerate):</strong> <em>h</em> = O(<em>n</em>) and <em>w</em> = O(1). BFS uses less space than DFS.</li>
+</ul>
+<p>Neither strategy is universally better—the tree's shape determines which is more space-efficient.</p>
+</div>
+
+<!-- Section 7 – Code -->
+<h2 id="code">7. Code Implementation — Java &amp; C++ Side-by-Side</h2>
+
+<details>
+<summary>Node Class Definition (Java / C++)</summary>
+<div class="detail-content">
+<div class="code-split">
+<div>
+<h4>Java</h4>
+<pre><code>class TreeNode {
+    char data;
+    TreeNode left;
+    TreeNode right;
+
+    TreeNode(char data) {
+        this.data = data;
+        this.left = null;
+        this.right = null;
+    }
+}</code></pre>
+</div>
+<div>
+<h4>C++</h4>
+<pre><code>struct TreeNode {
+    char data;
+    TreeNode* left;
+    TreeNode* right;
+
+    TreeNode(char d)
+        : data(d), left(nullptr),
+          right(nullptr) {}
+};</code></pre>
+</div>
+</div>
+</div>
+</details>
+
+<details>
+<summary>Preorder Traversal (Java / C++)</summary>
+<div class="detail-content">
+<div class="code-split">
+<div>
+<h4>Java</h4>
+<pre><code>void preorder(TreeNode node) {
+    if (node == null) return;
+    System.out.print(node.data + " ");
+    preorder(node.left);
+    preorder(node.right);
+}</code></pre>
+</div>
+<div>
+<h4>C++</h4>
+<pre><code>void preorder(TreeNode* node) {
+    if (node == nullptr) return;
+    cout &lt;&lt; node-&gt;data &lt;&lt; " ";
+    preorder(node-&gt;left);
+    preorder(node-&gt;right);
+}</code></pre>
+</div>
+</div>
+</div>
+</details>
+
+<details>
+<summary>Inorder Traversal (Java / C++)</summary>
+<div class="detail-content">
+<div class="code-split">
+<div>
+<h4>Java</h4>
+<pre><code>void inorder(TreeNode node) {
+    if (node == null) return;
+    inorder(node.left);
+    System.out.print(node.data + " ");
+    inorder(node.right);
+}</code></pre>
+</div>
+<div>
+<h4>C++</h4>
+<pre><code>void inorder(TreeNode* node) {
+    if (node == nullptr) return;
+    inorder(node-&gt;left);
+    cout &lt;&lt; node-&gt;data &lt;&lt; " ";
+    inorder(node-&gt;right);
+}</code></pre>
+</div>
+</div>
+</div>
+</details>
+
+<details>
+<summary>Postorder Traversal (Java / C++)</summary>
+<div class="detail-content">
+<div class="code-split">
+<div>
+<h4>Java</h4>
+<pre><code>void postorder(TreeNode node) {
+    if (node == null) return;
+    postorder(node.left);
+    postorder(node.right);
+    System.out.print(node.data + " ");
+}</code></pre>
+</div>
+<div>
+<h4>C++</h4>
+<pre><code>void postorder(TreeNode* node) {
+    if (node == nullptr) return;
+    postorder(node-&gt;left);
+    postorder(node-&gt;right);
+    cout &lt;&lt; node-&gt;data &lt;&lt; " ";
+}</code></pre>
+</div>
+</div>
+</div>
+</details>
+
+<details>
+<summary>Level-Order Traversal (Java / C++)</summary>
+<div class="detail-content">
+<div class="code-split">
+<div>
+<h4>Java</h4>
+<pre><code>import java.util.LinkedList;
+import java.util.Queue;
+
+void levelOrder(TreeNode root) {
+    if (root == null) return;
+    Queue&lt;TreeNode&gt; q =
+        new LinkedList&lt;&gt;();
+    q.add(root);
+
+    while (!q.isEmpty()) {
+        TreeNode node = q.poll();
+        System.out.print(
+            node.data + " ");
+        if (node.left != null)
+            q.add(node.left);
+        if (node.right != null)
+            q.add(node.right);
+    }
+}</code></pre>
+</div>
+<div>
+<h4>C++</h4>
+<pre><code>#include &lt;queue&gt;
+using namespace std;
+
+void levelOrder(TreeNode* root) {
+    if (root == nullptr) return;
+    queue&lt;TreeNode*&gt; q;
+    q.push(root);
+
+    while (!q.empty()) {
+        TreeNode* node = q.front();
+        q.pop();
+        cout &lt;&lt; node-&gt;data &lt;&lt; " ";
+        if (node-&gt;left != nullptr)
+            q.push(node-&gt;left);
+        if (node-&gt;right != nullptr)
+            q.push(node-&gt;right);
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+</details>
+
+<!-- Section 8 – Knowledge Checks -->
+<h2 id="checks">8. Knowledge Checks</h2>
+<p>These are <strong>ungraded</strong> self-assessments. Use them to confirm your understanding before moving on.</p>
+
+<!-- Check 15.2a -->
+<div class="kc-question" id="kc-a">
+<h4>Check 15.2a — Identifying Traversal Type</h4>
+<p>Given the binary tree from the worked example above, which traversal produces the sequence <strong>D, G, H, E, B, I, F, C, A</strong>?</p>
+<ul class="kc-options" role="radiogroup" aria-labelledby="kc-a">
+<li><label><input type="radio" name="kc-a" value="a"> Preorder</label></li>
+<li><label><input type="radio" name="kc-a" value="b"> Inorder</label></li>
+<li><label><input type="radio" name="kc-a" value="c"> Postorder</label></li>
+<li><label><input type="radio" name="kc-a" value="d"> Level-order</label></li>
+</ul>
+<button class="kc-submit" onclick="checkAnswer('kc-a','c')">Check Answer</button>
+<div class="kc-feedback" id="kc-a-feedback"></div>
+</div>
+
+<!-- Check 15.2b -->
+<div class="kc-question" id="kc-b">
+<h4>Check 15.2b — Level-Order Data Structure</h4>
+<p>Level-order traversal uses which data structure to determine the processing order of nodes?</p>
+<ul class="kc-options" role="radiogroup" aria-labelledby="kc-b">
+<li><label><input type="radio" name="kc-b" value="a"> Stack (LIFO)</label></li>
+<li><label><input type="radio" name="kc-b" value="b"> Queue (FIFO)</label></li>
+<li><label><input type="radio" name="kc-b" value="c"> Priority Queue</label></li>
+<li><label><input type="radio" name="kc-b" value="d"> Recursion (implicit stack)</label></li>
+</ul>
+<button class="kc-submit" onclick="checkAnswer('kc-b','b')">Check Answer</button>
+<div class="kc-feedback" id="kc-b-feedback"></div>
+</div>
+
+<!-- Check 15.2c -->
+<div class="kc-question" id="kc-c">
+<h4>Check 15.2c — Space Complexity</h4>
+<p>For a <strong>complete binary tree</strong> with <em>n</em> nodes, which statement about space complexity is correct?</p>
+<ul class="kc-options" role="radiogroup" aria-labelledby="kc-c">
+<li><label><input type="radio" name="kc-c" value="a"> Recursive DFS uses O(<em>n</em>) space; level-order uses O(log <em>n</em>) space.</label></li>
+<li><label><input type="radio" name="kc-c" value="b"> Recursive DFS uses O(log <em>n</em>) space; level-order uses O(<em>n</em>) space.</label></li>
+<li><label><input type="radio" name="kc-c" value="c"> Both use O(<em>n</em>) space.</label></li>
+<li><label><input type="radio" name="kc-c" value="d"> Both use O(log <em>n</em>) space.</label></li>
+</ul>
+<button class="kc-submit" onclick="checkAnswer('kc-c','b')">Check Answer</button>
+<div class="kc-feedback" id="kc-c-feedback"></div>
+</div>
+
+<!-- Check 15.2d -->
+<div class="kc-question" id="kc-d">
+<h4>Check 15.2d — Inorder and BSTs</h4>
+<p>If you perform an <strong>inorder traversal</strong> on a valid Binary Search Tree (BST), what property does the output sequence have?</p>
+<ul class="kc-options" role="radiogroup" aria-labelledby="kc-d">
+<li><label><input type="radio" name="kc-d" value="a"> The nodes appear in reverse sorted (descending) order.</label></li>
+<li><label><input type="radio" name="kc-d" value="b"> The nodes appear in sorted (ascending) order.</label></li>
+<li><label><input type="radio" name="kc-d" value="c"> The nodes appear in level-order.</label></li>
+<li><label><input type="radio" name="kc-d" value="d"> The output order depends on the tree's shape and cannot be predicted.</label></li>
+</ul>
+<button class="kc-submit" onclick="checkAnswer('kc-d','b')">Check Answer</button>
+<div class="kc-feedback" id="kc-d-feedback"></div>
+</div>
+
+<!-- Summary -->
+<h2>Summary</h2>
+<div class="callout">
+<p class="callout-title">Key Takeaways</p>
+<ul>
+<li>There are four standard binary tree traversals: three DFS variants (preorder, inorder, postorder) and one BFS variant (level-order).</li>
+<li>DFS traversals use recursion (implicit stack); level-order uses an explicit queue.</li>
+<li>All four traversals run in O(<em>n</em>) time. Space depends on tree shape: O(<em>h</em>) for DFS and O(<em>w</em>) for level-order.</li>
+<li>Inorder traversal of a BST yields elements in sorted order—a critical property you will use in Module 15.3 (Binary Search Trees).</li>
+</ul>
+</div>
+
+<p><strong>Next up:</strong> Module 15.3 – Binary Search Trees (BSTs) builds on these traversals to implement efficient search, insertion, and deletion operations.</p>
+
+</div><!-- end container -->
+
+<script>
+// Step reveal functionality
+function revealStep(containerId) {
+  var container = document.getElementById(containerId);
+  var steps = container.querySelectorAll('.step-content');
+  for (var i = 0; i < steps.length; i++) {
+    if (!steps[i].classList.contains('visible')) {
+      steps[i].classList.add('visible');
+      steps[i].setAttribute('aria-hidden', 'false');
+      return;
+    }
+  }
+}
+
+function revealAll(containerId) {
+  var container = document.getElementById(containerId);
+  var steps = container.querySelectorAll('.step-content');
+  for (var i = 0; i < steps.length; i++) {
+    steps[i].classList.add('visible');
+    steps[i].setAttribute('aria-hidden', 'false');
+  }
+}
+
+// Knowledge check functionality
+var feedbackMap = {
+  'kc-a': {
+    correct: '✓ Correct! The sequence D, G, H, E, B, I, F, C, A is postorder (Left → Right → Root). Notice the root A appears last—the defining characteristic of postorder traversal.',
+    incorrect: {
+      'a': '✗ Not quite. In preorder, the root A would appear first. The root appearing last is the hallmark of postorder.',
+      'b': '✗ Not quite. In inorder, the root A would appear between the left and right subtree nodes, not at the very end.',
+      'd': '✗ Not quite. Level-order would process nodes top-to-bottom, left-to-right (A, B, C, D, E, F, …). The root appearing last indicates postorder.'
+    }
+  },
+  'kc-b': {
+    correct: '✓ Correct! Level-order traversal uses a queue (FIFO). Nodes are enqueued when discovered and dequeued for processing, ensuring all nodes at depth d are visited before depth d+1—exactly like BFS from Week 13.',
+    incorrect: {
+      'a': '✗ A stack (LIFO) would give DFS behavior, not level-by-level processing. BFS/level-order requires FIFO ordering → use a queue.',
+      'c': '✗ A priority queue orders by priority/key value, not by level. Standard level-order needs a simple FIFO queue.',
+      'd': '✗ Recursion uses an implicit stack (LIFO), which produces DFS behavior (preorder, inorder, or postorder). Level-order needs a queue for FIFO processing.'
+    }
+  },
+  'kc-c': {
+    correct: '✓ Correct! In a complete binary tree: height h = O(log n), so recursive DFS uses O(log n) stack space. The widest level has approximately n/2 nodes, so the queue in level-order holds O(n) nodes. DFS is more space-efficient for balanced trees.',
+    incorrect: {
+      'a': '✗ This is reversed. For a complete tree, h = O(log n) so DFS stack space is O(log n). The widest level has ~n/2 nodes, so level-order queue space is O(n).',
+      'c': '✗ DFS recursion depth equals tree height. For a complete tree, h = O(log n), not O(n). Level-order does use O(n) due to the wide bottom level.',
+      'd': '✗ Level-order queue size equals the maximum width. In a complete tree, the last level can hold up to n/2 nodes, making it O(n), not O(log n).'
+    }
+  },
+  'kc-d': {
+    correct: '✓ Correct! Inorder traversal of a BST visits nodes in ascending (sorted) order. This follows from the BST property: all left-subtree values < root < all right-subtree values. This is one of the most important properties of BSTs and will be central to Module 15.3.',
+    incorrect: {
+      'a': '✗ Ascending, not descending. Inorder visits left (smaller values) before root before right (larger values), producing ascending order. A reverse-inorder (Right-Root-Left) would give descending order.',
+      'c': '✗ Level-order output depends on tree shape, not value ordering. Inorder on a BST specifically produces sorted (ascending) output due to the BST property.',
+      'd': '✗ Actually, the BST property guarantees a predictable output: inorder always produces ascending order regardless of the specific tree shape, as long as the BST property holds.'
+    }
+  }
+};
+
+function checkAnswer(questionId, correctValue) {
+  var radios = document.querySelectorAll('input[name="' + questionId + '"]');
+  var selected = null;
+  for (var i = 0; i < radios.length; i++) {
+    if (radios[i].checked) {
+      selected = radios[i].value;
+      break;
+    }
+  }
+  var feedbackEl = document.getElementById(questionId + '-feedback');
+  if (selected === null) {
+    feedbackEl.className = 'kc-feedback incorrect';
+    feedbackEl.textContent = 'Please select an answer before checking.';
+    feedbackEl.style.display = 'block';
+    return;
+  }
+  var info = feedbackMap[questionId];
+  if (selected === correctValue) {
+    feedbackEl.className = 'kc-feedback correct';
+    feedbackEl.textContent = info.correct;
+  } else {
+    feedbackEl.className = 'kc-feedback incorrect';
+    feedbackEl.textContent = info.incorrect[selected] || '✗ Incorrect. Please try again.';
+  }
+  feedbackEl.style.display = 'block';
+  feedbackEl.setAttribute('role', 'alert');
+}
+</script>
+</body>
+</html>
