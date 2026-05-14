@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 16.5 – Performance Analysis and Data Structure Comparison</title>
+<style>
+:root{--primary:#1a5276;--primary-light:#2980b9;--accent:#e67e22;--success:#27ae60;--danger:#c0392b;--bg:#fdfdfd;--surface:#fff;--text:#2c3e50;--text-light:#555;--border:#ddd;--nav-height:54px;--radius:8px;--shadow:0 2px 6px rgba(0,0,0,.08)}
+*,*::before,*::after{box-sizing:border-box}
+body{font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;line-height:1.7;color:var(--text);background:var(--bg);margin:0;padding:0}
+a{color:var(--primary-light);text-decoration:underline}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:3px}
+/* Nav */
+.nav-bar{position:sticky;top:0;z-index:1000;background:var(--primary);padding:0 1rem;display:flex;align-items:center;height:var(--nav-height);box-shadow:0 2px 4px rgba(0,0,0,.15);overflow-x:auto}
+.nav-bar a{color:#fff;text-decoration:none;font-size:.82rem;padding:.45rem .7rem;border-radius:4px;white-space:nowrap;margin-right:2px;transition:background .2s}
+.nav-bar a:hover,.nav-bar a:focus-visible{background:rgba(255,255,255,.18);outline-offset:-2px}
+/* Layout */
+.container{max-width:960px;margin:0 auto;padding:1.5rem 1.25rem 3rem}
+h1{font-size:1.85rem;color:var(--primary);margin:1rem 0 .25rem;border-bottom:3px solid var(--accent);padding-bottom:.4rem}
+h2{font-size:1.45rem;color:var(--primary);margin:2rem 0 .6rem;padding-top:calc(var(--nav-height) + 16px);margin-top:-calc(var(--nav-height) + 16px)}
+h3{font-size:1.15rem;color:var(--primary-light);margin:1.4rem 0 .5rem}
+.subtitle{color:var(--text-light);font-size:1rem;margin-bottom:1.5rem}
+/* Callouts */
+.callout{border-left:4px solid var(--primary-light);background:#eaf2f8;padding:1rem 1.2rem;border-radius:var(--radius);margin:1.2rem 0}
+.callout.warn{border-color:var(--accent);background:#fef5e7}
+.callout.success{border-color:var(--success);background:#eafaf1}
+.callout.danger{border-color:var(--danger);background:#fdedec}
+.callout-title{font-weight:700;margin-bottom:.3rem;display:flex;align-items:center;gap:.4rem}
+/* Tables */
+.table-wrap{overflow-x:auto;margin:1rem 0}
+table{width:100%;border-collapse:collapse;font-size:.9rem}
+th,td{border:1px solid var(--border);padding:.55rem .7rem;text-align:left}
+th{background:var(--primary);color:#fff;font-weight:600}
+tr:nth-child(even){background:#f7f9fb}
+td.best{background:#d5f5e3}
+td.mid{background:#fef9e7}
+td.worst{background:#fadbd8}
+/* Buttons & Interactions */
+button{cursor:pointer;font-family:inherit}
+.toggle-btn{background:var(--primary-light);color:#fff;border:none;padding:.5rem 1rem;border-radius:var(--radius);font-size:.85rem;margin:.3rem .3rem .3rem 0;transition:background .2s}
+.toggle-btn:hover{background:var(--primary)}
+.toggle-btn[aria-pressed="true"]{background:var(--accent)}
+.collapsible-header{background:var(--surface);border:1px solid var(--border);padding:.75rem 1rem;border-radius:var(--radius);font-weight:600;width:100%;text-align:left;font-size:.95rem;display:flex;justify-content:space-between;align-items:center;margin-top:.6rem}
+.collapsible-header:hover{background:#f0f4f8}
+.collapsible-content{border:1px solid var(--border);border-top:none;padding:1rem 1.2rem;border-radius:0 0 var(--radius) var(--radius);display:none;animation:fadeIn .25s ease}
+.collapsible-content.open{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.arrow{transition:transform .25s;font-size:.8rem}
+.arrow.rotated{transform:rotate(90deg)}
+/* Knowledge Checks */
+.kc-card{background:var(--surface);border:2px solid var(--border);border-radius:var(--radius);padding:1.2rem;margin:1.2rem 0;box-shadow:var(--shadow)}
+.kc-card h4{margin:0 0 .6rem;color:var(--primary)}
+.kc-options label{display:block;padding:.4rem .6rem;margin:.25rem 0;border-radius:4px;cursor:pointer;transition:background .15s}
+.kc-options label:hover{background:#f0f4f8}
+.kc-options input[type="radio"]{margin-right:.5rem}
+.kc-feedback{margin-top:.75rem;padding:.75rem 1rem;border-radius:var(--radius);display:none;font-size:.9rem}
+.kc-feedback.correct{display:block;background:#d5f5e3;border:1px solid var(--success)}
+.kc-feedback.incorrect{display:block;background:#fadbd8;border:1px solid var(--danger)}
+.kc-submit{background:var(--primary-light);color:#fff;border:none;padding:.5rem 1.2rem;border-radius:var(--radius);font-size:.88rem;margin-top:.5rem}
+.kc-submit:hover{background:var(--primary)}
+/* Highlight rows */
+.highlight-row{outline:3px solid var(--accent);outline-offset:-2px;background:#fef9e7 !important}
+/* Scroll offset for anchors */
+[id]{scroll-margin-top:calc(var(--nav-height) + 16px)}
+/* Responsive */
+@media(max-width:600px){.nav-bar a{font-size:.75rem;padding:.4rem .5rem}h1{font-size:1.5rem}h2{font-size:1.25rem}.container{padding:1rem .75rem}}
+/* Math styling fallback */
+.math-block{overflow-x:auto;padding:.5rem 0;font-size:1.05rem;text-align:center}
+.math-inline{font-style:italic}
+</style>
+</head>
+<body>
+
+<nav class="nav-bar" aria-label="Module section navigation">
+<a href="#load-factor">Load Factor</a>
+<a href="#resizing">Resizing</a>
+<a href="#worst-case">Worst Case</a>
+<a href="#comparison">Comparison Table</a>
+<a href="#choosing">When to Choose</a>
+<a href="#mini-case">Mini-Case</a>
+<a href="#final-project">Final Project</a>
+<a href="#quiz-review">Quiz 5 Review</a>
+<a href="#knowledge-checks">Knowledge Checks</a>
+</nav>
+
+<main class="container">
+
+<h1>Module 16.5 – Performance Analysis &amp; Data Structure Comparison</h1>
+<p class="subtitle">Week 16 · Advanced Trees – AVL Trees and Hashing · CSLO 3</p>
+
+<div class="callout">
+<div class="callout-title">🎯 Module Purpose</div>
+<p>This capstone module synthesizes the entire week. You will analyze hash table performance through the lens of the <strong>load factor</strong>, build a comprehensive comparison of BST, AVL tree, and hash table, apply that framework to a realistic design scenario, and consolidate your preparation for Quiz 5 and the Final Project Analysis Document.</p>
+</div>
+
+<div class="callout warn">
+<div class="callout-title">⏱️ Estimated Time</div>
+<p>30–40 minutes. This module is primarily analytical and reflective — take notes you can reuse in your Analysis Document.</p>
+</div>
+
+<!-- ============ SECTION 1 ============ -->
+<h2 id="load-factor">1. Load Factor and Hash Table Performance</h2>
+
+<h3>1.1 Defining the Load Factor</h3>
+<p>The <strong>load factor</strong> (denoted <span class="math-inline">α</span>) is the single most important metric for predicting hash table performance:</p>
+<div class="math-block">α = n/m</div>
+<p>where <span class="math-inline">n</span> = number of elements stored and <span class="math-inline">m</span> = number of table slots (buckets).</p>
+<p>Intuitively, <span class="math-inline">α</span> represents the <em>average number of elements per slot</em>. A higher load factor means more crowding, more collisions, and degraded performance.</p>
+
+<h3>1.2 Separate Chaining Performance</h3>
+<p>With <strong>separate chaining</strong>, each slot holds a linked list of colliding elements. Under the <em>simple uniform hashing assumption</em> (each key is equally likely to hash to any slot):</p>
+<ul>
+<li><strong>Expected chain length</strong> = <span class="math-inline">α</span></li>
+<li><strong>Unsuccessful search:</strong> examine <span class="math-inline">α</span> nodes on average → <span class="math-inline">O(1 + α)</span></li>
+<li><strong>Successful search:</strong> examine about <span class="math-inline">1 + α/2</span> nodes → <span class="math-inline">O(1 + α)</span></li>
+<li><strong>Insert:</strong> <span class="math-inline">O(1)</span> (insert at head of chain) + hash computation</li>
+<li><strong>Delete:</strong> <span class="math-inline">O(1 + α)</span> (search then remove from linked list)</li>
+</ul>
+<div class="callout success">
+<div class="callout-title">✅ Key Insight</div>
+<p>If the table size grows proportionally with <span class="math-inline">n</span> (keeping <span class="math-inline">α</span> bounded by a constant), all operations remain <strong>O(1) average case</strong>. For example, if we maintain <span class="math-inline">α ≤ 2</span>, the expected chain length never exceeds 2.</p>
+</div>
+
+<h3>1.3 Open Addressing Performance</h3>
+<p>With <strong>open addressing</strong>, all elements live directly in the table array. Since every slot can hold at most one element, we must have <span class="math-inline">α ≤ 1</span>. Performance degrades <em>sharply</em> as <span class="math-inline">α</span> approaches 1:</p>
+
+<div class="table-wrap">
+<table>
+<caption>Expected probes for open addressing (linear probing, approximate)</caption>
+<thead><tr><th>Load Factor <span class="math-inline">α</span></th><th>Unsuccessful Search (avg probes)</th><th>Successful Search (avg probes)</th></tr></thead>
+<tbody>
+<tr><td>0.5</td><td>2.5</td><td>1.5</td></tr>
+<tr><td>0.7</td><td>6.1</td><td>2.2</td></tr>
+<tr><td>0.8</td><td>13</td><td>3.0</td></tr>
+<tr><td>0.9</td><td>50</td><td>5.5</td></tr>
+<tr><td>0.95</td><td>200</td><td>10.5</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="callout warn">
+<div class="callout-title">⚠️ The 0.7 Threshold</div>
+<p>Most practical implementations resize when <span class="math-inline">α</span> reaches approximately <strong>0.7</strong> (Java's <code>HashMap</code> uses 0.75). Beyond this point, clustering effects cause severe performance degradation for open addressing.</p>
+</div>
+
+<!-- ============ SECTION 2 ============ -->
+<h2 id="resizing">2. Resizing (Rehashing)</h2>
+
+<h3>2.1 When and Why</h3>
+<p>When the load factor exceeds the threshold (e.g., <span class="math-inline">α > 0.7</span>), the table must be <strong>resized</strong>:</p>
+<ol>
+<li>Allocate a new, larger table (typically <span class="math-inline">2m</span> slots, or the next prime &gt; <span class="math-inline">2m</span>).</li>
+<li><strong>Rehash every existing element</strong> — recompute <span class="math-inline">h(k)</span> using the new table size and insert into the new table.</li>
+<li>Deallocate the old table.</li>
+</ol>
+<p>Rehashing is necessary because hash values depend on <span class="math-inline">m</span> (e.g., <span class="math-inline">h(k) = k mod m</span>). Changing <span class="math-inline">m</span> changes where every key belongs.</p>
+
+<h3>2.2 Amortized O(1) Insertion</h3>
+<p>A single resize costs <span class="math-inline">O(n)</span> — we must reinsert all <span class="math-inline">n</span> elements. However, resizes happen rarely. Using a doubling strategy:</p>
+<ul>
+<li>After inserting <span class="math-inline">n</span> elements, the total work from all resizes is at most <span class="math-inline">n + n/2 + n/4 + … ≤ 2n</span>.</li>
+<li>Spread over <span class="math-inline">n</span> insertions, the <strong>amortized cost per insertion is O(1)</strong>.</li>
+</ul>
+
+<div class="callout">
+<div class="callout-title">📐 Analogy</div>
+<p>Think of resizing like moving to a bigger apartment. Moving day is expensive, but you only move when you've outgrown the current space. Averaged over all the months you lived there, the per-month cost of moving is small.</p>
+</div>
+
+<!-- ============ SECTION 3 ============ -->
+<h2 id="worst-case">3. Worst-Case Reminder</h2>
+
+<div class="callout danger">
+<div class="callout-title">🚨 Critical Point for Quiz 5</div>
+<p>Hash tables do <strong>NOT</strong> guarantee <span class="math-inline">O(1)</span> worst-case performance. If all <span class="math-inline">n</span> keys hash to the same slot:</p>
+<ul>
+<li><strong>Chaining:</strong> one chain of length <span class="math-inline">n</span> → search is <span class="math-inline">O(n)</span></li>
+<li><strong>Open addressing:</strong> all slots probed sequentially → <span class="math-inline">O(n)</span></li>
+</ul>
+<p>This is why hash tables provide <span class="math-inline">O(1)</span> <em>average</em> case (assuming good hash function and bounded load factor) but <span class="math-inline">O(n)</span> <em>worst</em> case.</p>
+</div>
+
+<p><strong>When does worst case matter?</strong></p>
+<ul>
+<li>Security-sensitive applications (adversarial input can be crafted to cause collisions)</li>
+<li>Real-time systems requiring guaranteed response times</li>
+<li>Any scenario where occasional <span class="math-inline">O(n)</span> spikes are unacceptable</li>
+</ul>
+<p>In these cases, an <strong>AVL tree</strong> (guaranteed <span class="math-inline">O(log n)</span> worst case) is the safer choice.</p>
+
+<!-- ============ SECTION 4 ============ -->
+<h2 id="comparison">4. Comprehensive Comparison: BST vs. AVL Tree vs. Hash Table</h2>
+
+<p>Use the buttons below to highlight the "winner" for different priorities:</p>
+<div role="group" aria-label="Highlight comparison table by priority">
+<button class="toggle-btn" aria-pressed="false" data-highlight="fast-avg" type="button">Fastest Average Lookup</button>
+<button class="toggle-btn" aria-pressed="false" data-highlight="worst-guarantee" type="button">Best Worst-Case</button>
+<button class="toggle-btn" aria-pressed="false" data-highlight="ordered" type="button">Ordered Operations</button>
+<button class="toggle-btn" aria-pressed="false" data-highlight="simple" type="button">Simplest Implementation</button>
+</div>
+
+<div class="table-wrap">
+<table id="comparison-table" aria-label="Comparison of BST, AVL Tree, and Hash Table (Chaining)">
+<thead>
+<tr><th>Dimension</th><th>BST (Unbalanced)</th><th>AVL Tree</th><th>Hash Table (Chaining)</th></tr>
+</thead>
+<tbody>
+<tr data-cat="fast-avg"><td><strong>Search – Average</strong></td><td class="mid">O(log n)</td><td class="mid">O(log n)</td><td class="best">O(1)</td></tr>
+<tr data-cat="worst-guarantee"><td><strong>Search – Worst</strong></td><td class="worst">O(n)</td><td class="best">O(log n)</td><td class="worst">O(n)</td></tr>
+<tr data-cat="fast-avg"><td><strong>Insert – Average</strong></td><td class="mid">O(log n)</td><td class="mid">O(log n)</td><td class="best">O(1)</td></tr>
+<tr data-cat="worst-guarantee"><td><strong>Insert – Worst</strong></td><td class="worst">O(n)</td><td class="best">O(log n)</td><td class="worst">O(n)</td></tr>
+<tr data-cat="fast-avg"><td><strong>Delete – Average</strong></td><td class="mid">O(log n)</td><td class="mid">O(log n)</td><td class="best">O(1)</td></tr>
+<tr data-cat="worst-guarantee"><td><strong>Delete – Worst</strong></td><td class="worst">O(n)</td><td class="best">O(log n)</td><td class="worst">O(n)</td></tr>
+<tr data-cat="ordered"><td><strong>Ordered Traversal</strong></td><td class="best">O(n) — inorder</td><td class="best">O(n) — inorder</td><td class="worst">Not supported directly</td></tr>
+<tr data-cat="ordered"><td><strong>Range Queries</strong></td><td class="best">O(log n + k)</td><td class="best">O(log n + k)</td><td class="worst">O(n) — must scan all</td></tr>
+<tr><td><strong>Find Min / Max</strong></td><td>O(n) worst / O(log n) avg</td><td>O(log n)</td><td>O(n)</td></tr>
+<tr><td><strong>Space</strong></td><td>O(n)</td><td>O(n) + height fields</td><td>O(m + n) — may waste empty slots</td></tr>
+<tr data-cat="simple"><td><strong>Implementation Complexity</strong></td><td class="best">Low</td><td class="worst">High (rotations)</td><td class="mid">Medium (hash + collision)</td></tr>
+</tbody>
+</table>
+</div>
+
+<p><em>Note: k</em> = number of elements in the query range.</p>
+
+<!-- ============ SECTION 5 ============ -->
+<h2 id="choosing">5. When to Choose Each Structure</h2>
+
+<button class="collapsible-header" aria-expanded="false" type="button">
+<span>🔹 Choose an Unbalanced BST when…</span><span class="arrow" aria-hidden="true">▶</span>
+</button>
+<div class="collapsible-content" role="region">
+<ul>
+<li>Data arrives in a <strong>random order</strong> (average case is <span class="math-inline">O(log n)</span>).</li>
+<li>You need <strong>ordered operations</strong> (sorted output, range queries, predecessor/successor).</li>
+<li>Implementation simplicity is a priority and you can tolerate occasional <span class="math-inline">O(n)</span> worst case.</li>
+<li><strong>Not suitable when:</strong> input may be sorted or nearly sorted (degenerates to linked list).</li>
+</ul>
+</div>
+
+<button class="collapsible-header" aria-expanded="false" type="button">
+<span>🔹 Choose an AVL Tree when…</span><span class="arrow" aria-hidden="true">▶</span>
+</button>
+<div class="collapsible-content" role="region">
+<ul>
+<li>You need <strong>guaranteed <span class="math-inline">O(log n)</span></strong> for all operations regardless of input order.</li>
+<li>You need <strong>ordered traversal, range queries, or min/max</strong> operations.</li>
+<li>Worst-case performance matters (real-time systems, security-sensitive applications).</li>
+<li>Data is frequently searched and relatively infrequently inserted/deleted (AVL is slightly slower on inserts due to rotations).</li>
+<li><strong>Tradeoff:</strong> more complex to implement; slight constant-factor overhead from balance maintenance.</li>
+</ul>
+</div>
+
+<button class="collapsible-header" aria-expanded="false" type="button">
+<span>🔹 Choose a Hash Table when…</span><span class="arrow" aria-hidden="true">▶</span>
+</button>
+<div class="collapsible-content" role="region">
+<ul>
+<li>You need the <strong>fastest possible average-case lookup</strong> — <span class="math-inline">O(1)</span>.</li>
+<li>You do <strong>not need ordered operations</strong> (no sorted traversal, no range queries).</li>
+<li>You can tolerate <span class="math-inline">O(n)</span> worst case (or mitigate with a good hash function).</li>
+<li>Keys have a natural hash function (integers, strings).</li>
+<li><strong>Not suitable when:</strong> you need to iterate in sorted order, perform range queries, or guarantee worst-case response time.</li>
+</ul>
+</div>
+
+<div class="callout">
+<div class="callout-title">💡 Decision Shortcut</div>
+<p><strong>Need ordering?</strong> → Tree (AVL if worst-case matters, BST if input is random).<br>
+<strong>Need only lookup by key?</strong> → Hash table.<br>
+<strong>Need both?</strong> → Consider using two structures (hash table for lookup + tree for ordering) or a balanced BST as a single compromise.</p>
+</div>
+
+<!-- ============ SECTION 6 ============ -->
+<h2 id="mini-case">6. Mini-Case: Student Records System</h2>
+
+<div class="callout">
+<div class="callout-title">📋 Scenario</div>
+<p>You are designing a student records system with three requirements:</p>
+<ol>
+<li><strong>Fast ID lookup:</strong> Given a student ID, retrieve the record in the fastest average time.</li>
+<li><strong>Ordered name printing:</strong> Print all students sorted alphabetically by last name.</li>
+<li><strong>GPA range queries:</strong> Find all students with GPA between 3.0 and 3.5.</li>
+</ol>
+<p>You have 10,000 student records. Which data structure(s) should you use?</p>
+</div>
+
+<p><strong>Work through the analysis step by step:</strong></p>
+
+<button class="collapsible-header" aria-expanded="false" type="button">
+<span>Step 1: Analyze Requirement 1 — Fast ID Lookup</span><span class="arrow" aria-hidden="true">▶</span>
+</button>
+<div class="collapsible-content" role="region">
+<p><strong>Best fit: Hash Table</strong> keyed on student ID.</p>
+<ul>
+<li>Student IDs are unique integers — perfect hash keys.</li>
+<li>Average lookup: <span class="math-inline">O(1)</span>.</li>
+<li>With 10,000 records and a table of size ~14,300 (load factor ≈ 0.7), we get excellent performance.</li>
+</ul>
+<p>Could an AVL tree work? Yes — <span class="math-inline">O(log 10,000) ≈ 14</span> comparisons. Fast, but not as fast as hash table's <span class="math-inline">O(1)</span>.</p>
+</div>
+
+<button class="collapsible-header" aria-expanded="false" type="button">
+<span>Step 2: Analyze Requirement 2 — Ordered Name Printing</span><span class="arrow" aria-hidden="true">▶</span>
+</button>
+<div class="collapsible-content" role="region">
+<p><strong>Best fit: AVL Tree (or BST)</strong> keyed on last name.</p>
+<ul>
+<li>Inorder traversal produces alphabetical output in <span class="math-inline">O(n)</span>.</li>
+<li>A hash table cannot produce sorted output without collecting all elements and sorting them — <span class="math-inline">O(n log n)</span> extra work.</li>
+</ul>
+<p>AVL is preferred over unbalanced BST because names inserted alphabetically (e.g., from a sorted file) would degenerate a BST to <span class="math-inline">O(n)</span> height.</p>
+</div>
+
+<button class="collapsible-header" aria-expanded="false" type="button">
+<span>Step 3: Analyze Requirement 3 — GPA Range Queries</span><span class="arrow" aria-hidden="true">▶</span>
+</button>
+<div class="collapsible-content" role="region">
+<p><strong>Best fit: AVL Tree (or BST)</strong> keyed on GPA.</p>
+<ul>
+<li>Range query "find all GPAs in [3.0, 3.5]" takes <span class="math-inline">O(log n + k)</span> in a tree, where <span class="math-inline">k</span> is the number of results.</li>
+<li>A hash table would require scanning all 10,000 records — <span class="math-inline">O(n)</span>.</li>
+</ul>
+</div>
+
+<button class="collapsible-header" aria-expanded="false" type="button">
+<span>Step 4: Recommendation</span><span class="arrow" aria-hidden="true">▶</span>
+</button>
+<div class="collapsible-content" role="region">
+<p><strong>Use multiple structures:</strong></p>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Structure</th><th>Key</th><th>Purpose</th></tr></thead>
+<tbody>
+<tr><td>Hash Table</td><td>Student ID</td><td>Fast ID lookup — <span class="math-inline">O(1)</span> average</td></tr>
+<tr><td>AVL Tree #1</td><td>Last Name</td><td>Ordered alphabetical printing — <span class="math-inline">O(n)</span> inorder</td></tr>
+<tr><td>AVL Tree #2</td><td>GPA</td><td>Range queries — <span class="math-inline">O(log n + k)</span></td></tr>
+</tbody>
+</table>
+</div>
+<p><strong>Space tradeoff:</strong> storing 10,000 records in three structures uses ~3× memory, but each operation achieves optimal time complexity for its requirement. This is a classic example of the <em>space-time tradeoff</em> in data structure design.</p>
+<p><strong>Alternative (simpler):</strong> If you can only use one structure, an AVL tree keyed on student ID gives <span class="math-inline">O(log n)</span> lookup, supports ordered traversal (by ID), but requires a separate scan for GPA ranges. No single structure optimally satisfies all three requirements.</p>
+</div>
+
+<!-- ============ SECTION 7 ============ -->
+<h2 id="final-project">7. Connection to the Final Project Analysis Document</h2>
+
+<p>Your Final Project Analysis Document (25 pts, due end of Week 17) requires you to <strong>justify your data structure and algorithm choices</strong> with complexity analysis. The comparison framework from this module gives you the vocabulary and reasoning structure you need.</p>
+
+<h3>What the Analysis Document expects:</h3>
+<ul>
+<li>Algorithm comparison: when to use MST vs. shortest path, BFS vs. DFS</li>
+<li>Time and space complexity for each algorithm you implemented</li>
+<li>At least one real-world scenario described and analyzed</li>
+</ul>
+
+<h3>How this module helps:</h3>
+
+<button class="collapsible-header" aria-expanded="false" type="button">
+<span>Component 4: Tree-Based Internal Structure (50 pts)</span><span class="arrow" aria-hidden="true">▶</span>
+</button>
+<div class="collapsible-content" role="region">
+<p>You chose either a <strong>min-heap/priority queue</strong> (supporting Dijkstra's or Prim's) or a <strong>BST</strong> (for graph node storage/lookup). In your Analysis Document, explain:</p>
+<ul>
+<li><strong>Why this structure?</strong> Use the comparison dimensions from Section 4 (average/worst case, ordering needs, implementation complexity).</li>
+<li><strong>Why not a hash table?</strong> If you're using a priority queue for Dijkstra's, explain that you need the <em>minimum extraction</em> operation — hash tables don't support efficient min-finding (<span class="math-inline">O(n)</span> vs. heap's <span class="math-inline">O(log n)</span>).</li>
+<li><strong>Why not an unbalanced BST?</strong> If you chose an AVL tree, explain the worst-case guarantee.</li>
+</ul>
+</div>
+
+<button class="collapsible-header" aria-expanded="false" type="button">
+<span>Sample justification paragraph (template)</span><span class="arrow" aria-hidden="true">▶</span>
+</button>
+<div class="collapsible-content" role="region">
+<p><em>"For Component 4, I implemented a min-heap to serve as the priority queue in Dijkstra's algorithm. A min-heap provides O(log n) insertion and O(log n) extract-min operations, which are the two operations Dijkstra's algorithm requires at each step. A hash table was not suitable because it does not support efficient minimum extraction (O(n) scan required). An AVL tree could provide O(log n) min-finding, but the constant factors are larger and the implementation more complex than a heap for this specific use case. The min-heap's O(n) space is acceptable for our graph sizes."</em></p>
+<p>Notice how this paragraph uses: time complexity comparison, identification of required operations, and a reasoned tradeoff argument. This is exactly what earns full marks on the Analysis Document.</p>
+</div>
+
+<!-- ============ SECTION 8 ============ -->
+<h2 id="quiz-review">8. Quiz 5 Review Synthesis</h2>
+
+<div class="callout">
+<div class="callout-title">📝 Quiz 5 Coverage — Weeks 14–16</div>
+<p>Quiz 5 (60 pts) covers three weeks of content. Here is a breakdown by topic area:</p>
+</div>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>Topic Area</th><th>Week</th><th>Approx. Weight</th><th>Key Skills to Practice</th></tr></thead>
+<tbody>
+<tr><td>MST — Kruskal's, Prim's</td><td>14</td><td>~30%</td><td>Trace both algorithms on a weighted graph; compare greedy strategies; state time complexities</td></tr>
+<tr><td>Shortest Path — Dijkstra's</td><td>14</td><td>~15%</td><td>Trace Dijkstra's step-by-step; identify when it fails (negative weights); state complexity with priority queue</td></tr>
+<tr><td>Trees, BST, Expression Trees, Traversals</td><td>15</td><td>~20%</td><td>Perform all four traversals; insert/delete in BST; build expression tree from postfix</td></tr>
+<tr><td>AVL Trees — Balance, Rotations, Insert/Delete</td><td>16</td><td>~20%</td><td>Identify rotation type; trace AVL insertion with rotations; compute balance factors</td></tr>
+<tr><td>Hashing — Functions, Collisions, Performance</td><td>16</td><td>~15%</td><td>Compute hash values; trace chaining and linear probing; compute load factor; state worst case</td></tr>
+</tbody>
+</table>
+</div>
+
+<h3>Study Strategy</h3>
+<ol>
+<li><strong>Revisit PS-09 and PS-10 solutions</strong> — these problem sets directly tested the Week 14 and 15 skills that appear on Quiz 5.</li>
+<li><strong>Practice AVL insertions by hand</strong> — insert sequences of 6–8 values into an empty AVL tree, drawing the tree after each step. Verify balance factors. This is the most common Quiz 5 question type for Week 16 content.</li>
+<li><strong>Trace hash table operations</strong> — insert 6–8 keys into a table using both chaining and linear probing. Compute the load factor before and after.</li>
+<li><strong>Review the comparison table</strong> (Section 4 above) — Quiz 5 may include a "which structure would you choose?" scenario question.</li>
+<li><strong>Revisit Modules 14.1–16.4 knowledge checks</strong> — if you missed any, redo them now.</li>
+</ol>
+
+<div class="callout success">
+<div class="callout-title">✅ You're Ready When…</div>
+<ul>
+<li>You can trace Kruskal's, Prim's, and Dijkstra's on a 6-node graph without notes.</li>
+<li>You can perform all four tree traversals and BST insert/delete correctly.</li>
+<li>You can identify which AVL rotation is needed and draw the result.</li>
+<li>You can insert keys into a hash table using chaining or linear probing, compute <span class="math-inline">α</span>, and explain what happens as <span class="math-inline">α</span> grows.</li>
+</ul>
+</div>
+
+<!-- ============ SECTION 9 ============ -->
+<h2 id="knowledge-checks">9. Knowledge Checks</h2>
+
+<p>These are <strong>ungraded</strong> self-assessment questions. Use them to verify your understanding before Quiz 5.</p>
+
+<!-- KC 1 -->
+<div class="kc-card" id="kc1">
+<h4>Knowledge Check 1: Load Factor Computation</h4>
+<p>A hash table has <span class="math-inline">m = 13</span> slots and currently stores <span class="math-inline">n = 9</span> elements using separate chaining. What is the load factor, and what is the expected chain length for an unsuccessful search?</p>
+<div class="kc-options" role="radiogroup" aria-label="Knowledge Check 1 options">
+<label><input type="radio" name="kc1" value="a"> α = 0.69; expected chain length ≈ 0.69</label>
+<label><input type="radio" name="kc1" value="b"> α = 1.44; expected chain length ≈ 1.44</label>
+<label><input type="radio" name="kc1" value="c"> α = 9; expected chain length = 9</label>
+<label><input type="radio" name="kc1" value="d"> α = 0.69; expected chain length = 13</label>
+</div>
+<button class="kc-submit" type="button" data-kc="kc1" data-correct="a">Check Answer</button>
+<div class="kc-feedback" id="kc1-feedback"></div>
+</div>
+
+<!-- KC 2 -->
+<div class="kc-card" id="kc2">
+<h4>Knowledge Check 2: Hash Table Limitations</h4>
+<p>A classmate claims: "Hash tables are always faster than AVL trees, so you should always use a hash table." Which of the following is the <strong>best</strong> counterargument?</p>
+<div class="kc-options" role="radiogroup" aria-label="Knowledge Check 2 options">
+<label><input type="radio" name="kc2" value="a"> Hash tables use more memory than AVL trees.</label>
+<label><input type="radio" name="kc2" value="b"> Hash tables have O(n) worst-case search and cannot efficiently support ordered traversal or range queries.</label>
+<label><input type="radio" name="kc2" value="c"> Hash tables are harder to implement than AVL trees.</label>
+<label><input type="radio" name="kc2" value="d"> Hash tables require integer keys only.</label>
+</div>
+<button class="kc-submit" type="button" data-kc="kc2" data-correct="b">Check Answer</button>
+<div class="kc-feedback" id="kc2-feedback"></div>
+</div>
+
+<!-- KC 3 -->
+<div class="kc-card" id="kc3">
+<h4>Knowledge Check 3: Final Project — Structure Choice for Dijkstra's</h4>
+<p>For the Final Project, Dijkstra's algorithm needs to repeatedly extract the vertex with the <strong>smallest tentative distance</strong>. Which tree-based structure best supports this operation, and why?</p>
+<div class="kc-options" role="radiogroup" aria-label="Knowledge Check 3 options">
+<label><input type="radio" name="kc3" value="a"> An unbalanced BST, because it supports O(log n) search.</label>
+<label><input type="radio" name="kc3" value="b"> A min-heap, because extract-min is O(log n) and it is specifically designed for priority-based retrieval.</label>
+<label><input type="radio" name="kc3" value="c"> A hash table, because lookup is O(1) average.</label>
+<label><input type="radio" name="kc3" value="d"> An AVL tree, because it guarantees O(log n) worst-case search.</label>
+</div>
+<button class="kc-submit" type="button" data-kc="kc3" data-correct="b">Check Answer</button>
+<div class="kc-feedback" id="kc3-feedback"></div>
+</div>
+
+<!-- KC 4 -->
+<div class="kc-card" id="kc4">
+<h4>Knowledge Check 4: Quiz 5 Study Plan</h4>
+<p>Which of the following is the <strong>most effective</strong> study strategy for Quiz 5?</p>
+<div class="kc-options" role="radiogroup" aria-label="Knowledge Check 4 options">
+<label><input type="radio" name="kc4" value="a"> Re-read all Module 14–16 text without practicing any problems.</label>
+<label><input type="radio" name="kc4" value="b"> Only study hashing since it is the newest topic.</label>
+<label><input type="radio" name="kc4" value="c"> Practice tracing algorithms by hand (Kruskal's, Prim's, Dijkstra's, AVL insertions, hash table insertions), revisit PS-09/PS-10 solutions, and redo any missed knowledge checks.</label>
+<label><input type="radio" name="kc4" value="d"> Memorize the comparison table without understanding why each complexity is what it is.</label>
+</div>
+<button class="kc-submit" type="button" data-kc="kc4" data-correct="c">Check Answer</button>
+<div class="kc-feedback" id="kc4-feedback"></div>
+</div>
+
+<!-- Closing -->
+<div class="callout success" style="margin-top:2rem">
+<div class="callout-title">🎉 Module 16.5 Complete — Week 16 Finished!</div>
+<p>You've now completed all five modules for Week 16. Your next steps:</p>
+<ol>
+<li><strong>Complete Quiz 5</strong> before the end of this week.</li>
+<li><strong>Continue your Final Project</strong> — use the comparison framework from this module in your Analysis Document.</li>
+<li><strong>Week 17</strong> is dedicated to Final Project completion and submission.</li>
+</ol>
+<p>Good luck on Quiz 5 and your Final Project!</p>
+</div>
+
+</main>
+
+<script>
+// Collapsible sections
+document.querySelectorAll('.collapsible-header').forEach(function(btn){
+btn.addEventListener('click',function(){
+var content=this.nextElementSibling;
+var expanded=this.getAttribute('aria-expanded')==='true';
+this.setAttribute('aria-expanded',String(!expanded));
+content.classList.toggle('open');
+this.querySelector('.arrow').classList.toggle('rotated');
+});
+btn.addEventListener('keydown',function(e){
+if(e.key==='Enter'||e.key===' '){e.preventDefault();this.click();}
+});
+});
+
+// Comparison table highlight toggles
+var toggleBtns=document.querySelectorAll('.toggle-btn[data-highlight]');
+toggleBtns.forEach(function(btn){
+btn.addEventListener('click',function(){
+var cat=this.getAttribute('data-highlight');
+var pressed=this.getAttribute('aria-pressed')==='true';
+// Reset all
+toggleBtns.forEach(function(b){b.setAttribute('aria-pressed','false');});
+document.querySelectorAll('#comparison-table tbody tr').forEach(function(r){r.classList.remove('highlight-row');});
+if(!pressed){
+this.setAttribute('aria-pressed','true');
+document.querySelectorAll('#comparison-table tbody tr[data-cat="'+cat+'"]').forEach(function(r){r.classList.add('highlight-row');});
+}
+});
+});
+
+// Knowledge checks
+var feedbackData={
+kc1:{
+a:{correct:true,text:'Correct! α = n/m = 9/13 ≈ 0.69. With separate chaining, the expected chain length for an unsuccessful search equals α ≈ 0.69. This means on average, you examine fewer than one node per search — excellent performance.'},
+b:{correct:false,text:'Incorrect. You computed m/n = 13/9 ≈ 1.44, which inverts the formula. The load factor is α = n/m = 9/13 ≈ 0.69.'},
+c:{correct:false,text:'Incorrect. α = 9 would mean 9 elements per slot on average, which would only happen if m = 1. With m = 13 slots, α = 9/13 ≈ 0.69.'},
+d:{correct:false,text:'Incorrect. The load factor α = 0.69 is correct, but the expected chain length equals α (≈ 0.69), not the table size m. The table size determines how many slots exist, not how long each chain is.'}
+},
+kc2:{
+a:{correct:false,text:'Partially true but not the strongest argument. Memory usage depends on implementation details and load factor. The fundamental limitations are more important.'},
+b:{correct:true,text:'Correct! This is the strongest counterargument because it identifies two fundamental limitations: (1) O(n) worst-case performance means hash tables cannot guarantee fast operations, and (2) hash tables inherently do not support ordered operations (sorted traversal, range queries, find-min/max) — these require tree-based structures.'},
+c:{correct:false,text:'Incorrect. Hash tables (especially with chaining) are generally simpler to implement than AVL trees with rotations. Implementation complexity actually favors hash tables.'},
+d:{correct:false,text:'Incorrect. Hash tables work with any key type that has a hash function (strings, objects, etc.), not just integers. This is not a real limitation.'}
+},
+kc3:{
+a:{correct:false,text:'Incorrect. While a BST supports search, finding the minimum in an unbalanced BST is O(n) worst case. More importantly, a BST is not optimized for repeated extract-min operations the way a heap is.'},
+b:{correct:true,text:'Correct! A min-heap is specifically designed for priority queue operations: insert in O(log n) and extract-min in O(log n). Dijkstra\'s algorithm repeatedly needs the vertex with smallest distance — this is exactly the extract-min operation. A min-heap makes Dijkstra\'s run in O((V + E) log V), which is optimal for sparse graphs.'},
+c:{correct:false,text:'Incorrect. A hash table provides O(1) lookup by key, but finding the minimum value requires scanning all entries — O(n). Dijkstra\'s needs extract-min, not lookup-by-key.'},
+d:{correct:false,text:'Close, but not the best answer. An AVL tree can find the minimum in O(log n), but it is not as efficient as a heap for repeated extract-min operations. A heap\'s structure is specifically optimized for this pattern, with simpler implementation and better constant factors for priority queue use.'}
+},
+kc4:{
+a:{correct:false,text:'Incorrect. Passive re-reading without active practice is one of the least effective study strategies. You need to actively trace algorithms and solve problems to build fluency.'},
+b:{correct:false,text:'Incorrect. Hashing is only ~15% of Quiz 5. The quiz covers three weeks (14–16), with MST and shortest path algorithms comprising ~45% of the content. Neglecting those topics would be risky.'},
+c:{correct:true,text:'Correct! Active practice (tracing algorithms by hand, reworking graded problem sets, redoing knowledge checks) builds the procedural fluency that Quiz 5 tests. The quiz will ask you to trace Kruskal\'s, Dijkstra\'s, AVL insertions, and hash table operations — you need to have practiced these, not just read about them.'},
+d:{correct:false,text:'Incorrect. Memorizing without understanding is fragile — Quiz 5 will present novel scenarios where you need to apply reasoning, not just recall a table. Understanding why AVL guarantees O(log n) (because height is bounded) is more useful than memorizing the entry.'}
+}
+};
+
+document.querySelectorAll('.kc-submit').forEach(function(btn){
+btn.addEventListener('click',function(){
+var kcId=this.getAttribute('data-kc');
+var correctAns=this.getAttribute('data-correct');
+var selected=document.querySelector('input[name="'+kcId+'"]:checked');
+var feedbackEl=document.getElementById(kcId+'-feedback');
+if(!selected){
+feedbackEl.className='kc-feedback incorrect';
+feedbackEl.innerHTML='<strong>Please select an answer before checking.</strong>';
+feedbackEl.style.display='block';
+return;
+}
+var val=selected.value;
+var data=feedbackData[kcId][val];
+if(data.correct){
+feedbackEl.className='kc-feedback correct';
+feedbackEl.innerHTML='<strong>✓ '+data.text+'</strong>';
+}else{
+feedbackEl.className='kc-feedback incorrect';
+feedbackEl.innerHTML='<strong>✗ </strong>'+data.text;
+}
+feedbackEl.style.display='block';
+feedbackEl.scrollIntoView({behavior:'smooth',block:'nearest'});
+});
+});
+</script>
+</body>
+</html>

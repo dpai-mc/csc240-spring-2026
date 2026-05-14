@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 16.2 – AVL Rotations</title>
+<style>
+:root{--nav-h:54px;--blue:#1a5276;--blue-light:#d6eaf8;--green:#0e6655;--green-light:#d1f2eb;--orange:#d35400;--orange-light:#fdebd0;--purple:#6c3483;--purple-light:#e8daef;--red:#922b21;--red-light:#fadbd8;--gray:#5d6d7e;--gray-light:#f2f3f4;--font-main:'Segoe UI',system-ui,sans-serif;--font-mono:'Courier New',monospace;--radius:8px;--shadow:0 2px 6px rgba(0,0,0,.1)}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:calc(var(--nav-h) + 16px)}
+body{margin:0;font-family:var(--font-main);line-height:1.65;color:#222;background:#fff}
+nav.sticky{position:sticky;top:0;z-index:1000;background:var(--blue);padding:0 16px;display:flex;align-items:center;height:var(--nav-h);box-shadow:var(--shadow);overflow-x:auto}
+nav.sticky a{color:#fff;text-decoration:none;font-size:.82rem;padding:6px 10px;border-radius:4px;white-space:nowrap;transition:background .2s}
+nav.sticky a:hover,nav.sticky a:focus-visible{background:rgba(255,255,255,.2);outline:none}
+nav.sticky a:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.container{max-width:900px;margin:0 auto;padding:24px 20px 60px}
+h1{font-size:1.85rem;color:var(--blue);margin-top:0;border-bottom:3px solid var(--blue);padding-bottom:8px}
+h2{font-size:1.45rem;color:var(--blue);margin-top:48px;border-bottom:2px solid var(--blue-light);padding-bottom:6px}
+h3{font-size:1.15rem;color:var(--green);margin-top:28px}
+h4{font-size:1rem;color:var(--purple);margin-top:20px}
+.meta{background:var(--gray-light);border-radius:var(--radius);padding:14px 18px;margin-bottom:28px;font-size:.9rem}
+.meta strong{color:var(--blue)}
+.callout{border-left:4px solid;border-radius:var(--radius);padding:14px 18px;margin:20px 0;font-size:.93rem}
+.callout-blue{border-color:var(--blue);background:var(--blue-light)}
+.callout-green{border-color:var(--green);background:var(--green-light)}
+.callout-orange{border-color:var(--orange);background:var(--orange-light)}
+.callout-purple{border-color:var(--purple);background:var(--purple-light)}
+.callout-red{border-color:var(--red);background:var(--red-light)}
+.callout-title{font-weight:700;margin-bottom:4px}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:.9rem}
+th,td{border:1px solid #ccc;padding:10px 12px;text-align:left}
+th{background:var(--blue);color:#fff;font-weight:600}
+tr:nth-child(even){background:var(--gray-light)}
+.tree-diagram{background:#1a1a2e;color:#0f0;font-family:var(--font-mono);font-size:.85rem;padding:16px 20px;border-radius:var(--radius);overflow-x:auto;margin:14px 0;line-height:1.5;white-space:pre}
+.tree-diagram .highlight{color:#ffeb3b}
+.tree-diagram .newnode{color:#ff6b6b}
+.tree-diagram .moved{color:#64b5f6}
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin:16px 0 0;border-bottom:2px solid var(--blue-light)}
+.tab-btn{padding:8px 16px;background:var(--gray-light);border:1px solid #ccc;border-bottom:none;border-radius:var(--radius) var(--radius) 0 0;cursor:pointer;font-size:.88rem;font-weight:600;transition:background .2s}
+.tab-btn:hover,.tab-btn:focus-visible{background:var(--blue-light)}
+.tab-btn[aria-selected="true"]{background:var(--blue);color:#fff;border-color:var(--blue)}
+.tab-btn:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+.tab-panel{display:none;padding:18px;border:1px solid #ccc;border-top:none;border-radius:0 0 var(--radius) var(--radius)}
+.tab-panel.active{display:block}
+.step-container{margin:14px 0}
+.step-btn{display:inline-block;padding:8px 16px;background:var(--green);color:#fff;border:none;border-radius:var(--radius);cursor:pointer;font-size:.88rem;font-weight:600;margin:4px 4px 4px 0;transition:background .2s}
+.step-btn:hover,.step-btn:focus-visible{background:var(--blue)}
+.step-btn:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+.step-btn:disabled{background:#aaa;cursor:not-allowed}
+.step-content{min-height:60px;padding:14px;background:var(--gray-light);border-radius:var(--radius);margin-top:10px}
+details{margin:14px 0;border:1px solid #ccc;border-radius:var(--radius);overflow:hidden}
+details summary{padding:12px 16px;background:var(--purple-light);font-weight:600;cursor:pointer;font-size:.93rem;list-style:none;display:flex;align-items:center;gap:8px}
+details summary::before{content:'▶';font-size:.75rem;transition:transform .2s}
+details[open] summary::before{transform:rotate(90deg)}
+details summary:focus-visible{outline:2px solid var(--orange);outline-offset:-2px}
+details .details-body{padding:14px 16px}
+.kc-section{margin:20px 0}
+.kc-question{background:var(--gray-light);border:1px solid #ccc;border-radius:var(--radius);padding:16px 18px;margin:16px 0}
+.kc-question h4{margin-top:0;color:var(--blue)}
+.kc-options label{display:block;padding:6px 0;cursor:pointer;font-size:.92rem}
+.kc-options input[type="radio"]{margin-right:8px}
+.kc-feedback{margin-top:12px;padding:12px 14px;border-radius:var(--radius);font-size:.9rem;display:none}
+.kc-feedback.correct{background:var(--green-light);border:1px solid var(--green)}
+.kc-feedback.incorrect{background:var(--red-light);border:1px solid var(--red)}
+.kc-submit{padding:8px 16px;background:var(--blue);color:#fff;border:none;border-radius:var(--radius);cursor:pointer;font-size:.88rem;margin-top:8px;transition:background .2s}
+.kc-submit:hover,.kc-submit:focus-visible{background:var(--green)}
+.kc-submit:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+.inline-math{font-family:var(--font-mono);font-style:italic;background:var(--gray-light);padding:1px 5px;border-radius:3px}
+.block-math{font-family:var(--font-mono);text-align:center;padding:12px;margin:12px 0;background:var(--gray-light);border-radius:var(--radius);font-size:1rem}
+.arrow{font-size:1.2rem;color:var(--orange);font-weight:700}
+ol.steps{counter-reset:step-counter}
+ol.steps li{counter-increment:step-counter;margin:10px 0;padding-left:8px}
+ol.steps li::marker{content:counter(step-counter) ". ";font-weight:700;color:var(--blue)}
+@media(max-width:600px){nav.sticky{padding:0 8px}nav.sticky a{font-size:.75rem;padding:5px 7px}.container{padding:16px 12px}.tree-diagram{font-size:.75rem;padding:12px}}
+</style>
+</head>
+<body>
+
+<nav class="sticky" aria-label="Module navigation">
+<a href="#trigger">Trigger</a>
+<a href="#decision">Decision Table</a>
+<a href="#ll">LL Case</a>
+<a href="#rr">RR Case</a>
+<a href="#lr">LR Case</a>
+<a href="#rl">RL Case</a>
+<a href="#preservation">Preservation</a>
+<a href="#visualizer">Visualizer</a>
+<a href="#checks">Checks</a>
+</nav>
+
+<div class="container">
+
+<h1>Module 16.2 – AVL Rotations</h1>
+
+<div class="meta">
+<strong>Course:</strong> CSC 240 – Discrete Structures &nbsp;|&nbsp;
+<strong>Week:</strong> 16 of 17 &nbsp;|&nbsp;
+<strong>Est. Time:</strong> 60–75 minutes &nbsp;|&nbsp;
+<strong>Prerequisite:</strong> Module 16.1<br>
+<strong>Objective 2:</strong> Perform all four AVL rotation types (LL, RR, LR, RL) correctly on paper and trace through the rotation steps, identifying the pivot node and restructured subtrees.
+</div>
+
+<div class="callout callout-blue">
+<div class="callout-title">Where We Are</div>
+In Module 16.1, you learned to compute balance factors and identify when a BST violates the AVL property. Now you will learn the <strong>four rotation operations</strong> that restore balance. Mastering rotations is the key mechanical skill for AVL trees — Quiz 5 will include problems requiring you to identify the rotation type and draw the result.
+</div>
+
+<!-- ============================================================ -->
+<h2 id="trigger">1. When Rotations Are Needed</h2>
+
+<p>After an insertion or deletion in an AVL tree, one or more nodes along the path from the modified position back to the root may have their balance factors change. A rotation is triggered when:</p>
+
+<div class="callout callout-orange">
+<div class="callout-title">Rotation Trigger Condition</div>
+A node's balance factor becomes <strong>+2</strong> or <strong>−2</strong> (i.e., <span class="inline-math">|BF| = 2</span>).
+</div>
+
+<h3>Identifying the Imbalanced Node</h3>
+<p>The <strong>imbalanced node</strong> (also called the <em>pivot</em> or <em>critical node</em>) is the <strong>lowest ancestor</strong> of the inserted or deleted node whose balance factor has become ±2. We fix the lowest violation first because correcting it often restores balance for all ancestors above it.</p>
+
+<p>Recall from Module 16.1:</p>
+<div class="block-math">BF(node) = height(left subtree) − height(right subtree)</div>
+
+<ul>
+<li><span class="inline-math">BF = +2</span> → the node is <strong>left-heavy</strong> (left subtree is too tall)</li>
+<li><span class="inline-math">BF = −2</span> → the node is <strong>right-heavy</strong> (right subtree is too tall)</li>
+</ul>
+
+<p>Once we identify the imbalanced node, we examine its <strong>heavy child</strong> (the child on the taller side) to determine which of the four rotation types to apply.</p>
+
+<!-- ============================================================ -->
+<h2 id="decision">2. Rotation Decision Table</h2>
+
+<p>The rotation type is determined by two balance factors: that of the <strong>imbalanced node</strong> and that of its <strong>heavy child</strong>. The following table is your complete decision guide:</p>
+
+<table>
+<thead>
+<tr>
+<th>Imbalanced Node BF</th>
+<th>Heavy Child</th>
+<th>Heavy Child BF</th>
+<th>Case Name</th>
+<th>Rotation Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>+2 (left-heavy)</td>
+<td>Left child</td>
+<td>+1 or 0</td>
+<td><strong>LL</strong></td>
+<td>Single right rotation</td>
+</tr>
+<tr>
+<td>−2 (right-heavy)</td>
+<td>Right child</td>
+<td>−1 or 0</td>
+<td><strong>RR</strong></td>
+<td>Single left rotation</td>
+</tr>
+<tr>
+<td>+2 (left-heavy)</td>
+<td>Left child</td>
+<td>−1</td>
+<td><strong>LR</strong></td>
+<td>Double: left rotation on left child, then right rotation on node</td>
+</tr>
+<tr>
+<td>−2 (right-heavy)</td>
+<td>Right child</td>
+<td>+1</td>
+<td><strong>RL</strong></td>
+<td>Double: right rotation on right child, then left rotation on node</td>
+</tr>
+</tbody>
+</table>
+
+<div class="callout callout-green">
+<div class="callout-title">Reading the Table</div>
+<strong>Case naming convention:</strong> The letters indicate the direction of the path from the imbalanced node to the newly inserted node (or the heavy path after deletion). "LL" means the imbalance is caused by going Left then Left. "LR" means Left then Right, and so on.
+</div>
+
+<div class="callout callout-purple">
+<div class="callout-title">Memory Aid</div>
+<ul style="margin:0">
+<li><strong>Same direction</strong> (LL or RR) → <strong>single</strong> rotation (opposite to the heavy direction)</li>
+<li><strong>Different direction</strong> (LR or RL) → <strong>double</strong> rotation (straighten first, then rotate)</li>
+</ul>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="ll">3. Single Right Rotation — LL Case</h2>
+
+<h3>When It Applies</h3>
+<p>The imbalanced node has <span class="inline-math">BF = +2</span> and its <strong>left child</strong> has <span class="inline-math">BF = +1</span> (or 0). The excess height is on the left-left path.</p>
+
+<h3>The Rotation Mechanics</h3>
+<p>Let the imbalanced node be <strong>A</strong>, its left child be <strong>B</strong>, and B's right subtree be <strong>T₂</strong>:</p>
+
+<ol class="steps">
+<li><strong>B</strong> becomes the new root of this subtree.</li>
+<li><strong>A</strong> becomes B's right child.</li>
+<li><strong>T₂</strong> (B's former right subtree) becomes A's new left child.</li>
+</ol>
+
+<h4>Before and After Diagrams</h4>
+<div class="tree-diagram" role="img" aria-label="LL case before rotation: A is root with left child B, B has left subtree T1 and right subtree T2, A has right subtree T3">BEFORE (LL imbalance):
+
+        <span class="highlight">A</span> (BF = +2)
+       / \
+      <span class="highlight">B</span>   T₃
+     / \
+    T₁  T₂</div>
+
+<div class="tree-diagram" role="img" aria-label="LL case after rotation: B is new root with left subtree T1 and right child A, A has left subtree T2 and right subtree T3">AFTER (single right rotation):
+
+        <span class="moved">B</span> (new root)
+       / \
+      T₁  <span class="moved">A</span>
+         / \
+        T₂  T₃</div>
+
+<h4>Why BST Order Is Preserved</h4>
+<p>Before the rotation, inorder traversal gives: <strong>T₁ – B – T₂ – A – T₃</strong>. After the rotation, inorder traversal gives: <strong>T₁ – B – T₂ – A – T₃</strong>. The sequence is identical — the rotation only changed parent-child pointers, not the logical ordering of keys.</p>
+
+<details>
+<summary>Worked Example: LL Case</summary>
+<div class="details-body">
+<p><strong>Scenario:</strong> Insert keys 30, 20, 10 into an initially empty AVL tree.</p>
+
+<div class="tree-diagram" role="img" aria-label="After inserting 30 and 20, tree has 30 as root with left child 20">Step 1: Insert 30, then 20
+
+      30 (BF = +1)
+     /
+    20 (BF = 0)</div>
+
+<div class="tree-diagram" role="img" aria-label="After inserting 10, node 30 has BF of +2, triggering LL case">Step 2: Insert 10 → <span class="newnode">imbalance at 30!</span>
+
+      <span class="highlight">30</span> (BF = +2) ← imbalanced node
+     /
+    <span class="highlight">20</span> (BF = +1) ← left child is left-heavy → LL case
+   /
+  <span class="newnode">10</span></div>
+
+<p><strong>Apply single right rotation around 30:</strong></p>
+<ul>
+<li>B = 20 becomes new root</li>
+<li>A = 30 becomes B's right child</li>
+<li>B's right subtree (null here) becomes A's left child</li>
+</ul>
+
+<div class="tree-diagram" role="img" aria-label="After rotation: 20 is root with left child 10 and right child 30, all BFs are 0">Step 3: After LL rotation
+
+      <span class="moved">20</span> (BF = 0)
+     /  \
+    10   30
+  (BF=0) (BF=0)
+
+✓ AVL property restored
+✓ Inorder: 10, 20, 30 (correct BST order)</div>
+</div>
+</details>
+
+<!-- ============================================================ -->
+<h2 id="rr">4. Single Left Rotation — RR Case</h2>
+
+<h3>When It Applies</h3>
+<p>The imbalanced node has <span class="inline-math">BF = −2</span> and its <strong>right child</strong> has <span class="inline-math">BF = −1</span> (or 0). The excess height is on the right-right path.</p>
+
+<h3>The Rotation Mechanics</h3>
+<p>Let the imbalanced node be <strong>A</strong>, its right child be <strong>B</strong>, and B's left subtree be <strong>T₂</strong>:</p>
+
+<ol class="steps">
+<li><strong>B</strong> becomes the new root of this subtree.</li>
+<li><strong>A</strong> becomes B's left child.</li>
+<li><strong>T₂</strong> (B's former left subtree) becomes A's new right child.</li>
+</ol>
+
+<h4>Before and After Diagrams</h4>
+<div class="tree-diagram" role="img" aria-label="RR case before rotation: A is root with right child B, A has left subtree T1, B has left subtree T2 and right subtree T3">BEFORE (RR imbalance):
+
+    <span class="highlight">A</span> (BF = −2)
+   / \
+  T₁  <span class="highlight">B</span>
+      / \
+     T₂  T₃</div>
+
+<div class="tree-diagram" role="img" aria-label="RR case after rotation: B is new root with left child A and right subtree T3, A has left subtree T1 and right subtree T2">AFTER (single left rotation):
+
+        <span class="moved">B</span> (new root)
+       / \
+      <span class="moved">A</span>   T₃
+     / \
+    T₁  T₂</div>
+
+<h4>Why BST Order Is Preserved</h4>
+<p>Inorder before: <strong>T₁ – A – T₂ – B – T₃</strong>. Inorder after: <strong>T₁ – A – T₂ – B – T₃</strong>. Identical — the rotation is the mirror image of the LL case.</p>
+
+<details>
+<summary>Worked Example: RR Case</summary>
+<div class="details-body">
+<p><strong>Scenario:</strong> Insert keys 10, 20, 30 into an initially empty AVL tree.</p>
+
+<div class="tree-diagram" role="img" aria-label="After inserting 10 and 20, tree has 10 as root with right child 20">Step 1: Insert 10, then 20
+
+    10 (BF = −1)
+      \
+      20 (BF = 0)</div>
+
+<div class="tree-diagram" role="img" aria-label="After inserting 30, node 10 has BF of -2, triggering RR case">Step 2: Insert 30 → <span class="newnode">imbalance at 10!</span>
+
+    <span class="highlight">10</span> (BF = −2) ← imbalanced node
+      \
+      <span class="highlight">20</span> (BF = −1) ← right child is right-heavy → RR case
+        \
+        <span class="newnode">30</span></div>
+
+<p><strong>Apply single left rotation around 10:</strong></p>
+<ul>
+<li>B = 20 becomes new root</li>
+<li>A = 10 becomes B's left child</li>
+<li>B's left subtree (null here) becomes A's right child</li>
+</ul>
+
+<div class="tree-diagram" role="img" aria-label="After rotation: 20 is root with left child 10 and right child 30, all BFs are 0">Step 3: After RR rotation
+
+      <span class="moved">20</span> (BF = 0)
+     /  \
+    10   30
+  (BF=0) (BF=0)
+
+✓ AVL property restored
+✓ Inorder: 10, 20, 30 (correct BST order)</div>
+</div>
+</details>
+
+<!-- ============================================================ -->
+<h2 id="lr">5. Double Left-Right Rotation — LR Case</h2>
+
+<h3>When It Applies</h3>
+<p>The imbalanced node has <span class="inline-math">BF = +2</span> and its <strong>left child</strong> has <span class="inline-math">BF = −1</span>. The excess height is on the left-right path — a "zig-zag" pattern that a single rotation cannot fix.</p>
+
+<div class="callout callout-orange">
+<div class="callout-title">Why a Single Rotation Fails Here</div>
+If we tried a single right rotation on a zig-zag (LR) pattern, the problem would just move to the other side. The double rotation first <em>straightens</em> the zig-zag into a straight line (making it look like an LL case), then applies the single right rotation.
+</div>
+
+<h3>The Rotation Mechanics (Two Steps)</h3>
+<p>Let the imbalanced node be <strong>A</strong>, its left child be <strong>B</strong>, and B's right child be <strong>C</strong>:</p>
+
+<ol class="steps">
+<li><strong>Step 1 — Left rotation on B:</strong> Rotate left around B, making C the new left child of A (straightens the zig-zag).</li>
+<li><strong>Step 2 — Right rotation on A:</strong> Rotate right around A, making C the new root of this subtree.</li>
+</ol>
+
+<h4>Step-by-Step Diagrams</h4>
+
+<div class="step-container" id="lr-steps">
+<button class="step-btn" onclick="showLRStep(0)" aria-label="Show initial state">Initial</button>
+<button class="step-btn" onclick="showLRStep(1)" aria-label="Show after step 1">After Step 1</button>
+<button class="step-btn" onclick="showLRStep(2)" aria-label="Show after step 2">After Step 2</button>
+<div class="step-content" id="lr-step-display" aria-live="polite">
+<div class="tree-diagram" role="img" aria-label="LR initial state: A is root with left child B, B has left subtree T1 and right child C, C has subtrees T2 and T3, A has right subtree T4">INITIAL (LR imbalance):
+
+        <span class="highlight">A</span> (BF = +2)
+       / \
+      <span class="highlight">B</span>   T₄
+     / \
+    T₁  <span class="highlight">C</span> (B's BF = −1)
+       / \
+      T₂  T₃</div>
+<p><em>Click the buttons above to step through the double rotation.</em></p>
+</div>
+</div>
+
+<h4>Why BST Order Is Preserved</h4>
+<p>Inorder at every stage: <strong>T₁ – B – T₂ – C – T₃ – A – T₄</strong>. Neither step changes this ordering — each rotation only reassigns child pointers.</p>
+
+<details>
+<summary>Worked Example: LR Case</summary>
+<div class="details-body">
+<p><strong>Scenario:</strong> Insert keys 30, 10, 20 into an initially empty AVL tree.</p>
+
+<div class="tree-diagram" role="img" aria-label="After inserting 30 and 10: 30 is root with left child 10">Step 1: Insert 30, then 10
+
+      30 (BF = +1)
+     /
+    10 (BF = 0)</div>
+
+<div class="tree-diagram" role="img" aria-label="After inserting 20: node 30 has BF +2, node 10 has BF -1, LR case detected">Step 2: Insert 20 → <span class="newnode">imbalance at 30!</span>
+
+      <span class="highlight">30</span> (BF = +2) ← imbalanced node (A)
+     /
+    <span class="highlight">10</span> (BF = −1) ← left child is RIGHT-heavy → LR case!
+      \
+      <span class="newnode">20</span> (C)</div>
+
+<p><strong>Step 1 — Left rotation around 10:</strong></p>
+<div class="tree-diagram" role="img" aria-label="After left rotation on 10: 30 is root, 20 is left child of 30, 10 is left child of 20">Intermediate state:
+
+      30 (BF = +2)
+     /
+    <span class="moved">20</span>
+   /
+  10
+
+Now it looks like an LL case!</div>
+
+<p><strong>Step 2 — Right rotation around 30:</strong></p>
+<div class="tree-diagram" role="img" aria-label="After right rotation on 30: 20 is root with left child 10 and right child 30">Final result:
+
+      <span class="moved">20</span> (BF = 0)
+     /  \
+    10   30
+  (BF=0) (BF=0)
+
+✓ AVL property restored
+✓ Inorder: 10, 20, 30 (correct BST order)</div>
+</div>
+</details>
+
+<!-- ============================================================ -->
+<h2 id="rl">6. Double Right-Left Rotation — RL Case</h2>
+
+<h3>When It Applies</h3>
+<p>The imbalanced node has <span class="inline-math">BF = −2</span> and its <strong>right child</strong> has <span class="inline-math">BF = +1</span>. The excess height is on the right-left path — the mirror of the LR case.</p>
+
+<h3>The Rotation Mechanics (Two Steps)</h3>
+<p>Let the imbalanced node be <strong>A</strong>, its right child be <strong>B</strong>, and B's left child be <strong>C</strong>:</p>
+
+<ol class="steps">
+<li><strong>Step 1 — Right rotation on B:</strong> Rotate right around B, making C the new right child of A (straightens the zig-zag).</li>
+<li><strong>Step 2 — Left rotation on A:</strong> Rotate left around A, making C the new root of this subtree.</li>
+</ol>
+
+<h4>Step-by-Step Diagrams</h4>
+
+<div class="step-container" id="rl-steps">
+<button class="step-btn" onclick="showRLStep(0)" aria-label="Show initial state">Initial</button>
+<button class="step-btn" onclick="showRLStep(1)" aria-label="Show after step 1">After Step 1</button>
+<button class="step-btn" onclick="showRLStep(2)" aria-label="Show after step 2">After Step 2</button>
+<div class="step-content" id="rl-step-display" aria-live="polite">
+<div class="tree-diagram" role="img" aria-label="RL initial state: A is root with right child B, A has left subtree T1, B has left child C and right subtree T4, C has subtrees T2 and T3">INITIAL (RL imbalance):
+
+    <span class="highlight">A</span> (BF = −2)
+   / \
+  T₁  <span class="highlight">B</span>
+      / \
+     <span class="highlight">C</span>  T₄   (B's BF = +1)
+    / \
+   T₂  T₃</div>
+<p><em>Click the buttons above to step through the double rotation.</em></p>
+</div>
+</div>
+
+<h4>Why BST Order Is Preserved</h4>
+<p>Inorder at every stage: <strong>T₁ – A – T₂ – C – T₃ – B – T₄</strong>. The ordering is maintained throughout both rotation steps.</p>
+
+<details>
+<summary>Worked Example: RL Case</summary>
+<div class="details-body">
+<p><strong>Scenario:</strong> Insert keys 10, 30, 20 into an initially empty AVL tree.</p>
+
+<div class="tree-diagram" role="img" aria-label="After inserting 10 and 30: 10 is root with right child 30">Step 1: Insert 10, then 30
+
+    10 (BF = −1)
+      \
+      30 (BF = 0)</div>
+
+<div class="tree-diagram" role="img" aria-label="After inserting 20: node 10 has BF -2, node 30 has BF +1, RL case detected">Step 2: Insert 20 → <span class="newnode">imbalance at 10!</span>
+
+    <span class="highlight">10</span> (BF = −2) ← imbalanced node (A)
+      \
+      <span class="highlight">30</span> (BF = +1) ← right child is LEFT-heavy → RL case!
+     /
+    <span class="newnode">20</span> (C)</div>
+
+<p><strong>Step 1 — Right rotation around 30:</strong></p>
+<div class="tree-diagram" role="img" aria-label="After right rotation on 30: 10 is root, 20 is right child of 10, 30 is right child of 20">Intermediate state:
+
+    10 (BF = −2)
+      \
+      <span class="moved">20</span>
+        \
+        30
+
+Now it looks like an RR case!</div>
+
+<p><strong>Step 2 — Left rotation around 10:</strong></p>
+<div class="tree-diagram" role="img" aria-label="After left rotation on 10: 20 is root with left child 10 and right child 30">Final result:
+
+      <span class="moved">20</span> (BF = 0)
+     /  \
+    10   30
+  (BF=0) (BF=0)
+
+✓ AVL property restored
+✓ Inorder: 10, 20, 30 (correct BST order)</div>
+</div>
+</details>
+
+<!-- ============================================================ -->
+<h2 id="preservation">7. The Subtree Preservation Principle</h2>
+
+<div class="callout callout-green">
+<div class="callout-title">Core Principle</div>
+<strong>Rotations only reassign child pointers — they never copy, delete, or reorder keys.</strong> Every subtree that existed before the rotation still exists after it, attached at a position that maintains BST inorder ordering.
+</div>
+
+<h3>What Exactly Changes During a Rotation?</h3>
+
+<p>In every rotation (single or double), exactly <strong>three pointer reassignments</strong> occur per single rotation step:</p>
+
+<table>
+<thead>
+<tr><th>Pointer Change</th><th>LL (Right Rotation) Example</th></tr>
+</thead>
+<tbody>
+<tr><td>1. Parent of A now points to B</td><td>B becomes new subtree root</td></tr>
+<tr><td>2. A.left ← B.right (T₂)</td><td>The "orphaned" subtree is adopted</td></tr>
+<tr><td>3. B.right ← A</td><td>A becomes B's child</td></tr>
+</tbody>
+</table>
+
+<h3>Why Ordering Is Always Preserved</h3>
+<p>Consider the general LL case. Before the rotation, BST ordering guarantees:</p>
+<div class="block-math">T₁ &lt; B &lt; T₂ &lt; A &lt; T₃</div>
+<p>After the rotation, T₂ moves from being B's right subtree to being A's left subtree. Since <span class="inline-math">B &lt; T₂ &lt; A</span> was already true, placing T₂ as A's left child is valid — everything in T₂ is still less than A and greater than B.</p>
+
+<div class="callout callout-purple">
+<div class="callout-title">Key Insight for Double Rotations</div>
+In LR and RL cases, the intermediate step is also a valid BST (just not balanced). Each individual rotation in the double rotation preserves BST ordering independently, so the composition of two order-preserving operations is also order-preserving.
+</div>
+
+<h3>Subtrees Are Never "Lost"</h3>
+<p>A common student concern: "What happens to T₂ when B moves up?" The answer: T₂ is explicitly reassigned to a new parent. No subtree is ever orphaned or duplicated. This is why rotations are <span class="inline-math">O(1)</span> operations — they involve a constant number of pointer changes regardless of tree size.</p>
+
+<!-- ============================================================ -->
+<h2 id="visualizer">8. Visualizer Walk-Through Activity</h2>
+
+<div class="callout callout-blue">
+<div class="callout-title">Activity: Observe All Four Rotation Types</div>
+Use the <strong>AVL Tree Visualizer</strong> (available in this week's module resources) to observe each rotation type in action. Follow the steps below to generate each case.
+</div>
+
+<h3>Instructions</h3>
+<p>Open the <strong>AVL Tree Visualizer</strong> and perform the following insertion sequences. After each sequence, observe the rotation that occurs and verify it matches what you learned above.</p>
+
+<div role="tablist" class="tabs" aria-label="Visualizer activity tabs">
+<button role="tab" class="tab-btn" id="tab-vis-ll" aria-selected="true" aria-controls="panel-vis-ll" onclick="switchVisTab('ll')">LL Case</button>
+<button role="tab" class="tab-btn" id="tab-vis-rr" aria-selected="false" aria-controls="panel-vis-rr" onclick="switchVisTab('rr')">RR Case</button>
+<button role="tab" class="tab-btn" id="tab-vis-lr" aria-selected="false" aria-controls="panel-vis-lr" onclick="switchVisTab('lr')">LR Case</button>
+<button role="tab" class="tab-btn" id="tab-vis-rl" aria-selected="false" aria-controls="panel-vis-rl" onclick="switchVisTab('rl')">RL Case</button>
+</div>
+
+<div role="tabpanel" class="tab-panel active" id="panel-vis-ll" aria-labelledby="tab-vis-ll">
+<h4>Generating an LL Rotation</h4>
+<ol class="steps">
+<li>Clear the tree (start fresh).</li>
+<li>Insert <strong>30</strong>, then <strong>20</strong>, then <strong>10</strong>.</li>
+<li>Observe: after inserting 10, node 30 becomes imbalanced (BF = +2). The visualizer performs a <strong>single right rotation</strong>.</li>
+<li>Verify the result: 20 is the new root, with 10 on the left and 30 on the right.</li>
+<li>Check inorder traversal in the visualizer — it should read 10, 20, 30.</li>
+</ol>
+</div>
+
+<div role="tabpanel" class="tab-panel" id="panel-vis-rr" aria-labelledby="tab-vis-rr">
+<h4>Generating an RR Rotation</h4>
+<ol class="steps">
+<li>Clear the tree.</li>
+<li>Insert <strong>10</strong>, then <strong>20</strong>, then <strong>30</strong>.</li>
+<li>Observe: after inserting 30, node 10 becomes imbalanced (BF = −2). The visualizer performs a <strong>single left rotation</strong>.</li>
+<li>Verify the result: 20 is the new root, with 10 on the left and 30 on the right.</li>
+<li>Check inorder traversal — it should read 10, 20, 30.</li>
+</ol>
+</div>
+
+<div role="tabpanel" class="tab-panel" id="panel-vis-lr" aria-labelledby="tab-vis-lr">
+<h4>Generating an LR Rotation</h4>
+<ol class="steps">
+<li>Clear the tree.</li>
+<li>Insert <strong>30</strong>, then <strong>10</strong>, then <strong>20</strong>.</li>
+<li>Observe: after inserting 20, node 30 has BF = +2 and its left child (10) has BF = −1. The visualizer performs a <strong>double left-right rotation</strong>.</li>
+<li>Watch for the intermediate state: 20 briefly becomes the left child of 30 (after the left rotation on 10), then 20 becomes the root (after the right rotation on 30).</li>
+<li>Verify the result: 20 is the root with 10 left and 30 right. Inorder: 10, 20, 30.</li>
+</ol>
+</div>
+
+<div role="tabpanel" class="tab-panel" id="panel-vis-rl" aria-labelledby="tab-vis-rl">
+<h4>Generating an RL Rotation</h4>
+<ol class="steps">
+<li>Clear the tree.</li>
+<li>Insert <strong>10</strong>, then <strong>30</strong>, then <strong>20</strong>.</li>
+<li>Observe: after inserting 20, node 10 has BF = −2 and its right child (30) has BF = +1. The visualizer performs a <strong>double right-left rotation</strong>.</li>
+<li>Watch for the intermediate state: 20 briefly becomes the right child of 10 (after the right rotation on 30), then 20 becomes the root (after the left rotation on 10).</li>
+<li>Verify the result: 20 is the root with 10 left and 30 right. Inorder: 10, 20, 30.</li>
+</ol>
+</div>
+
+<div class="callout callout-orange">
+<div class="callout-title">Challenge Extension</div>
+After completing the four basic cases, try inserting a longer sequence — such as 50, 25, 75, 10, 30, 60, 80, 5 — and predict which rotation will occur <em>before</em> the visualizer shows it. This is excellent Quiz 5 preparation.
+</div>
+
+<!-- ============================================================ -->
+<h2 id="checks">9. Knowledge Checks</h2>
+
+<p>These are <strong>ungraded</strong> self-assessment questions. Use them to verify your understanding before moving to Module 16.3. Select your answer and click "Check" for immediate feedback.</p>
+
+<!-- KC 1: LR Case Identification -->
+<div class="kc-question" id="kc1">
+<h4>Check 1: Identifying the LR Case</h4>
+<p>A node <strong>X</strong> has balance factor +2. Its left child <strong>Y</strong> has balance factor −1. What rotation type is needed?</p>
+<div class="kc-options">
+<label><input type="radio" name="kc1" value="a"> A. Single right rotation (LL case)</label>
+<label><input type="radio" name="kc1" value="b"> B. Single left rotation (RR case)</label>
+<label><input type="radio" name="kc1" value="c"> C. Double left-right rotation (LR case)</label>
+<label><input type="radio" name="kc1" value="d"> D. Double right-left rotation (RL case)</label>
+</div>
+<button class="kc-submit" onclick="checkKC('kc1','c')">Check</button>
+<div class="kc-feedback correct" id="kc1-correct">
+<strong>✓ Correct!</strong> The imbalanced node is left-heavy (BF = +2) but its left child is right-heavy (BF = −1). This zig-zag pattern is the LR case, requiring a double rotation: first left around Y, then right around X.
+</div>
+<div class="kc-feedback incorrect" id="kc1-incorrect">
+<strong>✗ Not quite.</strong> Look at the decision table: BF = +2 at the imbalanced node means it's left-heavy, and BF = −1 at the left child means the heavy side goes <em>right</em> from there. Left then Right = <strong>LR case</strong> (double left-right rotation). A single rotation won't work because the path "zig-zags."
+</div>
+</div>
+
+<!-- KC 2: Pointer Reassignment After LL -->
+<div class="kc-question" id="kc2">
+<h4>Check 2: Pointer Reassignment in LL Rotation</h4>
+<p>In a single right rotation (LL case), node <strong>A</strong> is the imbalanced node and <strong>B</strong> is its left child. After the rotation, what becomes A's new left child?</p>
+<div class="kc-options">
+<label><input type="radio" name="kc2" value="a"> A. B's left subtree (T₁)</label>
+<label><input type="radio" name="kc2" value="b"> B. B's right subtree (T₂)</label>
+<label><input type="radio" name="kc2" value="c"> C. A's original right subtree (T₃)</label>
+<label><input type="radio" name="kc2" value="d"> D. Node B itself</label>
+</div>
+<button class="kc-submit" onclick="checkKC('kc2','b')">Check</button>
+<div class="kc-feedback correct" id="kc2-correct">
+<strong>✓ Correct!</strong> B's right subtree (T₂) becomes A's new left child. This is the key pointer reassignment — T₂ is "adopted" by A because B no longer needs it on its right (A is now B's right child instead). Since T₂ &gt; B and T₂ &lt; A, placing it as A's left child preserves BST ordering.
+</div>
+<div class="kc-feedback incorrect" id="kc2-incorrect">
+<strong>✗ Not quite.</strong> When B rotates up to become the new root, A becomes B's right child. But A needs a left child — its original left child (B) has moved up. The subtree that fills this gap is <strong>B's right subtree (T₂)</strong>, which is guaranteed to contain values between B and A in BST ordering.
+</div>
+</div>
+
+<!-- KC 3: BST Property Preservation -->
+<div class="kc-question" id="kc3">
+<h4>Check 3: BST Property Preservation</h4>
+<p>Why do AVL rotations always preserve the BST inorder ordering of keys?</p>
+<div class="kc-options">
+<label><input type="radio" name="kc3" value="a"> A. Rotations sort the keys into the correct order</label>
+<label><input type="radio" name="kc3" value="b"> B. Rotations only reassign parent-child pointers without changing the relative ordering of any keys or subtrees</label>
+<label><input type="radio" name="kc3" value="c"> C. Rotations swap the values stored in nodes</label>
+<label><input type="radio" name="kc3" value="d"> D. Rotations rebuild the tree from scratch using inorder traversal</label>
+</div>
+<button class="kc-submit" onclick="checkKC('kc3','b')">Check</button>
+<div class="kc-feedback correct" id="kc3-correct">
+<strong>✓ Correct!</strong> This is the subtree preservation principle. Rotations only change which node is the parent of which — they never move keys between nodes, never copy values, and never reorder subtrees. The inorder sequence is determined by the left-root-right relationship, and rotations carefully maintain this by placing "orphaned" subtrees exactly where BST ordering requires them.
+</div>
+<div class="kc-feedback incorrect" id="kc3-incorrect">
+<strong>✗ Not quite.</strong> Rotations do <em>not</em> sort, swap values, or rebuild anything. They are purely structural operations that <strong>reassign child pointers</strong>. The key insight is that when a subtree is "displaced" by a rotation, it is placed at the only position where BST ordering allows it. No keys are ever moved between nodes — only the parent-child relationships change.
+</div>
+</div>
+
+<!-- KC 4: Full Rotation Execution -->
+<div class="kc-question" id="kc4">
+<h4>Check 4: Full Rotation Execution</h4>
+<p>Consider this AVL tree after inserting 40, 60, 50:</p>
+<div class="tree-diagram" role="img" aria-label="Tree with root 40, right child 60, 60 has left child 50. Node 40 has BF -2, node 60 has BF +1.">    40 (BF = −2)
+      \
+      60 (BF = +1)
+     /
+    50</div>
+<p>What is the correct result after the appropriate rotation(s)?</p>
+<div class="kc-options">
+<label><input type="radio" name="kc4" value="a"> A. Root=50, left=40, right=60</label>
+<label><input type="radio" name="kc4" value="b"> B. Root=60, left=50, right=40</label>
+<label><input type="radio" name="kc4" value="c"> C. Root=40, left=50, right=60</label>
+<label><input type="radio" name="kc4" value="d"> D. Root=60, left=40, right=50</label>
+</div>
+<button class="kc-submit" onclick="checkKC('kc4','a')">Check</button>
+<div class="kc-feedback correct" id="kc4-correct">
+<strong>✓ Correct!</strong> This is an <strong>RL case</strong>: node 40 has BF = −2 (right-heavy) and its right child 60 has BF = +1 (left-heavy). Step 1: right rotation around 60 makes 50 the right child of 40 with 60 as 50's right child. Step 2: left rotation around 40 makes 50 the new root with 40 on the left and 60 on the right. Inorder: 40, 50, 60 ✓
+</div>
+<div class="kc-feedback incorrect" id="kc4-incorrect">
+<strong>✗ Not quite.</strong> Identify the case: node 40 is right-heavy (BF = −2) and its right child 60 is left-heavy (BF = +1). Right then Left = <strong>RL case</strong>. Apply: (1) right rotation around 60 → straightens to 40-50-60 in a line, (2) left rotation around 40 → 50 becomes root. Result: root=50, left=40, right=60. Inorder check: 40 &lt; 50 &lt; 60 ✓
+</div>
+</div>
+
+<!-- ============================================================ -->
+<div class="callout callout-blue" style="margin-top:40px">
+<div class="callout-title">What's Next</div>
+In <strong>Module 16.3 – AVL Insertion and Deletion</strong>, you will put these rotation mechanics into the context of complete algorithms. You will trace multi-step insertion sequences that trigger rotations at different points in the tree, and learn why deletion can require multiple rotations while insertion requires at most one.
+</div>
+
+</div><!-- end container -->
+
+<script>
+// LR Step-by-step
+const lrSteps=[
+`<div class="tree-diagram" role="img" aria-label="LR initial state">INITIAL (LR imbalance):
+
+        <span class="highlight">A</span> (BF = +2)
+       / \\
+      <span class="highlight">B</span>   T₄
+     / \\
+    T₁  <span class="highlight">C</span> (B's BF = −1)
+       / \\
+      T₂  T₃</div>
+<p><strong>Diagnosis:</strong> A is left-heavy (+2), B is right-heavy (−1). Path goes Left then Right → LR case. Need double rotation.</p>`,
+`<div class="tree-diagram" role="img" aria-label="LR after step 1: left rotation on B, C becomes left child of A">AFTER STEP 1 (left rotation around B):
+
+        <span class="highlight">A</span> (BF = +2)
+       / \\
+      <span class="moved">C</span>   T₄
+     / \\
+    <span class="moved">B</span>   T₃
+   / \\
+  T₁  T₂</div>
+<p><strong>What happened:</strong> C moved up to replace B as A's left child. B became C's left child. T₂ (C's former left subtree) became B's right child. Now the heavy path is straight: A → C → B (LL pattern).</p>`,
+`<div class="tree-diagram" role="img" aria-label="LR after step 2: right rotation on A, C becomes new root">AFTER STEP 2 (right rotation around A):
+
+        <span class="moved">C</span> (new root, BF = 0)
+       / \\
+      B    A
+     / \\  / \\
+    T₁ T₂ T₃ T₄</div>
+<p><strong>Final result:</strong> C is the new root. B and A are its children. All four subtrees (T₁–T₄) are attached in BST order. Inorder: T₁–B–T₂–C–T₃–A–T₄ ✓</p>`
+];
+function showLRStep(i){document.getElementById('lr-step-display').innerHTML=lrSteps[i];}
+
+// RL Step-by-step
+const rlSteps=[
+`<div class="tree-diagram" role="img" aria-label="RL initial state">INITIAL (RL imbalance):
+
+    <span class="highlight">A</span> (BF = −2)
+   / \\
+  T₁  <span class="highlight">B</span>
+      / \\
+     <span class="highlight">C</span>  T₄   (B's BF = +1)
+    / \\
+   T₂  T₃</div>
+<p><strong>Diagnosis:</strong> A is right-heavy (−2), B is left-heavy (+1). Path goes Right then Left → RL case. Need double rotation.</p>`,
+`<div class="tree-diagram" role="img" aria-label="RL after step 1: right rotation on B, C becomes right child of A">AFTER STEP 1 (right rotation around B):
+
+    <span class="highlight">A</span> (BF = −2)
+   / \\
+  T₁  <span class="moved">C</span>
+      / \\
+     T₂  <span class="moved">B</span>
+         / \\
+        T₃  T₄</div>
+<p><strong>What happened:</strong> C moved up to replace B as A's right child. B became C's right child. T₃ (C's former right subtree) became B's left child. Now the heavy path is straight: A → C → B (RR pattern).</p>`,
+`<div class="tree-diagram" role="img" aria-label="RL after step 2: left rotation on A, C becomes new root">AFTER STEP 2 (left rotation around A):
+
+        <span class="moved">C</span> (new root, BF = 0)
+       / \\
+      A    B
+     / \\  / \\
+    T₁ T₂ T₃ T₄</div>
+<p><strong>Final result:</strong> C is the new root. A and B are its children. All four subtrees are attached in BST order. Inorder: T₁–A–T₂–C–T₃–B–T₄ ✓</p>`
+];
+function showRLStep(i){document.getElementById('rl-step-display').innerHTML=rlSteps[i];}
+
+// Visualizer tabs
+function switchVisTab(id){
+const tabs=document.querySelectorAll('[role="tab"]');
+const panels=document.querySelectorAll('[role="tabpanel"]');
+tabs.forEach(t=>{t.setAttribute('aria-selected','false')});
+panels.forEach(p=>{p.classList.remove('active')});
+document.getElementById('tab-vis-'+id).setAttribute('aria-selected','true');
+document.getElementById('panel-vis-'+id).classList.add('active');
+}
+
+// Knowledge checks
+function checkKC(qid,correct){
+const selected=document.querySelector('input[name="'+qid+'"]:checked');
+if(!selected){alert('Please select an answer.');return;}
+const cEl=document.getElementById(qid+'-correct');
+const iEl=document.getElementById(qid+'-incorrect');
+cEl.style.display='none';iEl.style.display='none';
+if(selected.value===correct){cEl.style.display='block';}
+else{iEl.style.display='block';}
+}
+
+// Keyboard support for tabs
+document.addEventListener('keydown',function(e){
+if(e.target.getAttribute('role')!=='tab')return;
+const tabs=Array.from(e.target.parentElement.querySelectorAll('[role="tab"]'));
+const idx=tabs.indexOf(e.target);
+let newIdx=-1;
+if(e.key==='ArrowRight')newIdx=(idx+1)%tabs.length;
+else if(e.key==='ArrowLeft')newIdx=(idx-1+tabs.length)%tabs.length;
+if(newIdx>=0){e.preventDefault();tabs[newIdx].focus();tabs[newIdx].click();}
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 16 Overview – AVL Trees and Hashing | CSC 240</title>
+<style>
+:root{--primary:#1a5276;--accent:#2980b9;--bg:#ffffff;--surface:#f4f7fa;--text:#212529;--border:#dee2e6;--focus:#f39c12;--success:#27ae60;--radius:6px;--shadow:0 2px 6px rgba(0,0,0,.08)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;font-size:1rem;line-height:1.6;color:var(--text);background:var(--bg)}
+a{color:var(--accent);text-decoration:underline}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+/* Sticky Nav */
+.top-nav{position:sticky;top:0;z-index:1000;background:var(--primary);padding:.6rem 1rem;display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;box-shadow:var(--shadow)}
+.top-nav a{color:#fff;text-decoration:none;font-size:.85rem;padding:.3rem .6rem;border-radius:var(--radius)}
+.top-nav a:hover,.top-nav a:focus-visible{background:rgba(255,255,255,.15)}
+.nav-title{color:#fff;font-weight:700;font-size:1rem;margin-right:auto}
+/* Layout */
+.container{max-width:56rem;margin:0 auto;padding:1.5rem 1rem 3rem}
+h1{font-size:1.6rem;color:var(--primary);margin-bottom:.25rem}
+h2{font-size:1.25rem;color:var(--primary);margin:2rem 0 .75rem;border-bottom:2px solid var(--accent);padding-bottom:.3rem}
+h3{font-size:1.05rem;margin:.75rem 0 .4rem}
+p,li{margin-bottom:.5rem}
+ul,ol{padding-left:1.4rem}
+.subtitle{font-size:.95rem;color:#555;margin-bottom:1.25rem}
+/* Cards */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:1rem;box-shadow:var(--shadow)}
+.card-highlight{border-left:4px solid var(--accent)}
+.card-tip{border-left:4px solid var(--success);background:#eafaf1}
+/* Collapsible */
+details{margin-bottom:.75rem}
+summary{cursor:pointer;font-weight:600;padding:.5rem .75rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);list-style:none;display:flex;align-items:center;gap:.4rem}
+summary::before{content:"▸";transition:transform .2s}
+details[open] summary::before{transform:rotate(90deg)}
+summary::-webkit-details-marker{display:none}
+details .detail-body{padding:.75rem 1rem;border:1px solid var(--border);border-top:none;border-radius:0 0 var(--radius) var(--radius);background:#fff}
+/* Checklist */
+.checklist{list-style:none;padding-left:0}
+.checklist li{position:relative;padding-left:2rem;margin-bottom:.6rem}
+.checklist input[type="checkbox"]{position:absolute;left:0;top:.25rem;width:1.1rem;height:1.1rem;accent-color:var(--accent)}
+.checklist label{cursor:pointer}
+/* Badge */
+.badge{display:inline-block;font-size:.75rem;font-weight:600;padding:.15rem .5rem;border-radius:3px;background:var(--accent);color:#fff;vertical-align:middle;margin-left:.35rem}
+.badge-optional{background:#8e44ad}
+/* Responsive */
+@media(max-width:600px){.top-nav{justify-content:center}.nav-title{width:100%;text-align:center;margin-bottom:.25rem}h1{font-size:1.3rem}h2{font-size:1.1rem}}
+</style>
+</head>
+<body>
+
+<!-- Sticky Navigation -->
+<nav class="top-nav" aria-label="Page navigation">
+<span class="nav-title">Week 16</span>
+<a href="#welcome">Welcome</a>
+<a href="#goals">Goals</a>
+<a href="#activities">Activities</a>
+<a href="#concepts">Key Concepts</a>
+<a href="#time">Time Tip</a>
+<a href="#ahead">Looking Ahead</a>
+</nav>
+
+<main class="container" role="main">
+
+<!-- Header -->
+<h1 id="welcome">Week 16: AVL Trees &amp; Hashing</h1>
+<p class="subtitle">Advanced Trees – AVL Trees and Hashing &nbsp;|&nbsp; CSC 240 – Discrete Structures &nbsp;|&nbsp; Spring 2026</p>
+
+<!-- Welcome & Week Focus -->
+<section aria-labelledby="welcome">
+<div class="card card-highlight">
+<p><strong>Welcome to Week 16!</strong> This week you'll complete the tree data structures arc by studying <em>AVL trees</em>—the elegant, self-balancing extension of the BSTs you built in Week 15—and then pivot to <em>hashing</em>, an entirely different strategy for storing and retrieving data in near-constant time. Together these topics give you the full toolkit for understanding how modern software chooses between tree-based and hash-based structures.</p>
+<p>This is a <strong>"Quiz only" week</strong>—no lab, no problem set, no discussion is due. Take advantage of the lighter assignment load to go deep on the module content, prepare thoroughly for Quiz 5, and make meaningful progress on your Final Project.</p>
+</div>
+</section>
+
+<!-- Learning Goals (collapsible) -->
+<section aria-labelledby="goals-heading">
+<h2 id="goals">Week 16 Learning Goals</h2>
+<details open>
+<summary id="goals-heading">By the end of this week you will be able to&hellip;</summary>
+<div class="detail-body">
+<ol>
+<li>Explain the AVL balance property and identify when a BST violates it after an insertion or deletion.</li>
+<li>Perform all four AVL rotation types (LL, RR, LR, RL) correctly on paper, identifying the pivot node and restructured subtrees.</li>
+<li>Trace AVL insertion and deletion operations on small trees, showing the tree state before and after each rotation.</li>
+<li>Analyze the time complexity of AVL tree operations and explain why guaranteed O(log n) height is preferable to unbalanced BSTs for worst-case scenarios.</li>
+<li>Design a hash function for a given key type and evaluate its quality based on distribution uniformity and collision minimization.</li>
+<li>Implement and compare collision resolution strategies—separate chaining and open addressing (linear probing, quadratic probing)—and trace insertions and lookups.</li>
+<li>Analyze hash table performance in terms of load factor and explain its relationship to collision frequency and resizing.</li>
+<li>Compare BST, AVL tree, and hash table data structures across time complexity, space usage, ordering support, and application suitability.</li>
+</ol>
+</div>
+</details>
+</section>
+
+<!-- Required Activities (interactive checklist) -->
+<section aria-labelledby="activities-heading">
+<h2 id="activities">Required Activities</h2>
+<p>Complete the following modules <strong>in order</strong> and take Quiz 5 before the posted deadline. Check items off as you finish them:</p>
+<ul class="checklist" aria-label="Weekly activity checklist">
+<li><input type="checkbox" id="m161"><label for="m161">Module 16.1 – The Balance Problem and AVL Property</label></li>
+<li><input type="checkbox" id="m162"><label for="m162">Module 16.2 – AVL Rotations</label></li>
+<li><input type="checkbox" id="m163"><label for="m163">Module 16.3 – AVL Insertion and Deletion</label></li>
+<li><input type="checkbox" id="m164"><label for="m164">Module 16.4 – Introduction to Hashing and Collision Resolution</label></li>
+<li><input type="checkbox" id="m165"><label for="m165">Module 16.5 – Performance Analysis and Data Structure Comparison</label></li>
+<li><input type="checkbox" id="q5"><label for="q5">Quiz 5 – Covers Weeks 14–16 <span class="badge">60 pts</span></label></li>
+</ul>
+<p><strong>Extra credit opportunities</strong> (not required):<br>
+Algorithm Visualization Video <span class="badge badge-optional">optional 10 pts</span> &nbsp;|&nbsp; LeetCode Challenge <span class="badge badge-optional">optional 10 pts</span></p>
+</section>
+
+<!-- Key Concepts & Themes -->
+<section aria-labelledby="concepts-heading">
+<h2 id="concepts">Key Concepts &amp; Themes</h2>
+<div class="card">
+<h3>AVL Trees (Modules 16.1–16.3)</h3>
+<ul>
+<li>Balance factor: BF(v) = height(v.left) − height(v.right)</li>
+<li>Four rotation types: LL (single right), RR (single left), LR (double left-right), RL (double right-left)</li>
+<li>AVL insertion algorithm (BST insert → update heights → rotate if needed)</li>
+<li>AVL deletion and cascading rotations</li>
+<li>Guaranteed O(log n) worst-case for search, insert, and delete</li>
+</ul>
+<h3>Hashing (Modules 16.4–16.5)</h3>
+<ul>
+<li>Hash functions: division method, polynomial hashing, quality criteria</li>
+<li>Collision resolution: separate chaining vs. open addressing (linear probing, quadratic probing, double hashing)</li>
+<li>Load factor α = n/m and its impact on performance</li>
+<li>Resizing / rehashing</li>
+</ul>
+<h3>Synthesis</h3>
+<ul>
+<li>BST vs. AVL vs. Hash Table tradeoff comparison (time, space, ordering, implementation complexity)</li>
+</ul>
+</div>
+<div class="card card-tip">
+<p><strong>Where does this fit?</strong> Week 15 gave you the BST foundation—this week adds the <em>balance guarantee</em> (AVL) and an entirely different paradigm (hashing). Next week (Week 17) you'll bring everything together in your Final Project, choosing and justifying the right data structure for your application.</p>
+</div>
+</section>
+
+<!-- Time Management Tip -->
+<section aria-labelledby="time-heading">
+<h2 id="time">Time Management Tip</h2>
+<div class="card card-tip">
+<p><strong>Suggested pacing (≈5 hours total):</strong></p>
+<ol>
+<li><strong>Early in the week:</strong> Complete Modules 16.1–16.3 (AVL trees). These build directly on Week 15's BST content while it's still fresh.</li>
+<li><strong>Mid-week:</strong> Complete Modules 16.4–16.5 (hashing and comparison).</li>
+<li><strong>End of week:</strong> Review all of Weeks 14–16 and take Quiz 5. Use any remaining time for Final Project development.</li>
+</ol>
+</div>
+</section>
+
+<!-- Looking Ahead -->
+<section aria-labelledby="ahead-heading">
+<h2 id="ahead">Looking Ahead – Week 17</h2>
+<div class="card">
+<p>Week 17 is your <strong>Final Project submission week</strong>. All components are due, including Component 4: Tree-Based Internal Structure (50 pts) and the Analysis Document (25 pts), where you justify your data structure choices—the BST/AVL/hash table comparison from Module 16.5 feeds directly into that justification.</p>
+<p>Use your Quiz 5 feedback to identify any remaining gaps before final submission. Start strong this week so you can finish strong next week!</p>
+</div>
+</section>
+
+</main>
+
+<script>
+// Persist checklist state in localStorage
+(function(){
+const KEY='csc240-wk16-checklist';
+const boxes=document.querySelectorAll('.checklist input[type="checkbox"]');
+const saved=JSON.parse(localStorage.getItem(KEY)||'{}');
+boxes.forEach(function(cb){if(saved[cb.id])cb.checked=true;cb.addEventListener('change',function(){const state={};boxes.forEach(function(b){state[b.id]=b.checked});localStorage.setItem(KEY,JSON.stringify(state))})});
+})();
+</script>
+</body>
+</html>

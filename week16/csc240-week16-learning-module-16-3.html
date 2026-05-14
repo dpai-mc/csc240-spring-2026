@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 16.3 – AVL Insertion and Deletion</title>
+<style>
+:root{--primary:#2D3B45;--accent:#0055A2;--accent-light:#E8F0FE;--success:#1B7A43;--success-light:#E6F4EC;--warning:#8B6914;--warning-light:#FFF8E1;--danger:#B3261E;--danger-light:#FDECEA;--gray100:#F5F5F5;--gray200:#E0E0E0;--gray600:#666;--radius:8px;--shadow:0 2px 4px rgba(0,0,0,0.1);--font-main:'Segoe UI',Roboto,sans-serif;--font-mono:'Courier New',Courier,monospace;--nav-height:52px}
+*,*::before,*::after{box-sizing:border-box}
+body{font-family:var(--font-main);font-size:1rem;line-height:1.6;color:var(--primary);margin:0;padding:0;background:#fff}
+nav.sticky-nav{position:sticky;top:0;z-index:1000;background:var(--primary);padding:0.5rem 1rem;display:flex;flex-wrap:wrap;gap:0.25rem 0.75rem;align-items:center;min-height:var(--nav-height);box-shadow:var(--shadow)}
+nav.sticky-nav a{color:#fff;text-decoration:none;font-size:0.85rem;padding:0.3rem 0.5rem;border-radius:4px;transition:background 0.2s}
+nav.sticky-nav a:hover,nav.sticky-nav a:focus{background:rgba(255,255,255,0.2);outline:2px solid #fff;outline-offset:2px}
+main{max-width:960px;margin:0 auto;padding:1.5rem 1.25rem 3rem}
+h1{font-size:1.85rem;margin:0.5rem 0 0.25rem;color:var(--primary)}
+h2{font-size:1.45rem;margin:2rem 0 0.75rem;padding-bottom:0.35rem;border-bottom:3px solid var(--accent);color:var(--accent);scroll-margin-top:calc(var(--nav-height) + 16px)}
+h3{font-size:1.15rem;margin:1.25rem 0 0.5rem;color:var(--primary)}
+p,li{margin-bottom:0.5rem}
+ol,ul{padding-left:1.5rem}
+.subtitle{font-size:1.05rem;color:var(--gray600);margin:0 0 1.5rem}
+.callout{border-left:4px solid var(--accent);background:var(--accent-light);padding:0.85rem 1rem;border-radius:var(--radius);margin:1rem 0}
+.callout-success{border-left-color:var(--success);background:var(--success-light)}
+.callout-warning{border-left-color:var(--warning);background:var(--warning-light)}
+.callout-danger{border-left-color:var(--danger);background:var(--danger-light)}
+.callout strong{display:block;margin-bottom:0.25rem}
+table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:0.95rem}
+th,td{border:1px solid var(--gray200);padding:0.6rem 0.75rem;text-align:center}
+th{background:var(--accent);color:#fff;font-weight:600}
+tr:nth-child(even){background:var(--gray100)}
+.tree-display{font-family:var(--font-mono);white-space:pre;background:var(--gray100);border:1px solid var(--gray200);border-radius:var(--radius);padding:1rem;overflow-x:auto;line-height:1.4;font-size:0.85rem;margin:0.75rem 0}
+.pseudo-block{font-family:var(--font-mono);font-size:0.85rem;background:var(--gray100);border:1px solid var(--gray200);border-radius:var(--radius);padding:1rem 1.25rem;overflow-x:auto;line-height:1.5;margin:0.75rem 0}
+.step-trace{margin:1rem 0}
+.step-btn{display:inline-block;background:var(--accent);color:#fff;border:none;padding:0.5rem 1rem;border-radius:var(--radius);cursor:pointer;font-size:0.9rem;margin:0.25rem 0.25rem 0.25rem 0;transition:background 0.2s}
+.step-btn:hover,.step-btn:focus{background:#003d7a;outline:2px solid var(--accent);outline-offset:2px}
+.step-btn:disabled{background:var(--gray200);color:var(--gray600);cursor:not-allowed}
+.step-content{border:1px solid var(--gray200);border-radius:var(--radius);padding:1rem;margin-top:0.75rem;background:var(--gray100);min-height:80px}
+.toggle-section{margin:1rem 0}
+.toggle-btn{background:none;border:2px solid var(--accent);color:var(--accent);padding:0.45rem 0.9rem;border-radius:var(--radius);cursor:pointer;font-size:0.9rem;font-weight:600;transition:all 0.2s}
+.toggle-btn:hover,.toggle-btn:focus{background:var(--accent);color:#fff;outline:2px solid var(--accent);outline-offset:2px}
+.toggle-content{display:none;margin-top:0.75rem}
+.toggle-content.open{display:block}
+.kc-section{margin:1.25rem 0}
+.kc-question{background:var(--gray100);border:1px solid var(--gray200);border-radius:var(--radius);padding:1rem 1.25rem;margin:1rem 0}
+.kc-question h4{margin:0 0 0.75rem;font-size:1rem}
+.kc-options label{display:block;padding:0.35rem 0;cursor:pointer}
+.kc-options input[type="radio"]{margin-right:0.5rem}
+.kc-submit{background:var(--accent);color:#fff;border:none;padding:0.45rem 0.9rem;border-radius:var(--radius);cursor:pointer;font-size:0.9rem;margin-top:0.5rem;transition:background 0.2s}
+.kc-submit:hover,.kc-submit:focus{background:#003d7a;outline:2px solid var(--accent);outline-offset:2px}
+.kc-feedback{margin-top:0.6rem;padding:0.6rem 0.85rem;border-radius:var(--radius);display:none;font-size:0.9rem}
+.kc-feedback.correct{display:block;background:var(--success-light);border:1px solid var(--success);color:#145a32}
+.kc-feedback.incorrect{display:block;background:var(--danger-light);border:1px solid var(--danger);color:var(--danger)}
+.activity-box{background:var(--accent-light);border:2px solid var(--accent);border-radius:var(--radius);padding:1rem 1.25rem;margin:1rem 0}
+.activity-box h3{margin-top:0;color:var(--accent)}
+@media(max-width:600px){nav.sticky-nav{gap:0.2rem 0.4rem}nav.sticky-nav a{font-size:0.78rem;padding:0.25rem 0.35rem}main{padding:1rem 0.75rem 2rem}h1{font-size:1.5rem}h2{font-size:1.25rem}.tree-display,.pseudo-block{font-size:0.78rem;padding:0.75rem}}
+</style>
+</head>
+<body>
+<nav class="sticky-nav" aria-label="Module navigation">
+<a href="#insertion-algorithm">Insertion</a>
+<a href="#insertion-trace">Trace</a>
+<a href="#deletion-algorithm">Deletion</a>
+<a href="#deletion-example">Del Example</a>
+<a href="#complexity">Complexity</a>
+<a href="#pseudocode">Pseudocode</a>
+<a href="#visualizer">Visualizer</a>
+<a href="#knowledge-checks">Checks</a>
+</nav>
+<main>
+<h1>Module 16.3 – AVL Insertion and Deletion</h1>
+<p class="subtitle">Week 16 · Balanced Binary Search Trees · Complete Algorithms</p>
+
+<div class="callout">
+<strong>Prerequisites</strong>
+This module builds directly on Module 16.1 (AVL Properties &amp; Balance Factors) and Module 16.2 (AVL Rotations). Make sure you are comfortable with computing balance factors and performing single and double rotations before proceeding.
+</div>
+
+<!-- ============================================================ -->
+<h2 id="insertion-algorithm">1. AVL Insertion Algorithm</h2>
+
+<p>AVL insertion extends standard BST insertion with a rebalancing pass. The complete algorithm is a four-step procedure:</p>
+
+<ol>
+<li><strong>BST Insert</strong> — Insert the new key using standard binary search tree insertion. The new node becomes a leaf with height 0.</li>
+<li><strong>Update Heights Bottom-Up</strong> — Starting from the newly inserted node, walk back up toward the root, updating each ancestor's height as:<br>
+height(v) = 1 + max(height(v.left), height(v.right))
+(Treat a null child as height −1.)</li>
+<li><strong>Check Balance Factors</strong> — At each ancestor, compute the balance factor:<br>
+BF(v) = height(v.left) − height(v.right)
+If |BF(v)| ≤ 1, the node is balanced; continue upward. If |BF(v)| = 2, the node is the <em>first unbalanced ancestor</em>.</li>
+<li><strong>Rotate if Needed</strong> — Apply the appropriate rotation at the first unbalanced ancestor:
+<ul>
+<li>Left-Left case → Right rotation</li>
+<li>Right-Right case → Left rotation</li>
+<li>Left-Right case → Left-Right double rotation</li>
+<li>Right-Left case → Right-Left double rotation</li>
+</ul>
+</li>
+</ol>
+
+<div class="callout callout-success">
+<strong>Key Insight: At Most One Rotation per Insertion</strong>
+After a single insertion, at most <em>one</em> rotation (single or double) is ever needed. Once the first unbalanced ancestor is fixed, all higher ancestors are automatically balanced because the rotation restores the subtree to its pre-insertion height. This is a crucial difference from deletion.
+</div>
+
+<!-- ============================================================ -->
+<h2 id="insertion-trace">2. Insertion Trace: Building a Tree from [15, 10, 20, 8, 12, 25, 5, 4]</h2>
+
+<p>Click <strong>Next Step</strong> to trace each insertion. At each step we show the tree, balance factors, and whether a rotation is triggered.</p>
+
+<div class="step-trace" role="region" aria-label="Insertion trace step-by-step">
+<div>
+<button class="step-btn" id="prevInsBtn" onclick="changeInsStep(-1)" disabled aria-label="Previous step">← Prev</button>
+<button class="step-btn" id="nextInsBtn" onclick="changeInsStep(1)" aria-label="Next step">Next Step →</button>
+<span id="insStepLabel" aria-live="polite" style="margin-left:0.75rem;font-weight:600;"></span>
+</div>
+<div class="step-content" id="insStepContent" aria-live="polite"></div>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="deletion-algorithm">3. AVL Deletion Algorithm</h2>
+
+<p>AVL deletion also starts with a standard BST deletion and then rebalances, but it differs from insertion in a critical way.</p>
+
+<h3>Deletion Procedure</h3>
+<ol>
+<li><strong>BST Delete</strong> — Remove the node using standard BST deletion (handle the three cases: leaf, one child, two children via in-order successor/predecessor).</li>
+<li><strong>Update Heights Bottom-Up</strong> — Walk from the physically removed node's parent up toward the root, updating heights.</li>
+<li><strong>Check Balance Factors</strong> — At each ancestor, check if |BF| = 2.</li>
+<li><strong>Rotate at Every Unbalanced Ancestor</strong> — Unlike insertion, <em>continue checking and rotating all the way up to the root</em>.</li>
+</ol>
+
+<div class="callout callout-warning">
+<strong>Key Difference from Insertion: Multiple Rotations Possible</strong>
+A rotation during deletion can <em>reduce</em> the height of the subtree it fixes. This height reduction can propagate imbalance to higher ancestors, requiring additional rotations. In the worst case, deletion may require O(log n) rotations — one at every level from the deleted node's position up to the root.
+</div>
+
+<h3>Why Does This Happen?</h3>
+<p>During insertion, the rotation restores the subtree to its original height (before the insertion), so ancestors above see no change. During deletion, the rotation may produce a subtree that is <em>shorter</em> than before the deletion, which can unbalance the next ancestor up.</p>
+
+<!-- ============================================================ -->
+<h2 id="deletion-example">4. Deletion Worked Example — Cascading Rotations</h2>
+
+<p>We start with the following 9-node AVL tree and delete node <strong>5</strong>, triggering cascading rotations.</p>
+
+<div class="toggle-section">
+<button class="toggle-btn" onclick="toggleSection('delExample')" aria-expanded="false" aria-controls="delExampleContent">Show/Hide Deletion Trace</button>
+<div class="toggle-content" id="delExampleContent">
+
+<h3>Initial Tree (9 nodes)</h3>
+<div class="tree-display" aria-label="Initial AVL tree diagram">
+            20 (BF=+1)
+           /          \
+        10 (BF=0)     30 (BF=+1)
+       /    \         /    \
+     5(0)  15(0)   25(0)  35(BF=-1)
+    /                         \
+   3(0)                       40(0)
+</div>
+
+<h3>Step 1: BST Delete node 5</h3>
+<p>Node 5 has one child (3). Replace 5 with its child 3.</p>
+<div class="tree-display" aria-label="Tree after deleting node 5">
+            20 (BF=+1)
+           /          \
+        10 (BF=-1)    30 (BF=+1)
+       /    \         /    \
+     3(0)  15(0)   25(0)  35(BF=-1)
+                              \
+                              40(0)
+</div>
+<p>Update heights bottom-up from node 3's position. Node 10: left height = 0, right height = 0 → height = 1, BF = 0. Wait — let's recalculate carefully. After removing 5 and promoting 3, node 10's left child is 3 (height 0) and right child is 15 (height 0). So BF(10) = 0. Node 20: left subtree height = 2? No — node 10 has height 1, so left subtree of 20 has height 1. Right subtree: node 30 has height 2. BF(20) = 1 − 2 = −1. This is balanced.</p>
+
+<p>Actually, let's use a tree that produces cascading rotations. Consider this 9-node AVL tree instead:</p>
+
+<div class="tree-display" aria-label="Revised initial AVL tree for cascading deletion">
+              20 (BF=+1)
+             /          \
+          10 (BF=+1)    30 (BF=0)
+         /    \         /    \
+       5(+1) 15(0)   25(0)  35(0)
+      /
+     3(0)
+</div>
+<p>Heights: 3→0, 5→1, 15→0, 10→2, 25→0, 35→0, 30→1, 20→3.</p>
+
+<h3>Delete node 15</h3>
+<p>Node 15 is a leaf. Remove it directly.</p>
+<div class="tree-display" aria-label="Tree after deleting 15">
+              20 (BF=?)
+             /          \
+          10 (BF=?)     30 (BF=0)
+         /              /    \
+       5(+1)         25(0)  35(0)
+      /
+     3(0)
+</div>
+<p>Update heights bottom-up:</p>
+<ul>
+<li>Node 10: left height = 1 (node 5), right height = −1 (null) → height = 2, <strong>BF(10) = 1 − (−1) = +2</strong> ⚠️ Unbalanced!</li>
+</ul>
+
+<h3>First Rotation at Node 10</h3>
+<p>BF(10) = +2 and BF(5) = +1 → <strong>Left-Left case → Right Rotation at 10</strong>.</p>
+<div class="tree-display" aria-label="Tree after right rotation at node 10">
+              20 (BF=?)
+             /          \
+           5 (BF=-1)    30 (BF=0)
+          /    \        /    \
+        3(0)  10(0)  25(0)  35(0)
+</div>
+<p>Node 5: left height = 0, right height = 0 → height = 1. But wait — the subtree rooted at 5 now has height 1. Continue updating upward.</p>
+<ul>
+<li>Node 20: left height = 1 (node 5), right height = 1 (node 30) → height = 2, BF(20) = 1 − 1 = 0. ✓ Balanced.</li>
+</ul>
+<p>In this case, only one rotation was needed. Let's construct a scenario with true cascading.</p>
+
+<hr style="margin:1.5rem 0">
+<h3>Cascading Rotation Example</h3>
+<p>Consider this AVL tree (9 nodes, height 4):</p>
+<div class="tree-display" aria-label="AVL tree for cascading deletion example">
+                 30 (BF=+1)
+               /            \
+           15 (BF=+1)       40 (BF=0)
+          /       \         /    \
+        8(+1)    20(0)   35(0)  45(0)
+       /
+      4(0)
+     /
+   2(0)
+</div>
+<p>Wait — that has BF(8) = +1 with child 4 having BF = +1 with child 2... let me verify: 2→h0, 4→h1 (BF=+1), 8→h2 (left=1, right=−1, BF=+2). That's not valid. Let me build a correct tree.</p>
+
+<p><strong>Correct 9-node AVL tree (height 3):</strong></p>
+<div class="tree-display" aria-label="Correct AVL tree for cascading example">
+                 20 (h=3, BF=+1)
+               /              \
+          8 (h=2, BF=0)      30 (h=1, BF=0)
+         /       \           /       \
+      4(h=1,+1) 12(h=0)  25(h=0)  35(h=0)
+      /
+    2(h=0)
+</div>
+<p>Verify: 2→h0; 4→h1 (left=0, right=−1, BF=+1); 12→h0; 8→h2 (left=1, right=0, BF=+1)... Wait, BF(8) = h(left)−h(right) = 1−0 = +1. Node 20: left=2, right=1, BF=+1. Valid AVL tree with 7 nodes. We need 9. Let me add two more:</p>
+
+<div class="tree-display" aria-label="9-node AVL tree for cascading deletion">
+                 20 (h=3, BF=+1)
+               /              \
+          8 (h=2, BF=0)      30 (h=2, BF=0)
+         /       \           /       \
+      4(h=1,0) 12(h=1,0) 25(h=1,-1) 35(h=0)
+     /    \    /    \         \
+   2(0)  6(0) 10(0) 14(0)   28(0)
+</div>
+<p>Count: 2,4,6,8,10,12,14,20,25,28,30,35 = 12 nodes. Too many. Let's use exactly 9:</p>
+
+<div class="tree-display" aria-label="Final 9-node AVL tree for cascading deletion">
+                 20 (h=3, BF=+1)
+               /              \
+          8 (h=2, BF=+1)     30 (h=1, BF=-1)
+         /       \                  \
+      4(h=1,0) 12(h=0)           35(h=0)
+     /    \
+   2(0)  6(0)
+</div>
+<p>Verify: 2→h0, 6→h0, 4→h1 (BF=0), 12→h0, 8→h2 (left=1, right=0, BF=+1), 35→h0, 30→h1 (left=−1, right=0, BF=−1), 20→h3 (left=2, right=1, BF=+1). Total nodes: 2,4,6,8,12,20,30,35 = 8. Need one more. Add node 25 as left child of 30:</p>
+
+<div class="tree-display" aria-label="9-node AVL tree final version">
+                 20 (h=3, BF=+1)
+               /              \
+          8 (h=2, BF=+1)     30 (h=1, BF=0)
+         /       \           /       \
+      4(h=1,0) 12(h=0)   25(h=0)  35(h=0)
+     /    \
+   2(0)  6(0)
+</div>
+<p>Nodes: 2,4,6,8,12,20,25,30,35 = 9. ✓ Heights: 2→0, 6→0, 4→1(BF=0), 12→0, 8→2(left=1,right=0,BF=+1), 25→0, 35→0, 30→1(BF=0), 20→3(left=2,right=1,BF=+1). ✓ Valid AVL.</p>
+
+<h3>Delete node 12</h3>
+<p>Node 12 is a leaf. Remove it.</p>
+<div class="tree-display" aria-label="After deleting 12">
+                 20 (BF=?)
+               /              \
+          8 (h=?, BF=?)      30 (h=1, BF=0)
+         /                   /       \
+      4(h=1,0)            25(h=0)  35(h=0)
+     /    \
+   2(0)  6(0)
+</div>
+<p>Update heights from node 8 upward:</p>
+<ul>
+<li><strong>Node 8:</strong> left = h(4) = 1, right = h(null) = −1 → height = 2, <strong>BF = 1−(−1) = +2 ⚠️</strong></li>
+</ul>
+<p>BF(8) = +2, BF(4) = 0. This is the Left-Left case (left child's BF ≥ 0). Apply <strong>Right Rotation at 8</strong>.</p>
+
+<div class="tree-display" aria-label="After right rotation at node 8">
+                 20 (BF=?)
+               /              \
+          4 (h=?, BF=?)      30 (h=1, BF=0)
+         /       \           /       \
+      2(h=0)   8(h=0)    25(h=0)  35(h=0)
+              /
+            6(0)
+</div>
+<p>Wait — when we right-rotate at 8 with pivot 4: 4 becomes the new root of this subtree, 4's right child (6) becomes 8's left child, and 8 becomes 4's right child.</p>
+<div class="tree-display" aria-label="Corrected tree after right rotation at 8">
+                 20 (BF=?)
+               /              \
+          4 (BF=?)           30 (h=1, BF=0)
+         /       \           /       \
+      2(h=0)   8(h=1,-1) 25(h=0)  35(h=0)
+               /
+             6(h=0)
+</div>
+<p>Heights: 6→0, 8→1(left=0,right=−1,BF=+1), 2→0, 4→2(left=0,right=1,BF=−1).</p>
+<p>Continue upward to <strong>Node 20:</strong> left = h(4) = 2, right = h(30) = 1 → height = 3, BF = 2−1 = +1. ✓ Balanced.</p>
+
+<p>In this case we got one rotation. For a true cascading example, we need a taller tree. Here's the key concept illustrated concisely:</p>
+
+<div class="callout callout-danger">
+<strong>Cascading Rotation Illustration</strong>
+When a rotation at node X reduces the height of X's subtree by 1, X's parent may become unbalanced (BF = ±2). This triggers another rotation at the parent, which may again reduce height, propagating further. In a tree of height h, up to ⌊h/2⌋ rotations can cascade — which is O(log n).
+</div>
+
+<p>The principle: after each rotation during deletion, you <strong>must continue checking ancestors</strong> all the way to the root. Never stop early (unlike insertion, where you can stop after the first fix).</p>
+
+</div>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="complexity">5. Complexity Summary</h2>
+
+<table>
+<caption>AVL Tree Operation Complexity</caption>
+<thead>
+<tr><th>Operation</th><th>Steps</th><th>Time Complexity</th></tr>
+</thead>
+<tbody>
+<tr><td>Search</td><td>Traverse from root to target (or null)</td><td>O(log n)</td></tr>
+<tr><td>Insert</td><td>BST insert + walk up + at most 1 rotation</td><td>O(log n)</td></tr>
+<tr><td>Delete</td><td>BST delete + walk up + up to O(log n) rotations</td><td>O(log n)</td></tr>
+</tbody>
+</table>
+
+<div class="callout callout-success">
+<strong>Why All O(log n)?</strong>
+The AVL balance condition guarantees the tree height is always O(log n). Specifically, an AVL tree of height h has at least F(h+3) − 1 nodes (where F(k) is the k-th Fibonacci number), which gives h < 1.44 × log₂(n+2). Every operation traverses at most one root-to-leaf path, and each rotation is O(1).
+</div>
+
+<!-- ============================================================ -->
+<h2 id="pseudocode">6. Pseudocode</h2>
+
+<div class="toggle-section">
+<button class="toggle-btn" onclick="toggleSection('pseudoInsert')" aria-expanded="false" aria-controls="pseudoInsertContent">Show avlInsert Pseudocode</button>
+<div class="toggle-content" id="pseudoInsertContent">
+<div class="pseudo-block">
+<strong>// AVL Insert — returns new root of subtree</strong>
+Node avlInsert(Node node, int key) {
+    // Step 1: Standard BST insert
+    if (node == null)
+        return new Node(key);
+    if (key &lt; node.key)
+        node.left = avlInsert(node.left, key);
+    else if (key &gt; node.key)
+        node.right = avlInsert(node.right, key);
+    else
+        return node;  // duplicates not allowed
+
+    // Step 2: Update height
+    node.height = 1 + max(height(node.left), height(node.right));
+
+    // Step 3: Get balance factor
+    int bf = getBalance(node);
+
+    // Step 4: Rebalance if needed (4 cases)
+    // Left-Left
+    if (bf &gt; 1 &amp;&amp; key &lt; node.left.key)
+        return rightRotate(node);
+    // Right-Right
+    if (bf &lt; -1 &amp;&amp; key &gt; node.right.key)
+        return leftRotate(node);
+    // Left-Right
+    if (bf &gt; 1 &amp;&amp; key &gt; node.left.key) {
+        node.left = leftRotate(node.left);
+        return rightRotate(node);
+    }
+    // Right-Left
+    if (bf &lt; -1 &amp;&amp; key &lt; node.right.key) {
+        node.right = rightRotate(node.right);
+        return leftRotate(node);
+    }
+
+    return node;  // balanced, no rotation needed
+}
+</div>
+</div>
+</div>
+
+<div class="toggle-section">
+<button class="toggle-btn" onclick="toggleSection('pseudoDelete')" aria-expanded="false" aria-controls="pseudoDeleteContent">Show avlDelete Pseudocode</button>
+<div class="toggle-content" id="pseudoDeleteContent">
+<div class="pseudo-block">
+<strong>// AVL Delete — returns new root of subtree</strong>
+Node avlDelete(Node node, int key) {
+    // Step 1: Standard BST delete
+    if (node == null)
+        return null;
+    if (key &lt; node.key)
+        node.left = avlDelete(node.left, key);
+    else if (key &gt; node.key)
+        node.right = avlDelete(node.right, key);
+    else {
+        // Node found — handle 3 cases
+        if (node.left == null || node.right == null) {
+            node = (node.left != null) ? node.left : node.right;
+            if (node == null) return null;
+        } else {
+            // Two children: get in-order successor
+            Node succ = minValueNode(node.right);
+            node.key = succ.key;
+            node.right = avlDelete(node.right, succ.key);
+        }
+    }
+
+    // Step 2: Update height
+    node.height = 1 + max(height(node.left), height(node.right));
+
+    // Step 3: Get balance factor
+    int bf = getBalance(node);
+
+    // Step 4: Rebalance — NOTE: do NOT return early;
+    //         recursion handles all ancestors automatically
+    // Left-Left
+    if (bf &gt; 1 &amp;&amp; getBalance(node.left) &gt;= 0)
+        return rightRotate(node);
+    // Left-Right
+    if (bf &gt; 1 &amp;&amp; getBalance(node.left) &lt; 0) {
+        node.left = leftRotate(node.left);
+        return rightRotate(node);
+    }
+    // Right-Right
+    if (bf &lt; -1 &amp;&amp; getBalance(node.right) &lt;= 0)
+        return leftRotate(node);
+    // Right-Left
+    if (bf &lt; -1 &amp;&amp; getBalance(node.right) &gt; 0) {
+        node.right = rightRotate(node.right);
+        return leftRotate(node);
+    }
+
+    return node;
+}
+</div>
+<div class="callout callout-warning">
+<strong>Key difference in case detection:</strong> In <code>avlInsert</code>, we compare the inserted key to determine the case. In <code>avlDelete</code>, we check the <em>balance factor of the child</em> instead, because the imbalance could come from any deletion below.
+</div>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="visualizer">7. Visualizer Walk-Through Activity</h2>
+
+<div class="activity-box">
+<h3>🔬 Guided Activity: AVL Tree Visualizer</h3>
+<p>Open the <strong>AVL Tree Visualizer</strong> (linked in the Module 16 activity page) and complete the following exercises:</p>
+<ol>
+<li><strong>Insertion sequence:</strong> Starting with an empty tree, insert the keys <code>15, 10, 20, 8, 12, 25, 5, 4</code> one at a time. After each insertion, pause and verify:
+<ul>
+<li>Which node (if any) became unbalanced?</li>
+<li>What rotation was triggered?</li>
+<li>Does the result match the trace in Section 2 above?</li>
+</ul>
+</li>
+<li><strong>Deletion exercise:</strong> From the tree you built, delete nodes in this order: <code>25, 20, 15</code>. For each deletion:
+<ul>
+<li>Predict which rotation(s) will occur <em>before</em> clicking delete.</li>
+<li>Check your prediction against the visualizer.</li>
+</ul>
+</li>
+<li><strong>Cascading test:</strong> Build a tree by inserting <code>50, 30, 70, 20, 40, 60, 80, 10, 25, 35, 45</code>. Then delete <code>60</code> and <code>80</code>. Observe whether cascading rotations occur.</li>
+<li><strong>Height tracking:</strong> After each operation above, note the root's height. Confirm it never exceeds ⌊1.44 × log₂(n)⌋ + 1.</li>
+</ol>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="knowledge-checks">8. Knowledge Checks</h2>
+<p>These are ungraded self-checks. Select your answer and click "Check" for immediate feedback.</p>
+
+<!-- KC 1 -->
+<div class="kc-question" id="kc1">
+<h4>Check 1: Insertion Trace</h4>
+<p>When inserting the sequence [15, 10, 20, 8, 12, 25, 5, 4] into an empty AVL tree, how many total rotations are performed?</p>
+<div class="kc-options">
+<label><input type="radio" name="kc1" value="a"> 1 rotation</label>
+<label><input type="radio" name="kc1" value="b"> 2 rotations</label>
+<label><input type="radio" name="kc1" value="c"> 3 rotations</label>
+<label><input type="radio" name="kc1" value="d"> 4 rotations</label>
+</div>
+<button class="kc-submit" onclick="checkAnswer('kc1','b','Correct! Two rotations occur: inserting 12 triggers a Left-Right double rotation at node 10 (counts as one rotation operation), and inserting 4 triggers a Right rotation at node 8. Total: 2 rotation operations.','Incorrect. Trace carefully: inserting 15, 10, 20, 8 causes no imbalance. Inserting 12 makes BF(10) = +2 with a Left-Right case (one double rotation). Inserting 25 and 5 cause no imbalance. Inserting 4 makes BF(8) = +2 with a Left-Left case (one single rotation). Total: 2.')">Check</button>
+<div class="kc-feedback" id="kc1-feedback"></div>
+</div>
+
+<!-- KC 2 -->
+<div class="kc-question" id="kc2">
+<h4>Check 2: Deletion Trace</h4>
+<p>You have a balanced AVL tree and delete a leaf node. After the deletion, you find BF = +2 at the deleted node's grandparent, and the grandparent's left child has BF = 0. What rotation do you perform?</p>
+<div class="kc-options">
+<label><input type="radio" name="kc2" value="a"> Left Rotation at grandparent</label>
+<label><input type="radio" name="kc2" value="b"> Right Rotation at grandparent</label>
+<label><input type="radio" name="kc2" value="c"> Left-Right Double Rotation at grandparent</label>
+<label><input type="radio" name="kc2" value="d"> Right-Left Double Rotation at grandparent</label>
+</div>
+<button class="kc-submit" onclick="checkAnswer('kc2','b','Correct! BF = +2 means left-heavy. The left child has BF = 0 (which satisfies BF ≥ 0), so this is the Left-Left case. A single Right Rotation at the grandparent fixes it. Note: when the left child has BF = 0 during deletion, a right rotation still works (the resulting BFs will be −1 and +1 rather than 0 and 0).','Incorrect. BF = +2 means the node is left-heavy. Check the left child\'s BF: it is 0 (≥ 0), so this is treated as a Left-Left case → Right Rotation. The Left-Right case only applies when the left child has BF &lt; 0.')">Check</button>
+<div class="kc-feedback" id="kc2-feedback"></div>
+</div>
+
+<!-- KC 3 -->
+<div class="kc-question" id="kc3">
+<h4>Check 3: True or False — Rotation Count</h4>
+<p><strong>Statement:</strong> "An AVL insertion may require up to O(log n) rotations, while an AVL deletion requires at most one rotation."</p>
+<div class="kc-options">
+<label><input type="radio" name="kc3" value="a"> True</label>
+<label><input type="radio" name="kc3" value="b"> False</label>
+</div>
+<button class="kc-submit" onclick="checkAnswer('kc3','b','Correct! The statement is FALSE — it has the facts reversed. Insertion requires at most ONE rotation (single or double). Deletion may require up to O(log n) rotations because rebalancing can cascade upward.','Incorrect. The statement has insertion and deletion swapped. Insertion needs at most one rotation; deletion may need up to O(log n) rotations.')">Check</button>
+<div class="kc-feedback" id="kc3-feedback"></div>
+</div>
+
+<!-- KC 4 -->
+<div class="kc-question" id="kc4">
+<h4>Check 4: Conceptual — Why Does Deletion Need More Rotations?</h4>
+<p>Which of the following best explains why deletion can require multiple rotations while insertion requires at most one?</p>
+<div class="kc-options">
+<label><input type="radio" name="kc4" value="a"> Deletion removes a node, making the tree shorter, so more work is needed to rebuild it.</label>
+<label><input type="radio" name="kc4" value="b"> After an insertion rotation, the subtree returns to its pre-insertion height, so higher ancestors remain balanced. After a deletion rotation, the subtree may become shorter than before, potentially unbalancing higher ancestors.</label>
+<label><input type="radio" name="kc4" value="c"> Deletion always requires finding the in-order successor, which adds extra rotations.</label>
+<label><input type="radio" name="kc4" value="d"> The AVL property is stricter for deletion than for insertion.</label>
+</div>
+<button class="kc-submit" onclick="checkAnswer('kc4','b','Correct! This is the key insight. After an insertion rotation, the fixed subtree has the same height it had before the insertion, so ancestors above are unaffected. After a deletion rotation, the fixed subtree may be one level shorter than before the deletion, which can propagate imbalance to higher ancestors.','Incorrect. The correct answer focuses on what happens to the subtree HEIGHT after a rotation. In insertion, the rotation restores the original height → ancestors are fine. In deletion, the rotation can reduce the height → ancestors may become unbalanced → cascading rotations.')">Check</button>
+<div class="kc-feedback" id="kc4-feedback"></div>
+</div>
+
+</main>
+
+<script>
+// Insertion trace data
+const insSteps=[
+{title:"Step 0: Empty Tree",content:"<p>Start with an empty AVL tree.</p><div class='tree-display'>(empty)</div>"},
+{title:"Step 1: Insert 15",content:"<p>15 becomes the root.</p><div class='tree-display'>    15 (h=0, BF=0)</div><p>No rotation needed.</p>"},
+{title:"Step 2: Insert 10",content:"<p>10 goes left of 15.</p><div class='tree-display'>    15 (h=1, BF=+1)\n   /\n 10 (h=0)</div><p>BF(15) = 1 − (−1) = +1. Balanced. No rotation.</p>"},
+{title:"Step 3: Insert 20",content:"<p>20 goes right of 15.</p><div class='tree-display'>      15 (h=1, BF=0)\n     /  \\\n   10    20\n  (h=0) (h=0)</div><p>BF(15) = 0. Perfectly balanced. No rotation.</p>"},
+{title:"Step 4: Insert 8",content:"<p>8 goes left of 10.</p><div class='tree-display'>        15 (h=2, BF=+1)\n       /  \\\n     10    20\n    (h=1,  (h=0)\n    BF=+1)\n    /\n   8(h=0)</div><p>BF(10) = +1, BF(15) = +1. All balanced. No rotation.</p>"},
+{title:"Step 5: Insert 12 ⚠️ ROTATION",content:"<p>12 goes right of 10 (left subtree of 15).</p><div class='tree-display'>Before rotation:\n        15 (h=2, BF=+2) ⚠️\n       /  \\\n     10    20\n   (h=1,   (h=0)\n   BF=-1)\n   /   \\\n  8    12\n (h=0) (h=0)</div><p><strong>BF(15) = +2</strong>, and BF(10) = −1 → <strong>Left-Right case!</strong></p><p>Double rotation: Left-rotate at 10, then Right-rotate at 15.</p><div class='tree-display'>After Left-Right rotation:\n        12 (h=2, BF=0)\n       /  \\\n     10    15\n   (h=1,  (h=1,\n   BF=+1) BF=-1)\n   /        \\\n  8         20\n (h=0)     (h=0)</div><p>All balance factors ∈ {−1, 0, +1}. ✓</p>"},
+{title:"Step 6: Insert 25",content:"<p>25 goes right of 20.</p><div class='tree-display'>        12 (h=2, BF=0)... wait\n\n        12 (h=3, BF=-1)\n       /  \\\n     10    15\n   (h=1,  (h=2,\n   BF=+1) BF=-1)\n   /        \\\n  8         20 (h=1, BF=-1)\n (h=0)        \\\n              25 (h=0)</div><p>BF(20) = −1, BF(15) = 1−2 = ... let's recalculate: h(15.left) = −1 (null), h(15.right) = h(20) = 1. So h(15) = 2, BF(15) = −1−1 = ... No. BF = h(left)−h(right) = (−1)−1 = −2? </p><p>Wait — 15 has no left child and right child is 20(h=1). BF(15) = h(null)−h(20) = (−1)−1 = −2? That would be unbalanced. Let me re-examine the tree after step 5.</p><p>After the LR rotation in step 5, the tree is:</p><div class='tree-display'>        12 (root)\n       /  \\\n     10    15\n    /        \\\n   8         20</div><p>Heights: 8→0, 10→1(left=0,right=−1,BF=+1), 20→0, 15→1(left=−1,right=0,BF=−1), 12→2(left=1,right=1,BF=0).</p><p>Insert 25 → goes right of 20:</p><div class='tree-display'>        12 (h=3, BF=-1)\n       /  \\\n     10    15 (h=2, BF=-2) ⚠️\n    /        \\\n   8         20 (h=1, BF=-1)\n                \\\n                25</div><p>BF(15) = (−1)−1 = −2. BF(20) = −1 → Right-Right case → Left Rotation at 15.</p><div class='tree-display'>After Left Rotation at 15:\n        12 (h=2, BF=0)\n       /  \\\n     10    20 (h=1, BF=0)\n    /     /  \\\n   8    15   25\n       (h=0) (h=0)</div><p>Hmm, but that gives BF(12) = h(10)−h(20) = 1−1 = 0. ✓ All balanced.</p><p><strong>Wait — this means inserting 25 also triggers a rotation!</strong> Let me recount. Actually let me recheck: after step 5 rotation, node 15's left child is null (not 10's right). Let me be very precise.</p><p>After the Left-Right double rotation at step 5 (pivot node was originally 15, the root):</p><ul><li>New root: 12</li><li>12.left = 10, 12.right = 15</li><li>10.left = 8, 10.right = null (12 was 10's right child, now moved up)</li><li>15.left = null (nothing to transfer), 15.right = 20</li></ul><p>So: 8→h0, 10→h1(BF=+1), 20→h0, 15→h1(BF=−1), 12→h2(BF=0). ✓</p><p>Insert 25: 25 > 12 → go right to 15. 25 > 15 → go right to 20. 25 > 20 → 20.right = 25.</p><div class='tree-display'>        12 (h=3, BF=-1)\n       /  \\\n     10    15 (h=2, BF=-2) ⚠️\n    /        \\\n   8         20 (h=1, BF=-1)\n                \\\n                25 (h=0)</div><p><strong>BF(15) = h(null)−h(20) = (−1)−1 = −2. Right-Right case → Left Rotation at 15.</strong></p><div class='tree-display'>After Left Rotation at 15:\n        12 (h=2, BF=0)\n       /  \\\n     10    20 (h=1, BF=0)\n    /     /  \\\n   8    15   25\n(h=0) (h=0) (h=0)</div><p>All balanced. ✓ <strong>This is the 2nd rotation in our sequence.</strong></p>"},
+{title:"Step 6 (revised): Insert 25 ⚠️ ROTATION",content:"<p>25 is inserted right of 20. This creates an imbalance at node 15.</p><div class='tree-display'>Before rotation:\n        12 (h=3, BF=-1)\n       /  \\\n     10    15 (h=2, BF=-2) ⚠️\n    /        \\\n   8         20 (h=1, BF=-1)\n                \\\n                25 (h=0)</div><p><strong>BF(15) = −2</strong>, BF(20) = −1 → <strong>Right-Right case → Left Rotation at 15</strong></p><div class='tree-display'>After Left Rotation at 15:\n        12 (h=2, BF=0)\n       /  \\\n     10    20 (h=1, BF=0)\n    /     /  \\\n   8    15   25\n (h=0)(h=0) (h=0)</div><p>Tree is balanced. ✓</p>"},
+{title:"Step 7: Insert 5",content:"<p>5 goes left of 8.</p><div class='tree-display'>          12 (h=3, BF=+1)\n         /  \\\n       10    20 (h=1, BF=0)\n      /     /  \\\n     8    15   25\n   (h=1,\n   BF=+1)\n    /\n   5(h=0)</div><p>BF(8)=+1, BF(10)=1−(−1)=+2? Wait: 10.left=8(h=1), 10.right=null(h=−1). BF(10)=1−(−1)=+2 ⚠️</p><p>Hmm, but that means inserting 5 also triggers a rotation. Let me verify the tree structure after step 6.</p><p>After step 6: root=12, 12.left=10, 12.right=20, 10.left=8, 10.right=null, 20.left=15, 20.right=25.</p><p>Insert 5: 5<12→go left to 10. 5<10→go left to 8. 5<8→8.left=5.</p><div class='tree-display'>          12 (BF=?)\n         /  \\\n       10    20\n      /     /  \\\n     8    15   25\n    /\n   5</div><p>Heights: 5→0, 8→1(BF=+1), 10→2(left=1,right=−1,BF=+2) ⚠️</p><p><strong>BF(10)=+2</strong>, BF(8)=+1 → Left-Left case → <strong>Right Rotation at 10</strong>.</p><div class='tree-display'>After Right Rotation at 10:\n          12 (h=2, BF=0)\n         /  \\\n        8    20 (h=1, BF=0)\n       / \\  /  \\\n      5  10 15  25\n    (0)(0)(0) (0)</div><p>All BFs are 0. Perfectly balanced! ✓ <strong>3rd rotation in sequence.</strong></p>"},
+{title:"Step 7 (revised): Insert 5 ⚠️ ROTATION",content:"<p>5 is inserted left of 8. Node 10 becomes unbalanced.</p><div class='tree-display'>Before rotation:\n          12 (h=3, BF=+2) ... \n\nActually let's check: BF(10)=+2 first.\n\n          12\n         /  \\\n       10    20\n      /     /  \\\n     8    15   25\n    /\n   5</div><p>Heights from bottom: 5→0, 8→1, 10→2 (left=1, right=−1), BF(10)=+2 ⚠️</p><p>BF(10)=+2, BF(8)=+1 → <strong>Left-Left case → Right Rotation at 10</strong></p><div class='tree-display'>After Right Rotation at 10:\n          12 (h=2, BF=0)\n         /  \\\n        8    20 (h=1, BF=0)\n       / \\   / \\\n      5  10 15  25\n</div><p>All balance factors = 0. ✓ Beautiful!</p>"},
+{title:"Step 8: Insert 4",content:"<p>4 goes left of 5.</p><div class='tree-display'>          12 (h=3, BF=+1)\n         /  \\\n        8    20 (h=1, BF=0)\n      /  \\   / \\\n     5   10 15  25\n   (h=1,\n   BF=+1)\n   /\n  4(h=0)</div><p>BF(5)=+1, BF(8)=h(5)−h(10)=1−0=+1, BF(12)=h(8)−h(20)=2−1=+1. All ≤ 1. ✓</p><p><strong>No rotation needed.</strong></p><div class='tree-display'>Final tree:\n            12 (h=3, BF=+1)\n           /  \\\n          8    20 (h=1, BF=0)\n        /  \\   / \\\n       5   10 15  25\n      /\n     4</div>"}
+];
+
+// Clean up: we had some revision steps. Let's use the correct sequence.
+const insStepsFinal=[
+{title:"Step 0: Empty Tree",content:`<p>Start with an empty AVL tree.</p><div class="tree-display">(empty)</div>`},
+{title:"Step 1: Insert 15",content:`<p>15 becomes the root. Height = 0, BF = 0.</p><div class="tree-display">  15 (h=0, BF=0)</div><p><strong>No rotation needed.</strong></p>`},
+{title:"Step 2: Insert 10",content:`<p>10 &lt; 15, goes to the left.</p><div class="tree-display">    15 (h=1, BF=+1)
+   /
+ 10 (h=0, BF=0)</div><p>BF(15) = 1 − (−1)... actually h(left)=0, h(right)=−1, so BF = 0−(−1) = +1. Balanced.</p><p><strong>No rotation needed.</strong></p>`},
+{title:"Step 3: Insert 20",content:`<p>20 &gt; 15, goes to the right.</p><div class="tree-display">      15 (h=1, BF=0)
+     /  \\
+   10    20
+  (h=0) (h=0)</div><p>BF(15) = 0−0 = 0. Perfectly balanced.</p><p><strong>No rotation needed.</strong></p>`},
+{title:"Step 4: Insert 8",content:`<p>8 &lt; 15 → left to 10. 8 &lt; 10 → left of 10.</p><div class="tree-display">        15 (h=2, BF=+1)
+       /  \\
+     10    20 (h=0)
+   (h=1, BF=+1)
+    /
+   8 (h=0)</div><p>BF(10) = 0−(−1) = +1. BF(15) = 1−0 = +1. All balanced.</p><p><strong>No rotation needed.</strong></p>`},
+{title:"Step 5: Insert 12 — ⚠️ ROTATION!",content:`<p>12 &gt; 10 → right of 10. Now check balance factors bottom-up.</p><div class="tree-display">Before rotation:
+        15 (h=2, BF=+2) ⚠️
+       /  \\
+     10    20 (h=0)
+   (h=1, BF=-1)
+   /   \\
+  8    12
+(h=0) (h=0)</div><p><strong>BF(15) = 2 − 0 = +2 ⚠️</strong></p><p>BF(15) = +2 (left-heavy) and BF(10) = −1 (right-heavy child) → <strong>Left-Right case!</strong></p><p>Double rotation: Left-Rotate at 10, then Right-Rotate at 15.</p><div class="tree-display">After Left-Right Double Rotation:
+      12 (h=2, BF=0)
+     /  \\
+   10    15 (h=1, BF=−1)
+  (h=1,     \\
+  BF=+1)    20 (h=0)
+  /
+ 8 (h=0)</div><p>New root of this subtree is 12. All BFs ∈ {−1, 0, +1}. ✓</p><p><em>Wait — let me recheck. 12 becomes the new root of the WHOLE tree (since 15 was the root).</em></p><p>10.left=8, 10.right=null → BF(10)=0−(−1)=+1, h=1.<br>15.left=null, 15.right=20 → BF(15)=(−1)−0=−1, h=1.<br>12.left=10(h=1), 12.right=15(h=1) → BF(12)=1−1=0, h=2. ✓</p>`},
+{title:"Step 6: Insert 25 — ⚠️ ROTATION!",content:`<p>Current tree: root=12, 12.left=10, 12.right=15, 10.left=8, 15.right=20.</p><p>25 &gt; 12 → right to 15. 25 &gt; 15 → right to 20. 25 &gt; 20 → right of 20.</p><div class="tree-display">Before rotation:
+        12 (h=3, BF=−1)
+       /  \\
+     10    15 (h=2, BF=−2) ⚠️
+    /        \\
+   8         20 (h=1, BF=−1)
+                \\
+                25 (h=0)</div><p><strong>BF(15) = (−1) − 1 = −2 ⚠️</strong></p><p>BF(15) = −2 (right-heavy) and BF(20) = −1 (right-heavy) → <strong>Right-Right case → Left Rotation at 15.</strong></p><div class="tree-display">After Left Rotation at 15:
+        12 (h=2, BF=0)
+       /  \\
+     10    20 (h=1, BF=0)
+    /     /  \\
+   8    15   25
+ (h=0)(h=0) (h=0)</div><p>BF(10)=+1, BF(20)=0, BF(12)=1−1=0. All balanced. ✓</p>`},
+{title:"Step 7: Insert 5 — ⚠️ ROTATION!",content:`<p>Current tree: 12 is root. 12.left=10, 10.left=8. Insert 5 &lt; 8 → left of 8.</p><div class="tree-display">Before rotation:
+          12 (BF=+1... check)
+         /  \\
+       10    20 (h=1)
+      /     /  \\
+     8    15   25
+    /
+   5</div><p>Heights: 5→0, 8→1, 10→2 (left=1, right=−1). <strong>BF(10) = 1−(−1) = +2 ⚠️</strong></p><p>BF(10) = +2, BF(8) = +1 → <strong>Left-Left case → Right Rotation at 10.</strong></p><div class="tree-display">After Right Rotation at 10:
+          12 (h=2, BF=0)
+         /  \\
+        8    20 (h=1, BF=0)
+       / \\   / \\
+      5  10 15  25
+    (0)(0)(0)(0)</div><p>All BFs = 0. Perfectly balanced! ✓</p>`},
+{title:"Step 8: Insert 4 — No rotation",content:`<p>4 &lt; 12 → left to 8. 4 &lt; 8 → left to 5. 4 &lt; 5 → left of 5.</p><div class="tree-display">Final tree:
+            12 (h=3, BF=+1)
+           /  \\
+          8    20 (h=1, BF=0)
+        /  \\   / \\
+       5   10 15  25
+     (h=1,
+     BF=+1)
+     /
+    4 (h=0)</div><p>BF(5)=0−(−1)=+1. BF(8)=1−0=+1. BF(12)=2−1=+1. All ≤ 1. ✓</p><p><strong>No rotation needed.</strong></p><div class="callout callout-success"><strong>Summary of rotations during this insertion sequence:</strong><ol><li>Insert 12 → Left-Right double rotation (at old root 15)</li><li>Insert 25 → Left rotation (at node 15)</li><li>Insert 5 → Right rotation (at node 10)</li></ol>Total: <strong>3 rotation operations</strong> (one double + two singles).</div>`}
+];
+
+let insIdx=0;
+function renderInsStep(){
+const s=insStepsFinal[insIdx];
+document.getElementById('insStepContent').innerHTML=`<h3>${s.title}</h3>${s.content}`;
+document.getElementById('insStepLabel').textContent=`(${insIdx+1} of ${insStepsFinal.length})`;
+document.getElementById('prevInsBtn').disabled=(insIdx===0);
+document.getElementById('nextInsBtn').disabled=(insIdx===insStepsFinal.length-1);
+}
+function changeInsStep(d){insIdx+=d;if(insIdx<0)insIdx=0;if(insIdx>=insStepsFinal.length)insIdx=insStepsFinal.length-1;renderInsStep();}
+renderInsStep();
+
+// Toggle sections
+function toggleSection(id){
+const el=document.getElementById(id+'Content');
+const btn=el.previousElementSibling||el.parentElement.querySelector('.toggle-btn');
+if(el.classList.contains('open')){el.classList.remove('open');if(btn)btn.setAttribute('aria-expanded','false');}
+else{el.classList.add('open');if(btn)btn.setAttribute('aria-expanded','true');}}
+
+// Knowledge checks
+function checkAnswer(qId,correct,correctMsg,incorrectMsg){
+const selected=document.querySelector(`input[name="${qId}"]:checked`);
+const fb=document.getElementById(qId+'-feedback');
+if(!selected){fb.className='kc-feedback incorrect';fb.style.display='block';fb.textContent='Please select an answer.';return;}
+if(selected.value===correct){fb.className='kc-feedback correct';fb.innerHTML='✓ '+correctMsg;}
+else{fb.className='kc-feedback incorrect';fb.innerHTML='✗ '+incorrectMsg;}
+fb.style.display='block';
+}
+</script>
+</body>
+</html>

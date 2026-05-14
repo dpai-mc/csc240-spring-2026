@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab 16 – AVL Trees and Hashing Practice Lab</title>
+<style>
+:root{--primary:#2d4a7a;--secondary:#3d6098;--accent:#e8f0fe;--text:#222;--border:#ccc;--success:#2e7d32;--light-bg:#f9fafb;--nav-height:54px}
+*,*::before,*::after{box-sizing:border-box}
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;line-height:1.6;color:var(--text);margin:0;padding:0;padding-top:var(--nav-height)}
+nav.sticky-nav{position:fixed;top:0;left:0;right:0;height:var(--nav-height);background:var(--primary);display:flex;align-items:center;gap:0.25rem;padding:0 1rem;z-index:1000;overflow-x:auto;white-space:nowrap}
+nav.sticky-nav a{color:#fff;text-decoration:none;font-size:0.85rem;padding:0.4rem 0.7rem;border-radius:4px;transition:background 0.2s}
+nav.sticky-nav a:hover,nav.sticky-nav a:focus{background:var(--secondary);outline:2px solid #fff;outline-offset:1px}
+main{max-width:960px;margin:0 auto;padding:1.5rem 1rem 3rem}
+h1{color:var(--primary);font-size:1.75rem;border-bottom:3px solid var(--primary);padding-bottom:0.4rem;margin-top:1rem}
+h2{color:var(--secondary);font-size:1.35rem;margin-top:2rem;border-left:4px solid var(--primary);padding-left:0.6rem}
+h3{color:var(--primary);font-size:1.1rem;margin-top:1.4rem}
+.badge-ungraded{display:inline-block;background:#ff9800;color:#fff;font-size:0.8rem;font-weight:700;padding:0.2rem 0.6rem;border-radius:4px;margin-left:0.5rem;vertical-align:middle}
+.objectives-list{background:var(--accent);border-left:4px solid var(--primary);padding:1rem 1.25rem;border-radius:4px;margin:1rem 0}
+.objectives-list li{margin-bottom:0.4rem}
+.scenario-box{background:#fff3e0;border:1px solid #ffcc02;border-radius:6px;padding:1rem 1.25rem;margin:1rem 0}
+.task-section{background:var(--light-bg);border:1px solid var(--border);border-radius:6px;padding:1.25rem;margin:1.5rem 0}
+.task-section h3{margin-top:0}
+pre.code-block{background:#263238;color:#eee;padding:1rem;border-radius:4px;overflow-x:auto;font-size:0.9rem;line-height:1.5}
+textarea.work-area{width:100%;min-height:140px;font-family:'Courier New',monospace;font-size:0.9rem;padding:0.75rem;border:1px solid var(--border);border-radius:4px;resize:vertical;margin-top:0.5rem}
+textarea.work-area:focus{outline:2px solid var(--primary);outline-offset:1px}
+details.hint-box{margin-top:1rem;background:#e8f5e9;border:1px solid #a5d6a7;border-radius:4px;padding:0.75rem 1rem}
+details.hint-box summary{cursor:pointer;font-weight:600;color:var(--success)}
+details.hint-box summary:focus{outline:2px solid var(--success);outline-offset:2px}
+.note-box{background:#e3f2fd;border:1px solid #90caf9;border-radius:6px;padding:1rem 1.25rem;margin:1.5rem 0}
+.tree-diagram{font-family:'Courier New',monospace;white-space:pre;line-height:1.3;background:#fff;border:1px solid var(--border);padding:0.75rem;border-radius:4px;overflow-x:auto;display:block;margin:0.5rem 0}
+table.hash-table{border-collapse:collapse;margin:0.75rem 0;width:100%}
+table.hash-table th,table.hash-table td{border:1px solid var(--border);padding:0.5rem 0.75rem;text-align:center}
+table.hash-table th{background:var(--primary);color:#fff}
+label{font-weight:600;display:block;margin-top:0.75rem}
+@media(max-width:600px){nav.sticky-nav{padding:0 0.5rem}nav.sticky-nav a{font-size:0.75rem;padding:0.3rem 0.5rem}main{padding:1rem 0.75rem 2rem}h1{font-size:1.4rem}h2{font-size:1.15rem}}
+</style>
+</head>
+<body>
+<nav class="sticky-nav" aria-label="Lab section navigation">
+<a href="#overview">Overview</a>
+<a href="#scenario">Scenario</a>
+<a href="#task1">Task 1</a>
+<a href="#task2">Task 2</a>
+<a href="#task3">Task 3</a>
+<a href="#task4">Task 4</a>
+<a href="#task5">Task 5</a>
+<a href="#hints">Hints</a>
+<a href="#submission">Submission</a>
+</nav>
+<main>
+<h1 id="overview">Lab 16 – AVL Trees and Hashing Practice Lab <span class="badge-ungraded">UNGRADED</span></h1>
+<p><strong>Week 16 of 17 | CSC 240 – Discrete Structures</strong></p>
+<div class="note-box" role="note">
+<strong>Practice Only:</strong> This lab is an <em>ungraded</em> practice activity designed to prepare you for Quiz 5. It is not submitted for a grade. Use it to build confidence with AVL tree operations and hash table traces.
+</div>
+<h2>Objectives</h2>
+<ul class="objectives-list" aria-label="Practice objectives">
+<li>Trace AVL tree insertions step-by-step, computing balance factors after each insertion.</li>
+<li>Identify and apply single (LL, RR) and double (LR, RL) rotations to restore AVL balance.</li>
+<li>Trace hash table insertions using separate chaining.</li>
+<li>Trace hash table insertions using linear probing, recording probe sequences.</li>
+<li>Justify selection of a data structure (AVL tree vs. hash table) for a given scenario.</li>
+</ul>
+
+<h2 id="scenario">Scenario</h2>
+<div class="scenario-box">
+<p><strong>Context:</strong> You have been hired as a junior software engineer at <em>QuickLookup Solutions</em>, a small company that builds high-performance search tools for inventory management. The team is evaluating two candidate data structures for their core lookup engine:</p>
+<ul>
+<li><strong>Option A:</strong> An AVL tree that guarantees O(log n) worst-case search and supports sorted traversal.</li>
+<li><strong>Option B:</strong> A hash table that offers O(1) average-case search but does not maintain order.</li>
+</ul>
+<p>Your tech lead has asked you to trace through both structures by hand so the team can compare behavior under realistic insert sequences. The exercises below simulate this evaluation process.</p>
+</div>
+
+<h2 id="task1">Task 1 – AVL Insertion Trace</h2>
+<div class="task-section">
+<h3>Instructions</h3>
+<p>Starting from an <strong>empty AVL tree</strong>, insert the following keys in order:</p>
+<pre class="code-block">Insert sequence: 45, 25, 65, 15, 35, 55, 10, 30</pre>
+<p>For each insertion:</p>
+<ol>
+<li>Draw (or describe) the tree after the key is placed.</li>
+<li>Compute the balance factor (BF) of every node on the insertion path (BF = height(left subtree) − height(right subtree)).</li>
+<li>If any node has BF = +2 or −2, identify the imbalance type (LL, RR, LR, or RL) and perform the appropriate rotation.</li>
+<li>Show the tree after rotation and confirm all balance factors are in {−1, 0, +1}.</li>
+</ol>
+<p><strong>Tip:</strong> Use a text-based tree format. For example:</p>
+<span class="tree-diagram" aria-label="Example text-based tree format">       45
+      /  \
+    25    65
+   /  \   /
+  15  35 55</span>
+<label for="task1-area">Your AVL insertion trace:</label>
+<textarea id="task1-area" class="work-area" aria-label="Task 1 work area" placeholder="Show each step of your AVL insertion trace here. Include balance factors and any rotations performed."></textarea>
+</div>
+
+<h2 id="task2">Task 2 – Rotation Identification</h2>
+<div class="task-section">
+<h3>Instructions</h3>
+<p>Each diagram below shows a subtree where one node has a balance factor of +2 or −2. For each case:</p>
+<ol>
+<li>Identify the <strong>type of rotation</strong> needed (LL, RR, LR, or RL).</li>
+<li>Draw or describe the tree <strong>after</strong> the rotation is applied.</li>
+</ol>
+<h3>Case A – Left-Left (LL) Pattern</h3>
+<span class="tree-diagram" aria-label="Case A tree with BF +2 at node 50">       50 (BF=+2)
+      /
+    30 (BF=+1)
+   /
+  10 (BF=0)</span>
+<label for="task2a-area">Case A – Rotation type and result:</label>
+<textarea id="task2a-area" class="work-area" aria-label="Task 2 Case A work area" placeholder="Identify the rotation type and draw the balanced result." rows="5"></textarea>
+
+<h3>Case B – Right-Right (RR) Pattern</h3>
+<span class="tree-diagram" aria-label="Case B tree with BF -2 at node 20">  20 (BF=-2)
+    \
+    40 (BF=-1)
+      \
+      60 (BF=0)</span>
+<label for="task2b-area">Case B – Rotation type and result:</label>
+<textarea id="task2b-area" class="work-area" aria-label="Task 2 Case B work area" placeholder="Identify the rotation type and draw the balanced result." rows="5"></textarea>
+
+<h3>Case C – Left-Right (LR) Pattern</h3>
+<span class="tree-diagram" aria-label="Case C tree with BF +2 at node 50">       50 (BF=+2)
+      /
+    20 (BF=-1)
+      \
+      35 (BF=0)</span>
+<label for="task2c-area">Case C – Rotation type and result:</label>
+<textarea id="task2c-area" class="work-area" aria-label="Task 2 Case C work area" placeholder="Identify the rotation type and draw the balanced result." rows="5"></textarea>
+
+<h3>Case D – Right-Left (RL) Pattern</h3>
+<span class="tree-diagram" aria-label="Case D tree with BF -2 at node 10">  10 (BF=-2)
+    \
+    40 (BF=+1)
+   /
+  25 (BF=0)</span>
+<label for="task2d-area">Case D – Rotation type and result:</label>
+<textarea id="task2d-area" class="work-area" aria-label="Task 2 Case D work area" placeholder="Identify the rotation type and draw the balanced result." rows="5"></textarea>
+</div>
+
+<h2 id="task3">Task 3 – Hash Table: Separate Chaining</h2>
+<div class="task-section">
+<h3>Instructions</h3>
+<p>Insert the following keys into a hash table of size <strong>7</strong> (indices 0–6) using <strong>separate chaining</strong> for collision resolution.</p>
+<pre class="code-block">Keys: 14, 21, 7, 33, 28, 42, 10, 49
+Hash function: h(k) = k mod 7</pre>
+<p>Complete the following:</p>
+<ol>
+<li>Compute h(k) for each key.</li>
+<li>Draw the resulting table showing chains at each index.</li>
+<li>Compute the <strong>load factor</strong>: α = n/m, where n = number of keys and m = table size.</li>
+<li>Identify the <strong>longest chain</strong> length.</li>
+</ol>
+<p><strong>Starting table template:</strong></p>
+<table class="hash-table" aria-label="Empty hash table template for separate chaining">
+<thead><tr><th>Index</th><th>Chain</th></tr></thead>
+<tbody>
+<tr><td>0</td><td></td></tr>
+<tr><td>1</td><td></td></tr>
+<tr><td>2</td><td></td></tr>
+<tr><td>3</td><td></td></tr>
+<tr><td>4</td><td></td></tr>
+<tr><td>5</td><td></td></tr>
+<tr><td>6</td><td></td></tr>
+</tbody>
+</table>
+<label for="task3-area">Your separate chaining trace:</label>
+<textarea id="task3-area" class="work-area" aria-label="Task 3 work area" placeholder="Show h(k) for each key, draw the final table with chains, and compute the load factor and longest chain length."></textarea>
+</div>
+
+<h2 id="task4">Task 4 – Hash Table: Linear Probing</h2>
+<div class="task-section">
+<h3>Instructions</h3>
+<p>Insert the <strong>same keys</strong> into a hash table of size <strong>11</strong> (indices 0–10) using <strong>linear probing</strong> for collision resolution.</p>
+<pre class="code-block">Keys: 14, 21, 7, 33, 28, 42, 10, 49
+Hash function: h(k) = k mod 11
+Probe sequence: h(k, i) = (h(k) + i) mod 11,  i = 0, 1, 2, ...</pre>
+<p>For each key:</p>
+<ol>
+<li>Compute the initial hash h(k).</li>
+<li>If a collision occurs, record the full probe sequence until an empty slot is found.</li>
+<li>Record the final index where the key is placed.</li>
+</ol>
+<p><strong>Starting table template:</strong></p>
+<table class="hash-table" aria-label="Empty hash table template for linear probing">
+<thead><tr><th>Index</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th></tr></thead>
+<tbody><tr><td><strong>Key</strong></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></tbody>
+</table>
+<label for="task4-area">Your linear probing trace:</label>
+<textarea id="task4-area" class="work-area" aria-label="Task 4 work area" placeholder="For each key, show h(k), any probe sequence needed, and the final placement index. Then show the completed table."></textarea>
+</div>
+
+<h2 id="task5">Task 5 – Structure Selection Justification</h2>
+<div class="task-section">
+<h3>Instructions</h3>
+<p>Consider the following scenario:</p>
+<div class="scenario-box">
+<p><em>QuickLookup Solutions</em> is building a feature that must support:</p>
+<ul>
+<li>Guaranteed O(log n) worst-case lookup time (no degradation under adversarial inputs).</li>
+<li>The ability to output all stored product IDs in sorted order for monthly reports.</li>
+<li>Frequent insertions (approximately 10,000 new products per day).</li>
+</ul>
+</div>
+<p>In <strong>3–5 sentences</strong>, justify which data structure (AVL tree or hash table) is the better choice for this feature. Address:</p>
+<ul>
+<li>Worst-case time complexity for search and insert.</li>
+<li>Support for sorted output.</li>
+<li>Any trade-offs the team should be aware of.</li>
+</ul>
+<label for="task5-area">Your justification (3–5 sentences):</label>
+<textarea id="task5-area" class="work-area" aria-label="Task 5 work area" placeholder="Write your data structure selection justification here." rows="6"></textarea>
+</div>
+
+<h2 id="hints">Hints &amp; Tips</h2>
+<details class="hint-box">
+<summary>Hint for Task 1 – AVL Insertion Trace</summary>
+<ul>
+<li>After inserting 10 into the tree, check the balance factor at node 25. Does it become +2?</li>
+<li>Remember: update balance factors bottom-up from the inserted node to the root.</li>
+<li>The first seven insertions (45, 25, 65, 15, 35, 55, 10) will produce a perfectly balanced tree of height 2 before the last insertion. Think about why.</li>
+</ul>
+</details>
+<details class="hint-box">
+<summary>Hint for Task 2 – Rotation Identification</summary>
+<ul>
+<li><strong>LL case:</strong> The imbalance is at a node and the heavy subtree is the left child's left subtree. Fix with a single right rotation.</li>
+<li><strong>RR case:</strong> Mirror of LL. Fix with a single left rotation.</li>
+<li><strong>LR case:</strong> The heavy subtree is the left child's <em>right</em> subtree. Fix with a left rotation on the left child, then a right rotation on the imbalanced node (double rotation).</li>
+<li><strong>RL case:</strong> Mirror of LR. Right rotation on right child, then left rotation on imbalanced node.</li>
+<li>Common mistake: confusing which child to rotate first in double rotations.</li>
+</ul>
+</details>
+<details class="hint-box">
+<summary>Hint for Task 3 – Separate Chaining</summary>
+<ul>
+<li>Compute: 14 mod 7 = 0, 21 mod 7 = 0, 7 mod 7 = 0. Notice that three keys hash to the same index!</li>
+<li>Load factor α = 8/7 ≈ 1.14. A load factor greater than 1 is fine with chaining.</li>
+<li>New keys are typically appended to the end of the chain (or prepended—either convention is acceptable; just be consistent).</li>
+</ul>
+</details>
+<details class="hint-box">
+<summary>Hint for Task 4 – Linear Probing</summary>
+<ul>
+<li>With table size 11: 14 mod 11 = 3, 21 mod 11 = 10, 7 mod 11 = 7, 33 mod 11 = 0.</li>
+<li>Watch for <strong>primary clustering</strong>: once a cluster forms, subsequent keys that hash into the cluster will probe through all occupied slots.</li>
+<li>Key 49: 49 mod 11 = 5. Check if index 5 is already occupied by the time you insert 49.</li>
+</ul>
+</details>
+<details class="hint-box">
+<summary>Hint for Task 5 – Structure Selection</summary>
+<ul>
+<li>Hash tables offer O(1) average-case but O(n) worst-case (e.g., all keys collide).</li>
+<li>AVL trees guarantee O(log n) for both search and insert in the worst case.</li>
+<li>An in-order traversal of an AVL tree produces sorted output in O(n) time. A hash table requires extracting all keys and sorting them: O(n log n).</li>
+<li>Trade-off: AVL trees have higher constant factors per operation due to rotations and pointer overhead.</li>
+</ul>
+</details>
+
+<h2 id="submission">Submission Note</h2>
+<div class="note-box" role="note">
+<p><strong>This activity is for practice only.</strong> It is not submitted for a grade and does not count toward your course total. There is no submission mechanism for this lab.</p>
+<p>After completing the exercises, compare your work against the examples and explanations in <strong>Module 16 – Learning Module content</strong> (Module 16.1 and 16.2). If you have questions, bring them to office hours or post in the course Q&amp;A discussion.</p>
+<p>Use this practice to prepare for <strong>Quiz 5</strong>, which covers AVL trees and hashing concepts from Weeks 15–16.</p>
+</div>
+</main>
+<script>
+document.querySelectorAll('nav.sticky-nav a').forEach(function(link){link.addEventListener('click',function(e){e.preventDefault();var target=document.querySelector(this.getAttribute('href'));if(target){var offset=parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-height'))||54;var top=target.getBoundingClientRect().top+window.pageYOffset-offset-10;window.scrollTo({top:top,behavior:'smooth'});target.setAttribute('tabindex','-1');target.focus({preventScroll:true})}})});
+</script>
+</body>
+</html>
