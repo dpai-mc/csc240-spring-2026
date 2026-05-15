@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 17.4 – Code Quality, Documentation, and Final Submission | CSC 240</title>
+<style>
+:root {
+  --primary: #1a5276;
+  --primary-light: #2980b9;
+  --accent: #148f77;
+  --accent-light: #1abc9c;
+  --warning: #d35400;
+  --warning-bg: #fdf2e9;
+  --danger: #c0392b;
+  --danger-bg: #fdedec;
+  --success: #1e8449;
+  --success-bg: #eafaf1;
+  --info-bg: #eaf2f8;
+  --gray-dark: #2c3e50;
+  --gray-medium: #566573;
+  --gray-light: #f4f6f7;
+  --white: #ffffff;
+  --border: #d5dbdb;
+  --shadow: 0 2px 4px rgba(0,0,0,0.08);
+  --radius: 8px;
+}
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--gray-dark);
+  background: var(--white);
+  margin: 0;
+  padding: 0;
+}
+.container { max-width: 960px; margin: 0 auto; padding: 1rem 1.5rem 3rem; }
+/* Nav Bar */
+.nav-bar {
+  background: var(--primary);
+  padding: 0.75rem 1.5rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+.nav-bar ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  max-width: 960px;
+  margin: 0 auto;
+}
+.nav-bar li { margin: 0; }
+.nav-bar a {
+  color: var(--white);
+  text-decoration: none;
+  font-size: 0.875rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+.nav-bar a:hover, .nav-bar a:focus {
+  background: rgba(255,255,255,0.2);
+  outline: 2px solid var(--accent-light);
+}
+/* Headings */
+h1 { font-size: 1.75rem; color: var(--primary); margin: 1.5rem 0 0.5rem; border-bottom: 3px solid var(--primary-light); padding-bottom: 0.5rem; }
+h2 { font-size: 1.4rem; color: var(--primary); margin: 2rem 0 0.75rem; border-bottom: 2px solid var(--border); padding-bottom: 0.4rem; }
+h3 { font-size: 1.15rem; color: var(--gray-dark); margin: 1.5rem 0 0.5rem; }
+/* Callout boxes */
+.callout {
+  border-left: 4px solid var(--primary-light);
+  background: var(--info-bg);
+  padding: 1rem 1.25rem;
+  margin: 1.25rem 0;
+  border-radius: var(--radius);
+}
+.callout-warning {
+  border-left-color: var(--warning);
+  background: var(--warning-bg);
+}
+.callout-danger {
+  border-left-color: var(--danger);
+  background: var(--danger-bg);
+}
+.callout-success {
+  border-left-color: var(--success);
+  background: var(--success-bg);
+}
+.callout-title {
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+/* Tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 0.925rem;
+}
+th, td {
+  border: 1px solid var(--border);
+  padding: 0.6rem 0.75rem;
+  text-align: left;
+}
+th { background: var(--primary); color: var(--white); font-weight: 600; }
+tr:nth-child(even) { background: var(--gray-light); }
+/* Code blocks */
+pre {
+  background: #1e1e2e;
+  color: #cdd6f4;
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius);
+  overflow-x: auto;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin: 1rem 0;
+}
+pre code { background: none; color: inherit; padding: 0; font-size: inherit; }
+code {
+  background: var(--gray-light);
+  padding: 0.15rem 0.4rem;
+  border-radius: 3px;
+  font-size: 0.9em;
+  color: var(--danger);
+}
+/* Accordion / Expandable */
+.accordion { margin: 1rem 0; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.accordion-item { border-bottom: 1px solid var(--border); }
+.accordion-item:last-child { border-bottom: none; }
+.accordion-btn {
+  width: 100%;
+  background: var(--gray-light);
+  border: none;
+  padding: 0.85rem 1.25rem;
+  text-align: left;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--gray-dark);
+  transition: background 0.2s;
+}
+.accordion-btn:hover, .accordion-btn:focus { background: var(--info-bg); outline: 2px solid var(--primary-light); outline-offset: -2px; }
+.accordion-btn::after { content: "+"; font-size: 1.25rem; font-weight: 700; color: var(--primary-light); transition: transform 0.2s; }
+.accordion-btn[aria-expanded="true"]::after { content: "−"; }
+.accordion-panel { padding: 0 1.25rem; max-height: 0; overflow: hidden; transition: max-height 0.3s ease, padding 0.3s ease; }
+.accordion-panel[aria-hidden="false"] { padding: 1rem 1.25rem; max-height: 2000px; }
+/* Interactive checklist */
+.checklist { list-style: none; padding: 0; margin: 1rem 0; }
+.checklist li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.2s;
+}
+.checklist li:last-child { border-bottom: none; }
+.checklist input[type="checkbox"] {
+  width: 1.2rem;
+  height: 1.2rem;
+  margin-top: 0.2rem;
+  flex-shrink: 0;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+.checklist label { cursor: pointer; flex: 1; }
+.checklist li.checked { background: var(--success-bg); }
+.progress-bar-container { background: var(--border); border-radius: 20px; overflow: hidden; height: 1.25rem; margin: 0.75rem 0; position: relative; }
+.progress-bar-fill { height: 100%; background: var(--accent); transition: width 0.4s ease; border-radius: 20px; }
+.progress-text { position: absolute; top: 0; left: 50%; transform: translateX(-50%); font-size: 0.75rem; font-weight: 700; line-height: 1.25rem; color: var(--gray-dark); }
+/* Knowledge check */
+.kc-question { background: var(--info-bg); border: 1px solid var(--primary-light); border-radius: var(--radius); padding: 1.25rem; margin: 1rem 0; }
+.kc-question p { margin: 0 0 0.75rem; }
+.kc-options { list-style: none; padding: 0; margin: 0 0 0.75rem; }
+.kc-options li { margin: 0.35rem 0; }
+.kc-options label { cursor: pointer; display: flex; align-items: flex-start; gap: 0.5rem; }
+.kc-options input[type="radio"] { margin-top: 0.3rem; accent-color: var(--primary-light); }
+.kc-btn {
+  background: var(--primary-light);
+  color: var(--white);
+  border: none;
+  padding: 0.5rem 1.25rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.925rem;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+.kc-btn:hover, .kc-btn:focus { background: var(--primary); outline: 2px solid var(--accent-light); }
+.kc-feedback { margin-top: 0.75rem; padding: 0.75rem 1rem; border-radius: var(--radius); display: none; font-size: 0.925rem; }
+.kc-feedback.correct { display: block; background: var(--success-bg); border: 1px solid var(--success); }
+.kc-feedback.incorrect { display: block; background: var(--danger-bg); border: 1px solid var(--danger); }
+/* Meta info */
+.meta-box {
+  background: var(--gray-light);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  margin: 1rem 0;
+  font-size: 0.9rem;
+}
+.meta-box dl { display: grid; grid-template-columns: auto 1fr; gap: 0.25rem 1rem; margin: 0; }
+.meta-box dt { font-weight: 600; }
+.meta-box dd { margin: 0; }
+/* Closing banner */
+.closing-banner {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+  color: var(--white);
+  padding: 2rem;
+  border-radius: var(--radius);
+  text-align: center;
+  margin: 2rem 0;
+}
+.closing-banner h2 { color: var(--white); border: none; margin: 0 0 0.75rem; }
+.closing-banner p { margin: 0.4rem 0; font-size: 1.05rem; }
+/* Responsive */
+@media (max-width: 600px) {
+  .nav-bar ul { flex-direction: column; gap: 0.25rem; }
+  .meta-box dl { grid-template-columns: 1fr; }
+  h1 { font-size: 1.4rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- Navigation Bar -->
+<nav class="nav-bar" aria-label="Module sections">
+<ul role="menubar">
+  <li role="none"><a role="menuitem" href="#overview">Overview</a></li>
+  <li role="none"><a role="menuitem" href="#code-quality">Code Quality</a></li>
+  <li role="none"><a role="menuitem" href="#before-after">Before/After</a></li>
+  <li role="none"><a role="menuitem" href="#readme-guide">README Guide</a></li>
+  <li role="none"><a role="menuitem" href="#submission-checklist">Submission Checklist</a></li>
+  <li role="none"><a role="menuitem" href="#self-eval">Self-Evaluation</a></li>
+  <li role="none"><a role="menuitem" href="#submission-steps">Submit</a></li>
+  <li role="none"><a role="menuitem" href="#knowledge-check">Knowledge Check</a></li>
+  <li role="none"><a role="menuitem" href="#closing">Closing</a></li>
+</ul>
+</nav>
+
+<div class="container">
+
+<!-- Module Metadata -->
+<div class="meta-box">
+<dl>
+  <dt>Module</dt><dd>17.4 – Code Quality, Documentation, and Final Submission</dd>
+  <dt>Week</dt><dd>17 of 17 (Final Week)</dd>
+  <dt>Course</dt><dd>CSC 240 – Discrete Structures</dd>
+  <dt>Est. Time</dt><dd>2–3 hours</dd>
+  <dt>CSLO</dt><dd>CSLO 3: Implement graph/tree traversal methods in a programming language.</dd>
+</dl>
+</div>
+
+<!-- Section: Overview -->
+<h1 id="overview">Module 17.4 – Code Quality, Documentation, and Final Submission</h1>
+
+<p><strong>This is the final module of CSC 240.</strong> You've built graph algorithms from scratch, implemented tree-based data structures, measured runtime performance, and written technical analysis. Now it's time to <em>polish, package, and submit</em> a professional-quality project.</p>
+
+<p>Think of this module as your project's finishing stage: the difference between a working prototype and a deliverable that you'd be proud to show a future employer or transfer institution. Clean code, clear documentation, and a complete submission package demonstrate mastery not just of discrete structures, but of software engineering practice.</p>
+
+<div class="callout">
+<p class="callout-title">🎯 Module Goals</p>
+<ul>
+  <li>Polish your code to meet professional quality standards (Objective 5)</li>
+  <li>Write a complete README.md that enables anyone to compile and run your project</li>
+  <li>Assemble all six required deliverables into a properly named ZIP archive</li>
+  <li>Complete a thoughtful self-evaluation reflecting on your learning (Objective 6)</li>
+  <li>Submit to Canvas and verify your upload</li>
+</ul>
+</div>
+
+<div class="callout callout-success">
+<p class="callout-title">📋 Rubric Categories Addressed</p>
+<p>This module directly supports the following rubric areas:</p>
+<ul>
+  <li><strong>Code Quality (20% = 50 pts)</strong> — meaningful names, modular design, formatting, no dead code, error handling</li>
+  <li><strong>Tree-Based Structure Integration (15% = 37.5 pts)</strong> — verify your tree structure is present and meaningfully used</li>
+  <li><strong>Analysis Document (15% = 37.5 pts)</strong> — ensure it's included in the submission package</li>
+  <li><strong>Self-Evaluation Form</strong> — required for submission completeness</li>
+</ul>
+</div>
+
+<!-- Section: Code Quality -->
+<h2 id="code-quality">Code Quality Checklist</h2>
+
+<p>The grading rubric allocates <strong>20% (50 points)</strong> to code quality. This isn't about whether your algorithms produce correct output — that's functionality. Code quality is about whether another developer (or your future self) can <em>read, understand, and maintain</em> your code. Expand each criterion below to understand what the grader evaluates:</p>
+
+<div class="accordion" role="region" aria-label="Code quality criteria">
+
+<div class="accordion-item">
+  <button class="accordion-btn" aria-expanded="false" aria-controls="acc-names" id="btn-names">Meaningful Names</button>
+  <div class="accordion-panel" id="acc-names" role="region" aria-labelledby="btn-names" aria-hidden="true">
+    <p><strong>What it means:</strong> Every variable, function, and class name communicates its purpose without requiring a comment to explain it.</p>
+    <p><strong>Ask yourself:</strong></p>
+    <ul>
+      <li>Could someone reading <code>vertexCount</code> immediately know what it stores? (Yes!) Could they know what <code>n</code> stores? (Maybe not.)</li>
+      <li>Does <code>findShortestPath()</code> describe what the function does? (Yes!) Does <code>doStuff()</code>? (No.)</li>
+      <li>Are abbreviations consistent? If you use <code>adj</code> for "adjacency" in one place, don't use <code>adjList</code>, <code>adjacency</code>, and <code>aList</code> elsewhere.</li>
+    </ul>
+    <p><strong>Common pitfalls:</strong> single-letter names (<code>x</code>, <code>i</code>, <code>n</code> outside of loop counters), generic names (<code>temp</code>, <code>data</code>, <code>result</code>), misleading names (a variable called <code>list</code> that's actually an array).</p>
+  </div>
+</div>
+
+<div class="accordion-item">
+  <button class="accordion-btn" aria-expanded="false" aria-controls="acc-modular" id="btn-modular">Modular Design</button>
+  <div class="accordion-panel" id="acc-modular" role="region" aria-labelledby="btn-modular" aria-hidden="true">
+    <p><strong>What it means:</strong> Each function does <em>one thing</em> and does it well. Functions are short (ideally under 50 lines), and complex operations are broken into named steps.</p>
+    <p><strong>Ask yourself:</strong></p>
+    <ul>
+      <li>Is your <code>main()</code> method under 50 lines? If not, extract logical blocks into helper functions.</li>
+      <li>Can you describe what each function does in one sentence? If you need "and" in the sentence, the function probably does too much.</li>
+      <li>Are there repeated code blocks? Extract them into a shared helper.</li>
+    </ul>
+    <p><strong>Common pitfalls:</strong> a 500-line <code>main()</code> method, copy-pasted code with minor variations, functions that both compute a result and print it (separate computation from display).</p>
+  </div>
+</div>
+
+<div class="accordion-item">
+  <button class="accordion-btn" aria-expanded="false" aria-controls="acc-format" id="btn-format">Consistent Formatting</button>
+  <div class="accordion-panel" id="acc-format" role="region" aria-labelledby="btn-format" aria-hidden="true">
+    <p><strong>What it means:</strong> Indentation, brace placement, spacing, and blank lines follow a single consistent style throughout the entire codebase.</p>
+    <p><strong>Ask yourself:</strong></p>
+    <ul>
+      <li>Are you using tabs or spaces? Pick one and use it everywhere.</li>
+      <li>Is your brace style consistent? (K&amp;R, Allman, or other — just be consistent.)</li>
+      <li>Do you have consistent spacing around operators? (<code>x = y + z</code> not sometimes <code>x=y+z</code>)</li>
+      <li>Are blank lines used consistently to separate logical sections?</li>
+    </ul>
+    <p><strong>Tip:</strong> Most IDEs have an "auto-format" feature. Run it on your entire project before submission.</p>
+  </div>
+</div>
+
+<div class="accordion-item">
+  <button class="accordion-btn" aria-expanded="false" aria-controls="acc-dead" id="btn-dead">No Dead Code</button>
+  <div class="accordion-panel" id="acc-dead" role="region" aria-labelledby="btn-dead" aria-hidden="true">
+    <p><strong>What it means:</strong> Your submitted code contains nothing that isn't actively used: no commented-out blocks, no unused variables, no unreachable code paths, no leftover debugging output.</p>
+    <p><strong>Ask yourself:</strong></p>
+    <ul>
+      <li>Search for <code>System.out.println("DEBUG")</code> or <code>cout &lt;&lt; "test"</code> — remove them all.</li>
+      <li>Are there commented-out blocks of code? Delete them. (Version control preserves history; your submission shouldn't.)</li>
+      <li>Does your compiler report any "unused variable" warnings? Fix them.</li>
+    </ul>
+    <p><strong>Common pitfalls:</strong> leftover <code>TODO</code> comments with no resolution, functions that are defined but never called, import/include statements for unused libraries.</p>
+  </div>
+</div>
+
+<div class="accordion-item">
+  <button class="accordion-btn" aria-expanded="false" aria-controls="acc-error" id="btn-error">Error Handling</button>
+  <div class="accordion-panel" id="acc-error" role="region" aria-labelledby="btn-error" aria-hidden="true">
+    <p><strong>What it means:</strong> Your application handles unexpected or invalid input gracefully — it doesn't crash, and it communicates the problem clearly to the user.</p>
+    <p><strong>Ask yourself:</strong></p>
+    <ul>
+      <li>What happens if the user enters an invalid vertex number? (Should print an error message, not throw an unhandled exception.)</li>
+      <li>What happens on an empty graph (0 vertices)? Does each algorithm handle this case?</li>
+      <li>What happens if Dijkstra's is called on a disconnected graph? (Should report "no path" for unreachable vertices.)</li>
+      <li>What happens if topological sort is called on a graph with a cycle? (Should detect and report the cycle.)</li>
+    </ul>
+    <p><strong>Common pitfalls:</strong> <code>NullPointerException</code> / segfault on empty input, array index out of bounds on edge cases, infinite loops on cyclic input to topological sort.</p>
+  </div>
+</div>
+
+</div><!-- end accordion -->
+
+<!-- Section: Before/After -->
+<h2 id="before-after">Before/After: Common Code Quality Improvements</h2>
+
+<p>Below are three concrete examples of transformations that move code from "it works" to "it's professional." Study these patterns and apply them to your own project.</p>
+
+<h3>1. Renaming Vague Variables</h3>
+
+<p><strong>Before:</strong></p>
+<pre><code>int n = 20;
+int[][] arr = new int[n][n];
+for (int i = 0; i &lt; n; i++) {
+    for (int j = 0; j &lt; n; j++) {
+        if (arr[i][j] != 0) {
+            // process edge
+        }
+    }
+}</code></pre>
+
+<p><strong>After:</strong></p>
+<pre><code>int vertexCount = 20;
+int[][] adjacencyMatrix = new int[vertexCount][vertexCount];
+for (int source = 0; source &lt; vertexCount; source++) {
+    for (int destination = 0; destination &lt; vertexCount; destination++) {
+        if (adjacencyMatrix[source][destination] != 0) {
+            int edgeWeight = adjacencyMatrix[source][destination];
+            processEdge(source, destination, edgeWeight);
+        }
+    }
+}</code></pre>
+
+<p><strong>Why it matters:</strong> The "after" version requires zero comments to understand. A reader immediately knows what <code>source</code>, <code>destination</code>, and <code>edgeWeight</code> represent.</p>
+
+<h3>2. Extracting Helper Functions</h3>
+
+<p><strong>Before:</strong> (a 40-line block buried inside <code>main()</code>)</p>
+<pre><code>// inside main(), after building the graph...
+boolean[] visited = new boolean[vertexCount];
+int[] distance = new int[vertexCount];
+Arrays.fill(distance, Integer.MAX_VALUE);
+distance[startVertex] = 0;
+MinHeap pq = new MinHeap(vertexCount);
+pq.insert(startVertex, 0);
+while (!pq.isEmpty()) {
+    int u = pq.extractMin();
+    if (visited[u]) continue;
+    visited[u] = true;
+    for (Edge edge : adjacencyList[u]) {
+        int v = edge.destination;
+        int w = edge.weight;
+        if (!visited[v] &amp;&amp; distance[u] + w &lt; distance[v]) {
+            distance[v] = distance[u] + w;
+            pq.insert(v, distance[v]);
+        }
+    }
+}
+// ... print results ...</code></pre>
+
+<p><strong>After:</strong></p>
+<pre><code>/**
+ * Computes shortest paths from startVertex to all reachable vertices
+ * using Dijkstra's algorithm with a student-implemented min-heap.
+ *
+ * @param graph       the adjacency list representation
+ * @param startVertex the source vertex
+ * @return array where distance[v] = shortest distance from startVertex to v
+ */
+public static int[] dijkstra(List&lt;Edge&gt;[] graph, int startVertex) {
+    int vertexCount = graph.length;
+    boolean[] visited = new boolean[vertexCount];
+    int[] distance = new int[vertexCount];
+    Arrays.fill(distance, Integer.MAX_VALUE);
+    distance[startVertex] = 0;
+
+    MinHeap priorityQueue = new MinHeap(vertexCount);
+    priorityQueue.insert(startVertex, 0);
+
+    while (!priorityQueue.isEmpty()) {
+        int current = priorityQueue.extractMin();
+        if (visited[current]) continue;
+        visited[current] = true;
+        relaxNeighbors(graph, current, distance, visited, priorityQueue);
+    }
+    return distance;
+}
+
+private static void relaxNeighbors(List&lt;Edge&gt;[] graph, int current,
+        int[] distance, boolean[] visited, MinHeap priorityQueue) {
+    for (Edge edge : graph[current]) {
+        int neighbor = edge.destination;
+        int newDist = distance[current] + edge.weight;
+        if (!visited[neighbor] &amp;&amp; newDist &lt; distance[neighbor]) {
+            distance[neighbor] = newDist;
+            priorityQueue.insert(neighbor, newDist);
+        }
+    }
+}</code></pre>
+
+<p><strong>Why it matters:</strong> The algorithm is now reusable, testable in isolation, and self-documenting. The <code>main()</code> method simply calls <code>dijkstra(graph, 0)</code>.</p>
+
+<h3>3. Removing Debug Output</h3>
+
+<p><strong>Before:</strong></p>
+<pre><code>public int extractMin() {
+    System.out.println("DEBUG: extracting min, heap size = " + size);
+    System.out.println("DEBUG: root value = " + heap[0].priority);
+    int minVertex = heap[0].vertex;
+    heap[0] = heap[size - 1];
+    size--;
+    System.out.println("DEBUG: about to heapify down");
+    heapifyDown(0);
+    System.out.println("DEBUG: done with extractMin");
+    return minVertex;
+}</code></pre>
+
+<p><strong>After:</strong></p>
+<pre><code>/**
+ * Removes and returns the vertex with the smallest priority (distance).
+ * Maintains the heap property via downward percolation.
+ *
+ * @return the vertex index with minimum priority
+ * @throws IllegalStateException if the heap is empty
+ */
+public int extractMin() {
+    if (size == 0) {
+        throw new IllegalStateException("Cannot extract from empty heap");
+    }
+    int minVertex = heap[0].vertex;
+    heap[0] = heap[size - 1];
+    size--;
+    if (size > 0) {
+        heapifyDown(0);
+    }
+    return minVertex;
+}</code></pre>
+
+<p><strong>Why it matters:</strong> Debug output clutters the user experience and the grader's terminal. The "after" version also adds proper error handling for the empty-heap edge case.</p>
+
+<!-- Section: README Guide -->
+<h2 id="readme-guide">README.md Writing Guide</h2>
+
+<p>Your README is the first thing the grader reads. A clear, complete README demonstrates professionalism and makes it easy to compile and evaluate your project. Use the following template as your model:</p>
+
+<h3>Required Sections</h3>
+
+<table>
+<thead><tr><th>Section</th><th>Purpose</th></tr></thead>
+<tbody>
+<tr><td>Title &amp; Author</td><td>Identify the project and yourself</td></tr>
+<tr><td>How to Compile and Run</td><td>Exact commands so the grader can build and execute</td></tr>
+<tr><td>System Requirements</td><td>Language version, OS, dependencies</td></tr>
+<tr><td>Features Implemented</td><td>Checklist of all components present</td></tr>
+<tr><td>Known Limitations</td><td>Honest disclosure of incomplete features or bugs</td></tr>
+<tr><td>External Resources</td><td>Citations for any references used</td></tr>
+</tbody>
+</table>
+
+<h3>README Template</h3>
+
+<pre><code># Network Analysis Application
+## CSC 240 – Final Project
+### [Your Name] | [Date]
+
+---
+
+## How to Compile and Run
+
+- **Language:** Java 17 (or C++17)
+- **Compile:**

@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 17.2 – Runtime Comparison and Complexity Analysis | CSC 240</title>
+<style>
+/* === RESET & BASE === */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #1a1a2e;
+  background: #f8f9fa;
+}
+
+/* === NAV BAR === */
+.module-nav {
+  background: #1a1a2e;
+  padding: 0.75rem 1.5rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+.module-nav a {
+  color: #e0e0e0;
+  text-decoration: none;
+  font-size: 0.85rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+.module-nav a:hover, .module-nav a:focus {
+  background: #16213e;
+  color: #fff;
+  outline: 2px solid #4fc3f7;
+}
+.module-nav .nav-title {
+  color: #4fc3f7;
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-right: auto;
+}
+
+/* === MAIN CONTAINER === */
+main {
+  max-width: 58rem;
+  margin: 2rem auto;
+  padding: 0 1.5rem 4rem;
+}
+
+/* === HEADINGS === */
+h1 {
+  font-size: 1.75rem;
+  color: #0f3460;
+  border-bottom: 3px solid #4fc3f7;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+.module-subtitle {
+  font-size: 0.95rem;
+  color: #555;
+  margin-bottom: 1.5rem;
+}
+h2 {
+  font-size: 1.35rem;
+  color: #16213e;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  border-left: 4px solid #4fc3f7;
+  padding-left: 0.75rem;
+}
+h3 {
+  font-size: 1.1rem;
+  color: #1a1a2e;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* === CALLOUT BOXES === */
+.callout {
+  border-radius: 6px;
+  padding: 1rem 1.25rem;
+  margin: 1.25rem 0;
+  border-left: 4px solid;
+}
+.callout-info {
+  background: #e3f2fd;
+  border-color: #2196f3;
+}
+.callout-tip {
+  background: #e8f5e9;
+  border-color: #4caf50;
+}
+.callout-warning {
+  background: #fff3e0;
+  border-color: #ff9800;
+}
+.callout-connection {
+  background: #f3e5f5;
+  border-color: #9c27b0;
+}
+.callout-title {
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+  font-size: 0.95rem;
+}
+
+/* === COLLAPSIBLE SECTIONS === */
+.collapsible-toggle {
+  background: #e8eaf6;
+  border: 1px solid #c5cae9;
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  width: 100%;
+  text-align: left;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1a1a2e;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  transition: background 0.2s;
+}
+.collapsible-toggle:hover, .collapsible-toggle:focus {
+  background: #c5cae9;
+  outline: 2px solid #4fc3f7;
+}
+.collapsible-toggle::before {
+  content: "▶";
+  font-size: 0.8rem;
+  transition: transform 0.2s;
+  display: inline-block;
+}
+.collapsible-toggle[aria-expanded="true"]::before {
+  transform: rotate(90deg);
+}
+.collapsible-content {
+  display: none;
+  padding: 1rem 1.25rem;
+  border: 1px solid #c5cae9;
+  border-top: none;
+  border-radius: 0 0 6px 6px;
+  background: #fff;
+}
+.collapsible-content.open {
+  display: block;
+}
+
+/* === CODE BLOCKS === */
+pre {
+  background: #263238;
+  color: #e0e0e0;
+  border-radius: 6px;
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  margin: 0.75rem 0;
+}
+pre code {
+  font-family: "Fira Code", "Consolas", "Courier New", monospace;
+}
+code {
+  font-family: "Fira Code", "Consolas", "Courier New", monospace;
+  font-size: 0.88rem;
+}
+.code-label {
+  display: inline-block;
+  background: #4fc3f7;
+  color: #1a1a2e;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.15rem 0.6rem;
+  border-radius: 4px 4px 0 0;
+  margin-bottom: -1px;
+  position: relative;
+  top: 1px;
+}
+
+/* === TABLES === */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 0.92rem;
+}
+th, td {
+  border: 1px solid #ccc;
+  padding: 0.6rem 0.75rem;
+  text-align: left;
+}
+th {
+  background: #1a1a2e;
+  color: #fff;
+  font-weight: 600;
+}
+tr:nth-child(even) { background: #f4f6f8; }
+.fillable-cell {
+  background: #fffde7;
+  border: 2px dashed #ff9800;
+  min-width: 5rem;
+}
+
+/* === KNOWLEDGE CHECK === */
+.knowledge-check {
+  background: #fff;
+  border: 2px solid #4fc3f7;
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin: 1.5rem 0;
+}
+.knowledge-check h3 {
+  color: #0f3460;
+  margin-top: 0;
+}
+.kc-question {
+  margin: 1rem 0;
+  padding: 0.75rem;
+  background: #f8f9fa;
+  border-radius: 4px;
+}
+.kc-question p { margin-bottom: 0.5rem; font-weight: 600; }
+.kc-reveal-btn {
+  background: #4fc3f7;
+  color: #1a1a2e;
+  border: none;
+  border-radius: 4px;
+  padding: 0.4rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 0.4rem;
+}
+.kc-reveal-btn:hover, .kc-reveal-btn:focus {
+  background: #0f3460;
+  color: #fff;
+  outline: 2px solid #4fc3f7;
+}
+.kc-feedback {
+  display: none;
+  margin-top: 0.5rem;
+  padding: 0.75rem;
+  border-radius: 4px;
+  background: #e8f5e9;
+  border-left: 3px solid #4caf50;
+  font-size: 0.9rem;
+}
+.kc-feedback.visible { display: block; }
+
+/* === SAMPLE OUTPUT === */
+.sample-output {
+  background: #1a1a2e;
+  color: #4fc3f7;
+  border-radius: 6px;
+  padding: 1rem 1.25rem;
+  font-family: "Fira Code", "Consolas", "Courier New", monospace;
+  font-size: 0.84rem;
+  line-height: 1.6;
+  overflow-x: auto;
+  margin: 0.75rem 0;
+  white-space: pre;
+}
+
+/* === METADATA TABLE === */
+.meta-table {
+  max-width: 28rem;
+  margin-bottom: 1.5rem;
+}
+.meta-table td { font-size: 0.9rem; }
+.meta-table td:first-child { font-weight: 600; width: 40%; }
+
+/* === LISTS === */
+ul, ol { margin: 0.5rem 0 0.5rem 1.5rem; }
+li { margin-bottom: 0.3rem; }
+
+/* === SECTION SPACING === */
+section { margin-bottom: 2.5rem; }
+
+/* === FOCUS VISIBLE === */
+:focus-visible {
+  outline: 3px solid #4fc3f7;
+  outline-offset: 2px;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 600px) {
+  main { padding: 0 0.75rem 3rem; }
+  h1 { font-size: 1.4rem; }
+  pre { font-size: 0.8rem; padding: 0.75rem; }
+  .module-nav { padding: 0.5rem 0.75rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== NAVIGATION BAR ===== -->
+<nav class="module-nav" aria-label="Module 17.2 navigation">
+  <span class="nav-title">Module 17.2</span>
+  <a href="#overview">Overview</a>
+  <a href="#why-measure">Why Measure</a>
+  <a href="#how-to-measure">How to Measure</a>
+  <a href="#experiment-design">Experiment Design</a>
+  <a href="#sample-output">Sample Output</a>
+  <a href="#interpretation">Interpretation</a>
+  <a href="#complexity-table">Complexity Table</a>
+  <a href="#knowledge-check">Knowledge Check</a>
+  <a href="#graded-work">Graded Work</a>
+</nav>
+
+<!-- ===== MAIN CONTENT ===== -->
+<main>
+
+<!-- === HEADER === -->
+<section id="overview">
+  <h1>Module 17.2 – Runtime Comparison and Complexity Analysis</h1>
+  <p class="module-subtitle">CSC 240 – Discrete Structures &nbsp;|&nbsp; Week 17 &nbsp;|&nbsp; Estimated Time: 2–2.5 hours</p>
+
+  <table class="meta-table" aria-label="Module metadata">
+    <tbody>
+      <tr><td>Module Identifier</td><td>Module 17.2</td></tr>
+      <tr><td>CSLO Alignment</td><td>CSLO 3</td></tr>
+      <tr><td>Objectives Supported</td><td>Objectives 3 and 4</td></tr>
+      <tr><td>Prerequisites</td><td>Module 17.1 completed; all four project components functional</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Why Runtime Comparison Matters</h2>
+  <p>Throughout this course you have analyzed algorithms using <strong>Big-O notation</strong> — a theoretical tool that describes how an algorithm's resource usage grows with input size. But theory alone cannot tell you whether <em>your specific implementation</em> achieves the expected growth rate. That is where <strong>empirical runtime measurement</strong> comes in: you time your code on real inputs and compare the measured growth to the theoretical prediction.</p>
+
+  <p>If the two match, you gain confidence that your implementation is correct and efficient. If they diverge, you have a powerful debugging signal — perhaps your priority queue performs linear scans instead of logarithmic extractions, or your adjacency-matrix traversal adds an unexpected |V|² factor.</p>
+
+  <p>This module prepares you to produce the <strong>side-by-side runtime output</strong> required by Component 3 of the Final Project and to write the <strong>complexity analysis section</strong> of your Analysis Document. By the end, you will have measured, recorded, and interpreted the performance of every graph algorithm in your application.</p>
+
+  <div class="callout callout-connection">
+    <p class="callout-title">↩ Connection to Week 11</p>
+    <p>In Week 11 you learned Big-O notation, solved recurrence relations, and applied the Master Theorem to recursive algorithms. Now you are applying that <em>same analytical framework</em> to graph algorithms — but this time you also have empirical data to compare against the theory. Think of this module as the practical payoff of Week 11's mathematical groundwork.</p>
+  </div>
+</section>
+
+<!-- === HOW TO MEASURE === -->
+<section id="how-to-measure">
+  <h2>How to Measure Runtime</h2>
+  <p>Both Java and C++ provide high-resolution timing utilities. The key pattern is: record a start time immediately before algorithm execution, record an end time immediately after, and compute the difference. Wrap <em>only</em> the algorithm — not graph construction or output printing — inside the timing window.</p>
+
+  <button class="collapsible-toggle" aria-expanded="false" aria-controls="java-timing-content">
+    Java Timing Code
+  </button>
+  <div class="collapsible-content" id="java-timing-content">
+    <span class="code-label">Java</span>
+<pre><code>// Measure a single algorithm run
+long startTime = System.nanoTime();
+
+// --- Algorithm execution (e.g., BFS) ---
+bfs(graph, sourceVertex);
+
+long endTime = System.nanoTime();
+long durationMs = (endTime - startTime) / 1_000_000; // convert to ms
+
+System.out.println("BFS duration: " + durationMs + " ms");
+
+// --- Averaging multiple runs ---
+int trials = 5;
+long totalNanos = 0;
+for (int t = 0; t &lt; trials; t++) {
+    resetVisited(); // clear state between runs
+    long s = System.nanoTime();
+    bfs(graph, sourceVertex);
+    long e = System.nanoTime();
+    totalNanos += (e - s);
+}
+double avgMs = (totalNanos / (double) trials) / 1_000_000.0;
+System.out.printf("BFS avg (%d trials): %.2f ms%n", trials, avgMs);</code></pre>
+    <div class="callout callout-tip">
+      <p class="callout-title">💡 Tip</p>
+      <p>Use <code>System.nanoTime()</code> — not <code>System.currentTimeMillis()</code>. The latter has only millisecond granularity and can jump due to system clock adjustments.</p>
+    </div>
+  </div>
+
+  <button class="collapsible-toggle" aria-expanded="false" aria-controls="cpp-timing-content">
+    C++ Timing Code
+  </button>
+  <div class="collapsible-content" id="cpp-timing-content">
+    <span class="code-label">C++</span>
+<pre><code>#include &lt;chrono&gt;
+#include &lt;iostream&gt;
+
+// Measure a single algorithm run
+auto start = std::chrono::high_resolution_clock::now();
+
+// --- Algorithm execution (e.g., BFS) ---
+bfs(graph, sourceVertex);
+
+auto end = std::chrono::high_resolution_clock::now();
+auto duration = std::chrono::duration_cast&lt;std::chrono::microseconds&gt;(end - start);
+std::cout &lt;&lt; "BFS duration: " &lt;&lt; duration.count() / 1000.0 &lt;&lt; " ms\n";
+
+// --- Averaging multiple runs ---
+int trials = 5;
+long long totalMicro = 0;
+for (int t = 0; t &lt; trials; t++) {
+    resetVisited(); // clear state between runs
+    auto s = std::chrono::high_resolution_clock::now();
+    bfs(graph, sourceVertex);
+    auto e = std::chrono::high_resolution_clock::now();
+    totalMicro += std::chrono::duration_cast&lt;std::chrono::microseconds&gt;(e - s).count();
+}
+double avgMs = (totalMicro / static_cast&lt;double&gt;(trials)) / 1000.0;
+std::cout &lt;&lt; "BFS avg (" &lt;&lt; trials &lt;&lt; " trials): " &lt;&lt; avgMs &lt;&lt; " ms\n";</code></pre>
+    <div class="callout callout-tip">
+      <p class="callout-title">💡 Tip</p>
+      <p>Compile with optimizations disabled (<code>-O0</code>) during timing experiments so the compiler does not eliminate your algorithm calls. Alternatively, use the result (print a checksum) to prevent dead-code elimination.</p>
+    </div>
+  </div>
+
+  <div class="callout callout-warning">
+    <p class="callout-title">⚠ Common Pitfalls</p>
+    <ul>
+      <li><strong>Including I/O in the timing window</strong> — printing traversal orders inside the timed block inflates results. Time the algorithm alone, then print results separately.</li>
+      <li><strong>Forgetting to reset state</strong> — if your visited array is not cleared between trials, subsequent runs will return instantly.</li>
+      <li><strong>JVM warm-up (Java)</strong> — the first 1–2 runs may be slower due to JIT compilation. Discard warm-up runs or include a warm-up loop before measurement begins.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- === EXPERIMENT DESIGN === -->
+<section id="experiment-design">
+  <h2>Designing Your Runtime Experiment</h2>
+  <p>A well-designed experiment isolates the variable you care about (input size) and controls everything else. Follow this structure:</p>
+
+  <button class="collapsible-toggle" aria-expanded="false" aria-controls="experiment-details">
+    Experiment Design Guide (click to expand)
+  </button>
+  <div class="collapsible-content" id="experiment-details">
+
+    <h3>1. Choose Graph Sizes</h3>
+    <ul>
+      <li><strong>Minimum requirement:</strong> Two sizes (e.g., 20 vertices / 50 edges and 100 vertices / 500 edges).</li>
+      <li><strong>Recommended:</strong> Three sizes to see a growth trend (e.g., 20, 60, 200 vertices).</li>
+      <li>Keep the edge-to-vertex ratio consistent across sizes so you are scaling both |V| and |E| proportionally (e.g., always ~2.5 edges per vertex for sparse, or ~|V|·(|V|−1)/4 for moderate density).</li>
+    </ul>
+
+    <h3>2. Generate or Construct Test Graphs</h3>
+    <ul>
+      <li><strong>Hard-coded small graph:</strong> Useful for correctness verification (you can check results by hand).</li>
+      <li><strong>Programmatic random graph:</strong> Write a helper that creates a connected graph with a given |V| and |E|. Strategy: first create a spanning tree (ensures connectivity), then add random edges until you reach the target |E|.</li>
+      <li><strong>File-based input:</strong> Store graphs in a file and load them — ensures identical input across runs.</li>
+    </ul>
+
+    <h3>3. What to Measure</h3>
+    <p>Time each algorithm <strong>separately</strong>:</p>
+    <table>
+      <thead>
+        <tr><th scope="col">Algorithm</th><th scope="col">What to Time</th><th scope="col">What to Exclude</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>BFS</td><td>Queue-based traversal from source to completion</td><td>Graph construction, output printing</td></tr>
+        <tr><td>DFS (recursive)</td><td>Recursive traversal from source to completion</td><td>Graph construction, output printing</td></tr>
+        <tr><td>DFS (iterative)</td><td>Stack-based traversal from source to completion</td><td>Graph construction, output printing</td></tr>
+        <tr><td>MST (Prim's or Kruskal's)</td><td>Full MST computation</td><td>Graph construction, result printing</td></tr>
+        <tr><td>Dijkstra's</td><td>Shortest-path computation from source</td><td>Graph construction, path reconstruction printing</td></tr>
+      </tbody>
+    </table>
+
+    <h3>4. Number of Trials</h3>
+    <ul>
+      <li>Run each algorithm <strong>3–5 times</strong> on the same graph and report the <strong>average</strong>.</li>
+      <li>This reduces noise from background system processes, garbage collection (Java), or cache effects.</li>
+      <li>Optionally discard the highest and lowest times (trimmed mean) for cleaner data.</li>
+    </ul>
+
+    <h3>5. Record-Keeping</h3>
+    <p>Print results in a structured format your Analysis Document can reference directly. See the sample output below.</p>
+  </div>
+</section>
+
+<!-- === SAMPLE OUTPUT === -->
+<section id="sample-output">
+  <h2>Sample Output Format</h2>
+  <p>Model your application's runtime output on this format. It clearly identifies graph parameters, algorithm, and averaged timing:</p>
+
+  <div class="sample-output" role="img" aria-label="Sample console output showing runtime comparison results">
+============================================================
+           RUNTIME COMPARISON — Network Analysis App
+============================================================
+
+Graph 1: |V| = 20, |E| = 50 (sparse, ~2.5 edges/vertex)
+------------------------------------------------------------
+  BFS            :   0.08 ms  (avg of 5 trials)
+  DFS (recursive):   0.07 ms  (avg of 5 trials)
+  DFS (iterative):   0.07 ms  (avg of 5 trials)
+  Prim's MST     :   0.18 ms  (avg of 5 trials)
+  Dijkstra's     :   0.21 ms  (avg of 5 trials)
+
+Graph 2: |V| = 100, |E| = 250 (sparse, ~2.5 edges/vertex)
+------------------------------------------------------------
+  BFS            :   0.35 ms  (avg of 5 trials)
+  DFS (recursive):   0.33 ms  (avg of 5 trials)
+  DFS (iterative):   0.34 ms  (avg of 5 trials)
+  Prim's MST     :   1.20 ms  (avg of 5 trials)
+  Dijkstra's     :   1.38 ms  (avg of 5 trials)
+
+Graph 3: |V| = 500, |E| = 1250 (sparse, ~2.5 edges/vertex)
+------------------------------------------------------------
+  BFS            :   1.65 ms  (avg of 5 trials)
+  DFS (recursive):   1.58 ms  (avg of 5 trials)
+  DFS (iterative):   1.60 ms  (avg of 5 trials)
+  Prim's MST     :   8.40 ms  (avg of 5 trials)
+  Dijkstra's     :   9.75 ms  (avg of 5 trials)
+
+============================================================</div>
+
+  <div class="callout callout-info">
+    <p class="callout-title">ℹ Note</p>
+    <p>Your exact numbers will differ based on hardware, language, and implementation details. What matters for the Analysis Document is the <strong>ratio</strong> between graph sizes — does it match the theoretical prediction?</p>
+  </div>
+</section>
+
+<!-- === INTERPRETATION GUIDE === -->
+<section id="interpretation">
+  <h2>Interpreting Your Results</h2>
+  <p>Use this guide to compare your measured growth ratios against theoretical expectations. The key question: <em>when I scale the input by factor k, does the runtime scale by the factor Big-O predicts?</em></p>
+
+  <button class="collapsible-toggle" aria-expanded="false" aria-controls="growth-rates-content">
+    Expected Growth Rates by Algorithm
+  </button>
+  <div class="collapsible-content" id="growth-rates-content">
+    <table>
+      <thead>
+        <tr><th scope="col">Algorithm</th><th scope="col">Time Complexity</th><th scope="col">If Input ×5</th><th scope="col">Expected Runtime Factor</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>BFS</td>
+          <td>O(|V| + |E|)</td>
+          <td>|V| ×5, |E| ×5</td>
+          <td>≈ 5×</td>
+        </tr>
+        <tr>
+          <td>DFS (recursive or iterative)</td>
+          <td>O(|V| + |E|)</td>
+          <td>|V| ×5, |E| ×5</td>
+          <td>≈ 5×</td>
+        </tr>
+        <tr>
+          <td>Prim's (binary heap)</td>
+          <td>O((|V| + |E|) log |V|)</td>
+          <td>|V| ×5, |E| ×5</td>
+          <td>≈ 5 × (log(5n) / log(n)) — slightly more than 5×</td>
+        </tr>
+        <tr>
+          <td>Kruskal's (Union-Find)</td>
+          <td>O(|E| log |E|)</td>
+          <td>|E| ×5</td>
+          <td>≈ 5 × (log(5m) / log(m)) — slightly more than 5×</td>
+        </tr>
+        <tr>
+          <td>Dijkstra's (binary heap)</td>
+          <td>O((|V| + |E|) log |V|)</td>
+          <td>|V| ×5, |E| ×5</td>
+          <td>≈ 5 × (log(5n) / log(n)) — slightly more than 5×</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Reading the Ratio</h3>
+    <p>Suppose your Graph 1 has 20 vertices and Graph 2 has 100 vertices (a 5× increase), with edges scaled proportionally:</p>
+    <ul>
+      <li><strong>BFS/DFS:</strong> If Graph 1 takes 0.08 ms and Graph 2 takes 0.35 ms, the ratio is 0.35/0.08 ≈ 4.4×. Close to 5× — consistent with O(|V| + |E|). ✓</li>
+      <li><strong>Prim's/Dijkstra's:</strong> If Graph 1 takes 0.20 ms and Graph 2 takes 1.30 ms, the ratio is 6.5×. Slightly above 5× due to the log factor — consistent with O((|V|+|E|) log |V|). ✓</li>
+    </ul>
+  </div>
+
+  <button class="collapsible-toggle" aria-expanded="false" aria-controls="anomalies-content">
+    Detecting Implementation Anomalies
+  </button>
+  <div class="collapsible-content" id="anomalies-content">
+    <p>When measured results <strong>don't match</strong> theory, use this diagnostic table:</p>
+    <table>
+      <thead>
+        <tr><th scope="col">Symptom</th><th scope="col">Likely Cause</th><th scope="col">Fix</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>BFS/DFS ratio ≈ 25× when input scaled 5×</td>
+          <td>Iterating over full adjacency matrix rows → O(|V|²) instead of O(|V|+|E|)</td>
+          <td>Switch neighbor iteration to adjacency list</td>
+        </tr>
+        <tr>
+          <td>Dijkstra's ratio ≈ 25× when input scaled 5×</td>
+          <td>Linear scan to find minimum instead of heap extract → O(|V|²)</td>
+          <td>Use your min-heap's extractMin() for O(log |V|)</td>
+        </tr>
+        <tr>
+          <td>Prim's much slower than expected</td>
+          <td>Rebuilding heap from scratch each iteration instead of using decrease-key</td>
+          <td>Implement decrease-key or use lazy deletion with a visited check</td>
+        </tr>
+        <tr>
+          <td>Runtime varies wildly between trials</td>
+          <td>Garbage collection (Java) or background processes</td>
+          <td>Increase trials to 10; discard outliers; close other applications</td>
+        </tr>
+        <tr>
+          <td>Second run is much faster than first</td>
+          <td>JVM JIT warm-up (Java) or CPU cache effects</td>
+          <td>Add 2–3 warm-up iterations before measurement begins</td>
+        </tr>
+        <tr>
+          <td>Recursive DFS crashes on large graphs</td>
+          <td>Stack overflow from deep recursion</td>
+          <td>Increase stack size or note limitation in README; use iterative DFS for large inputs</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-warning">
+      <p class="callout-title">⚠ Important</p>
+      <p>If your results don't match theory, <strong>don't fabricate data</strong>. Report what you measured and explain the discrepancy in your Analysis Document. Honest analysis of unexpected results demonstrates deeper understanding and earns more credit than faked numbers.</p>
+    </div>
+  </div>
+</section>
+
+<!-- === COMPLEXITY TABLE === -->
+<section id="complexity-table">
+  <h2>Complexity Comparison Table</h2>
+  <p>Use this table to organize your runtime results for the Analysis Document. Fill in each cell with your measured data and the theoretical expectation. This table (or one like it) should appear in Section 4 of your Analysis Document.</p>
+
+  <table aria-label="Fillable complexity comparison table for student use">
+    <thead>
+      <tr>
+        <th scope="col">Algorithm</th>
+        <th scope="col">Theoretical Time Complexity</th>
+        <th scope="col">Graph 1 (n₁ vertices, m₁ edges)<br>Measured Avg</th>
+        <th scope="col">Graph 2 (n₂ vertices, m₂ edges)<br>Measured Avg</th>
+        <th scope="col">Measured Ratio<br>(Graph 2 / Graph 1)</th>
+        <th scope="col">Expected Ratio<br>(from Big-O)</th>
+        <th scope="col">Match?<br>(✓ or explain)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>BFS</td>
+        <td>O(|V| + |E|)</td>
+        <td class="fillable-cell">___ ms</td>
+        <td class="fillable-cell">___ ms</td>
+        <td class="fillable-cell">___×</td>
+        <td>≈ (n₂+m₂)/(n₁+m₁)</td>
+        <td class="fillable-cell"></td>
+      </tr>
+      <tr>
+        <td>DFS (recursive)</td>
+        <td>O(|V| + |E|)</td>
+        <td class="fillable-cell">___ ms</td>
+        <td class="fillable-cell">___ ms</td>
+        <td class="fillable-cell">___×</td>
+        <td>≈ (n₂+m₂)/(n₁+m₁)</td>
+        <td class="fillable-cell"></td>
+      </tr>
+      <tr>
+        <td>DFS (iterative)</td>
+        <td>O(|V| + |E|)</td>
+        <td class="fillable-cell">___ ms</td>
+        <td class="fillable-cell">___ ms</td>
+        <td class="fillable-cell">___×</td>
+        <td>≈ (n₂+m₂)/(n₁+m₁)</td>
+        <td class="fillable-cell"></td>
+      </tr>
+      <tr>
+        <td>MST (Prim's <em>or</em> Kruskal's)</td>
+        <td class="fillable-cell">O(___)</td>
+        <td class="fillable-cell">___ ms</td>
+        <td class="fillable-cell">___ ms</td>
+        <td class="fillable-cell">___×</td>
+        <td class="fillable-cell">≈ ___</td>
+        <td class="fillable-cell"></td>
+      </tr>
+      <tr>
+        <td>Dijkstra's</td>
+        <td>O((|V|+|E|) log |V|)</td>
+        <td class="fillable-cell">___ ms</td>
+        <td class="fillable-cell">___ ms</td>
+        <td class="fillable-cell">___×</td>
+        <td>≈ (n₂+m₂)log(n₂) / ((n₁+m₁)log(n₁))</td>
+        <td class="fillable-cell"></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-tip">
+    <p class="callout-title">💡 How to Fill This Table</p>
+    <ul>
+      <li><strong>Theoretical Time Complexity:</strong> For the MST row, write the complexity of the algorithm you actually implemented (Prim's with binary heap: O((|V|+|E|) log |V|); Kruskal's with Union-Find: O(|E| log |E|)).</li>
+      <li><strong>Measured Avg:</strong> The average runtime from your 3–5 trial runs.</li>
+      <li><strong>Measured Ratio:</strong> Divide Graph 2's time by Graph 1's time.</li>
+      <li><strong>Expected Ratio:</strong> Plug your actual n₁, m₁, n₂, m₂ values into the Big-O formula ratio.</li>
+      <li><strong>Match?:</strong> If the measured ratio is within ~30% of the expected ratio, write ✓. If not, write a brief explanation (e.g., "Using adjacency matrix — adds |V| factor").</li>
+    </ul>
+  </div>
+</section>
+
+<!-- === KNOWLEDGE CHECK === -->
+<section id="knowledge-check">
+  <h2>Self-Check: Runtime Analysis</h2>
+  <div class="knowledge-check">
+    <h3>Ungraded Knowledge Check – Module 17.2</h3>
+    <p>Test your understanding before moving on. These items align with the Final Project runtime comparison requirement.</p>
+
+    <!-- Check 17.2a -->
+    <div class="kc-question">
+      <p>Check 17.2a: If you double both the number of vertices and the number of edges in your graph, by what factor should BFS runtime approximately increase? Why?</p>
+      <button class="kc-reveal-btn" aria-expanded="false" aria-controls="feedback-a" onclick="toggleFeedback('feedback-a', this)">Reveal Answer</button>
+      <div class="kc-feedback" id="feedback-a">
+        <strong>Answer:</strong> Approximately <strong>2×</strong>. BFS has time complexity O(|V| + |E|). If both |V| and |E| double, then (2|V| + 2|E|) / (|V| + |E|) = 2. The runtime should roughly double because BFS visits each vertex and each edge exactly once, and you doubled both quantities.
+      </div>
+    </div>
+
+    <!-- Check 17.2b -->
+    <div class="kc-question">
+      <p>Check 17.2b: You run Prim's MST algorithm (with a binary heap) on Graph 1 (20 vertices, 50 edges) and get 0.18 ms. On Graph 2 (100 vertices, 250 edges) you get 1.20 ms. The ratio is 6.7×. The input scaled by 5× in both |V| and |E|. Is this consistent with O((|V|+|E|) log |V|)? Explain in one sentence.</p>
+      <button class="kc-reveal-btn" aria-expanded="false" aria-controls="feedback-b" onclick="toggleFeedback('feedback-b', this)">Reveal Answer</button>
+      <div class="kc-feedback" id="feedback-b">
+        <strong>Answer:</strong> Yes, this is consistent. The expected ratio is approximately 5 × (log 100 / log 20) ≈ 5 × (2 / 1.3) ≈ 7.7×. The measured 6.7× is in the right ballpark — slightly below the theoretical maximum due to constant factors and measurement noise. The key insight: the log factor causes Prim's to grow <em>faster</em> than linearly, which is exactly what the 6.7× (greater than 5×) demonstrates.
+      </div>
+    </div>
+
+    <!-- Check 17.2c -->
+    <div class="kc-question">
+      <p>Check 17.2c: Your Dijkstra's implementation shows a 10× runtime increase when you only 5× the input size (vertices and edges). What is the most likely implementation problem, and how would you confirm it?</p>
+      <button class="kc-reveal-btn" aria-expanded="false" aria-controls="feedback-c" onclick="toggleFeedback('feedback-c', this)">Reveal Answer</button>
+      <div class="kc-feedback" id="feedback-c">
+        <strong>Answer:</strong> The most likely problem is that your "priority queue" is performing a <strong>linear scan</strong> to find the minimum-distance vertex instead of using a true O(log |V|) heap extraction. This would give you O(|V|²) behavior instead of O((|V|+|E|) log |V|). A 5× increase in |V| with O(|V|²) yields a 25× increase — your 10× is between the expected 5–7× (correct heap) and 25× (linear scan), suggesting a partial issue. <strong>To confirm:</strong> add a counter inside your extractMin operation. If it iterates over all vertices each time (count ≈ |V| per extraction), you have a linear scan. A correct binary heap should touch at most O(log |V|) elements per extraction.
+      </div>
+    </div>
+
+    <!-- Check 17.2d (bonus) -->
+    <div class="kc-question">
+      <p>Check 17.2d: You implement Kruskal's algorithm. On a graph with |E| = 50 edges it takes 0.05 ms; on |E| = 500 edges it takes 0.65 ms. The ratio is 13×. The expected ratio for O(|E| log |E|) with a 10× increase in |E| is 10 × (log 500 / log 50) ≈ 10 × 1.59 ≈ 15.9×. Is your measurement reasonable?</p>
+      <button class="kc-reveal-btn" aria-expanded="false" aria-controls="feedback-d" onclick="toggleFeedback('feedback-d', this)">Reveal Answer</button>
+      <div class="kc-feedback" id="feedback-d">
+        <strong>Answer:</strong> Yes, 13× is reasonable and consistent with O(|E| log |E|). It is slightly below the theoretical 15.9× — this is normal because: (1) constant factors and overhead make the smaller input slightly "slower per unit" than the larger one, (2) Union-Find with path compression makes the union operations nearly O(1) in practice (inverse Ackermann), so the sorting step dominates and the actual growth is close to O(|E| log |E|). A ratio of 13× is well within the expected range and definitely not linear (which would be exactly 10×) or quadratic (which would be 100×).
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- === GRADED WORK CONNECTION === -->
+<section id="graded-work">
+  <h2>Connection to Graded Work</h2>
+  <table>
+    <thead>
+      <tr><th scope="col">Category</th><th scope="col">Weight</th><th scope="col">Points</th><th scope="col">How This Module Helps</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Functionality</strong></td>
+        <td>50%</td>
+        <td>125</td>
+        <td>Component 3 requires "side-by-side runtime output on at least two different graph sizes." This module walks you through producing that output correctly.</td>
+      </tr>
+      <tr>
+        <td><strong>Analysis Document</strong></td>
+        <td>15%</td>
+        <td>37.5</td>
+        <td>The complexity analysis section of your document draws directly from the interpretation work and complexity table in this module.</td>
+      </tr>
+    </tbody>
+  </table>
+  <p style="margin-top:0.6rem; font-size:0.88rem;"><em>No new graded assignments are introduced this week. The Final Project (250 pts) is the sole deliverable.</em></p>
+
+  <h3>What Comes Next</h3>
+  <ul>
+    <li><strong>Module 17.3</strong> – Analysis Document and Technical Writing: structure and write your 1–2 page analysis using the data you gathered here.</li>
+    <li><strong>Module 17.4</strong> – Code Quality, Documentation, and Final Submission: polish code, write README, complete self-evaluation, and submit.</li>
+  </ul>
+</section>
+
+</main>
+
+<!-- ===== JAVASCRIPT ===== -->
+<script>
+// === Collapsible Sections ===
+document.querySelectorAll('.collapsible-toggle').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var expanded = this.getAttribute('aria-expanded') === 'true';
+    this.setAttribute('aria-expanded', String(!expanded));
+    var contentId = this.getAttribute('aria-controls');
+    var content = document.getElementById(contentId);
+    if (content) {
+      content.classList.toggle('open', !expanded);
+    }
+  });
+  btn.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      this.click();
+    }
+  });
+});
+
+// === Knowledge Check Feedback ===
+function toggleFeedback(id, btn) {
+  var feedback = document.getElementById(id);
+  if (feedback) {
+    var isVisible = feedback.classList.contains('visible');
+    feedback.classList.toggle('visible', !isVisible);
+    btn.setAttribute('aria-expanded', String(!isVisible));
+    btn.textContent = isVisible ? 'Reveal Answer' : 'Hide Answer';
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 17.1 – Integration Testing and Component Verification | CSC 240</title>
+<style>
+/* ===== CSS RESET & BASE ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; scroll-padding-top: 72px; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #1a1a2e;
+  background: #f8f9fa;
+  padding: 0;
+}
+
+/* ===== TOP NAV BAR ===== */
+.nav-bar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: #1a1a2e;
+  padding: 0.6rem 1.2rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1rem;
+  align-items: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+.nav-bar a {
+  color: #e0e0e0;
+  text-decoration: none;
+  font-size: 0.85rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  transition: background 0.2s, outline 0.2s;
+}
+.nav-bar a:hover { background: #16213e; color: #fff; }
+.nav-bar a:focus-visible {
+  outline: 3px solid #fca311;
+  outline-offset: 2px;
+}
+.nav-bar .nav-title {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #fca311;
+  margin-right: auto;
+}
+
+/* ===== MAIN CONTAINER ===== */
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+/* ===== HEADINGS ===== */
+h1 { font-size: 1.8rem; color: #0f3460; margin-bottom: 0.5rem; }
+h2 { font-size: 1.4rem; color: #16213e; margin-top: 2.2rem; margin-bottom: 0.8rem; border-bottom: 3px solid #fca311; padding-bottom: 0.3rem; }
+h3 { font-size: 1.15rem; color: #1a1a2e; margin-top: 1.4rem; margin-bottom: 0.5rem; }
+
+/* ===== SUBTITLE & META ===== */
+.module-meta {
+  background: #e8f4f8;
+  border-left: 5px solid #0f3460;
+  padding: 1rem 1.2rem;
+  margin-bottom: 1.5rem;
+  border-radius: 0 6px 6px 0;
+}
+.module-meta p { margin: 0.2rem 0; font-size: 0.92rem; }
+.module-meta strong { color: #0f3460; }
+
+/* ===== CALLOUT BOXES ===== */
+.callout {
+  border-radius: 6px;
+  padding: 1rem 1.2rem;
+  margin: 1.2rem 0;
+}
+.callout-info { background: #e3f2fd; border-left: 5px solid #1976d2; }
+.callout-warning { background: #fff8e1; border-left: 5px solid #f9a825; }
+.callout-success { background: #e8f5e9; border-left: 5px solid #388e3c; }
+.callout-rubric { background: #fce4ec; border-left: 5px solid #c62828; }
+.callout-title {
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* ===== TABLES ===== */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 0.9rem;
+}
+th, td {
+  border: 1px solid #ccc;
+  padding: 0.6rem 0.8rem;
+  text-align: left;
+  vertical-align: top;
+}
+th { background: #0f3460; color: #fff; font-weight: 600; }
+tr:nth-child(even) { background: #f4f8fb; }
+
+/* ===== COLLAPSIBLE / ACCORDION ===== */
+.collapsible {
+  margin: 0.8rem 0;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.collapsible-toggle {
+  width: 100%;
+  background: #eef2f7;
+  border: none;
+  padding: 0.85rem 1.1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background 0.2s;
+  color: #1a1a2e;
+}
+.collapsible-toggle:hover { background: #dce6f0; }
+.collapsible-toggle:focus-visible {
+  outline: 3px solid #fca311;
+  outline-offset: -2px;
+}
+.collapsible-toggle::before {
+  content: "▶";
+  font-size: 0.75rem;
+  transition: transform 0.25s;
+  display: inline-block;
+}
+.collapsible-toggle[aria-expanded="true"]::before {
+  transform: rotate(90deg);
+}
+.collapsible-content {
+  display: none;
+  padding: 1rem 1.2rem;
+  border-top: 1px solid #ddd;
+  background: #fff;
+}
+.collapsible-content.open { display: block; }
+
+/* ===== CHECKLIST ===== */
+.checklist { list-style: none; padding: 0; }
+.checklist li {
+  padding: 0.5rem 0 0.5rem 2rem;
+  position: relative;
+  border-bottom: 1px solid #eee;
+}
+.checklist li::before {
+  content: "☐";
+  position: absolute;
+  left: 0.3rem;
+  font-size: 1.1rem;
+  color: #0f3460;
+}
+.checklist li.checked::before {
+  content: "☑";
+  color: #388e3c;
+}
+
+/* ===== INTERACTIVE CHECKLIST (JS) ===== */
+.check-item {
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin: 0.5rem 0;
+  background: #fff;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+}
+.check-item input[type="checkbox"] {
+  margin-top: 0.25rem;
+  width: 1.1rem;
+  height: 1.1rem;
+  accent-color: #0f3460;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.check-item label { cursor: pointer; flex: 1; }
+
+/* ===== KNOWLEDGE CHECK ===== */
+.kc-question {
+  margin: 1rem 0;
+  padding: 1rem;
+  background: #f5f5ff;
+  border: 1px solid #c5cae9;
+  border-radius: 6px;
+}
+.kc-question p { margin-bottom: 0.6rem; font-weight: 600; }
+.kc-options { list-style: none; padding: 0; }
+.kc-options li { margin: 0.3rem 0; }
+.kc-btn {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.4rem 1rem;
+  background: #0f3460;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.kc-btn:hover { background: #1a4a8a; }
+.kc-btn:focus-visible { outline: 3px solid #fca311; outline-offset: 2px; }
+.kc-feedback {
+  margin-top: 0.5rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  display: none;
+}
+.kc-feedback.correct { display: block; background: #e8f5e9; border: 1px solid #66bb6a; }
+.kc-feedback.incorrect { display: block; background: #fce4ec; border: 1px solid #ef5350; }
+
+/* ===== PROGRESS TRACKER ===== */
+.progress-bar-container {
+  background: #ddd;
+  border-radius: 10px;
+  height: 12px;
+  margin: 0.5rem 0 1.5rem;
+  overflow: hidden;
+}
+.progress-bar-fill {
+  background: linear-gradient(90deg, #0f3460, #1976d2);
+  height: 100%;
+  width: 0%;
+  transition: width 0.4s ease;
+  border-radius: 10px;
+}
+
+/* ===== UTILITY ===== */
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0,0,0,0); border: 0;
+}
+code {
+  background: #eef2f7;
+  padding: 0.15rem 0.4rem;
+  border-radius: 3px;
+  font-size: 0.88rem;
+}
+ul, ol { margin: 0.5rem 0 0.5rem 1.5rem; }
+p { margin: 0.6rem 0; }
+</style>
+</head>
+<body>
+
+<!-- ===== NAVIGATION BAR ===== -->
+<nav class="nav-bar" aria-label="Module section navigation">
+  <span class="nav-title">Module 17.1</span>
+  <a href="#context">Context</a>
+  <a href="#checklist">Verification Checklist</a>
+  <a href="#integration">Integration Testing</a>
+  <a href="#edge-cases">Edge Cases</a>
+  <a href="#debugging">Debugging Tips</a>
+  <a href="#knowledge-check">Knowledge Check</a>
+  <a href="#graded-work">Graded Work</a>
+</nav>
+
+<main class="container">
+
+<!-- ===== HEADER ===== -->
+<h1>Module 17.1 – Integration Testing and Component Verification</h1>
+
+<div class="module-meta">
+  <p><strong>Week:</strong> 17 of 17 (Final Week)</p>
+  <p><strong>Estimated Time:</strong> 3–4 hours</p>
+  <p><strong>CSLO Alignment:</strong> CSLO 3 – Implement graph/tree traversal methods in a programming language.</p>
+  <p><strong>Graded Deliverable:</strong> Final Project: Network Analysis Application (250 pts) – due end of Week 17, 11:59 PM</p>
+</div>
+
+<!-- ===== SECTION: CONTEXT ===== -->
+<section id="context">
+<h2>Where You Are and What This Module Covers</h2>
+
+<p>Welcome to the final week of CSC 240. By now you have completed all quizzes, problem sets, and programming exercises. Your PE-09 code (BFS, DFS, MST, Dijkstra's) should already be working. Your tree-based internal structure (min-heap or BST) should be designed and at least partially implemented from Week 15. Quiz 5 is behind you.</p>
+
+<p>This module focuses on <strong>integration testing</strong> — the process of verifying that your four Final Project components work together as a single, cohesive application. Individual components may pass their own unit tests but still fail when connected: a Graph Builder might store edges differently than your traversal code expects, or your Dijkstra's implementation might not actually call your student-built priority queue.</p>
+
+<p>Integration testing matters because the Final Project rubric evaluates <strong>Functionality (50% = 125 pts)</strong> holistically — the grader will run your application end-to-end, not test each function in isolation. Catching integration bugs now, before submission, is the single highest-value activity you can do this week.</p>
+
+<div class="callout callout-info">
+  <div class="callout-title">⏱ Time Management</div>
+  <p>If you are entering Week 17 still writing core algorithm code, <strong>prioritize getting all four components functional before perfecting any one component.</strong> Partial credit across all components is worth more than a perfect Component 1 with missing Components 3–4.</p>
+</div>
+</section>
+
+<!-- ===== SECTION: COMPONENT CHECKLIST ===== -->
+<section id="checklist">
+<h2>Component-by-Component Verification Checklist</h2>
+
+<p>Work through each component below. Check off each item as you verify it passes. This is your pre-integration "unit confidence" step — confirm each piece works alone before testing them together.</p>
+
+<div class="progress-bar-container" aria-hidden="true">
+  <div class="progress-bar-fill" id="progressFill"></div>
+</div>
+<p id="progressText" aria-live="polite" style="font-size:0.88rem; color:#555;">Progress: 0 of 16 items verified</p>
+
+<!-- Component 1 -->
+<div class="collapsible">
+  <button class="collapsible-toggle" aria-expanded="false" aria-controls="comp1-content">Component 1: Graph Builder (Weeks 12–14)</button>
+  <div class="collapsible-content" id="comp1-content" role="region">
+    <p>Your Graph Builder implements the foundational data structure. Verify each capability:</p>
+    <div class="check-item"><input type="checkbox" id="c1a" class="progress-check"><label for="c1a">Can you create a graph from scratch — add vertices, add weighted/unweighted edges?</label></div>
+    <div class="check-item"><input type="checkbox" id="c1b" class="progress-check"><label for="c1b">Can you switch between (or support both) adjacency matrix and adjacency list representations?</label></div>
+    <div class="check-item"><input type="checkbox" id="c1c" class="progress-check"><label for="c1c">Can you display graph properties: vertex count, edge count, degree of each vertex?</label></div>
+    <div class="check-item"><input type="checkbox" id="c1d" class="progress-check"><label for="c1d">Does your graph correctly handle both directed and undirected modes (if applicable to your design)?</label></div>
+  </div>
+</div>
+
+<!-- Component 2 -->
+<div class="collapsible">
+  <button class="collapsible-toggle" aria-expanded="false" aria-controls="comp2-content">Component 2: Traversal Algorithms (Week 13)</button>
+  <div class="collapsible-content" id="comp2-content" role="region">
+    <p>Traversals are the dynamic heart of graph algorithms. Verify correctness from multiple starting vertices:</p>
+    <div class="check-item"><input type="checkbox" id="c2a" class="progress-check"><label for="c2a">Does BFS produce correct traversal order from any starting vertex?</label></div>
+    <div class="check-item"><input type="checkbox" id="c2b" class="progress-check"><label for="c2b">Does DFS (recursive) produce correct traversal order?</label></div>
+    <div class="check-item"><input type="checkbox" id="c2c" class="progress-check"><label for="c2c">Does DFS (iterative) produce the same set of visited vertices as recursive DFS? (Order may differ due to stack vs. call-stack neighbor processing.)</label></div>
+    <div class="check-item"><input type="checkbox" id="c2d" class="progress-check"><label for="c2d">Does connected-components detection correctly identify all components in a disconnected graph?</label></div>
+    <div class="check-item"><input type="checkbox" id="c2e" class="progress-check"><label for="c2e">Does topological sort work on a DAG and correctly reject graphs with cycles?</label></div>
+  </div>
+</div>
+
+<!-- Component 3 -->
+<div class="collapsible">
+  <button class="collapsible-toggle" aria-expanded="false" aria-controls="comp3-content">Component 3: Advanced Graph Algorithms (Week 14)</button>
+  <div class="collapsible-content" id="comp3-content" role="region">
+    <p>These algorithms build on your Graph Builder and (for Prim's/Dijkstra's) use your tree-based structure:</p>
+    <div class="check-item"><input type="checkbox" id="c3a" class="progress-check"><label for="c3a">Does your MST algorithm (Kruskal's or Prim's) produce a valid MST with correct total weight?</label></div>
+    <div class="check-item"><input type="checkbox" id="c3b" class="progress-check"><label for="c3b">Does Dijkstra's shortest path produce the correct path and distance from a source to all reachable vertices?</label></div>
+    <div class="check-item"><input type="checkbox" id="c3c" class="progress-check"><label for="c3c">Can you run both algorithms on at least two different graph sizes and display runtime output?</label></div>
+  </div>
+</div>
+
+<!-- Component 4 -->
+<div class="collapsible">
+  <button class="collapsible-toggle" aria-expanded="false" aria-controls="comp4-content">Component 4: Tree-Based Internal Structure (Week 15)</button>
+  <div class="collapsible-content" id="comp4-content" role="region">
+    <p>This component is worth 15% of your project grade (37.5 pts). It must be student-implemented and meaningfully used:</p>
+    <div class="check-item"><input type="checkbox" id="c4a" class="progress-check"><label for="c4a">Is your min-heap/priority queue (or BST) <strong>student-implemented</strong> — not a library class like <code>PriorityQueue</code> or <code>TreeMap</code>?</label></div>
+    <div class="check-item"><input type="checkbox" id="c4b" class="progress-check"><label for="c4b">Is it <strong>meaningfully used</strong> by a graph algorithm (e.g., priority queue in Dijkstra's or Prim's), not just present in the codebase?</label></div>
+    <div class="check-item"><input type="checkbox" id="c4c" class="progress-check"><label for="c4c">Can you demonstrate at least one tree traversal (in-order, pre-order, or level-order) on the structure within your application?</label></div>
+    <div class="check-item"><input type="checkbox" id="c4d" class="progress-check"><label for="c4d">Does the tree structure maintain its invariant (heap property or BST property) after every insert and extract/delete operation?</label></div>
+  </div>
+</div>
+
+</section>
+
+<!-- ===== SECTION: INTEGRATION TESTING ===== -->
+<section id="integration">
+<h2>End-to-End Integration Testing Strategy</h2>
+
+<p>Once each component passes its individual checks, test the <strong>complete data flow</strong> in a single execution. Integration testing verifies that components communicate correctly — that the graph your Builder creates is the same graph your algorithms traverse.</p>
+
+<h3>The Integration Pipeline</h3>
+<p>Your application should support this end-to-end flow:</p>
+
+<div class="callout callout-success">
+  <div class="callout-title">🔗 Data Flow: Single Execution Path</div>
+  <ol>
+    <li><strong>Graph Input →</strong> Build graph using Graph Builder (add vertices, add weighted edges)</li>
+    <li><strong>Construction →</strong> Store in adjacency list (and/or matrix); display graph properties</li>
+    <li><strong>Traversal →</strong> Run BFS and DFS from a specified source; output traversal orders</li>
+    <li><strong>Advanced Algorithms →</strong> Run MST (output edges + total weight); Run Dijkstra's (output shortest paths)</li>
+    <li><strong>Tree Structure Active →</strong> During step 4, your student-built min-heap/BST performs insert/extract operations</li>
+    <li><strong>Output →</strong> All results displayed; runtime recorded</li>
+  </ol>
+</div>
+
+<h3>Three-Configuration Testing Protocol</h3>
+<p>Test your full pipeline on at least three graph configurations:</p>
+
+<table>
+  <thead>
+    <tr><th scope="col">Configuration</th><th scope="col">Purpose</th><th scope="col">Suggested Size</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Small graph</td><td>Manual verification — you can check every output by hand</td><td>5–7 vertices, 7–10 edges</td></tr>
+    <tr><td>Medium graph</td><td>Runtime comparison — large enough to show measurable time differences</td><td>15–20+ vertices, 30–50+ edges</td></tr>
+    <tr><td>Edge-case graph</td><td>Robustness — disconnected, single vertex, or complete graph</td><td>Varies (see Edge Cases section)</td></tr>
+  </tbody>
+</table>
+
+<h3>Verifying Tree Structure Is Actually Called</h3>
+<p>A common mistake: the tree-based structure exists in the code but the algorithm bypasses it (e.g., using a simple linear scan instead of the heap). To verify meaningful use:</p>
+<ul>
+  <li>Add temporary print/log statements inside your heap's <code>insert()</code> and <code>extractMin()</code> methods.</li>
+  <li>Run Dijkstra's (or Prim's) on your small test graph.</li>
+  <li>Confirm you see insert/extract output for every relaxation step.</li>
+  <li>Remove or disable the print statements before final submission (or guard them behind a <code>DEBUG</code> flag).</li>
+</ul>
+
+</section>
+
+<!-- ===== SECTION: EDGE CASES ===== -->
+<section id="edge-cases">
+<h2>Edge-Case Testing Guide</h2>
+
+<p>Edge cases reveal assumptions in your code. The table below lists critical edge cases, what to test, and what correct behavior looks like. Use this as a reference while testing.</p>
+
+<table>
+  <thead>
+    <tr><th scope="col">Edge Case</th><th scope="col">What to Test</th><th scope="col">Expected Behavior</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Empty graph</strong><br>(0 vertices, 0 edges)</td>
+      <td>All operations: display, BFS, DFS, MST, Dijkstra's</td>
+      <td>Graceful handling — informative message (e.g., "Graph is empty"), no crash or exception</td>
+    </tr>
+    <tr>
+      <td><strong>Single vertex, no edges</strong></td>
+      <td>BFS/DFS from that vertex; MST; Dijkstra's</td>
+      <td>Traversal returns only that vertex; MST has weight 0 (no edges); Dijkstra's reports distance 0 to itself, unreachable to others</td>
+    </tr>
+    <tr>
+      <td><strong>Disconnected graph</strong><br>(multiple components)</td>
+      <td>Connected components; BFS/DFS; MST</td>
+      <td>Components correctly identified; BFS/DFS from one component does not visit others; MST reports minimum spanning <em>forest</em> or indicates graph is not connected</td>
+    </tr>
+    <tr>
+      <td><strong>Complete graph K<sub>n</sub></strong></td>
+      <td>All algorithms; runtime measurement</td>
+      <td>Correct results; useful as the "dense graph" case for runtime comparison since |E| = n(n−1)/2</td>
+    </tr>
+    <tr>
+      <td><strong>DAG</strong><br>(directed acyclic graph)</td>
+      <td>Topological sort; DFS</td>
+      <td>Topological sort produces a valid ordering (every edge (u, v) has u before v in the output)</td>
+    </tr>
+    <tr>
+      <td><strong>Graph with cycle</strong></td>
+      <td>Topological sort; cycle detection</td>
+      <td>Topological sort correctly rejects the graph and reports "cycle detected"</td>
+    </tr>
+    <tr>
+      <td><strong>Graph with one edge</strong></td>
+      <td>MST; Dijkstra's</td>
+      <td>MST = that single edge; Dijkstra's from one endpoint reaches the other with distance = edge weight</td>
+    </tr>
+    <tr>
+      <td><strong>Negative-weight edge</strong><br>(if your design allows)</td>
+      <td>Dijkstra's</td>
+      <td>Dijkstra's does not guarantee correctness with negative weights — document this as a known limitation or reject the input</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="callout callout-warning">
+  <div class="callout-title">⚠️ Minimum Requirement</div>
+  <p>You do not need to handle every edge case perfectly for full credit, but your application must <strong>not crash</strong> on any of them. Graceful error messages ("Cannot compute MST: graph is disconnected") earn more credit than unhandled exceptions.</p>
+</div>
+
+</section>
+
+<!-- ===== SECTION: DEBUGGING ===== -->
+<section id="debugging">
+<h2>Debugging Tips</h2>
+
+<div class="collapsible">
+  <button class="collapsible-toggle" aria-expanded="false" aria-controls="debug-content">🐛 Expand Debugging Tips</button>
+  <div class="collapsible-content" id="debug-content" role="region">
+
+    <h3>BFS/DFS Traversal Order Seems Wrong</h3>
+    <ul>
+      <li>Check your <strong>visited-set logic</strong>: are you marking a vertex as visited when you <em>enqueue/push</em> it, or when you <em>dequeue/pop</em> it? For BFS, mark on enqueue to avoid duplicates in the queue.</li>
+      <li>Check your <strong>adjacency list ordering</strong>: neighbor processing order affects traversal output. If your expected output assumes alphabetical/numerical order, sort your neighbor lists.</li>
+      <li>For iterative DFS: remember that a stack reverses the processing order compared to recursive DFS (last-pushed neighbor is processed first).</li>
+    </ul>
+
+    <h3>MST Weight Is Incorrect</h3>
+    <ul>
+      <li>Verify you are using <strong>edge weights</strong>, not vertex labels or indices.</li>
+      <li>For undirected graphs, ensure you are <strong>not double-counting</strong> edges (each undirected edge appears in both adjacency lists).</li>
+      <li>For Kruskal's: confirm your Union-Find correctly detects cycles (check that <code>find(u) != find(v)</code> before adding edge).</li>
+      <li>For Prim's: confirm you update the key/priority when a cheaper edge to a vertex is found (decrease-key operation).</li>
+    </ul>
+
+    <h3>Dijkstra's Produces Wrong Distances</h3>
+    <ul>
+      <li>Check your <strong>priority queue update logic</strong>: if using lazy deletion (re-inserting with new priority), make sure you skip already-finalized vertices when you extract them.</li>
+      <li>Verify <strong>initialization</strong>: distance to source = 0, all others = ∞ (use a large sentinel value like <code>Integer.MAX_VALUE</code>).</li>
+      <li>Confirm you are <strong>relaxing all neighbors</strong> of the extracted vertex, not just one.</li>
+    </ul>
+
+    <h3>Tree Structure Not Being Used</h3>
+    <ul>
+      <li>Trace through your algorithm with print statements inside <code>insert()</code> and <code>extractMin()</code>.</li>
+      <li>If you see no output, your algorithm is likely using a different mechanism (e.g., linear scan of a distance array). Refactor to route through your heap.</li>
+      <li>Common mistake: importing a library priority queue alongside your custom one and accidentally calling the library version.</li>
+    </ul>
+
+    <h3>General Strategies</h3>
+    <ul>
+      <li><strong>Small-graph debugging:</strong> Use a 4–5 vertex graph where you can trace every step by hand. Compare your hand trace to your program's output line by line.</li>
+      <li><strong>Regression testing:</strong> After fixing a bug, re-run all previous test cases to make sure the fix didn't break something else.</li>
+      <li><strong>Isolate the problem:</strong> If the integrated pipeline fails, test each component with hardcoded input to determine which component introduced the error.</li>
+    </ul>
+
+  </div>
+</div>
+</section>
+
+<!-- ===== SECTION: KNOWLEDGE CHECK ===== -->
+<section id="knowledge-check">
+<h2>Self-Check: Integration Readiness</h2>
+
+<p>These ungraded checks help you confirm your project is integration-ready. Work through each one and use the feedback to guide your next steps.</p>
+
+<!-- KC 17.1a -->
+<div class="kc-question" id="kc1">
+  <p>Check 17.1a: Run your application on the 5-vertex sample graph from PE-09. Does BFS from vertex 0 produce the same traversal order as your PE-09 submission?</p>
+  <label for="kc1-select" class="sr-only">Select your answer</label>
+  <select id="kc1-select" style="padding:0.4rem; border-radius:4px; border:1px solid #999; font-size:0.9rem;">
+    <option value="">-- Select --</option>
+    <option value="yes">Yes — traversal orders match</option>
+    <option value="no">No — there is a discrepancy</option>
+    <option value="notest">I haven't tested yet</option>
+  </select>
+  <button class="kc-btn" onclick="checkKC1()">Check</button>
+  <div class="kc-feedback" id="kc1-fb-correct" role="alert">✅ <strong>Great!</strong> Matching output confirms your Graph Builder is feeding the same structure to your BFS as PE-09 did. Proceed to the next check.</div>
+  <div class="kc-feedback" id="kc1-fb-incorrect" role="alert">🔍 <strong>Investigate:</strong> A discrepancy means your Graph Builder may store neighbors in a different order, or your BFS visited-set logic changed. Compare your adjacency list output to PE-09's expected input. Also check whether you mark visited on enqueue vs. dequeue.</div>
+  <div class="kc-feedback" id="kc1-fb-notest" role="alert">⏳ <strong>Action needed:</strong> This is the most important verification step. Run the test now — it takes under 2 minutes and can reveal integration bugs immediately.</div>
+</div>
+
+<!-- KC 17.1b -->
+<div class="kc-question" id="kc2">
+  <p>Check 17.1b: Run your MST algorithm on a graph where you can compute the MST by hand (e.g., 4 vertices, 5 edges with distinct weights). Does your output match your hand calculation?</p>
+  <label for="kc2-select" class="sr-only">Select your answer</label>
+  <select id="kc2-select" style="padding:0.4rem; border-radius:4px; border:1px solid #999; font-size:0.9rem;">
+    <option value="">-- Select --</option>
+    <option value="yes">Yes — MST edges and total weight match</option>
+    <option value="weight">Edges differ but total weight is correct</option>
+    <option value="no">No — total weight does not match</option>
+  </select>
+  <button class="kc-btn" onclick="checkKC2()">Check</button>
+  <div class="kc-feedback" id="kc2-fb-correct" role="alert">✅ <strong>Correct!</strong> Your MST algorithm is producing valid output. (Note: if edge weights are distinct, the MST is unique. If some weights are equal, multiple valid MSTs may exist.)</div>
+  <div class="kc-feedback" id="kc2-fb-weight" role="alert">⚠️ <strong>Possibly OK:</strong> If edge weights are not all distinct, multiple valid MSTs exist with the same total weight. Verify that your output forms a spanning tree (connected, |V| − 1 edges) with the minimum total weight.</div>
+  <div class="kc-feedback" id="kc2-fb-incorrect" role="alert">🐛 <strong>Bug detected:</strong> Check for double-counting undirected edges, incorrect Union-Find cycle detection (Kruskal's), or missing decrease-key updates (Prim's). See the Debugging Tips section above.</div>
+</div>
+
+<!-- KC 17.1c -->
+<div class="kc-question" id="kc3">
+  <p>Check 17.1c: Add print statements inside your tree-based structure's <code>insert()</code> and <code>extractMin()</code> (or equivalent) methods. Run Dijkstra's on your small test graph. Do you see insert/extract output for each relaxation step?</p>
+  <label for="kc3-select" class="sr-only">Select your answer</label>
+  <select id="kc3-select" style="padding:0.4rem; border-radius:4px; border:1px solid #999; font-size:0.9rem;">
+    <option value="">-- Select --</option>
+    <option value="yes">Yes — I see insert/extract operations during execution</option>
+    <option value="no">No — I see no output from my tree structure</option>
+    <option value="partial">Partial — some operations print but fewer than expected</option>
+  </select>
+  <button class="kc-btn" onclick="checkKC3()">Check</button>
+  <div class="kc-feedback" id="kc3-fb-correct" role="alert">✅ <strong>Excellent!</strong> Your tree-based structure is meaningfully integrated. This directly satisfies the Tree-Based Structure Integration rubric criterion (15% = 37.5 pts). Remove or disable debug prints before submission.</div>
+  <div class="kc-feedback" id="kc3-fb-incorrect" role="alert">🚨 <strong>Critical issue:</strong> Your algorithm is bypassing the tree structure. Check if you accidentally imported a library priority queue, or if your code uses a linear scan of the distance array instead of extracting from the heap. This must be fixed — it affects 37.5 points.</div>
+  <div class="kc-feedback" id="kc3-fb-partial" role="alert">🔍 <strong>Investigate:</strong> You may be inserting into the heap but not extracting from it (or vice versa). Trace through Dijkstra's pseudocode: every iteration should extract the minimum, and every successful relaxation should insert (or decrease-key). Count expected operations for your test graph and compare.</div>
+</div>
+
+<!-- KC 17.1d -->
+<div class="kc-question" id="kc4">
+  <p>Check 17.1d: Test on a disconnected graph with 3 components. Does your connected-components algorithm correctly report 3 components? Does your MST algorithm handle this gracefully?</p>
+  <label for="kc4-select" class="sr-only">Select your answer</label>
+  <select id="kc4-select" style="padding:0.4rem; border-radius:4px; border:1px solid #999; font-size:0.9rem;">
+    <option value="">-- Select --</option>
+    <option value="both">Yes — components correct AND MST handles gracefully</option>
+    <option value="comp-only">Components correct but MST crashes or gives wrong output</option>
+    <option value="neither">Neither works correctly on disconnected input</option>
+  </select>
+  <button class="kc-btn" onclick="checkKC4()">Check</button>
+  <div class="kc-feedback" id="kc4-fb-correct" role="alert">✅ <strong>Robust!</strong> Handling disconnected graphs gracefully demonstrates mature error handling and earns full marks in the Functionality category for edge-case testing.</div>
+  <div class="kc-feedback" id="kc4-fb-partial" role="alert">⚠️ <strong>Partial fix needed:</strong> Your MST algorithm assumes a connected graph. Add a check: if the graph has multiple components, either report a minimum spanning forest (run MST on each component) or output a clear message like "Graph is disconnected — MST does not exist for the full graph." Do not let it crash.</div>
+  <div class="kc-feedback" id="kc4-fb-incorrect" role="alert">🐛 <strong>Fix needed:</strong> Your connected-components algorithm likely has a bug in its "restart BFS/DFS from unvisited vertices" logic. Review your Week 13 module content on connected components. Ensure you iterate over all vertices and start a new traversal for each unvisited vertex.</div>
+</div>
+
+</section>
+
+<!-- ===== SECTION: GRADED WORK ===== -->
+<section id="graded-work">
+<h2>Connection to Graded Work</h2>
+
+<div class="callout callout-rubric">
+  <div class="callout-title">📋 Rubric Categories This Module Prepares You For</div>
+  <table>
+    <thead>
+      <tr><th scope="col">Category</th><th scope="col">Weight</th><th scope="col">Points</th><th scope="col">How This Module Helps</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Functionality</strong></td>
+        <td>50%</td>
+        <td>125</td>
+        <td>The component checklist and integration testing strategy ensure all four components produce correct output on test inputs.</td>
+      </tr>
+      <tr>
+        <td><strong>Tree-Based Structure Integration</strong></td>
+        <td>15%</td>
+        <td>37.5</td>
+        <td>Check 17.1c specifically verifies your tree structure is student-implemented and meaningfully used — not just present in the codebase.</td>
+      </tr>
+    </tbody>
+  </table>
+  <p style="margin-top:0.6rem; font-size:0.88rem;"><em>No new graded assignments are introduced this week. The Final Project (250 pts) is the sole deliverable.</em></p>
+</div>
+
+<h3>What Comes Next</h3>
+<ul>
+  <li><strong>Module 17.2</strong> – Runtime Comparison and Complexity Analysis: measure and interpret algorithm performance.</li>
+  <li><strong>Module 17.3</strong> – Analysis Document and Technical Writing: write the required 1–2 page analysis.</li>
+  <li><strong>Module 17.4</strong> – Code Quality, Documentation, and Final Submission: polish, package, and submit.</li>
+</ul>
+
+</section>
+
+</main>
+
+<!-- ===== JAVASCRIPT ===== -->
+<script>
+// === Collapsible Sections ===
+document.querySelectorAll('.collapsible-toggle').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var expanded = this.getAttribute('aria-expanded') === 'true';
+    this.setAttribute('aria-expanded', String(!expanded));
+    var contentId = this.getAttribute('aria-controls');
+    var content = document.getElementById(contentId);
+    if (content) {
+      content.classList.toggle('open', !expanded);
+    }
+  });
+  btn.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      this.click();
+    }
+  });
+});
+
+// === Progress Tracker ===
+function updateProgress() {
+  var checks = document.querySelectorAll('.progress-check');
+  var total = checks.length;
+  var checked = 0;
+  checks.forEach(function(cb) { if (cb.checked) checked++; });
+  var pct = Math.round((checked / total) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressText').textContent = 'Progress: ' + checked + ' of ' + total + ' items verified';
+}
+document.querySelectorAll('.progress-check').forEach(function(cb) {
+  cb.addEventListener('change', updateProgress);
+});
+
+// === Knowledge Check Handlers ===
+function showFeedback(prefix, suffix) {
+  // Hide all feedback for this question
+  var allFb = document.querySelectorAll('[id^="' + prefix + '"]');
+  allFb.forEach(function(el) { el.className = 'kc-feedback'; });
+  var target = document.getElementById(prefix + suffix);
+  if (target) { target.className = 'kc-feedback correct'; }
+}
+
+function checkKC1() {
+  var val = document.getElementById('kc1-select').value;
+  var allFb = document.querySelectorAll('[id^="kc1-fb"]');
+  allFb.forEach(function(el) { el.className = 'kc-feedback'; });
+  if (val === 'yes') document.getElementById('kc1-fb-correct').className = 'kc-feedback correct';
+  else if (val === 'no') document.getElementById('kc1-fb-incorrect').className = 'kc-feedback incorrect';
+  else if (val === 'notest') document.getElementById('kc1-fb-notest').className = 'kc-feedback incorrect';
+}
+
+function checkKC2() {
+  var val = document.getElementById('kc2-select').value;
+  var allFb = document.querySelectorAll('[id^="kc2-fb"]');
+  allFb.forEach(function(el) { el.className = 'kc-feedback'; });
+  if (val === 'yes') document.getElementById('kc2-fb-correct').className = 'kc-feedback correct';
+  else if (val === 'weight') document.getElementById('kc2-fb-weight').className = 'kc-feedback correct';
+  else if (val === 'no') document.getElementById('kc2-fb-incorrect').className = 'kc-feedback incorrect';
+}
+
+function checkKC3() {
+  var val = document.getElementById('kc3-select').value;
+  var allFb = document.querySelectorAll('[id^="kc3-fb"]');
+  allFb.forEach(function(el) { el.className = 'kc-feedback'; });
+  if (val === 'yes') document.getElementById('kc3-fb-correct').className = 'kc-feedback correct';
+  else if (val === 'no') document.getElementById('kc3-fb-incorrect').className = 'kc-feedback incorrect';
+  else if (val === 'partial') document.getElementById('kc3-fb-partial').className = 'kc-feedback incorrect';
+}
+
+function checkKC4() {
+  var val = document.getElementById('kc4-select').value;
+  var allFb = document.querySelectorAll('[id^="kc4-fb"]');
+  allFb.forEach(function(el) { el.className = 'kc-feedback'; });
+  if (val === 'both') document.getElementById('kc4-fb-correct').className = 'kc-feedback correct';
+  else if (val === 'comp-only') document.getElementById('kc4-fb-partial').className = 'kc-feedback incorrect';
+  else if (val === 'neither') document.getElementById('kc4-fb-incorrect').className = 'kc-feedback incorrect';
+}
+</script>
+
+</body>
+</html>
